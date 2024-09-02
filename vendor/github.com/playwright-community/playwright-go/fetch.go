@@ -16,6 +16,14 @@ type apiRequestImpl struct {
 func (r *apiRequestImpl) NewContext(options ...APIRequestNewContextOptions) (APIRequestContext, error) {
 	overrides := map[string]interface{}{}
 	if len(options) == 1 {
+		if options[0].ClientCertificates != nil {
+			certs, err := transformClientCertificate(options[0].ClientCertificates)
+			if err != nil {
+				return nil, err
+			}
+			overrides["clientCertificates"] = certs
+			options[0].ClientCertificates = nil
+		}
 		if options[0].ExtraHttpHeaders != nil {
 			overrides["extraHTTPHeaders"] = serializeMapToNameAndValue(options[0].ExtraHttpHeaders)
 			options[0].ExtraHttpHeaders = nil
@@ -37,7 +45,7 @@ func (r *apiRequestImpl) NewContext(options ...APIRequestNewContextOptions) (API
 
 	channel, err := r.channel.Send("newRequest", options, overrides)
 	if err != nil {
-		return nil, fmt.Errorf("could not send message: %w", err)
+		return nil, err
 	}
 	return fromChannel(channel).(*apiRequestContextImpl), nil
 }
@@ -48,11 +56,20 @@ func newApiRequestImpl(pw *Playwright) *apiRequestImpl {
 
 type apiRequestContextImpl struct {
 	channelOwner
-	tracing *tracingImpl
+	tracing     *tracingImpl
+	closeReason *string
 }
 
-func (r *apiRequestContextImpl) Dispose() error {
-	_, err := r.channel.Send("dispose")
+func (r *apiRequestContextImpl) Dispose(options ...APIRequestContextDisposeOptions) error {
+	if len(options) == 1 {
+		r.closeReason = options[0].Reason
+	}
+	_, err := r.channel.Send("dispose", map[string]interface{}{
+		"reason": r.closeReason,
+	})
+	if errors.Is(err, ErrTargetClosed) {
+		return nil
+	}
 	return err
 }
 
@@ -82,6 +99,9 @@ func (r *apiRequestContextImpl) Fetch(urlOrRequest interface{}, options ...APIRe
 }
 
 func (r *apiRequestContextImpl) innerFetch(url string, request Request, options ...APIRequestContextFetchOptions) (APIResponse, error) {
+	if r.closeReason != nil {
+		return nil, fmt.Errorf("%w: %s", ErrTargetClosed, *r.closeReason)
+	}
 	overrides := map[string]interface{}{}
 	if url != "" {
 		overrides["url"] = url
@@ -92,6 +112,9 @@ func (r *apiRequestContextImpl) innerFetch(url string, request Request, options 
 	if len(options) == 1 {
 		if options[0].MaxRedirects != nil && *options[0].MaxRedirects < 0 {
 			return nil, errors.New("maxRedirects must be non-negative")
+		}
+		if options[0].MaxRetries != nil && *options[0].MaxRetries < 0 {
+			return nil, errors.New("maxRetries must be non-negative")
 		}
 		// only one of them can be specified
 		if countNonNil(options[0].Data, options[0].Form, options[0].Multipart) > 1 {
@@ -117,7 +140,15 @@ func (r *apiRequestContextImpl) innerFetch(url string, request Request, options 
 			case string:
 				headersArray, ok := overrides["headers"].([]map[string]string)
 				if ok && isJsonContentType(headersArray) {
-					overrides["jsonData"] = v
+					if json.Valid([]byte(v)) {
+						overrides["jsonData"] = v
+					} else {
+						data, err := json.Marshal(v)
+						if err != nil {
+							return nil, fmt.Errorf("could not marshal data: %w", err)
+						}
+						overrides["jsonData"] = string(data)
+					}
 				} else {
 					overrides["postData"] = base64.StdEncoding.EncodeToString([]byte(v))
 				}
@@ -298,7 +329,7 @@ func (r *apiResponseImpl) Body() ([]byte, error) {
 		},
 	})
 	if err != nil {
-		if isSafeCloseError(err) {
+		if errors.Is(err, ErrTargetClosed) {
 			return nil, errors.New("response has been disposed")
 		}
 		return nil, err
@@ -404,7 +435,6 @@ func isJsonContentType(headers []map[string]string) bool {
 				}
 			}
 		}
-
 	}
 	return false
 }

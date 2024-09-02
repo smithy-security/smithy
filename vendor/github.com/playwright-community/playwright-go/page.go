@@ -4,15 +4,17 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"log"
 	"os"
-	"time"
+	"sync"
+
+	"github.com/playwright-community/playwright-go/internal/safe"
+	"golang.org/x/exp/slices"
 )
 
 type pageImpl struct {
 	channelOwner
 	isClosed        bool
-	closedOrCrashed chan bool
+	closedOrCrashed chan error
 	video           *videoImpl
 	mouse           *mouseImpl
 	keyboard        *keyboardImpl
@@ -25,19 +27,111 @@ type pageImpl struct {
 	routes          []*routeHandlerEntry
 	viewportSize    *Size
 	ownedContext    BrowserContext
-	bindings        map[string]BindingCallFunction
+	bindings        *safe.SyncMap[string, BindingCallFunction]
+	closeReason     *string
+	closeWasCalled  bool
+	harRouters      []*harRouter
+	locatorHandlers map[float64]*locatorHandlerEntry
+}
+
+type locatorHandlerEntry struct {
+	locator *locatorImpl
+	handler func(Locator)
+	times   *int
+}
+
+func (p *pageImpl) AddLocatorHandler(locator Locator, handler func(Locator), options ...PageAddLocatorHandlerOptions) error {
+	if locator == nil || handler == nil {
+		return errors.New("locator or handler must not be nil")
+	}
+	if locator.Err() != nil {
+		return locator.Err()
+	}
+
+	var option PageAddLocatorHandlerOptions
+	if len(options) == 1 {
+		option = options[0]
+		if option.Times != nil && *option.Times == 0 {
+			return nil
+		}
+	}
+
+	loc := locator.(*locatorImpl)
+	if loc.frame != p.mainFrame {
+		return errors.New("locator must belong to the main frame of this page")
+	}
+	uid, err := p.channel.Send("registerLocatorHandler", map[string]any{
+		"selector":    loc.selector,
+		"noWaitAfter": option.NoWaitAfter,
+	})
+	if err != nil {
+		return err
+	}
+	p.locatorHandlers[uid.(float64)] = &locatorHandlerEntry{locator: loc, handler: handler, times: option.Times}
+	return nil
+}
+
+func (p *pageImpl) onLocatorHandlerTriggered(uid float64) {
+	var remove *bool
+	handler, ok := p.locatorHandlers[uid]
+	if !ok {
+		return
+	}
+	if handler.times != nil {
+		*handler.times--
+		if *handler.times == 0 {
+			remove = Bool(true)
+		}
+	}
+	go func() {
+		defer func() {
+			if remove != nil && *remove {
+				delete(p.locatorHandlers, uid)
+			}
+			_, _ = p.connection.WrapAPICall(func() (interface{}, error) {
+				p.channel.SendNoReply("resolveLocatorHandlerNoReply", map[string]any{
+					"uid":    uid,
+					"remove": remove,
+				})
+				return nil, nil
+			}, true)
+		}()
+
+		handler.handler(handler.locator)
+	}()
+}
+
+func (p *pageImpl) RemoveLocatorHandler(locator Locator) error {
+	for uid := range p.locatorHandlers {
+		if p.locatorHandlers[uid].locator.equals(locator) {
+			delete(p.locatorHandlers, uid)
+			_, _ = p.channel.Send("unregisterLocatorHandler", map[string]any{
+				"uid": uid,
+			})
+			return nil
+		}
+	}
+	return nil
 }
 
 func (p *pageImpl) Context() BrowserContext {
 	return p.browserContext
 }
 
+func (b *pageImpl) Clock() Clock {
+	return b.browserContext.clock
+}
+
 func (p *pageImpl) Close(options ...PageCloseOptions) error {
+	if len(options) == 1 {
+		p.closeReason = options[0].Reason
+	}
+	p.closeWasCalled = true
 	_, err := p.channel.Send("close", options)
 	if err == nil && p.ownedContext != nil {
 		err = p.ownedContext.Close()
 	}
-	if isSafeCloseError(err) || (len(options) == 1 && options[0].RunBeforeUnload != nil && *(options[0].RunBeforeUnload)) {
+	if errors.Is(err, ErrTargetClosed) || (len(options) == 1 && options[0].RunBeforeUnload != nil && *(options[0].RunBeforeUnload)) {
 		return nil
 	}
 	return err
@@ -179,13 +273,50 @@ func (p *pageImpl) Unroute(url interface{}, handlers ...routeHandler) error {
 	p.Lock()
 	defer p.Unlock()
 
-	routes, err := unroute(p.routes, url, handlers...)
+	removed, remaining, err := unroute(p.routes, url, handlers...)
 	if err != nil {
 		return err
 	}
-	p.routes = routes
+	return p.unrouteInternal(removed, remaining, UnrouteBehaviorDefault)
+}
 
-	return p.updateInterceptionPatterns()
+func (p *pageImpl) unrouteInternal(removed []*routeHandlerEntry, remaining []*routeHandlerEntry, behavior *UnrouteBehavior) error {
+	p.routes = remaining
+	err := p.updateInterceptionPatterns()
+	if err != nil {
+		return err
+	}
+	if behavior == nil || behavior == UnrouteBehaviorDefault {
+		return nil
+	}
+	wg := &sync.WaitGroup{}
+	for _, entry := range removed {
+		wg.Add(1)
+		go func(entry *routeHandlerEntry) {
+			defer wg.Done()
+			entry.Stop(string(*behavior))
+		}(entry)
+	}
+	wg.Wait()
+	return nil
+}
+
+func (p *pageImpl) disposeHarRouters() {
+	for _, router := range p.harRouters {
+		router.dispose()
+	}
+	p.harRouters = make([]*harRouter, 0)
+}
+
+func (p *pageImpl) UnrouteAll(options ...PageUnrouteAllOptions) error {
+	var behavior *UnrouteBehavior
+	if len(options) == 1 {
+		behavior = options[0].Behavior
+	}
+	p.Lock()
+	defer p.Unlock()
+	defer p.disposeHarRouters()
+	return p.unrouteInternal(p.routes, []*routeHandlerEntry{}, behavior)
 }
 
 func (p *pageImpl) Content() (string, error) {
@@ -341,14 +472,14 @@ func (p *pageImpl) Screenshot(options ...PageScreenshotOptions) ([]byte, error) 
 	}
 	data, err := p.channel.Send("screenshot", options, overrides)
 	if err != nil {
-		return nil, fmt.Errorf("could not send message :%w", err)
+		return nil, err
 	}
 	image, err := base64.StdEncoding.DecodeString(data.(string))
 	if err != nil {
 		return nil, fmt.Errorf("could not decode base64 :%w", err)
 	}
 	if path != nil {
-		if err := os.WriteFile(*path, image, 0644); err != nil {
+		if err := os.WriteFile(*path, image, 0o644); err != nil {
 			return nil, err
 		}
 	}
@@ -362,14 +493,14 @@ func (p *pageImpl) PDF(options ...PagePdfOptions) ([]byte, error) {
 	}
 	data, err := p.channel.Send("pdf", options)
 	if err != nil {
-		return nil, fmt.Errorf("could not send message :%w", err)
+		return nil, err
 	}
 	pdf, err := base64.StdEncoding.DecodeString(data.(string))
 	if err != nil {
 		return nil, fmt.Errorf("could not decode base64 :%w", err)
 	}
 	if path != nil {
-		if err := os.WriteFile(*path, pdf, 0644); err != nil {
+		if err := os.WriteFile(*path, pdf, 0o644); err != nil {
 			return nil, err
 		}
 	}
@@ -397,7 +528,7 @@ func (p *pageImpl) waiterForEvent(event string, options ...PageWaitForEventOptio
 		predicate = options[0].Predicate
 	}
 	waiter := newWaiter().WithTimeout(timeout)
-	waiter.RejectOnEvent(p, "close", errors.New("page closed"))
+	waiter.RejectOnEvent(p, "close", p.closeErrorWithReason())
 	waiter.RejectOnEvent(p, "crash", errors.New("page crashed"))
 	return waiter.WaitForEvent(p, event, predicate)
 }
@@ -456,52 +587,10 @@ func (p *pageImpl) ExpectEvent(event string, cb func() error, options ...PageExp
 }
 
 func (p *pageImpl) ExpectNavigation(cb func() error, options ...PageExpectNavigationOptions) (Response, error) {
-	option := PageExpectNavigationOptions{}
 	if len(options) == 1 {
-		option = options[0]
+		return p.mainFrame.ExpectNavigation(cb, FrameExpectNavigationOptions(options[0]))
 	}
-	if option.WaitUntil == nil {
-		option.WaitUntil = WaitUntilStateLoad
-	}
-	if option.Timeout == nil {
-		option.Timeout = Float(p.timeoutSettings.NavigationTimeout())
-	}
-	deadline := time.Now().Add(time.Duration(*option.Timeout) * time.Millisecond)
-	var matcher *urlMatcher
-	if option.URL != nil {
-		matcher = newURLMatcher(option.URL, p.browserContext.options.BaseURL)
-	}
-	predicate := func(events ...interface{}) bool {
-		ev := events[0].(map[string]interface{})
-		if ev["error"] != nil {
-			print("error")
-		}
-		return matcher == nil || matcher.Matches(ev["url"].(string))
-	}
-	waiter, err := p.mainFrame.(*frameImpl).setNavigationWaiter(option.Timeout)
-	if err != nil {
-		return nil, err
-	}
-
-	eventData, err := waiter.WaitForEvent(p.mainFrame.(*frameImpl), "navigated", predicate).RunAndWait(cb)
-	if err != nil || eventData == nil {
-		return nil, err
-	}
-
-	t := time.Until(deadline).Milliseconds()
-	if t > 0 {
-		err = p.mainFrame.(*frameImpl).waitForLoadStateImpl(string(*option.WaitUntil), Float(float64(t)), nil)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	event := eventData.(map[string]interface{})
-	if event["newDocument"] != nil && event["newDocument"].(map[string]interface{})["request"] != nil {
-		request := fromChannel(event["newDocument"].(map[string]interface{})["request"]).(*requestImpl)
-		return request.Response()
-	}
-	return nil, nil
+	return p.mainFrame.ExpectNavigation(cb)
 }
 
 func (p *pageImpl) ExpectConsoleMessage(cb func() error, options ...PageExpectConsoleMessageOptions) (ConsoleMessage, error) {
@@ -614,7 +703,7 @@ func (p *pageImpl) ExpectWorker(cb func() error, options ...PageExpectWorkerOpti
 func (p *pageImpl) Route(url interface{}, handler routeHandler, times ...int) error {
 	p.Lock()
 	defer p.Unlock()
-	p.routes = append(p.routes, newRouteHandlerEntry(newURLMatcher(url, p.browserContext.options.BaseURL), handler, times...))
+	p.routes = slices.Insert(p.routes, 0, newRouteHandlerEntry(newURLMatcher(url, p.browserContext.options.BaseURL), handler, times...))
 	return p.updateInterceptionPatterns()
 }
 
@@ -657,6 +746,7 @@ func (p *pageImpl) AddInitScript(script Script) error {
 func (p *pageImpl) Keyboard() Keyboard {
 	return p.keyboard
 }
+
 func (p *pageImpl) Mouse() Mouse {
 	return p.mouse
 }
@@ -677,6 +767,7 @@ func (p *pageImpl) RouteFromHAR(har string, options ...PageRouteFromHAROptions) 
 		notFound = HarNotFoundAbort
 	}
 	router := newHarRouter(p.connection.localUtils, har, *notFound, opt.URL)
+	p.harRouters = append(p.harRouters, router)
 	return router.addPageRoute(p)
 }
 
@@ -691,10 +782,12 @@ func newPage(parent *channelOwner, objectType string, guid string, initializer m
 		viewportSize.Width = int(initializer["viewportSize"].(map[string]interface{})["width"].(float64))
 	}
 	bt := &pageImpl{
-		workers:      make([]Worker, 0),
-		routes:       make([]*routeHandlerEntry, 0),
-		bindings:     make(map[string]BindingCallFunction),
-		viewportSize: viewportSize,
+		workers:         make([]Worker, 0),
+		routes:          make([]*routeHandlerEntry, 0),
+		bindings:        safe.NewSyncMap[string, BindingCallFunction](),
+		viewportSize:    viewportSize,
+		harRouters:      make([]*harRouter, 0),
+		locatorHandlers: make(map[float64]*locatorHandlerEntry, 0),
 	}
 	bt.createChannelOwner(bt, parent, objectType, guid, initializer)
 	bt.browserContext = fromChannel(parent.channel).(*browserContextImpl)
@@ -707,7 +800,7 @@ func newPage(parent *channelOwner, objectType string, guid string, initializer m
 	bt.keyboard = newKeyboard(bt.channel)
 	bt.touchscreen = newTouchscreen(bt.channel)
 	bt.channel.On("bindingCall", func(params map[string]interface{}) {
-		bt.onBinding(fromChannel(params["binding"]).(*bindingCallImpl))
+		go bt.onBinding(fromChannel(params["binding"]).(*bindingCallImpl))
 	})
 	bt.channel.On("close", bt.onClose)
 	bt.channel.On("crash", func() {
@@ -724,6 +817,9 @@ func newPage(parent *channelOwner, objectType string, guid string, initializer m
 	})
 	bt.channel.On("frameDetached", func(ev map[string]interface{}) {
 		bt.onFrameDetached(fromChannel(ev["frame"]).(*frameImpl))
+	})
+	bt.channel.On("locatorHandlerTriggered", func(ev map[string]interface{}) {
+		bt.onLocatorHandlerTriggered(ev["uid"].(float64))
 	})
 	bt.channel.On(
 		"load", func(ev map[string]interface{}) {
@@ -753,16 +849,16 @@ func newPage(parent *channelOwner, objectType string, guid string, initializer m
 	bt.channel.On("worker", func(ev map[string]interface{}) {
 		bt.onWorker(fromChannel(ev["worker"]).(*workerImpl))
 	})
-	bt.closedOrCrashed = make(chan bool, 1)
+	bt.closedOrCrashed = make(chan error, 1)
 	bt.OnClose(func(Page) {
 		select {
-		case bt.closedOrCrashed <- true:
+		case bt.closedOrCrashed <- bt.closeErrorWithReason():
 		default:
 		}
 	})
 	bt.OnCrash(func(Page) {
 		select {
-		case bt.closedOrCrashed <- true:
+		case bt.closedOrCrashed <- ErrTargetClosed:
 		default:
 		}
 	})
@@ -779,12 +875,19 @@ func newPage(parent *channelOwner, objectType string, guid string, initializer m
 	return bt
 }
 
+func (p *pageImpl) closeErrorWithReason() error {
+	if p.closeReason != nil {
+		return targetClosedError(p.closeReason)
+	}
+	return targetClosedError(p.browserContext.effectiveCloseReason())
+}
+
 func (p *pageImpl) onBinding(binding *bindingCallImpl) {
-	function := p.bindings[binding.initializer["name"].(string)]
-	if function == nil {
+	function, ok := p.bindings.Load(binding.initializer["name"].(string))
+	if !ok || function == nil {
 		return
 	}
-	go binding.Call(function)
+	binding.Call(function)
 }
 
 func (p *pageImpl) onFrameAttached(frame *frameImpl) {
@@ -810,29 +913,47 @@ func (p *pageImpl) onFrameDetached(frame *frameImpl) {
 func (p *pageImpl) onRoute(route *routeImpl) {
 	go func() {
 		p.Lock()
-		defer p.Unlock()
 		route.context = p.browserContext
 		routes := make([]*routeHandlerEntry, len(p.routes))
 		copy(routes, p.routes)
+		p.Unlock()
 
-		url := route.Request().URL()
-		for i, handlerEntry := range routes {
-			if !handlerEntry.Matches(url) {
-				continue
-			}
-			if handlerEntry.WillExceed() {
-				p.routes = append(p.routes[:i], p.routes[i+1:]...)
-			}
-			handled := handlerEntry.Handle(route)
+		checkInterceptionIfNeeded := func() {
+			p.Lock()
+			defer p.Unlock()
 			if len(p.routes) == 0 {
 				_, err := p.connection.WrapAPICall(func() (interface{}, error) {
 					err := p.updateInterceptionPatterns()
 					return nil, err
 				}, true)
 				if err != nil {
-					log.Printf("could not update interception patterns: %v", err)
+					logger.Printf("could not update interception patterns: %v\n", err)
 				}
 			}
+		}
+
+		url := route.Request().URL()
+		for _, handlerEntry := range routes {
+			// If the page was closed we stall all requests right away.
+			if p.closeWasCalled || p.browserContext.closeWasCalled {
+				return
+			}
+			if !handlerEntry.Matches(url) {
+				continue
+			}
+			if !slices.ContainsFunc(p.routes, func(entry *routeHandlerEntry) bool {
+				return entry == handlerEntry
+			}) {
+				continue
+			}
+			if handlerEntry.WillExceed() {
+				p.routes = slices.DeleteFunc(p.routes, func(rhe *routeHandlerEntry) bool {
+					return rhe == handlerEntry
+				})
+			}
+			handled := handlerEntry.Handle(route)
+			checkInterceptionIfNeeded()
+
 			if <-handled {
 				return
 			}
@@ -875,10 +996,11 @@ func (p *pageImpl) onClose() {
 		p.browserContext.backgroundPages = newBackgoundPages
 		p.browserContext.Unlock()
 	}
+	p.disposeHarRouters()
 	p.Emit("close", p)
 }
 
-func (p *pageImpl) SetInputFiles(selector string, files []InputFile, options ...PageSetInputFilesOptions) error {
+func (p *pageImpl) SetInputFiles(selector string, files interface{}, options ...PageSetInputFilesOptions) error {
 	if len(options) == 1 {
 		return p.mainFrame.SetInputFiles(selector, files, FrameSetInputFilesOptions(options[0]))
 	}
@@ -953,23 +1075,27 @@ func (p *pageImpl) ExposeFunction(name string, binding ExposedFunction) error {
 		return binding(args...)
 	})
 }
+
 func (p *pageImpl) ExposeBinding(name string, binding BindingCallFunction, handle ...bool) error {
 	needsHandle := false
 	if len(handle) == 1 {
 		needsHandle = handle[0]
 	}
-	if _, ok := p.bindings[name]; ok {
+	if _, ok := p.bindings.Load(name); ok {
 		return fmt.Errorf("Function '%s' has been already registered", name)
 	}
-	if _, ok := p.browserContext.bindings[name]; ok {
+	if _, ok := p.browserContext.bindings.Load(name); ok {
 		return fmt.Errorf("Function '%s' has been already registered in the browser context", name)
 	}
-	p.bindings[name] = binding
 	_, err := p.channel.Send("exposeBinding", map[string]interface{}{
 		"name":        name,
 		"needsHandle": needsHandle,
 	})
-	return err
+	if err != nil {
+		return err
+	}
+	p.bindings.Store(name, binding)
+	return nil
 }
 
 func (p *pageImpl) SelectOption(selector string, values SelectOptionValues, options ...PageSelectOptionOptions) ([]string, error) {
@@ -1034,15 +1160,14 @@ func (p *pageImpl) Pause() (err error) {
 	p.browserContext.SetDefaultNavigationTimeout(0)
 	p.browserContext.SetDefaultTimeout(0)
 	select {
-	case <-p.closedOrCrashed:
-		err = fmt.Errorf(errMsgBrowserOrContextClosed)
+	case err = <-p.closedOrCrashed:
 	case err = <-p.browserContext.pause():
 	}
 	if err != nil {
 		return err
 	}
-	p.browserContext.SetDefaultNavigationTimeout(*defaultNavigationTimout)
-	p.browserContext.SetDefaultTimeout(*defaultTimeout)
+	p.browserContext.setDefaultNavigationTimeoutImpl(defaultNavigationTimout)
+	p.browserContext.setDefaultTimeoutImpl(defaultTimeout)
 	return
 }
 
@@ -1184,7 +1309,7 @@ func (p *pageImpl) OnLoad(fn func(Page)) {
 	p.On("load", fn)
 }
 
-func (p *pageImpl) OnPageError(fn func(*Error)) {
+func (p *pageImpl) OnPageError(fn func(error)) {
 	p.On("pageerror", fn)
 }
 

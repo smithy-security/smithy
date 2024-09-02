@@ -19,7 +19,7 @@ func newLocatorAssertions(locator Locator, isNot bool, defaultTimeout *float64) 
 }
 
 func (la *locatorAssertionsImpl) ToBeAttached(options ...LocatorAssertionsToBeAttachedOptions) error {
-	var expression = "to.be.attached"
+	expression := "to.be.attached"
 	var timeout *float64
 	if len(options) == 1 {
 		if options[0].Attached != nil && !*options[0].Attached {
@@ -36,7 +36,7 @@ func (la *locatorAssertionsImpl) ToBeAttached(options ...LocatorAssertionsToBeAt
 }
 
 func (la *locatorAssertionsImpl) ToBeChecked(options ...LocatorAssertionsToBeCheckedOptions) error {
-	var expression = "to.be.checked"
+	expression := "to.be.checked"
 	var timeout *float64
 	if len(options) == 1 {
 		if options[0].Checked != nil && !*options[0].Checked {
@@ -143,7 +143,8 @@ func (la *locatorAssertionsImpl) ToBeInViewport(options ...LocatorAssertionsToBe
 		"to.be.in.viewport",
 		frameExpectOptions{
 			ExpectedNumber: ratio,
-			Timeout:        timeout},
+			Timeout:        timeout,
+		},
 		nil,
 		"Locator expected to be in viewport",
 	)
@@ -176,7 +177,10 @@ func (la *locatorAssertionsImpl) ToContainText(expected interface{}, options ...
 
 	switch expected.(type) {
 	case []string, []*regexp.Regexp:
-		expectedText := toExpectedTextValues(convertToInterfaceList(expected), true, true, ignoreCase)
+		expectedText, err := toExpectedTextValues(convertToInterfaceList(expected), true, true, ignoreCase)
+		if err != nil {
+			return err
+		}
 		return la.expect(
 			"to.contain.text.array",
 			frameExpectOptions{
@@ -188,7 +192,10 @@ func (la *locatorAssertionsImpl) ToContainText(expected interface{}, options ...
 			"Locator expected to contain text",
 		)
 	default:
-		expectedText := toExpectedTextValues([]interface{}{expected}, true, true, ignoreCase)
+		expectedText, err := toExpectedTextValues([]interface{}{expected}, true, true, ignoreCase)
+		if err != nil {
+			return err
+		}
 		return la.expect(
 			"to.have.text",
 			frameExpectOptions{
@@ -202,12 +209,55 @@ func (la *locatorAssertionsImpl) ToContainText(expected interface{}, options ...
 	}
 }
 
-func (la *locatorAssertionsImpl) ToHaveAttribute(name string, value interface{}, options ...LocatorAssertionsToHaveAttributeOptions) error {
+func (la *locatorAssertionsImpl) ToHaveAccessibleDescription(description interface{}, options ...LocatorAssertionsToHaveAccessibleDescriptionOptions) error {
 	var timeout *float64
+	var ignoreCase *bool
 	if len(options) == 1 {
 		timeout = options[0].Timeout
+		ignoreCase = options[0].IgnoreCase
 	}
-	expectedText := toExpectedTextValues([]interface{}{value}, false, false, nil)
+	expectedText, err := toExpectedTextValues([]interface{}{description}, false, false, ignoreCase)
+	if err != nil {
+		return err
+	}
+	return la.expect(
+		"to.have.accessible.description",
+		frameExpectOptions{ExpectedText: expectedText, Timeout: timeout},
+		description,
+		"Locator expected to have AccessibleDescription",
+	)
+}
+
+func (la *locatorAssertionsImpl) ToHaveAccessibleName(name interface{}, options ...LocatorAssertionsToHaveAccessibleNameOptions) error {
+	var timeout *float64
+	var ignoreCase *bool
+	if len(options) == 1 {
+		timeout = options[0].Timeout
+		ignoreCase = options[0].IgnoreCase
+	}
+	expectedText, err := toExpectedTextValues([]interface{}{name}, false, false, ignoreCase)
+	if err != nil {
+		return err
+	}
+	return la.expect(
+		"to.have.accessible.name",
+		frameExpectOptions{ExpectedText: expectedText, Timeout: timeout},
+		name,
+		"Locator expected to have AccessibleName",
+	)
+}
+
+func (la *locatorAssertionsImpl) ToHaveAttribute(name string, value interface{}, options ...LocatorAssertionsToHaveAttributeOptions) error {
+	var timeout *float64
+	var ignoreCase *bool
+	if len(options) == 1 {
+		timeout = options[0].Timeout
+		ignoreCase = options[0].IgnoreCase
+	}
+	expectedText, err := toExpectedTextValues([]interface{}{value}, false, false, ignoreCase)
+	if err != nil {
+		return err
+	}
 	return la.expect(
 		"to.have.attribute.value",
 		frameExpectOptions{
@@ -227,7 +277,10 @@ func (la *locatorAssertionsImpl) ToHaveClass(expected interface{}, options ...Lo
 	}
 	switch expected.(type) {
 	case []string, []*regexp.Regexp:
-		expectedText := toExpectedTextValues(convertToInterfaceList(expected), false, false, nil)
+		expectedText, err := toExpectedTextValues(convertToInterfaceList(expected), false, false, nil)
+		if err != nil {
+			return err
+		}
 		return la.expect(
 			"to.have.class.array",
 			frameExpectOptions{
@@ -238,7 +291,10 @@ func (la *locatorAssertionsImpl) ToHaveClass(expected interface{}, options ...Lo
 			"Locator expected to have class",
 		)
 	default:
-		expectedText := toExpectedTextValues([]interface{}{expected}, false, false, nil)
+		expectedText, err := toExpectedTextValues([]interface{}{expected}, false, false, nil)
+		if err != nil {
+			return err
+		}
 		return la.expect(
 			"to.have.class",
 			frameExpectOptions{
@@ -269,7 +325,10 @@ func (la *locatorAssertionsImpl) ToHaveCSS(name string, value interface{}, optio
 	if len(options) == 1 {
 		timeout = options[0].Timeout
 	}
-	expectedText := toExpectedTextValues([]interface{}{value}, false, false, nil)
+	expectedText, err := toExpectedTextValues([]interface{}{value}, false, false, nil)
+	if err != nil {
+		return err
+	}
 	return la.expect(
 		"to.have.css",
 		frameExpectOptions{
@@ -287,7 +346,10 @@ func (la *locatorAssertionsImpl) ToHaveId(id interface{}, options ...LocatorAsse
 	if len(options) == 1 {
 		timeout = options[0].Timeout
 	}
-	expectedText := toExpectedTextValues([]interface{}{id}, false, false, nil)
+	expectedText, err := toExpectedTextValues([]interface{}{id}, false, false, nil)
+	if err != nil {
+		return err
+	}
 	return la.expect(
 		"to.have.id",
 		frameExpectOptions{ExpectedText: expectedText, Timeout: timeout},
@@ -313,6 +375,23 @@ func (la *locatorAssertionsImpl) ToHaveJSProperty(name string, value interface{}
 	)
 }
 
+func (la *locatorAssertionsImpl) ToHaveRole(role AriaRole, options ...LocatorAssertionsToHaveRoleOptions) error {
+	var timeout *float64
+	if len(options) == 1 {
+		timeout = options[0].Timeout
+	}
+	expectedText, err := toExpectedTextValues([]interface{}{string(role)}, false, false, nil)
+	if err != nil {
+		return err
+	}
+	return la.expect(
+		"to.have.role",
+		frameExpectOptions{ExpectedText: expectedText, Timeout: timeout},
+		role,
+		"Locator expected to have Role",
+	)
+}
+
 func (la *locatorAssertionsImpl) ToHaveText(expected interface{}, options ...LocatorAssertionsToHaveTextOptions) error {
 	var (
 		timeout      *float64
@@ -327,7 +406,10 @@ func (la *locatorAssertionsImpl) ToHaveText(expected interface{}, options ...Loc
 
 	switch expected.(type) {
 	case []string, []*regexp.Regexp:
-		expectedText := toExpectedTextValues(convertToInterfaceList(expected), false, true, ignoreCase)
+		expectedText, err := toExpectedTextValues(convertToInterfaceList(expected), false, true, ignoreCase)
+		if err != nil {
+			return err
+		}
 		return la.expect(
 			"to.have.text.array",
 			frameExpectOptions{
@@ -339,7 +421,10 @@ func (la *locatorAssertionsImpl) ToHaveText(expected interface{}, options ...Loc
 			"Locator expected to have text",
 		)
 	default:
-		expectedText := toExpectedTextValues([]interface{}{expected}, false, true, ignoreCase)
+		expectedText, err := toExpectedTextValues([]interface{}{expected}, false, true, ignoreCase)
+		if err != nil {
+			return err
+		}
 		return la.expect(
 			"to.have.text",
 			frameExpectOptions{
@@ -358,7 +443,10 @@ func (la *locatorAssertionsImpl) ToHaveValue(value interface{}, options ...Locat
 	if len(options) == 1 {
 		timeout = options[0].Timeout
 	}
-	expectedText := toExpectedTextValues([]interface{}{value}, false, false, nil)
+	expectedText, err := toExpectedTextValues([]interface{}{value}, false, false, nil)
+	if err != nil {
+		return err
+	}
 	return la.expect(
 		"to.have.value",
 		frameExpectOptions{ExpectedText: expectedText, Timeout: timeout},
@@ -372,7 +460,10 @@ func (la *locatorAssertionsImpl) ToHaveValues(values []interface{}, options ...L
 	if len(options) == 1 {
 		timeout = options[0].Timeout
 	}
-	expectedText := toExpectedTextValues(values, false, false, nil)
+	expectedText, err := toExpectedTextValues(values, false, false, nil)
+	if err != nil {
+		return err
+	}
 	return la.expect(
 		"to.have.values",
 		frameExpectOptions{ExpectedText: expectedText, Timeout: timeout},

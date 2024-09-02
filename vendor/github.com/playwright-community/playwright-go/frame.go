@@ -4,46 +4,47 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"sync"
 	"time"
+
+	mapset "github.com/deckarep/golang-set/v2"
 )
 
 type frameImpl struct {
 	channelOwner
-	sync.RWMutex
 	detached    bool
 	page        *pageImpl
 	name        string
 	url         string
 	parentFrame Frame
 	childFrames []Frame
-	loadStates  *safeStringSet
+	loadStates  mapset.Set[string]
 }
 
 func newFrame(parent *channelOwner, objectType string, guid string, initializer map[string]interface{}) *frameImpl {
-	var loadStates *safeStringSet
+	var loadStates mapset.Set[string]
+
 	if ls, ok := initializer["loadStates"].([]string); ok {
-		loadStates = newSafeStringSet(ls)
+		loadStates = mapset.NewSet[string](ls...)
 	} else {
-		loadStates = newSafeStringSet([]string{})
+		loadStates = mapset.NewSet[string]()
 	}
-	bt := &frameImpl{
+	f := &frameImpl{
 		name:        initializer["name"].(string),
 		url:         initializer["url"].(string),
 		loadStates:  loadStates,
 		childFrames: make([]Frame, 0),
 	}
-	bt.createChannelOwner(bt, parent, objectType, guid, initializer)
+	f.createChannelOwner(f, parent, objectType, guid, initializer)
 
 	channelOwner := fromNullableChannel(initializer["parentFrame"])
 	if channelOwner != nil {
-		bt.parentFrame = channelOwner.(*frameImpl)
-		bt.parentFrame.(*frameImpl).childFrames = append(bt.parentFrame.(*frameImpl).childFrames, bt)
+		f.parentFrame = channelOwner.(*frameImpl)
+		f.parentFrame.(*frameImpl).childFrames = append(f.parentFrame.(*frameImpl).childFrames, f)
 	}
 
-	bt.channel.On("navigated", bt.onFrameNavigated)
-	bt.channel.On("loadstate", bt.onLoadState)
-	return bt
+	f.channel.On("navigated", f.onFrameNavigated)
+	f.channel.On("loadstate", f.onLoadState)
+	return f
 }
 
 func (f *frameImpl) URL() string {
@@ -78,7 +79,7 @@ func (f *frameImpl) Goto(url string, options ...FrameGotoOptions) (Response, err
 		"url": url,
 	}, options)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Frame.Goto %s: %w", url, err)
 	}
 	channelOwner := fromNullableChannel(channel)
 	if channelOwner == nil {
@@ -136,7 +137,7 @@ func (f *frameImpl) WaitForLoadState(options ...FrameWaitForLoadStateOptions) er
 }
 
 func (f *frameImpl) waitForLoadStateImpl(state string, timeout *float64, cb func() error) error {
-	if f.loadStates.Has(state) {
+	if f.loadStates.ContainsOne(state) {
 		return nil
 	}
 	waiter, err := f.setNavigationWaiter(timeout)
@@ -206,8 +207,11 @@ func (f *frameImpl) ExpectNavigation(cb func() error, options ...FrameExpectNavi
 	}
 	predicate := func(events ...interface{}) bool {
 		ev := events[0].(map[string]interface{})
-		if ev["error"] != nil {
-			print("error")
+		err, ok := ev["error"]
+		if ok {
+			// Any failed navigation results in a rejection.
+			logger.Printf("navigated to %s error: %v", ev["url"].(string), err)
+			return true
 		}
 		return matcher == nil || matcher.Matches(ev["url"].(string))
 	}
@@ -246,7 +250,7 @@ func (f *frameImpl) setNavigationWaiter(timeout *float64) (*waiter, error) {
 	} else {
 		waiter.WithTimeout(f.page.timeoutSettings.NavigationTimeout())
 	}
-	waiter.RejectOnEvent(f.page, "close", fmt.Errorf("Navigation failed because page was closed!"))
+	waiter.RejectOnEvent(f.page, "close", f.page.closeErrorWithReason())
 	waiter.RejectOnEvent(f.page, "crash", fmt.Errorf("Navigation failed because page crashed!"))
 	waiter.RejectOnEvent(f.page, "framedetached", fmt.Errorf("Navigating frame was detached!"), func(payload interface{}) bool {
 		frame, ok := payload.(*frameImpl)
@@ -452,11 +456,13 @@ func (f *frameImpl) Hover(selector string, options ...FrameHoverOptions) error {
 	return err
 }
 
-func (f *frameImpl) SetInputFiles(selector string, files []InputFile, options ...FrameSetInputFilesOptions) error {
-	_, err := f.channel.Send("setInputFiles", map[string]interface{}{
-		"selector": selector,
-		"files":    normalizeFilePayloads(files),
-	}, options)
+func (f *frameImpl) SetInputFiles(selector string, files interface{}, options ...FrameSetInputFilesOptions) error {
+	params, err := convertInputFiles(files, f.page.browserContext)
+	if err != nil {
+		return err
+	}
+	params.Selector = &selector
+	_, err = f.channel.Send("setInputFiles", params, options)
 	return err
 }
 

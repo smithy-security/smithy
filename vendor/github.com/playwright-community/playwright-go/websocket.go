@@ -3,7 +3,6 @@ package playwright
 import (
 	"encoding/base64"
 	"errors"
-	"log"
 )
 
 type webSocketImpl struct {
@@ -51,7 +50,7 @@ func (ws *webSocketImpl) onFrameSent(opcode float64, data string) {
 	if opcode == 2 {
 		payload, err := base64.StdEncoding.DecodeString(data)
 		if err != nil {
-			log.Printf("could not decode WebSocket.onFrameSent payload: %v", err)
+			logger.Printf("could not decode WebSocket.onFrameSent payload: %v\n", err)
 			return
 		}
 		ws.Emit("framesent", payload)
@@ -64,7 +63,7 @@ func (ws *webSocketImpl) onFrameReceived(opcode float64, data string) {
 	if opcode == 2 {
 		payload, err := base64.StdEncoding.DecodeString(data)
 		if err != nil {
-			log.Printf("could not decode WebSocket.onFrameReceived payload: %v", err)
+			logger.Printf("could not decode WebSocket.onFrameReceived payload: %v\n", err)
 			return
 		}
 		ws.Emit("framereceived", payload)
@@ -88,7 +87,7 @@ func (ws *webSocketImpl) WaitForEvent(event string, options ...WebSocketWaitForE
 
 func (ws *webSocketImpl) expectEvent(event string, cb func() error, options ...WebSocketExpectEventOptions) (interface{}, error) {
 	var predicate interface{} = nil
-	var timeout = ws.page.timeoutSettings.Timeout()
+	timeout := ws.page.timeoutSettings.Timeout()
 	if len(options) == 1 {
 		if options[0].Timeout != nil {
 			timeout = *options[0].Timeout
