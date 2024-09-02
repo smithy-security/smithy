@@ -235,6 +235,19 @@ var (
 	RouteFromHarUpdateContentPolicyAttach                                  = getRouteFromHarUpdateContentPolicy("attach")
 )
 
+func getUnrouteBehavior(in string) *UnrouteBehavior {
+	v := UnrouteBehavior(in)
+	return &v
+}
+
+type UnrouteBehavior string
+
+var (
+	UnrouteBehaviorWait         *UnrouteBehavior = getUnrouteBehavior("wait")
+	UnrouteBehaviorIgnoreErrors                  = getUnrouteBehavior("ignoreErrors")
+	UnrouteBehaviorDefault                       = getUnrouteBehavior("default")
+)
+
 func getMouseButton(in string) *MouseButton {
 	v := MouseButton(in)
 	return &v
@@ -256,10 +269,11 @@ func getKeyboardModifier(in string) *KeyboardModifier {
 type KeyboardModifier string
 
 var (
-	KeyboardModifierAlt     *KeyboardModifier = getKeyboardModifier("Alt")
-	KeyboardModifierControl                   = getKeyboardModifier("Control")
-	KeyboardModifierMeta                      = getKeyboardModifier("Meta")
-	KeyboardModifierShift                     = getKeyboardModifier("Shift")
+	KeyboardModifierAlt           *KeyboardModifier = getKeyboardModifier("Alt")
+	KeyboardModifierControl                         = getKeyboardModifier("Control")
+	KeyboardModifierControlOrMeta                   = getKeyboardModifier("ControlOrMeta")
+	KeyboardModifierMeta                            = getKeyboardModifier("Meta")
+	KeyboardModifierShift                           = getKeyboardModifier("Shift")
 )
 
 func getScreenshotAnimations(in string) *ScreenshotAnimations {
@@ -362,4 +376,16 @@ var (
 	MediaScreen     *Media = getMedia("screen")
 	MediaPrint             = getMedia("print")
 	MediaNoOverride        = getMedia("no-override")
+)
+
+func getHttpCredentialsSend(in string) *HttpCredentialsSend {
+	v := HttpCredentialsSend(in)
+	return &v
+}
+
+type HttpCredentialsSend string
+
+var (
+	HttpCredentialsSendUnauthorized *HttpCredentialsSend = getHttpCredentialsSend("unauthorized")
+	HttpCredentialsSendAlways                            = getHttpCredentialsSend("always")
 )

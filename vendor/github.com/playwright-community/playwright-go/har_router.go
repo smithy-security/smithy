@@ -2,7 +2,6 @@ package playwright
 
 import (
 	"errors"
-	"log"
 )
 
 type harRouter struct {
@@ -20,13 +19,12 @@ func (r *harRouter) addContextRoute(context BrowserContext) error {
 	err := context.Route(r.urlOrPredicate, func(route Route) {
 		err := r.handle(route)
 		if err != nil {
-			log.Println(err)
+			logger.Println(err)
 		}
 	})
 	if err != nil {
 		return err
 	}
-	context.Once("close", r.dispose)
 	return r.err
 }
 
@@ -37,13 +35,12 @@ func (r *harRouter) addPageRoute(page Page) error {
 	err := page.Route(r.urlOrPredicate, func(route Route) {
 		err := r.handle(route)
 		if err != nil {
-			log.Println(err)
+			logger.Println(err)
 		}
 	})
 	if err != nil {
 		return err
 	}
-	page.Once("close", r.dispose)
 	return r.err
 }
 
@@ -89,7 +86,7 @@ func (r *harRouter) handle(route Route) error {
 			Headers: deserializeNameAndValueToMap(response.Headers),
 		})
 	case "error":
-		log.Printf("har action error: %v", *response.Message)
+		logger.Printf("har action error: %v\n", *response.Message)
 		fallthrough
 	case "noentry":
 	}

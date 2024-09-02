@@ -23,29 +23,21 @@ func (t *tracingImpl) Start(options ...TracingStartOptions) error {
 		if _, err := t.channel.Send("tracingStart", options); err != nil {
 			return "", err
 		}
-		return t.channel.Send("tracingStartChunk", options)
+		return t.channel.Send("tracingStartChunk", chunkOption)
 	}
-	result, err := t.connection.WrapAPICall(innerStart, true)
+	name, err := t.connection.WrapAPICall(innerStart, true)
 	if err != nil {
 		return err
 	}
-	name, ok := result.(string)
-	if !ok {
-		name = ""
-	}
-	return t.startCollectingStacks(name)
+	return t.startCollectingStacks(name.(string))
 }
 
 func (t *tracingImpl) StartChunk(options ...TracingStartChunkOptions) error {
-	result, err := t.channel.Send("tracingStartChunk", options)
+	name, err := t.channel.Send("tracingStartChunk", options)
 	if err != nil {
 		return err
 	}
-	name, ok := result.(string)
-	if !ok {
-		name = ""
-	}
-	return t.startCollectingStacks(name)
+	return t.startCollectingStacks(name.(string))
 }
 
 func (t *tracingImpl) StopChunk(path ...string) error {

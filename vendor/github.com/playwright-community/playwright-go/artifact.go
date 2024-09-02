@@ -18,9 +18,6 @@ func (a *artifactImpl) PathAfterFinished() (string, error) {
 		return "", errors.New("Path is not available when connecting remotely. Use SaveAs() to save a local copy")
 	}
 	path, err := a.channel.Send("pathAfterFinished")
-	if path == nil {
-		return "", err
-	}
 	return path.(string), err
 }
 
@@ -40,11 +37,11 @@ func (a *artifactImpl) SaveAs(path string) error {
 }
 
 func (a *artifactImpl) Failure() error {
-	failure, err := a.channel.Send("failure")
-	if failure == nil {
+	reason, err := a.channel.Send("failure")
+	if reason == nil {
 		return err
 	}
-	return fmt.Errorf("%v", failure)
+	return fmt.Errorf("%w: %v", ErrPlaywright, reason)
 }
 
 func (a *artifactImpl) Delete() error {
@@ -62,10 +59,7 @@ func (a *artifactImpl) ReadIntoBuffer() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	stream := fromNullableChannel(streamChannel)
-	if stream == nil {
-		return nil, nil
-	}
+	stream := fromChannel(streamChannel)
 	return stream.(*streamImpl).ReadAll()
 }
 

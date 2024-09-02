@@ -2,6 +2,7 @@ package playwright
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"os"
 )
@@ -166,10 +167,20 @@ func (e *elementHandleImpl) ScrollIntoViewIfNeeded(options ...ElementHandleScrol
 	return err
 }
 
-func (e *elementHandleImpl) SetInputFiles(files []InputFile, options ...ElementHandleSetInputFilesOptions) error {
-	_, err := e.channel.Send("setInputFiles", map[string]interface{}{
-		"files": normalizeFilePayloads(files),
-	}, options)
+func (e *elementHandleImpl) SetInputFiles(files interface{}, options ...ElementHandleSetInputFilesOptions) error {
+	frame, err := e.OwnerFrame()
+	if err != nil {
+		return err
+	}
+	if frame == nil {
+		return errors.New("Cannot set input files to detached element")
+	}
+
+	params, err := convertInputFiles(files, frame.(*frameImpl).page.browserContext)
+	if err != nil {
+		return err
+	}
+	_, err = e.channel.Send("setInputFiles", params, options)
 	return err
 }
 
@@ -250,14 +261,14 @@ func (e *elementHandleImpl) Screenshot(options ...ElementHandleScreenshotOptions
 	}
 	data, err := e.channel.Send("screenshot", options, overrides)
 	if err != nil {
-		return nil, fmt.Errorf("could not send message :%w", err)
+		return nil, err
 	}
 	image, err := base64.StdEncoding.DecodeString(data.(string))
 	if err != nil {
 		return nil, fmt.Errorf("could not decode base64 :%w", err)
 	}
 	if path != nil {
-		if err := os.WriteFile(*path, image, 0644); err != nil {
+		if err := os.WriteFile(*path, image, 0o644); err != nil {
 			return nil, err
 		}
 	}
@@ -374,18 +385,6 @@ func newElementHandle(parent *channelOwner, objectType string, guid string, init
 	bt := &elementHandleImpl{}
 	bt.createChannelOwner(bt, parent, objectType, guid, initializer)
 	return bt
-}
-
-func normalizeFilePayloads(files []InputFile) []map[string]string {
-	out := make([]map[string]string, 0)
-	for _, file := range files {
-		out = append(out, map[string]string{
-			"name":     file.Name,
-			"mimeType": file.MimeType,
-			"buffer":   base64.StdEncoding.EncodeToString(file.Buffer),
-		})
-	}
-	return out
 }
 
 func transformToStringList(in interface{}) []string {

@@ -53,6 +53,10 @@ func newLocator(frame *frameImpl, selector string, options ...LocatorLocatorOpti
 	return locator
 }
 
+func (l *locatorImpl) equals(locator Locator) bool {
+	return l.frame == locator.(*locatorImpl).frame && l.err == locator.(*locatorImpl).err && l.selector == locator.(*locatorImpl).selector
+}
+
 func (l *locatorImpl) Err() error {
 	return l.err
 }
@@ -138,7 +142,6 @@ func (l *locatorImpl) BoundingBox(options ...LocatorBoundingBoxOptions) (*Rect, 
 	result, err := l.withElement(func(handle ElementHandle) (interface{}, error) {
 		return handle.BoundingBox()
 	}, option)
-
 	if err != nil {
 		return nil, err
 	}
@@ -167,9 +170,8 @@ func (l *locatorImpl) Clear(options ...LocatorClearOptions) error {
 	}
 	if len(options) == 1 {
 		return l.Fill("", LocatorFillOptions{
-			Force:       options[0].Force,
-			NoWaitAfter: options[0].NoWaitAfter,
-			Timeout:     options[0].Timeout,
+			Force:   options[0].Force,
+			Timeout: options[0].Timeout,
 		})
 	} else {
 		return l.Fill("")
@@ -189,6 +191,10 @@ func (l *locatorImpl) Click(options ...LocatorClickOptions) error {
 		}
 	}
 	return l.frame.Click(l.selector, opt)
+}
+
+func (l *locatorImpl) ContentFrame() FrameLocator {
+	return newFrameLocator(l.frame, l.selector)
 }
 
 func (l *locatorImpl) Count() (int, error) {
@@ -657,7 +663,6 @@ func (l *locatorImpl) Screenshot(options ...LocatorScreenshotOptions) ([]byte, e
 		}
 		return handle.Screenshot(screenshotOption)
 	}, option)
-
 	if err != nil {
 		return nil, err
 	}
@@ -735,7 +740,7 @@ func (l *locatorImpl) SetChecked(checked bool, options ...LocatorSetCheckedOptio
 	return l.frame.SetChecked(l.selector, checked, opt)
 }
 
-func (l *locatorImpl) SetInputFiles(files []InputFile, options ...LocatorSetInputFilesOptions) error {
+func (l *locatorImpl) SetInputFiles(files interface{}, options ...LocatorSetInputFilesOptions) error {
 	if l.err != nil {
 		return l.err
 	}

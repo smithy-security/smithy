@@ -1,7 +1,10 @@
 package playwright
 
 import (
-	"log"
+	"fmt"
+	"strings"
+
+	"github.com/go-stack/stack"
 )
 
 type BindingCall interface {
@@ -31,7 +34,7 @@ func (b *bindingCallImpl) Call(f BindingCallFunction) {
 			if _, err := b.channel.Send("reject", map[string]interface{}{
 				"error": serializeError(r.(error)),
 			}); err != nil {
-				log.Printf("could not reject BindingCall: %v", err)
+				logger.Printf("could not reject BindingCall: %v\n", err)
 			}
 		}
 	}()
@@ -57,7 +60,23 @@ func (b *bindingCallImpl) Call(f BindingCallFunction) {
 		"result": serializeArgument(result),
 	})
 	if err != nil {
-		log.Printf("could not resolve BindingCall: %v", err)
+		logger.Printf("could not resolve BindingCall: %v\n", err)
+	}
+}
+
+func serializeError(err error) map[string]interface{} {
+	st := stack.Trace().TrimRuntime()
+	if len(st) == 0 { // https://github.com/go-stack/stack/issues/27
+		st = stack.Trace()
+	}
+	return map[string]interface{}{
+		"error": &Error{
+			Name:    "Playwright for Go Error",
+			Message: err.Error(),
+			Stack: strings.ReplaceAll(strings.TrimFunc(fmt.Sprintf("%+v", st), func(r rune) bool {
+				return r == '[' || r == ']'
+			}), " ", "\n"),
+		},
 	}
 }
 
