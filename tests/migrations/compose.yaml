@@ -17,7 +17,7 @@ services:
   tester:
     build:
       context: ../..
-      dockerfile: containers/Dockerfile.draconctl
+      dockerfile: containers/Dockerfile.smithyctl
       args:
         - BASE_MIGRATION_IMAGE=ubuntu:latest
     depends_on:
@@ -27,19 +27,19 @@ services:
       - test-migrations
     entrypoint: /bin/bash
     environment:
-      DRACONCTL_MIGRATIONS_PATH: /etc/dracon/migrations/enrichment
+      SMITHYCTL_MIGRATIONS_PATH: /etc/smithy/migrations/enrichment
     command:
     - -c
     - |
       apt-get update && apt-get install -y jq &&
       echo "------------------------------ Starting tests ------------------------------" &&
-      /bin/draconctl migrations inspect --url postgres://postgres:password@postgres:5432?sslmode=disable --json |grep -v 'level=' | tee | jq -eM '. | select(.Version == 0)' &&
+      /bin/smithyctl migrations inspect --url postgres://postgres:password@postgres:5432?sslmode=disable --json |grep -v 'level=' | tee | jq -eM '. | select(.Version == 0)' &&
       echo "------------------------------ Applying migrations ------------------------------" &&
-      /bin/draconctl migrations apply --url postgres://postgres:password@postgres:5432?sslmode=disable &&
-      /bin/draconctl migrations inspect --url postgres://postgres:password@postgres:5432?sslmode=disable --json |grep -v 'level=' | tee | jq -eM '. | select(.Version > 0)' &&
+      /bin/smithyctl migrations apply --url postgres://postgres:password@postgres:5432?sslmode=disable &&
+      /bin/smithyctl migrations inspect --url postgres://postgres:password@postgres:5432?sslmode=disable --json |grep -v 'level=' | tee | jq -eM '. | select(.Version > 0)' &&
       echo "------------------------------ Reverting migrations ------------------------------" &&
-      /bin/draconctl migrations revert --url postgres://postgres:password@postgres:5432?sslmode=disable &&
-      /bin/draconctl migrations inspect --url postgres://postgres:password@postgres:5432?sslmode=disable --json |grep -v 'level=' | tee | jq -eM '. | select(.Version == 0)'
+      /bin/smithyctl migrations revert --url postgres://postgres:password@postgres:5432?sslmode=disable &&
+      /bin/smithyctl migrations inspect --url postgres://postgres:password@postgres:5432?sslmode=disable --json |grep -v 'level=' | tee | jq -eM '. | select(.Version == 0)'
 
 networks:
   test-migrations:
