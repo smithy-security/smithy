@@ -2,9 +2,9 @@
 apiVersion: database.arangodb.com/v1
 kind: ArangoDeployment
 metadata:
-  name: {{ include "dracon.fullname" . }}
+  name: {{ include "smithy.fullname" . }}
   labels:
-    {{- include "dracon.labels" . | nindent 4 }}
+    {{- include "smithy.labels" . | nindent 4 }}
 spec:
   mode: Single
   externalAccess:

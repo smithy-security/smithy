@@ -2,16 +2,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "dracon.fullname" . }}-kb
+  name: {{ include "smithy.fullname" . }}-kb
   labels:
-    {{- include "dracon.labels" . | nindent 4 }}
+    {{- include "smithy.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "http"
 spec:
   ingressClassName: {{ .Values.kibana.ingress.className }}
   defaultBackend:
     service:
-      name: {{ include "dracon.fullname" . }}-kb-http
+      name: {{ include "smithy.fullname" . }}-kb-http
       port:
         name: http
   rules:

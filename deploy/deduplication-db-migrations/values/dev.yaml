@@ -4,9 +4,9 @@ image:
 
 database:
   auth:
-    username: dracon
-    password: dracon
-    database: dracon
-    postgresPassword: dracon
+    username: smithy
+    password: smithy
+    database: smithy
+    postgresPassword: smithy
     querystringargs: "sslmode=disable"
-  host: dracon-postgresql:5432
+  host: smithy-postgresql:5432

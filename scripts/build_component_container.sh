@@ -30,12 +30,12 @@ BASE_IMAGE_PATH=$(realpath ${BASE_IMAGE_PATH:-./containers/Dockerfile.base})
 
 if make -C "${COMPONENT_PATH}" --no-print-directory --dry-run container >/dev/null 2>&1
 then
-    make -C "${COMPONENT_PATH}" --no-print-directory --quiet container BASE_IMAGE_PATH="${BASE_IMAGE_PATH}" CONTAINER_REPO="${CONTAINER_REPO}" DRACON_VERSION="${DRACON_VERSION}" BUILD_ARCHITECTURE="${build_architecture}"
+    make -C "${COMPONENT_PATH}" --no-print-directory --quiet container BASE_IMAGE_PATH="${BASE_IMAGE_PATH}" CONTAINER_REPO="${CONTAINER_REPO}" SMITHY_VERSION="${SMITHY_VERSION}" BUILD_ARCHITECTURE="${build_architecture}"
 else
     docker build \
         --build-arg EXECUTABLE_SRC_PATH="${EXECUTABLE_SRC_PATH}" \
         --build-arg EXECUTABLE_TARGET_PATH="${EXECUTABLE_TARGET_PATH}" \
-        --tag "${CONTAINER_REPO}/${COMPONENT_PATH}:${DRACON_VERSION}" \
+        --tag "${CONTAINER_REPO}/${COMPONENT_PATH}:${SMITHY_VERSION}" \
         $([ "${SOURCE_CODE_REPO}" != "" ] && echo "--label=org.opencontainers.image.source=${SOURCE_CODE_REPO}" ) \
         --file "${BASE_IMAGE_PATH}" \
         --platform "${build_architecture}" \
@@ -44,5 +44,5 @@ fi
 
 if make -C "${COMPONENT_PATH}" --no-print-directory --dry-run extras >/dev/null 2>&1
 then
-    make -C "${COMPONENT_PATH}" --no-print-directory --quiet extras CONTAINER_REPO="${CONTAINER_REPO}" DRACON_VERSION="${DRACON_VERSION}"
+    make -C "${COMPONENT_PATH}" --no-print-directory --quiet extras CONTAINER_REPO="${CONTAINER_REPO}" SMITHY_VERSION="${SMITHY_VERSION}"
 fi

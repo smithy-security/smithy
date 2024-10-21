@@ -1,5 +1,5 @@
 ingress:
   annotations: {}
   className: "nginx"
-  host: "tekton.dracon.localhost"
+  host: "tekton.smithy.localhost"
   tlsEnabled: false

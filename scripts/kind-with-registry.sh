@@ -6,7 +6,7 @@ set -o errexit
 
 reg_name='kind-registry'
 reg_port='5000'
-cluster_name='dracon-demo'
+cluster_name='smithy-demo'
 
 source ./scripts/util.sh
 

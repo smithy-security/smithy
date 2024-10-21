@@ -2,17 +2,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "dracon.fullname" . }}-arangodb
+  name: {{ include "smithy.fullname" . }}-arangodb
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/ssl-passthrough: "false"
   labels:
-    {{- include "dracon.labels" . | nindent 4 }}
+    {{- include "smithy.labels" . | nindent 4 }}
 spec:
   ingressClassName: {{ .Values.arangodb.ingress.className }}
   defaultBackend:
     service:
-      name: {{ include "dracon.fullname" . }}
+      name: {{ include "smithy.fullname" . }}
       port:
         name: server
   rules:
