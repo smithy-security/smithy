@@ -1,11 +1,11 @@
 ---
 runner:
   go/vet:
-    cmd: go vet $(go list ./... | grep -v /vendor/ | grep -v github.com/ocurity/dracon/api/proto/)
+    cmd: go vet $(go list ./... | grep -v /vendor/ | grep -v github.com/smithy-security/smithy/api/proto/)
     format: govet
 
   go/staticcheck:
-    cmd: staticcheck -checks "all,-SA1019,-ST1000" $(go list ./... | grep -v /vendor/ | grep -v github.com/ocurity/dracon/api/proto)
+    cmd: staticcheck -checks "all,-SA1019,-ST1000" $(go list ./... | grep -v /vendor/ | grep -v github.com/smithy-security/smithy/api/proto)
     format: staticcheck
 
   go/revive:
@@ -14,22 +14,22 @@ runner:
       - '%f:%l:%c: %m'
  
   go/containedctx:
-    cmd: go vet -vettool=$(which containedctx) $(go list ./... | grep -v /vendor/ | grep -v github.com/ocurity/dracon/api/proto)
+    cmd: go vet -vettool=$(which containedctx) $(go list ./... | grep -v /vendor/ | grep -v github.com/smithy-security/smithy/api/proto)
     errorformat:
       - '%f:%l:%c: %m'
 
   go/ineffassign:
-    cmd: ineffassign $(go list ./... | grep -v /vendor/ | grep -v github.com/ocurity/dracon/api/proto)
+    cmd: ineffassign $(go list ./... | grep -v /vendor/ | grep -v github.com/smithy-security/smithy/api/proto)
     errorformat:
       - '%f:%l:%c: %m'
 
   go/errorlint:
-    cmd: go-errorlint -errorf-multi -errorf -test $(go list ./... | grep -v /vendor/ | grep -v github.com/ocurity/dracon/api/proto)
+    cmd: go-errorlint -errorf-multi -errorf -test $(go list ./... | grep -v /vendor/ | grep -v github.com/smithy-security/smithy/api/proto)
     errorformat:
       - '%f:%l:%c: %m'
 
   go/errcheck:
-    cmd: errcheck -asserts -blank $(go list ./... | grep -v /vendor/ | grep -v github.com/ocurity/dracon/api/proto)
+    cmd: errcheck -asserts -blank $(go list ./... | grep -v /vendor/ | grep -v github.com/smithy-security/smithy/api/proto)
     errorformat:
       - '%f:%l:%c:%m'
 
