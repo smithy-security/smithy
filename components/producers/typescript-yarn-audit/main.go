@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"log"
 
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/typescript-yarn-audit/types"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/typescript-yarn-audit/types"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 	}
 
 	if report != nil {
-		if err := producers.WriteDraconOut(
+		if err := producers.WriteSmithyOut(
 			"yarn-audit",
 			report.AsIssues(),
 		); err != nil {

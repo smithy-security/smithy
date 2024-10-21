@@ -10,14 +10,14 @@ import (
 	"strings"
 	"time"
 
-	elasticsearch "github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"github.com/go-errors/errors"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/consumers"
-	"github.com/ocurity/dracon/pkg/enumtransformers"
-	"github.com/ocurity/dracon/pkg/templating"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/consumers"
+	"github.com/smithy-security/smithy/pkg/enumtransformers"
+	"github.com/smithy-security/smithy/pkg/templating"
 )
 
 var (

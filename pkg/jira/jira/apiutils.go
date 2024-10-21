@@ -9,16 +9,16 @@ import (
 	"strconv"
 	"strings"
 
-	jira "github.com/andygrunwald/go-jira"
+	"github.com/andygrunwald/go-jira"
 	"github.com/trivago/tgo/tcontainer"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/pkg/enumtransformers"
-	"github.com/ocurity/dracon/pkg/jira/config"
-	"github.com/ocurity/dracon/pkg/jira/document"
-	"github.com/ocurity/dracon/pkg/templating"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/pkg/enumtransformers"
+	"github.com/smithy-security/smithy/pkg/jira/config"
+	"github.com/smithy-security/smithy/pkg/jira/document"
+	"github.com/smithy-security/smithy/pkg/templating"
 )
 
 type defaultJiraFields struct {
@@ -96,15 +96,15 @@ func makeCustomField(fieldType string, values []string) interface{} {
 	}
 }
 
-func draconResultToSTRMaps(draconResult document.Document) (map[string]string, string) {
+func smithyResultToSTRMaps(smithyResult document.Document) (map[string]string, string) {
 	var strMap map[string]string
 
-	annotations, err := json.Marshal(draconResult.Annotations)
+	annotations, err := json.Marshal(smithyResult.Annotations)
 	if err != nil {
 		log.Fatalf("could not marshal annotations: %s", err)
 	}
-	draconResult.Annotations = nil
-	tmp, err := json.Marshal(draconResult)
+	smithyResult.Annotations = nil
+	tmp, err := json.Marshal(smithyResult)
 	if err != nil {
 		log.Fatalf("could not marshal result: %s", err)
 	}
@@ -114,55 +114,55 @@ func draconResultToSTRMaps(draconResult document.Document) (map[string]string, s
 	return strMap, string(annotations)
 }
 
-// makeDescription creates the description of an issue's enhanced with extra information from the Dracon Result.
-func makeDescription(draconResult document.Document, template string) string {
+// makeDescription creates the description of an issue's enhanced with extra information from the Smithy Result.
+func makeDescription(smithyResult document.Document, template string) string {
 
 	if template == "" {
 		template = defaultTemplate
 	}
-	if draconResult.Count == "" {
-		draconResult.Count = "0"
+	if smithyResult.Count == "" {
+		smithyResult.Count = "0"
 	}
-	count, err := strconv.Atoi(draconResult.Count)
+	count, err := strconv.Atoi(smithyResult.Count)
 	if err != nil {
 		log.Fatal("could not template enriched issue ", err)
 	}
 	fp := false
-	if strings.ToLower(draconResult.FalsePositive) == "true" {
+	if strings.ToLower(smithyResult.FalsePositive) == "true" {
 		fp = true
 	}
-	if draconResult.CVSS == "" {
-		draconResult.CVSS = "0.0"
+	if smithyResult.CVSS == "" {
+		smithyResult.CVSS = "0.0"
 	}
-	cvss, err := strconv.ParseFloat(draconResult.CVSS, 64)
+	cvss, err := strconv.ParseFloat(smithyResult.CVSS, 64)
 	if err != nil {
 		log.Fatal("could not template enriched issue ", err)
 	}
 
 	description, err := templating.TemplateStringEnriched(template,
 		&v1.EnrichedIssue{
-			Annotations:   draconResult.Annotations,
+			Annotations:   smithyResult.Annotations,
 			Count:         uint64(count),
 			FalsePositive: fp,
-			FirstSeen:     timestamppb.New(draconResult.FirstFound),
-			Hash:          draconResult.Hash,
+			FirstSeen:     timestamppb.New(smithyResult.FirstFound),
+			Hash:          smithyResult.Hash,
 			RawIssue: &v1.Issue{
-				Confidence:  enumtransformers.TextToConfidence(draconResult.ConfidenceText),
-				Cve:         draconResult.CVE,
+				Confidence:  enumtransformers.TextToConfidence(smithyResult.ConfidenceText),
+				Cve:         smithyResult.CVE,
 				Cvss:        cvss,
-				Description: draconResult.Description,
-				Severity:    enumtransformers.TextToSeverity(draconResult.SeverityText),
-				Source:      draconResult.Source,
-				Target:      draconResult.Target,
-				Title:       draconResult.Title,
-				Type:        draconResult.Type,
+				Description: smithyResult.Description,
+				Severity:    enumtransformers.TextToSeverity(smithyResult.SeverityText),
+				Source:      smithyResult.Source,
+				Target:      smithyResult.Target,
+				Title:       smithyResult.Title,
+				Type:        smithyResult.Type,
 			},
 		},
-		templating.EnrichedIssueWithToolName(draconResult.ToolName),
-		templating.EnrichedIssueWithScanID(draconResult.ScanID),
-		templating.EnrichedIssueWithConfidenceText(draconResult.ConfidenceText),
+		templating.EnrichedIssueWithToolName(smithyResult.ToolName),
+		templating.EnrichedIssueWithScanID(smithyResult.ScanID),
+		templating.EnrichedIssueWithConfidenceText(smithyResult.ConfidenceText),
 		templating.EnrichedIssueWithCount(uint(count)),
-		templating.EnrichedIssueWithSeverityText(draconResult.SeverityText),
+		templating.EnrichedIssueWithSeverityText(smithyResult.SeverityText),
 	)
 	if err != nil {
 		log.Fatal("Could not template enriched issue ", err)
@@ -172,8 +172,8 @@ func makeDescription(draconResult document.Document, template string) string {
 }
 
 // makeSummary creates the Summary/Title of an issue.
-func makeSummary(draconResult document.Document) (string, string) {
-	summary := filepath.Base(draconResult.Target) + " " + draconResult.Title
+func makeSummary(smithyResult document.Document) (string, string) {
+	summary := filepath.Base(smithyResult.Target) + " " + smithyResult.Title
 
 	if len(summary) > 255 { // jira summary field supports up to 255 chars
 		tobytes := bytes.Runes([]byte(summary))

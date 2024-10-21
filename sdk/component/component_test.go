@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/ocurity/dracon/sdk/component"
-	ocsf "github.com/ocurity/dracon/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	"github.com/smithy-security/smithy/sdk/component"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 type (

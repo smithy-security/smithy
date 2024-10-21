@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: consumer-jira
   labels:
-    v1.dracon.ocurity.com/component: consumer
+    v1.smithy.smithy-security.com/component: consumer
 spec:
   description: Pushes findings to a Jira instance.
   volumes:
@@ -28,8 +28,8 @@ spec:
     imagePullPolicy: IfNotPresent
     image: docker.io/busybox:1.35.0
     script: |
-      mkdir -p $(workspaces.output.path)/.dracon/consumers/jira
-      cat <<'EOF' > $(workspaces.output.path)/.dracon/consumers/jira/config.json
+      mkdir -p $(workspaces.output.path)/.smithy/consumers/jira
+      cat <<'EOF' > $(workspaces.output.path)/.smithy/consumers/jira/config.json
        {
       "defaultValues": {
           "project": "$(params.consumer-jira-project-name)",
@@ -40,23 +40,23 @@ spec:
       "mappings": null
       }
       EOF
-      cat $(workspaces.output.path)/.dracon/consumers/jira/config.json
+      cat $(workspaces.output.path)/.smithy/consumers/jira/config.json
   - name: run-consumer
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/consumers/jira:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/jira:{{ .Chart.AppVersion }}'
     command: ["/app/components/consumers/jira/jira"]
     env:
-    - name: DRACON_JIRA_TOKEN
+    - name: SMITHY_JIRA_TOKEN
       value: $(params.consumer-jira-api-token)
-    - name: DRACON_JIRA_USER
+    - name: SMITHY_JIRA_USER
       value: $(params.consumer-jira-user)
-    - name: DRACON_JIRA_URL
+    - name: SMITHY_JIRA_URL
       value: $(params.consumer-jira-url)
-    - name: DRACON_JIRA_CONFIG_PATH
-      value: $(workspaces.output.path)/.dracon/consumers/jira/config.json
+    - name: SMITHY_JIRA_CONFIG_PATH
+      value: $(workspaces.output.path)/.smithy/consumers/jira/config.json
     args: [
       "-in",
-      "$(workspaces.output.path)/.dracon/enrichers/",
+      "$(workspaces.output.path)/.smithy/enrichers/",
       "-severity-threshold",
        "0"
     ]

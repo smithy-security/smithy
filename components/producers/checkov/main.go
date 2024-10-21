@@ -6,10 +6,10 @@ import (
 
 	"github.com/go-errors/errors"
 
-	draconv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/pkg/cyclonedx"
-	"github.com/ocurity/dracon/pkg/sarif"
+	smithyv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/pkg/cyclonedx"
+	"github.com/smithy-security/smithy/pkg/sarif"
 )
 
 // the CycloneDX target override
@@ -34,7 +34,7 @@ func main() {
 func run(inFile []byte, target string) error {
 	sarifResults, sarifErr := handleSarif(inFile)
 	cyclondxResults, cyclonedxErr := handleCycloneDX(inFile, target)
-	var issues []*draconv1.Issue
+	var issues []*smithyv1.Issue
 	if sarifErr == nil {
 		issues = sarifResults
 	} else if cyclonedxErr == nil {
@@ -42,25 +42,25 @@ func run(inFile []byte, target string) error {
 	} else {
 		return errors.Errorf("Could not parse input file as neither Sarif nor CycloneDX sarif error: %v, cyclonedx error: %v", sarifErr, cyclonedxErr)
 	}
-	return producers.WriteDraconOut(
+	return producers.WriteSmithyOut(
 		"checkov",
 		issues,
 	)
 }
 
-func handleSarif(inFile []byte) ([]*draconv1.Issue, error) {
-	var sarifResults []*sarif.DraconIssueCollection
-	var draconResults []*draconv1.Issue
-	sarifResults, err := sarif.ToDracon(string(inFile))
+func handleSarif(inFile []byte) ([]*smithyv1.Issue, error) {
+	var sarifResults []*sarif.SmithyIssueCollection
+	var smithyResults []*smithyv1.Issue
+	sarifResults, err := sarif.ToSmithy(string(inFile))
 	if err != nil {
-		return draconResults, err
+		return smithyResults, err
 	}
 	for _, result := range sarifResults {
-		draconResults = append(draconResults, result.Issues...)
+		smithyResults = append(smithyResults, result.Issues...)
 	}
-	return draconResults, nil
+	return smithyResults, nil
 }
 
-func handleCycloneDX(inFile []byte, target string) ([]*draconv1.Issue, error) {
-	return cyclonedx.ToDracon(inFile, "json", target)
+func handleCycloneDX(inFile []byte, target string) ([]*smithyv1.Issue, error) {
+	return cyclonedx.ToSmithy(inFile, "json", target)
 }

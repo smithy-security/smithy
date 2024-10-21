@@ -64,7 +64,7 @@ func createPackageJSON(purl packageurl.PackageURL) {
 	switch {
 	case purl.Namespace == "":
 		packageJSON = fmt.Sprintf(`{
-		"name": "draconPurlScanning",
+		"name": "smithyPurlScanning",
 		"version": "0.0.1",
 		"description": "this is a dummy package json meant to scan the included dependency",
 		"main": "index.js",
@@ -87,7 +87,7 @@ func createPackageJSON(purl packageurl.PackageURL) {
 	  `, name, version)
 	case purl.Namespace != "" && purl.Name != "" && purl.Version != "":
 		packageJSON = fmt.Sprintf(`{
-			"name": "draconPurlScanning",
+			"name": "smithyPurlScanning",
 			"version": "0.0.1",
 			"description": "this is a dummy package json meant to scan the included dependency",
 			"main": "index.js",
@@ -120,7 +120,7 @@ func createPackageJSON(purl packageurl.PackageURL) {
 
 func createGoPKGs(purl packageurl.PackageURL) {
 	log.Println("Generating Gopkg.lock")
-	gopkgToml := "[[constraint]]\n\tname = \"dracon.io/tmp/dep\"\n\tversion = \"1.0.0\"\n"
+	gopkgToml := "[[constraint]]\n\tname = \"smithy.io/tmp/dep\"\n\tversion = \"1.0.0\"\n"
 	gopkgLock := fmt.Sprintf("[[projects]]\n\tname = \"%s/%s\"\n\tpackages = [\".\"]\n\tversion = \"%s\"\n", purl.Namespace, purl.Name, purl.Version)
 	outputPath := filepath.Join(outputDir, "Gopkg.toml")
 	err := os.WriteFile(outputPath, []byte(gopkgToml), 0o600)

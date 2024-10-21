@@ -8,11 +8,11 @@ import (
 	"log/slog"
 	"strings"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/docker-trivy/types"
-	"github.com/ocurity/dracon/pkg/cyclonedx"
-	"github.com/ocurity/dracon/pkg/sarif"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/docker-trivy/types"
+	"github.com/smithy-security/smithy/pkg/cyclonedx"
+	"github.com/smithy-security/smithy/pkg/sarif"
 )
 
 // Combined flag to indicate the producer is being fed  aggregated input from multiple images.
@@ -53,7 +53,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"trivy", results,
 	); err != nil {
 		log.Fatal(err)
@@ -76,23 +76,23 @@ func handleJSON(inFile []byte) ([]*v1.Issue, error) {
 }
 
 func handleSarif(inFile []byte) ([]*v1.Issue, error) {
-	var sarifResults []*sarif.DraconIssueCollection
-	var draconResults []*v1.Issue
-	sarifResults, err := sarif.ToDracon(string(inFile))
+	var sarifResults []*sarif.SmithyIssueCollection
+	var smithyResults []*v1.Issue
+	sarifResults, err := sarif.ToSmithy(string(inFile))
 	if err != nil {
-		return draconResults, err
+		return smithyResults, err
 	}
 	for _, result := range sarifResults {
 		if strings.ToLower(result.ToolName) != "trivy" {
 			log.Printf("Toolname from Sarif results is not 'trivy' it is %s instead\n", result.ToolName)
 		}
-		draconResults = append(draconResults, result.Issues...)
+		smithyResults = append(smithyResults, result.Issues...)
 	}
-	return draconResults, nil
+	return smithyResults, nil
 }
 
 func handleCycloneDX(inFile []byte) ([]*v1.Issue, error) {
-	return cyclonedx.ToDracon(inFile, "json", "")
+	return cyclonedx.ToSmithy(inFile, "json", "")
 }
 
 func parseCombinedOut(results types.CombinedOut) []*v1.Issue {
@@ -118,8 +118,8 @@ func parseSingleOut(results types.TrivyOut) []*v1.Issue {
 	return issues
 }
 
-// TrivySeverityToDracon maps Trivy Severity Strings to dracon struct.
-func TrivySeverityToDracon(severity string) v1.Severity {
+// TrivySeverityToSmithy maps Trivy Severity Strings to smithy struct.
+func TrivySeverityToSmithy(severity string) v1.Severity {
 	switch severity {
 	case "LOW":
 		return v1.Severity_SEVERITY_LOW
@@ -144,7 +144,7 @@ func parseResult(r *types.TrivyVulnerability) *v1.Issue {
 		Target:     purlTarget,
 		Type:       "Container image vulnerability",
 		Title:      fmt.Sprintf("[%s] %s", r.CVE, r.Title),
-		Severity:   TrivySeverityToDracon(r.Severity),
+		Severity:   TrivySeverityToSmithy(r.Severity),
 		Confidence: v1.Confidence_CONFIDENCE_UNSPECIFIED,
 		Cvss:       r.CVSS.Nvd.V3Score,
 		Description: fmt.Sprintf("CVSS Score: %v\nCvssVector: %s\nCve: %s\nCwe: %s\nReference: %s\nOriginal Description:%s\n",

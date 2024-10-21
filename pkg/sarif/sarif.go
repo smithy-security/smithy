@@ -10,20 +10,20 @@ import (
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
-// DraconIssueCollection represents all the findings in a single Sarif file converted to dracon format.
-type DraconIssueCollection struct {
+// SmithyIssueCollection represents all the findings in a single Sarif file converted to smithy format.
+type SmithyIssueCollection struct {
 	ToolName string
 	Issues   []*v1.Issue
 }
 
-// FromDraconEnrichedIssuesRun transforms a set of LaunchToolResponse to ONE sarif document with
+// FromSmithyEnrichedIssuesRun transforms a set of LaunchToolResponse to ONE sarif document with
 // one run per launch tool response, by default it skips duplicates unless reportDuplicates is set
 // to true.
-func FromDraconEnrichedIssuesRun(responses []*v1.EnrichedLaunchToolResponse, reportDuplicates bool) (*sarif.Report, error) {
+func FromSmithyEnrichedIssuesRun(responses []*v1.EnrichedLaunchToolResponse, reportDuplicates bool) (*sarif.Report, error) {
 	// if you are not ignoring duplicates use resultProvenance in each message to mark duplicates
 	// annotations become attachments in each findings with the description the json of the label
 	sarifReport, err := sarif.New(sarif.Version210)
@@ -48,7 +48,7 @@ func FromDraconEnrichedIssuesRun(responses []*v1.EnrichedLaunchToolResponse, rep
 			if err != nil {
 				rule = run.AddRule(issue.RawIssue.Type)
 			}
-			res, err := draconIssueToSarif(issue.RawIssue, rule)
+			res, err := smithyIssueToSarif(issue.RawIssue, rule)
 			if err != nil {
 				log.Println(err.Error())
 				continue
@@ -79,8 +79,8 @@ func FromDraconEnrichedIssuesRun(responses []*v1.EnrichedLaunchToolResponse, rep
 	return sarifReport, nil
 }
 
-// FromDraconRawIssuesRun accepts a set of Dracon LaunchToolResponses and transforms them to a Sarif file.
-func FromDraconRawIssuesRun(responses []*v1.LaunchToolResponse) (*sarif.Report, error) {
+// FromSmithyRawIssuesRun accepts a set of Smithy LaunchToolResponses and transforms them to a Sarif file.
+func FromSmithyRawIssuesRun(responses []*v1.LaunchToolResponse) (*sarif.Report, error) {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return &sarif.Report{}, err
@@ -101,7 +101,7 @@ func FromDraconRawIssuesRun(responses []*v1.LaunchToolResponse) (*sarif.Report, 
 			if err != nil {
 				rule = run.AddRule(issue.Type)
 			}
-			newResults, err := draconIssueToSarif(issue, rule)
+			newResults, err := smithyIssueToSarif(issue, rule)
 			if err != nil {
 				log.Println(err.Error())
 				continue
@@ -115,20 +115,20 @@ func FromDraconRawIssuesRun(responses []*v1.LaunchToolResponse) (*sarif.Report, 
 	return sarifReport, nil
 }
 
-func removeDraconInternalPath(target string) string {
+func removeSmithyInternalPath(target string) string {
 	return strings.Replace(target, producers.SourceDir, "", 1)
 }
 
-func draconIssueToSarif(issue *v1.Issue, rule *sarif.ReportingDescriptor) (*sarif.Result, error) {
+func smithyIssueToSarif(issue *v1.Issue, rule *sarif.ReportingDescriptor) (*sarif.Result, error) {
 	sarifResults := sarif.NewRuleResult(rule.ID)
 	loc := sarif.Location{}
 	physicalLocation := sarif.PhysicalLocation{}
 	artifactLocation := sarif.ArtifactLocation{}
-	_, err := url.ParseRequestURI(removeDraconInternalPath(issue.Target))
+	_, err := url.ParseRequestURI(removeSmithyInternalPath(issue.Target))
 	if err != nil {
 		return &sarif.Result{}, fmt.Errorf("issue titled '%s' targets '%s' which is not a valid URI, skipping", issue.Title, issue.Target)
 	}
-	artifactLocation.WithUri(removeDraconInternalPath(issue.Target))
+	artifactLocation.WithUri(removeSmithyInternalPath(issue.Target))
 	physicalLocation.WithArtifactLocation(&artifactLocation)
 	loc.WithPhysicalLocation(&physicalLocation)
 	sarifResults.WithLocations([]*sarif.Location{&loc})
@@ -158,9 +158,9 @@ func draconIssueToSarif(issue *v1.Issue, rule *sarif.ReportingDescriptor) (*sari
 	return sarifResults, nil
 }
 
-// ToDracon accepts a sarif file and transforms each run to DraconIssueCollection ready to be written to a results file.
-func ToDracon(inFile string) ([]*DraconIssueCollection, error) {
-	issueCollection := []*DraconIssueCollection{}
+// ToSmithy accepts a sarif file and transforms each run to SmithyIssueCollection ready to be written to a results file.
+func ToSmithy(inFile string) ([]*SmithyIssueCollection, error) {
+	issueCollection := []*SmithyIssueCollection{}
 	inSarif, err := sarif.FromString(inFile)
 	if err != nil {
 		return issueCollection, err
@@ -171,7 +171,7 @@ func ToDracon(inFile string) ([]*DraconIssueCollection, error) {
 		for _, rule := range run.Tool.Driver.Rules {
 			rules[rule.ID] = rule
 		}
-		issueCollection = append(issueCollection, &DraconIssueCollection{
+		issueCollection = append(issueCollection, &SmithyIssueCollection{
 			ToolName: tool,
 			Issues:   parseOut(*run, rules, tool),
 		})

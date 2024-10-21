@@ -1,5 +1,5 @@
 // Package main implements the binary for
-// parsing trufflehog results into the dracon format
+// parsing trufflehog results into the smithy format
 package main
 
 import (
@@ -8,9 +8,9 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
-	"github.com/ocurity/dracon/components/producers"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"trufflehog",
 		issues,
 	); err != nil {

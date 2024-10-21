@@ -9,12 +9,12 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	draconv1 "github.com/ocurity/dracon/api/proto/v1"
+	smithyv1 "github.com/smithy-security/smithy/api/proto/v1"
 )
 
 // TestEndToEnd is a helper function to test the end-to-end functionality of a producer.
 func TestEndToEnd(t *testing.T, inPath string, expectedPbPath string) error {
-	tempResultFile, err := os.CreateTemp("", "dracon-test-*.pb")
+	tempResultFile, err := os.CreateTemp("", "smithy-test-*.pb")
 	if err != nil {
 		return err
 	}
@@ -54,12 +54,12 @@ func TestEndToEnd(t *testing.T, inPath string, expectedPbPath string) error {
 	return err
 }
 
-func readResponseFromFile(filePath string) (*draconv1.LaunchToolResponse, error) {
+func readResponseFromFile(filePath string) (*smithyv1.LaunchToolResponse, error) {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
-	var response draconv1.LaunchToolResponse
+	var response smithyv1.LaunchToolResponse
 	err = proto.Unmarshal(content, &response)
 	if err != nil {
 		return nil, err

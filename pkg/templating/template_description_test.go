@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 )
 
 func Test_TemplateStringRaw(t *testing.T) {
@@ -25,7 +25,7 @@ func Test_TemplateStringRaw(t *testing.T) {
 		{
 			name: "template references some of of the issue",
 			args: args{
-				inputTemplate: "Dracon found '{{.Title}}' at '{{.Target}}', severity '{{.Severity}}'",
+				inputTemplate: "Smithy found '{{.Title}}' at '{{.Target}}', severity '{{.Severity}}'",
 				issue: &v1.Issue{
 					Target:      "/foo/bar/baz:32",
 					Title:       "whoops, XSS!",
@@ -38,13 +38,13 @@ func Test_TemplateStringRaw(t *testing.T) {
 					Uuid:        "2d7d1bd6-f1a0-11ed-a05b-0242ac120003",
 				},
 			},
-			want:    "Dracon found 'whoops, XSS!' at '/foo/bar/baz:32', severity 'SEVERITY_HIGH'",
+			want:    "Smithy found 'whoops, XSS!' at '/foo/bar/baz:32', severity 'SEVERITY_HIGH'",
 			wantErr: false,
 		},
 		{
 			name: "template references all of the issue",
 			args: args{
-				inputTemplate: "Dracon found '{{.Title}}' at '{{.Target}}', severity '{{.Severity}}', rule id: '{{.Type}}', CVSS '{{.Cvss}}' Confidence '{{.Confidence}}' Original Description: {{.Description}}, Cve {{.Cve}}",
+				inputTemplate: "Smithy found '{{.Title}}' at '{{.Target}}', severity '{{.Severity}}', rule id: '{{.Type}}', CVSS '{{.Cvss}}' Confidence '{{.Confidence}}' Original Description: {{.Description}}, Cve {{.Cve}}",
 				issue: &v1.Issue{
 					Target:      "/foo/bar/baz:32",
 					Title:       "whoops, XSS!",
@@ -57,7 +57,7 @@ func Test_TemplateStringRaw(t *testing.T) {
 					Uuid:        "2d7d1bd6-f1a0-11ed-a05b-0242ac120003",
 				},
 			},
-			want:    "Dracon found 'whoops, XSS!' at '/foo/bar/baz:32', severity 'SEVERITY_HIGH', rule id: '', CVSS '3.2' Confidence 'CONFIDENCE_UNSPECIFIED' Original Description: this is a description, Cve CVE-2020-1111",
+			want:    "Smithy found 'whoops, XSS!' at '/foo/bar/baz:32', severity 'SEVERITY_HIGH', rule id: '', CVSS '3.2' Confidence 'CONFIDENCE_UNSPECIFIED' Original Description: this is a description, Cve CVE-2020-1111",
 			wantErr: false,
 		},
 	}
@@ -98,7 +98,7 @@ func Test_TemplateStringEnriched(t *testing.T) {
 		{
 			name: "template references all of the issue",
 			args: args{
-				inputTemplate: "Dracon found '{{.RawIssue.Title}}' at '{{.RawIssue.Target}}', severity '{{.RawIssue.Severity}}', rule id: '{{.RawIssue.Type}}', CVSS '{{.RawIssue.Cvss}}' Confidence '{{.RawIssue.Confidence}}' Original Description: {{.RawIssue.Description}}, Cve {{.RawIssue.Cve}},\n{{ range $key,$element := .Annotations }}{{$key}}:{{$element}}\n{{end}}",
+				inputTemplate: "Smithy found '{{.RawIssue.Title}}' at '{{.RawIssue.Target}}', severity '{{.RawIssue.Severity}}', rule id: '{{.RawIssue.Type}}', CVSS '{{.RawIssue.Cvss}}' Confidence '{{.RawIssue.Confidence}}' Original Description: {{.RawIssue.Description}}, Cve {{.RawIssue.Cve}},\n{{ range $key,$element := .Annotations }}{{$key}}:{{$element}}\n{{end}}",
 				issue: &v1.EnrichedIssue{
 					RawIssue: &v1.Issue{
 						Target:      "/foo/bar/baz:32",
@@ -120,7 +120,7 @@ func Test_TemplateStringEnriched(t *testing.T) {
 					Annotations:   map[string]string{"Policy X": "false", "Some Other Annotation": "value"},
 				},
 			},
-			want:    "Dracon found 'whoops, XSS!' at '/foo/bar/baz:32', severity 'SEVERITY_HIGH', rule id: 'G101', CVSS '3.2' Confidence 'CONFIDENCE_HIGH' Original Description: this is a description, Cve CVE-2020-1111,\nPolicy X:false\nSome Other Annotation:value\n",
+			want:    "Smithy found 'whoops, XSS!' at '/foo/bar/baz:32', severity 'SEVERITY_HIGH', rule id: 'G101', CVSS '3.2' Confidence 'CONFIDENCE_HIGH' Original Description: this is a description, Cve CVE-2020-1111,\nPolicy X:false\nSome Other Annotation:value\n",
 			wantErr: false,
 		},
 	}

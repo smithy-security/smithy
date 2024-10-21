@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 
-	draconv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/enrichers"
+	smithyv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/enrichers"
 )
 
 func TestHandlesZeroFindings(t *testing.T) {
@@ -48,7 +48,7 @@ func TestHandlesZeroFindings(t *testing.T) {
 		encodedProto, err := os.ReadFile(fmt.Sprintf("%s/%s", outdir, f.Name()))
 		require.NoError(t, err)
 
-		output := &draconv1.EnrichedLaunchToolResponse{}
+		output := &smithyv1.EnrichedLaunchToolResponse{}
 		require.NoError(t, proto.Unmarshal(encodedProto, output))
 
 		assert.Empty(t, output.Issues)

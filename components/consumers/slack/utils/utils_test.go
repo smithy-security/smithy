@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -159,14 +159,14 @@ func TestProcessRawMessages(t *testing.T) {
 }
 
 func TestPushMetrics(t *testing.T) {
-	template := "Dracon scan <scanID>, started at <scanStartTime>, completed with <numResults> issues out of which, <newResults> new"
+	template := "Smithy scan <scanID>, started at <scanStartTime>, completed with <numResults> issues out of which, <newResults> new"
 	want := "OK"
 	scanUUID := "test-uuid"
 	scanStartTime, err := time.Parse(time.RFC3339, "2020-04-13T11:51:53Z")
 	require.NoError(t, err)
 
 	issuesNo := 1234
-	slackIn := `{"text":"Dracon scan test-uuid, started at 2020-04-13 11:51:53 +0000 UTC, completed with 1234 issues out of which, 0 new"}`
+	slackIn := `{"text":"Smithy scan test-uuid, started at 2020-04-13 11:51:53 +0000 UTC, completed with 1234 issues out of which, 0 new"}`
 	slackStub := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		buf := new(bytes.Buffer)
 		_, err = buf.ReadFrom(r.Body)

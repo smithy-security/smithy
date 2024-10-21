@@ -6,11 +6,11 @@ import (
 	"log"
 	"log/slog"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers/semgrep/types"
-	"github.com/ocurity/dracon/pkg/context"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers/semgrep/types"
+	"github.com/smithy-security/smithy/pkg/context"
 
-	"github.com/ocurity/dracon/components/producers"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 func main() {
@@ -32,7 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"semgrep",
 		issues,
 	); err != nil {
@@ -47,7 +47,7 @@ func parseIssues(out types.SemgrepResults) ([]*v1.Issue, error) {
 
 	for _, r := range results {
 
-		// Map the semgrep severity levels to dracon severity levels
+		// Map the semgrep severity levels to smithy severity levels
 		severityMap := map[string]v1.Severity{
 			"INFO":    v1.Severity_SEVERITY_INFO,
 			"WARNING": v1.Severity_SEVERITY_MEDIUM,

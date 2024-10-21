@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/conf"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/conf"
 )
 
 func TestNew(t *testing.T) {
@@ -25,7 +25,7 @@ func TestNew(t *testing.T) {
 			inProducerResultPath:  "",
 			inEnrichedResultsPath: "/enriched-results",
 			inATOMFilePath:        "/atom-files",
-			inEnricherAnnotation:  "DraconIsCool",
+			inEnricherAnnotation:  "SmithyIsCool",
 			shouldErr:             true,
 		},
 		{
@@ -33,7 +33,7 @@ func TestNew(t *testing.T) {
 			inProducerResultPath:  "/producer-results",
 			inEnrichedResultsPath: "",
 			inATOMFilePath:        "/atom-files",
-			inEnricherAnnotation:  "DraconIsCool",
+			inEnricherAnnotation:  "SmithyIsCool",
 			shouldErr:             true,
 		},
 		{
@@ -41,7 +41,7 @@ func TestNew(t *testing.T) {
 			inProducerResultPath:  "/producer-results",
 			inEnrichedResultsPath: "/enriched-results",
 			inATOMFilePath:        "",
-			inEnricherAnnotation:  "DraconIsCool",
+			inEnricherAnnotation:  "SmithyIsCool",
 			shouldErr:             true,
 		},
 		{
@@ -62,7 +62,7 @@ func TestNew(t *testing.T) {
 			inProducerResultPath:  "/producer-results",
 			inEnrichedResultsPath: "/enriched-results",
 			inATOMFilePath:        "/atom-files",
-			inEnricherAnnotation:  "DraconIsCool",
+			inEnricherAnnotation:  "SmithyIsCool",
 			shouldErr:             false,
 			expectedConf: &conf.Conf{
 				ProducerResultsPath: "/producer-results",

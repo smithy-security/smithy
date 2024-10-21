@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: enricher-reachability
   labels:
-    v1.dracon.ocurity.com/component: enricher
+    v1.smithy.smithy-security.com/component: enricher
 spec:
   description: Performs a reachability check on a supplied repository using AppThreat/atom.
   params:
@@ -48,15 +48,15 @@ spec:
         name: scratch
   - name: run-enricher
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/enrichers/reachability:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/enrichers/reachability:{{ .Chart.AppVersion }}'
     command: ["/app/components/enrichers/reachability/reachability"]
     volumeMounts:
       - mountPath: /scratch
         name: scratch
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.dracon/producers
+      value: $(workspaces.output.path)/.smithy/producers
     - name: WRITE_PATH
-      value: $(workspaces.output.path)/.dracon/enrichers/reachability
+      value: $(workspaces.output.path)/.smithy/enrichers/reachability
     - name: ATOM_FILE_PATH
       value: /scratch/reachables.json

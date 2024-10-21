@@ -15,7 +15,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/yaml"
 
-	"github.com/ocurity/dracon/pkg/manifests"
+	"github.com/smithy-security/smithy/pkg/manifests"
 )
 
 var (
@@ -29,7 +29,7 @@ var (
 
 // Package explores the components folder provided and gathers all the Tekton
 // Tasks into one Helm chart.
-func Package(ctx context.Context, name, componentFolder string, draconVersion string, chartVersion string) (err error) {
+func Package(ctx context.Context, name, componentFolder string, smithyVersion string, chartVersion string) (err error) {
 	fs, err := os.Stat(componentFolder)
 	if err != nil {
 		return errors.Errorf("%s: could not stat: %w", componentFolder, err)
@@ -39,7 +39,7 @@ func Package(ctx context.Context, name, componentFolder string, draconVersion st
 		return errors.Errorf("%s: path is not a directory", componentFolder)
 	}
 
-	tempFolder, err := os.MkdirTemp("/tmp", "dracon-helm")
+	tempFolder, err := os.MkdirTemp("/tmp", "smithy-helm")
 	if err != nil {
 		return errors.Errorf("there was an error while trying to create temp directory: %w", err)
 	}
@@ -61,7 +61,7 @@ func Package(ctx context.Context, name, componentFolder string, draconVersion st
 		return errors.Errorf("could not process tasks: %w", err)
 	}
 
-	if err = constructPackage(tempFolder, name, chartVersion, draconVersion, taskList); err != nil {
+	if err = constructPackage(tempFolder, name, chartVersion, smithyVersion, taskList); err != nil {
 		return errors.Errorf("could not generate Helm manifests: %w", err)
 	}
 
@@ -114,7 +114,7 @@ func ProcessTasks(taskList ...*tektonv1beta1api.Task) error {
 //
 //revive:disable:cyclomatic High complexity score but easy to understand
 //revive:disable:cognitive-complexity High complexity score but easy to understand
-func constructPackage(helmFolder, name, version, draconVersion string, taskList []*tektonv1beta1api.Task) error {
+func constructPackage(helmFolder, name, version, smithyVersion string, taskList []*tektonv1beta1api.Task) error {
 	if err := os.Mkdir(path.Join(helmFolder, "templates"), os.ModePerm); err != nil {
 		return errors.Errorf("could not create templates folder")
 	}
@@ -145,7 +145,7 @@ func constructPackage(helmFolder, name, version, draconVersion string, taskList 
 		APIVersion: chart.APIVersionV2,
 		Name:       name,
 		Version:    version,
-		AppVersion: draconVersion,
+		AppVersion: smithyVersion,
 	}
 
 	if err = helmChart.Validate(); err != nil {
@@ -280,18 +280,18 @@ func addEnvVarsToTask(task *tektonv1beta1api.Task) error {
 	scanTagsFound := false
 
 	for _, param := range task.Spec.Params {
-		if param.Name == "dracon_scan_id" {
+		if param.Name == "smithy_scan_id" {
 			scanIDFound = true
-		} else if param.Name == "dracon_scan_start_time" {
+		} else if param.Name == "smithy_scan_start_time" {
 			scanStartTimeFound = true
-		} else if param.Name == "dracon_scan_tags" {
+		} else if param.Name == "smithy_scan_tags" {
 			scanTagsFound = true
 		}
 	}
 	if !scanIDFound {
 		task.Spec.Params = append(task.Spec.Params, tektonv1beta1api.ParamSpecs{
 			{
-				Name: "dracon_scan_id",
+				Name: "smithy_scan_id",
 				Type: tektonv1beta1api.ParamTypeString,
 			},
 		}...)
@@ -299,7 +299,7 @@ func addEnvVarsToTask(task *tektonv1beta1api.Task) error {
 	if !scanStartTimeFound {
 		task.Spec.Params = append(task.Spec.Params, tektonv1beta1api.ParamSpecs{
 			{
-				Name: "dracon_scan_start_time",
+				Name: "smithy_scan_start_time",
 				Type: tektonv1beta1api.ParamTypeString,
 			},
 		}...)
@@ -307,7 +307,7 @@ func addEnvVarsToTask(task *tektonv1beta1api.Task) error {
 	if !scanTagsFound {
 		task.Spec.Params = append(task.Spec.Params, tektonv1beta1api.ParamSpecs{
 			{
-				Name: "dracon_scan_tags",
+				Name: "smithy_scan_tags",
 				Type: tektonv1beta1api.ParamTypeString,
 			},
 		}...)
@@ -318,35 +318,35 @@ func addEnvVarsToTask(task *tektonv1beta1api.Task) error {
 	scanTagsFound = false
 	for i, step := range task.Spec.Steps {
 		for _, envVar := range step.Env {
-			if envVar.Name == "DRACON_SCAN_TIME" {
+			if envVar.Name == "SMITHY_SCAN_TIME" {
 				scanStartTimeFound = true
-			} else if envVar.Name == "DRACON_SCAN_ID" {
+			} else if envVar.Name == "SMITHY_SCAN_ID" {
 				scanIDFound = true
-			} else if envVar.Name == "DRACON_SCAN_TAGS" {
+			} else if envVar.Name == "SMITHY_SCAN_TAGS" {
 				scanTagsFound = true
 			}
 		}
 		if !scanStartTimeFound {
 			step.Env = append(step.Env, []corev1.EnvVar{
 				{
-					Name:  "DRACON_SCAN_TIME",
-					Value: "$(params.dracon_scan_start_time)",
+					Name:  "SMITHY_SCAN_TIME",
+					Value: "$(params.smithy_scan_start_time)",
 				},
 			}...)
 		}
 		if !scanIDFound {
 			step.Env = append(step.Env, []corev1.EnvVar{
 				{
-					Name:  "DRACON_SCAN_ID",
-					Value: "$(params.dracon_scan_id)",
+					Name:  "SMITHY_SCAN_ID",
+					Value: "$(params.smithy_scan_id)",
 				},
 			}...)
 		}
 		if !scanTagsFound {
 			step.Env = append(step.Env, []corev1.EnvVar{
 				{
-					Name:  "DRACON_SCAN_TAGS",
-					Value: "$(params.dracon_scan_tags)",
+					Name:  "SMITHY_SCAN_TAGS",
+					Value: "$(params.smithy_scan_tags)",
 				},
 			}...)
 		}

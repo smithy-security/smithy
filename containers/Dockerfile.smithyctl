@@ -1,0 +1,13 @@
+ARG BASE_MIGRATION_IMAGE
+
+FROM ${BASE_MIGRATION_IMAGE:-scratch}
+
+ARG GOOS=linux
+ARG GOARCH=amd64
+
+LABEL org.opencontainers.image.description="Smithyctl is a command line tool for interacting with Smithy, you can find documentation for it at github.com/smithy-security/smithy"
+
+COPY ./bin/cmd/${GOOS}/${GOARCH}/smithyctl /bin/smithyctl
+COPY ./pkg/enrichment/migrations /etc/smithy/migrations/enrichment
+
+ENTRYPOINT ["/bin/smithyctl"]

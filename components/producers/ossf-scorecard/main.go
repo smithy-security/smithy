@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
-	"github.com/ocurity/dracon/components/producers"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 
 	issues := parseIssues(&results)
 
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"scorecard",
 		issues,
 	); err != nil {
@@ -45,7 +45,7 @@ func parseIssues(out *ScorecardOut) []*v1.Issue {
 			Target:      fmt.Sprintf("%s:%s", repo, commit),
 			Type:        r.Name,
 			Title:       r.Reason,
-			Severity:    scorecardToDraconSeverity(r.Score),
+			Severity:    scorecardToSmithySeverity(r.Score),
 			Cvss:        0.0,
 			Confidence:  v1.Confidence_CONFIDENCE_UNSPECIFIED,
 			Description: string(desc),
@@ -54,7 +54,7 @@ func parseIssues(out *ScorecardOut) []*v1.Issue {
 	return issues
 }
 
-func scorecardToDraconSeverity(score float64) v1.Severity {
+func scorecardToSmithySeverity(score float64) v1.Severity {
 	switch {
 	case score < 0:
 		return v1.Severity_SEVERITY_UNSPECIFIED

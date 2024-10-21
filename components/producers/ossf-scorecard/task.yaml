@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: producer-ossf-scorecard
   labels:
-    v1.dracon.ocurity.com/component: producer
+    v1.smithy.smithy-security.com/component: producer
 spec:
   description: Generates scorecards for open source projects to show how they adhere with best practices.
   params:
@@ -24,7 +24,7 @@ spec:
       description: The workspace containing the source-code to scan.
   steps:
   - name: run-ossf-scorecard
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/ossf-scorecard/scorecard-dracon:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/ossf-scorecard/scorecard-smithy:{{ .Chart.AppVersion }}'
     env:
       - name: GITHUB_AUTH_TOKEN
         value: "$(params.producer-ossf-scorecard-github-auth-token)"
@@ -40,11 +40,11 @@ spec:
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/ossf-scorecard:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/ossf-scorecard:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/ossf-scorecard/ossf-scorecard-parser"]
     args:
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.dracon/producers/ossf-scorecard.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/ossf-scorecard.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch

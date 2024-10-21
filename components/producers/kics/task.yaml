@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: producer-kics
   labels:
-    v1.dracon.ocurity.com/component: producer
+    v1.smithy.smithy-security.com/component: producer
 spec:
   description: Generate a KICS report from source code.
   volumes:
@@ -40,11 +40,11 @@ spec:
         cpu: "1"
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/kics:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/kics:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/kics/kics-parser"]
     args:
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.dracon/producers/kics.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/kics.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch

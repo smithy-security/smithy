@@ -16,8 +16,8 @@ import (
 
 	"github.com/go-errors/errors"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 // DefaultLineRange controls how many lines of code context will be returned by default

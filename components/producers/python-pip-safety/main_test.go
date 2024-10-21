@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/python-pip-safety/types"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/python-pip-safety/types"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -17,7 +17,7 @@ func TestParseIssues(t *testing.T) {
 	safetyIssues := types.Out{}
 	err := json.Unmarshal([]byte(exampleOutput), &safetyIssues)
 	require.NoError(t, err)
-	draconIssues := parseIssues(safetyIssues.Vulnerabilities)
+	smithyIssues := parseIssues(safetyIssues.Vulnerabilities)
 	expectedIssues := []*v1.Issue{
 		{
 			Target:      "pkg:pypi/aiohttp-jinja2@1.1.0",
@@ -54,7 +54,7 @@ func TestParseIssues(t *testing.T) {
 		},
 	}
 
-	assert.Equal(t, draconIssues, expectedIssues)
+	assert.Equal(t, smithyIssues, expectedIssues)
 }
 
 const exampleOutput = `

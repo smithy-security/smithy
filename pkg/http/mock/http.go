@@ -3,7 +3,7 @@ package mock
 import (
 	"net/http"
 
-	"github.com/ocurity/dracon/pkg/utils"
+	"github.com/smithy-security/smithy/pkg/utils"
 )
 
 var _ utils.MockableRequestDoer = (*HTTPReqDoer)(nil)

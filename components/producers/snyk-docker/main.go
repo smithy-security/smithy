@@ -4,9 +4,9 @@ import (
 	"log"
 	"log/slog"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/pkg/sarif"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/pkg/sarif"
 )
 
 func main() {
@@ -36,18 +36,18 @@ func writeOutput(results map[string][]*v1.Issue) error {
 			slog.Int("issues", len(issues)),
 			slog.String("tool", "snuk"),
 		)
-		if err := producers.WriteDraconOut(
+		if err := producers.WriteSmithyOut(
 			"snyk",
 			issues,
 		); err != nil {
-			slog.Error("error writing dracon out for the snyk tool", "err", err)
+			slog.Error("error writing smithy out for the snyk tool", "err", err)
 		}
 	}
 	return nil
 }
 
 func processInput(input string) (map[string][]*v1.Issue, error) {
-	issues, err := sarif.ToDracon(string(input))
+	issues, err := sarif.ToSmithy(string(input))
 	if err != nil {
 		return nil, err
 	}

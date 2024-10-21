@@ -1,6 +1,6 @@
 # deps.dev Enricher
 
-*WARNING*: as stated [here](https://github.com/ocurity/dracon/pull/15#discussion_r1125438946)
+*WARNING*: as stated [here](https://github.com/smithy-security/smithy/pull/15#discussion_r1125438946)
 *Because Go licenses must be detected, there's always a chance of the detected*
 *license being wrong*.
 The licenses detected for GO might not be 100% accurate. Please ensure you

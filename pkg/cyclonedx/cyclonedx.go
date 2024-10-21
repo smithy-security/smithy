@@ -8,12 +8,12 @@ import (
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 )
 
-// ToDracon accepts a cycloneDX bom file and transforms to an array containing a singular v1.Issue.
+// ToSmithy accepts a cycloneDX bom file and transforms to an array containing a singular v1.Issue.
 // revive:disable:cognitive-complexity,cyclomatic High complexity score but
-func ToDracon(inFile []byte, format, targetOverride string) ([]*v1.Issue, error) {
+func ToSmithy(inFile []byte, format, targetOverride string) ([]*v1.Issue, error) {
 	bom := new(cdx.BOM)
 	var decoder cdx.BOMDecoder
 	var issues []*v1.Issue
@@ -65,8 +65,8 @@ func ToDracon(inFile []byte, format, targetOverride string) ([]*v1.Issue, error)
 	}, nil
 }
 
-// FromDracon accepts an issue and transforms to a cyclonedx bom.
-func FromDracon(issue *v1.Issue) (*cdx.BOM, error) {
+// FromSmithy accepts an issue and transforms to a cyclonedx bom.
+func FromSmithy(issue *v1.Issue) (*cdx.BOM, error) {
 	bom := new(cdx.BOM)
 	if issue.CycloneDXSBOM == nil || *issue.CycloneDXSBOM == "" {
 		return bom, fmt.Errorf("issue %s does not have an sbom", issue.Uuid)

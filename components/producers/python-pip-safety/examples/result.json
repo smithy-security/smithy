@@ -5,7 +5,7 @@
             "requirements.txt"
         ],
         "scanned_full_path": [
-            "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+            "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
         ],
         "target_languages": [
             "python"
@@ -44,7 +44,7 @@
             "tag": "",
             "commit": "de6f3a4e373fe66c745fe7db2ba385903ef32aaa",
             "dirty": false,
-            "origin": "git@github.com:ocurity/dracon.git"
+            "origin": "git@github.com:smithy-security/smithy.git"
         },
         "project": null,
         "json_version": "1.1",
@@ -64,7 +64,7 @@
                     "name": "Django",
                     "specifier": "==1.11.29",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -79,7 +79,7 @@
                     "name": "requests",
                     "specifier": "==2.20.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -94,7 +94,7 @@
                     "name": "numpy",
                     "specifier": "==1.16.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -109,7 +109,7 @@
                     "name": "pandas",
                     "specifier": "==0.23.4",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -124,7 +124,7 @@
                     "name": "Flask",
                     "specifier": "==1.0.2",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -139,7 +139,7 @@
                     "name": "scipy",
                     "specifier": "==1.2.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -154,7 +154,7 @@
                     "name": "scikit-learn",
                     "specifier": "==0.20.2",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -169,7 +169,7 @@
                     "name": "matplotlib",
                     "specifier": "==2.2.3",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -184,7 +184,7 @@
                     "name": "seaborn",
                     "specifier": "==0.9.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -199,7 +199,7 @@
                     "name": "beautifulsoup4",
                     "specifier": "==4.6.3",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -214,7 +214,7 @@
                     "name": "lxml",
                     "specifier": "==4.2.5",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -229,7 +229,7 @@
                     "name": "pytz",
                     "specifier": "==2018.7",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -244,7 +244,7 @@
                     "name": "six",
                     "specifier": "==1.11.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -259,7 +259,7 @@
                     "name": "psycopg2",
                     "specifier": "==2.7.6.1",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -274,7 +274,7 @@
                     "name": "mysqlclient",
                     "specifier": "==1.3.14",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -289,7 +289,7 @@
                     "name": "Pillow",
                     "specifier": "==5.4.1",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -304,7 +304,7 @@
                     "name": "pyOpenSSL",
                     "specifier": "==19.0.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -319,7 +319,7 @@
                     "name": "cryptography",
                     "specifier": "==2.6.1",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -334,7 +334,7 @@
                     "name": "pyasn1",
                     "specifier": "==0.4.5",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         },
@@ -349,7 +349,7 @@
                     "name": "urllib3",
                     "specifier": "==1.24.1",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ]
         }
@@ -366,7 +366,7 @@
                     "name": "urllib3",
                     "specifier": "==1.24.1",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -485,7 +485,7 @@
                     "name": "cryptography",
                     "specifier": "==2.6.1",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -638,7 +638,7 @@
                     "name": "Pillow",
                     "specifier": "==5.4.1",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -757,7 +757,7 @@
                     "name": "lxml",
                     "specifier": "==4.2.5",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -893,7 +893,7 @@
                     "name": "scikit-learn",
                     "specifier": "==0.20.2",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -978,7 +978,7 @@
                     "name": "scipy",
                     "specifier": "==1.2.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -1086,7 +1086,7 @@
                     "name": "Flask",
                     "specifier": "==1.0.2",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -1169,7 +1169,7 @@
                     "name": "numpy",
                     "specifier": "==1.16.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -1321,7 +1321,7 @@
                     "name": "requests",
                     "specifier": "==2.20.0",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -1498,7 +1498,7 @@
                     "name": "Django",
                     "specifier": "==1.11.29",
                     "url": null,
-                    "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                    "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                 }
             ],
             "found": null,
@@ -1895,7 +1895,7 @@
                 "name": "urllib3",
                 "specifier": "==1.24.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Urllib3 1.26.18 and 2.0.7 include a fix for CVE-2023-45803: Request body not stripped after redirect from 303 status changes request method to GET.\r\nhttps://github.com/urllib3/urllib3/security/advisories/GHSA-g4mx-q9vg-27p4",
             "is_transitive": false,
@@ -1928,7 +1928,7 @@
                 "name": "urllib3",
                 "specifier": "==1.24.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Affected versions of urllib3 are vulnerable Improper Certificate Validation. Urllib3 mishandles certain cases where the desired set of CA certificates is different from the OS store of CA certificates, which results in SSL connections succeeding in situations where a verification failure is the correct outcome. This is related to the use of the ssl_context, ca_certs, or ca_certs_dir argument.",
             "is_transitive": false,
@@ -1961,7 +1961,7 @@
                 "name": "urllib3",
                 "specifier": "==1.24.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Urllib3 1.26.5 includes a fix for CVE-2021-33503: When provided with a URL containing many @ characters in the authority component, the authority regular expression exhibits catastrophic backtracking, causing a denial of service if a URL were passed as a parameter or redirected to via an HTTP redirect.\r\nhttps://github.com/advisories/GHSA-q2q7-5pp4-w6pg",
             "is_transitive": false,
@@ -1995,7 +1995,7 @@
                 "name": "urllib3",
                 "specifier": "==1.24.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Urllib3 1.26.17 and 2.0.5 include a fix for CVE-2023-43804: Urllib3 doesn't treat the 'Cookie' HTTP header special or provide any helpers for managing cookies over HTTP, that is the responsibility of the user. However, it is possible for a user to specify a 'Cookie' header and unknowingly leak information via HTTP redirects to a different origin if that user doesn't disable redirects explicitly.\r\nhttps://github.com/urllib3/urllib3/security/advisories/GHSA-v845-jxx5-vc9f",
             "is_transitive": false,
@@ -2028,7 +2028,7 @@
                 "name": "urllib3",
                 "specifier": "==1.24.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Urllib3 1.25.9 includes a fix for CVE-2020-26137: Urllib3 before 1.25.9 allows CRLF injection if the attacker controls the HTTP request method, as demonstrated by inserting CR and LF control characters in the first argument of putrequest(). NOTE: this is similar to CVE-2020-26116.\r\nhttps://github.com/python/cpython/issues/83784\r\nhttps://github.com/urllib3/urllib3/pull/1800",
             "is_transitive": false,
@@ -2061,7 +2061,7 @@
                 "name": "urllib3",
                 "specifier": "==1.24.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Urllib3 1.24.3 includes a fix for CVE-2019-11236: CRLF injection is possible if the attacker controls the request parameter.\r\nhttps://github.com/urllib3/urllib3/commit/5d523706c7b03f947dc50a7e783758a2bfff0532\r\nhttps://github.com/urllib3/urllib3/issues/1553",
             "is_transitive": false,
@@ -2094,7 +2094,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 41.0.4 updates Windows, macOS, and Linux wheels to be compiled with OpenSSL 3.1.3, that includes a security fix.\r\nhttps://github.com/pyca/cryptography/commit/fc11bce6930e591ce26a2317b31b9ce2b3e25512",
             "is_transitive": true,
@@ -2127,7 +2127,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 41.0.5 updates Windows, macOS, and Linux wheels to be compiled with OpenSSL 3.1.4, that includes a security fix.",
             "is_transitive": true,
@@ -2160,7 +2160,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 41.0.3  updates its bundled OpenSSL version to include a fix for CVE-2023-2975: AES-SIV implementation ignores empty associated data entries.\r\nhttps://github.com/pyca/cryptography/commit/bfa4d95f0f356f2d535efd5c775e0fb3efe90ef2\r\nhttps://www.openssl.org/news/secadv/20230714.txt",
             "is_transitive": true,
@@ -2193,7 +2193,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 41.0.3 updates its bundled OpenSSL version to include a fix for a Denial of Service vulnerability.\r\nhttps://github.com/pyca/cryptography/commit/b22271cf3c3dd8dc8978f8f4b00b5c7060b6538d\r\nhttps://www.openssl.org/news/secadv/20230731.txt",
             "is_transitive": true,
@@ -2226,7 +2226,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 41.0.3 updates its bundled OpenSSL version to include a fix for a Denial of Service vulnerability.\r\nhttps://github.com/pyca/cryptography/commit/bfa4d95f0f356f2d535efd5c775e0fb3efe90ef2\r\nhttps://www.openssl.org/news/secadv/20230719.txt",
             "is_transitive": true,
@@ -2259,7 +2259,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 3.3.2 includes a fix for CVE-2020-36242: certain sequences of update calls to symmetrically encrypt multi-GB values could result in an integer overflow and buffer overflow, as demonstrated by the Fernet class.",
             "is_transitive": false,
@@ -2292,7 +2292,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 3.3 no longer allows loading of finite field Diffie-Hellman parameters of less than 512 bits in length. This change is to conform with an upcoming OpenSSL release that no longer supports smaller sizes. These keys were already wildly insecure and should not have been used in any application outside of testing.\r\nhttps://github.com/pyca/cryptography/pull/5592",
             "is_transitive": false,
@@ -2325,7 +2325,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 updates its dependency 'OpenSSL' to v3.0.8 to include security fixes.\r\nhttps://github.com/pyca/cryptography/issues/8229",
             "is_transitive": true,
@@ -2358,7 +2358,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 updates its dependency 'OpenSSL' to v3.0.8 to include security fixes.\r\nhttps://github.com/pyca/cryptography/issues/8229",
             "is_transitive": true,
@@ -2391,7 +2391,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 includes a fix for CVE-2022-3996, a DoS vulnerability affecting openssl.\r\nhttps://github.com/pyca/cryptography/issues/7940",
             "is_transitive": true,
@@ -2424,7 +2424,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 updates its dependency 'OpenSSL' to v3.0.8 to include security fixes.\r\nhttps://github.com/pyca/cryptography/issues/8229",
             "is_transitive": true,
@@ -2457,7 +2457,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 updates its dependency 'OpenSSL' to v3.0.8 to include security fixes.\r\nhttps://github.com/pyca/cryptography/issues/8229",
             "is_transitive": true,
@@ -2490,7 +2490,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 updates its dependency 'OpenSSL' to v3.0.8 to include security fixes.\r\nhttps://github.com/pyca/cryptography/issues/8229",
             "is_transitive": true,
@@ -2523,7 +2523,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 updates its dependency 'OpenSSL' to v3.0.8 to include security fixes.\r\nhttps://github.com/pyca/cryptography/issues/8229",
             "is_transitive": true,
@@ -2556,7 +2556,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 updates its dependency 'OpenSSL' to v3.0.8 to include security fixes.\r\nhttps://github.com/pyca/cryptography/issues/8229",
             "is_transitive": true,
@@ -2589,7 +2589,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 updates its dependency 'OpenSSL' to v3.0.8 to include security fixes.\r\nhttps://github.com/pyca/cryptography/issues/8229",
             "is_transitive": true,
@@ -2622,7 +2622,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography version 42.0.5 introduces a limit on the number of name constraint checks during X.509 path validation to prevent denial of service attacks.\r\nhttps://github.com/pyca/cryptography/commit/4be53bf20cc90cbac01f5f94c5d1aecc5289ba1f",
             "is_transitive": false,
@@ -2655,7 +2655,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "A flaw was found in the python-cryptography package. This issue may allow a remote attacker to decrypt captured messages in TLS servers that use RSA key exchanges, which may lead to exposure of confidential or sensitive data. See CVE-2023-50782.",
             "is_transitive": false,
@@ -2688,7 +2688,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography starting from version 42.0.0 updates its CI configurations to use newer versions of BoringSSL or OpenSSL as a countermeasure to CVE-2023-5678. This vulnerability, affecting the package, could cause Denial of Service through specific DH key generation and verification functions when given overly long parameters.",
             "is_transitive": true,
@@ -2721,7 +2721,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "The cryptography package before 41.0.2 for Python mishandles SSH certificates that have critical options.",
             "is_transitive": false,
@@ -2754,7 +2754,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 3.2 and prior are vulnerable to Bleichenbacher timing attacks in the RSA decryption API, via timed processing of valid PKCS#1 v1.5 ciphertext.",
             "is_transitive": false,
@@ -2787,7 +2787,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 39.0.1 includes a fix for CVE-2023-23931: In affected versions 'Cipher.update_into' would accept Python objects which implement the buffer protocol, but provide only immutable buffers. This would allow immutable objects (such as 'bytes') to be mutated, thus violating fundamental rules of Python and resulting in corrupted output. This issue has been present since 'update_into' was originally introduced in cryptography 1.8.\r\nhttps://github.com/pyca/cryptography/security/advisories/GHSA-w7pp-m8wf-vj6r",
             "is_transitive": false,
@@ -2820,7 +2820,7 @@
                 "name": "cryptography",
                 "specifier": "==2.6.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Cryptography 41.0.0 updates its dependency 'OpenSSL' to v3.1.1 to include a security fix.\r\nhttps://github.com/pyca/cryptography/commit/8708245ccdeaff21d65eea68a4f8d2a7c5949a22",
             "is_transitive": true,
@@ -2853,7 +2853,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "In Pillow before 7.1.0, there are two Buffer Overflows in libImaging/TiffDecode.c.",
             "is_transitive": false,
@@ -2886,7 +2886,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow before 7.1.0 has multiple out-of-bounds reads in libImaging/FliDecode.c.",
             "is_transitive": false,
@@ -2919,7 +2919,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "In libImaging/PcxDecode.c in Pillow before 7.1.0, an out-of-bounds read can occur when reading PCX files where state->shuffle is instructed to read beyond state->buffer.",
             "is_transitive": false,
@@ -2952,7 +2952,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "In libImaging/Jpeg2KDecode.c in Pillow before 7.1.0, there are multiple out-of-bounds reads via a crafted JP2 file.",
             "is_transitive": false,
@@ -2985,7 +2985,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Certain versions of Pillow are susceptible to a denial of service via memory consumption due to inadequate validation of the reported size of a contained image in a BLP container. This can result in attempts to allocate excessively large amounts of memory. To mitigate or avoid this vulnerability, users should consider updating to a newer version that addresses the issue or following any provided workarounds, such as avoiding the processing of specially crafted invalid image files that may trigger this condition. For additional details and potential updates, users may refer to the CVE-2021-27921 entry or contact the software maintainers through the provided channels.",
             "is_transitive": false,
@@ -3018,7 +3018,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow is potentially vulnerable to DoS attacks through PIL.ImageFont.ImageFont.getmask(). A decompression bomb check has also been added to the affected function.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/10.2.0.html",
             "is_transitive": false,
@@ -3051,7 +3051,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow is affected by an arbitrary code execution vulnerability. If an attacker has control over the keys passed to the environment argument of PIL.ImageMath.eval(), they may be able to execute arbitrary code.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/10.2.0.html",
             "is_transitive": false,
@@ -3084,7 +3084,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow version 8.2.0 includes a fix for CVE-2021-28676: For FLI data, FliDecode did not properly check that the block advance was non-zero, potentially leading to an infinite loop on load.\r\nhttps://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MQHA5HAIBOYI3R6HDWCLAGFTIQP767FL/\r\nhttps://github.com/python-pillow/Pillow/pull/5377\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.2.0.html#cve-2021-28676-fix-fli-dos",
             "is_transitive": false,
@@ -3117,7 +3117,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow version 8.2.0 includes a fix for CVE-2021-28678: For BLP data, BlpImagePlugin did not properly check that reads (after jumping to file offsets) returned data. This could lead to a DoS where the decoder could be run a large number of times on empty data.\r\nhttps://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MQHA5HAIBOYI3R6HDWCLAGFTIQP767FL/\r\nhttps://github.com/python-pillow/Pillow/pull/5377\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.2.0.html#cve-2021-28678-fix-blp-dos",
             "is_transitive": false,
@@ -3150,7 +3150,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.2.0 includes a fix for CVE-2021-25288: There is an out-of-bounds read in J2kDecode, in j2ku_gray_i.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.2.0.html#cve-2021-25287-cve-2021-25288-fix-oob-read-in-jpeg2kdecode",
             "is_transitive": false,
@@ -3183,7 +3183,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.2.0 includes a fix for CVE-2021-25287: There is an out-of-bounds read in J2kDecode, in j2ku_graya_la.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.2.0.html#cve-2021-25287-cve-2021-25288-fix-oob-read-in-jpeg2kdecode",
             "is_transitive": false,
@@ -3216,7 +3216,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow version 8.2.0 includes a fix for CVE-2021-28677: For EPS data, the readline implementation used in EPSImageFile has to deal with any combination of \\r and \\n as line endings. It used an accidentally quadratic method of accumulating lines while looking for a line ending. A malicious EPS file could use this to perform a DoS of Pillow in the open phase, before an image was accepted for opening.\r\nhttps://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/MQHA5HAIBOYI3R6HDWCLAGFTIQP767FL/\r\nhttps://github.com/python-pillow/Pillow/pull/5377\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.2.0.html#cve-2021-28677-fix-eps-dos-on-open",
             "is_transitive": false,
@@ -3249,7 +3249,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 9.1.1 addresses the CVE-2022-30595: libImaging/TgaRleDecode.c in Pillow 9.1.0 has a heap buffer overflow in the processing of invalid TGA image files.",
             "is_transitive": false,
@@ -3282,7 +3282,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow from 5.2.0 and before 8.3.2 is vulnerable to Regular Expression Denial of Service (ReDoS) via the getrgb function.\r\nhttps://github.com/python-pillow/Pillow/commit/9e08eb8f78fdfd2f476e1b20b7cf38683754866b\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.3.2.html",
             "is_transitive": false,
@@ -3315,7 +3315,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.3.0 includes a fix for CVE-2021-34552: Pillow through 8.2.0 and PIL (also known as Python Imaging Library) through 1.1.7 allow an attacker to pass controlled parameters directly into a convert function to trigger a buffer overflow in Convert.c\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.3.0.html#buffer-overflow\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/index.html",
             "is_transitive": false,
@@ -3348,7 +3348,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "An issue was discovered in Pillow before 8.2.0. PSDImagePlugin.PsdImageFile lacked a sanity check on the number of input layers relative to the size of the data block. This could lead to a DoS on Image.open prior to Image.load.",
             "is_transitive": false,
@@ -3381,7 +3381,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 9.0.0 ensures JpegImagePlugin stops at the end of a truncated file to avoid Denial of Service attacks.\r\nhttps://github.com/python-pillow/Pillow/pull/5921\r\nhttps://github.com/advisories/GHSA-4fx9-vc88-q2xc",
             "is_transitive": false,
@@ -3414,7 +3414,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 9.0.0 excludes carriage return in PDF regex to help prevent ReDoS.\r\nhttps://github.com/python-pillow/Pillow/pull/5912\r\nhttps://github.com/python-pillow/Pillow/commit/43b800d933c996226e4d7df00c33fcbe46d97363",
             "is_transitive": false,
@@ -3447,7 +3447,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 9.0.0 includes a fix for CVE-2022-22816: path_getbbox in path.c in Pillow before 9.0.0 has a buffer over-read during initialization of ImagePath.Path.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/9.0.0.html#fixed-imagepath-path-array-handling",
             "is_transitive": false,
@@ -3480,7 +3480,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 9.0.0 includes a fix for CVE-2022-22815: path_getbbox in path.c in Pillow before 9.0.0 improperly initializes ImagePath.Path.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/9.0.0.html#fixed-imagepath-path-array-handling",
             "is_transitive": false,
@@ -3513,7 +3513,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.1 includes a fix for CVE-2021-25289: TiffDecode has a heap-based buffer overflow when decoding crafted YCbCr files because of certain interpretation conflicts with LibTIFF in RGBA mode. NOTE: this issue exists because of an incomplete fix for CVE-2020-35654.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html",
             "is_transitive": false,
@@ -3546,7 +3546,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.1 includes a fix for CVE-2021-25291: In TiffDecode.c, there is an out-of-bounds read in TiffreadRGBATile via invalid tile boundaries.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html",
             "is_transitive": false,
@@ -3579,7 +3579,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.1 includes a fix for CVE-2021-25293: There is an out-of-bounds read in SGIRleDecode.c.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html",
             "is_transitive": false,
@@ -3612,7 +3612,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.1 includes a fix for CVE-2021-25290: In TiffDecode.c, there is a negative-offset memcpy with an invalid size.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html",
             "is_transitive": false,
@@ -3645,7 +3645,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.1 includes a fix for CVE-2021-27921: Pillow before 8.1.1 allows attackers to cause a denial of service (memory consumption) because the reported size of a contained image is not properly checked for a BLP container, and thus an attempted memory allocation can be very large.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html",
             "is_transitive": false,
@@ -3678,7 +3678,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.1 includes a fix for CVE-2021-25292: The PDF parser allows a regular expression DoS (ReDoS) attack via a crafted PDF file because of a catastrophic backtracking regex.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html",
             "is_transitive": false,
@@ -3711,7 +3711,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.1 includes a fix for CVE-2021-27922: Pillow before 8.1.1 allows attackers to cause a denial of service (memory consumption) because the reported size of a contained image is not properly checked for an ICNS container, and thus an attempted memory allocation can be very large.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/8.1.1.html",
             "is_transitive": false,
@@ -3744,7 +3744,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.0.1 updates 'FreeType' used in binary wheels to v2.10.4 to include a security fix.",
             "is_transitive": true,
@@ -3777,7 +3777,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow before 9.2.0 performs Improper Handling of Highly Compressed GIF Data (Data Amplification).",
             "is_transitive": false,
@@ -3810,7 +3810,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.0 includes a fix for SGI Decode buffer overrun. CVE-2020-35655 #5173.",
             "is_transitive": false,
@@ -3843,7 +3843,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 8.1.0 fixes TIFF OOB Write error. CVE-2020-35654 #5175.",
             "is_transitive": false,
@@ -3876,7 +3876,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "In Pillow before 8.1.0, PcxDecode has a buffer over-read when decoding a crafted PCX file because the user-supplied stride value is trusted for buffer calculations.",
             "is_transitive": false,
@@ -3909,7 +3909,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow before 8.1.1 allows attackers to cause a denial of service (memory consumption) because the reported size of a contained image is not properly checked for an ICO container, and thus an attempted memory allocation can be very large.",
             "is_transitive": false,
@@ -3942,7 +3942,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "There is a DoS vulnerability in Pillow before 6.2.2 caused by FpxImagePlugin.py calling the range function on an unvalidated 32-bit integer if the number of bands is large. On Windows running 32-bit Python, this results in an OverflowError or MemoryError due to the 2 GB limit. However, on Linux running 64-bit Python this results in the process being terminated by the OOM killer.",
             "is_transitive": false,
@@ -3975,7 +3975,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "libImaging/SgiRleDecode.c in Pillow before 6.2.2 has an SGI buffer overflow.",
             "is_transitive": false,
@@ -4008,7 +4008,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "libImaging/TiffDecode.c in Pillow before 6.2.2 has a TIFF decoding integer overflow, related to realloc.",
             "is_transitive": false,
@@ -4041,7 +4041,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "libImaging/PcxDecode.c in Pillow before 6.2.2 has a PCX P mode buffer overflow.",
             "is_transitive": false,
@@ -4074,7 +4074,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "libImaging/FliDecode.c in Pillow before 6.2.2 has an FLI buffer overflow.",
             "is_transitive": false,
@@ -4107,7 +4107,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "In libImaging/SgiRleDecode.c in Pillow through 7.0.0, a number of out-of-bounds reads exist in the parsing of SGI image files, a different issue than CVE-2020-5311.",
             "is_transitive": false,
@@ -4140,7 +4140,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 10.0.0 includes a fix for CVE-2023-44271: Denial of Service that uncontrollably allocates memory to process a given task, potentially causing a service to crash by having it run out of memory. This occurs for truetype in ImageFont when textlength in an ImageDraw instance operates on a long text argument.\r\nhttps://github.com/python-pillow/Pillow/pull/7244",
             "is_transitive": false,
@@ -4173,7 +4173,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 10.3.0 introduces a security update addressing CVE-2024-28219 by replacing certain functions with strncpy to prevent buffer overflow issues.",
             "is_transitive": false,
@@ -4206,7 +4206,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 6.2.0 includes a fix for CVE-2019-16865: An issue was discovered in Pillow before 6.2.0. When reading specially crafted invalid image files, the library can either allocate very large amounts of memory or take an extremely long period of time to process the image.",
             "is_transitive": false,
@@ -4239,7 +4239,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow before 9.0.1 allows attackers to delete files because spaces in temporary pathnames are mishandled.",
             "is_transitive": false,
@@ -4272,7 +4272,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 9.0.1 includes a fix for CVE-2022-22817: PIL.ImageMath.eval in Pillow before 9.0.0 allows evaluation of arbitrary expressions, such as ones that use the Python exec method. A first patch was issued for version 9.0.0 but it did not prevent builtins available to lambda expressions.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/9.0.1.html#security",
             "is_transitive": false,
@@ -4305,7 +4305,7 @@
                 "name": "Pillow",
                 "specifier": "==5.4.1",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Pillow 10.0.1 updates its C dependency 'libwebp' to 1.3.2 to include a fix for a high-risk vulnerability.\r\nhttps://pillow.readthedocs.io/en/stable/releasenotes/10.0.1.html",
             "is_transitive": true,
@@ -4338,7 +4338,7 @@
                 "name": "lxml",
                 "specifier": "==4.2.5",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "In lxml before 4.4.0, when writing to file paths that contain the URL escape character '%', the file path could wrongly be mangled by URL unescaping and thus write to a different file or directory.  Code that writes to file paths that are provided by untrusted sources, but that must work with previous versions of lxml, should best either reject paths that contain '%' characters, or otherwise make sure that the path does not contain maliciously injected '%XX' URL hex escapes for paths like '../'.\r\nhttps://github.com/lxml/lxml/commit/0245aba002f069a0b157282707bdf77418d1b5be",
             "is_transitive": false,
@@ -4371,7 +4371,7 @@
                 "name": "lxml",
                 "specifier": "==4.2.5",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Lxml 4.6.2 includes a fix for CVE-2020-27783: A XSS vulnerability was discovered in python-lxml's clean module. The module's parser didn't properly imitate browsers, which caused different behaviors between the sanitizer and the user's page. A remote attacker could exploit this flaw to run arbitrary HTML/JS code.",
             "is_transitive": false,
@@ -4404,7 +4404,7 @@
                 "name": "lxml",
                 "specifier": "==4.2.5",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Lxml 4.6.5 includes a fix for CVE-2021-43818: Prior to version 4.6.5, the HTML Cleaner in lxml.html lets certain crafted script content pass through, as well as script content in SVG files embedded using data URIs. Users that employ the HTML cleaner in a security relevant context should upgrade to lxml 4.6.5 to receive a patch.",
             "is_transitive": false,
@@ -4437,7 +4437,7 @@
                 "name": "lxml",
                 "specifier": "==4.2.5",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Lxml version 4.6.3 includes a fix for CVE-2021-28957: An XSS vulnerability was discovered in python-lxml's clean module versions before 4.6.3. When disabling the safe_attrs_only and forms arguments, the Cleaner class does not remove the formation attribute allowing for JS to bypass the sanitizer. A remote attacker could exploit this flaw to run arbitrary JS code on users who interact with incorrectly sanitized HTML.\r\nhttps://bugs.launchpad.net/lxml/+bug/1888153",
             "is_transitive": false,
@@ -4470,7 +4470,7 @@
                 "name": "lxml",
                 "specifier": "==4.2.5",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Lxml 4.9.1 includes a fix for CVE-2022-2309: NULL Pointer Dereference allows attackers to cause a denial of service (or application crash). This only applies when lxml is used together with libxml2 2.9.10 through 2.9.14. libxml2 2.9.9 and earlier are not affected. It allows triggering crashes through forged input data, given a vulnerable code sequence in the application. The vulnerability is caused by the iterwalk function (also used by the canonicalize function). Such code shouldn't be in wide-spread use, given that parsing + iterwalk would usually be replaced with the more efficient iterparse function. However, an XML converter that serialises to C14N would also be vulnerable, for example, and there are legitimate use cases for this code sequence. If untrusted input is received (also remotely) and processed via iterwalk function, a crash can be triggered.",
             "is_transitive": false,
@@ -4503,7 +4503,7 @@
                 "name": "scikit-learn",
                 "specifier": "==0.20.2",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Scikit-learn 0.24.2 includes a fix for a ReDoS vulnerability.\r\nhttps://github.com/scikit-learn/scikit-learn/issues/19522",
             "is_transitive": false,
@@ -4536,7 +4536,7 @@
                 "name": "scikit-learn",
                 "specifier": "==0.20.2",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Scikit-learn 1.1.0rc1 includes a fix for CVE-2020-28975: svm_predict_values in svm.cpp in Libsvm v324, as used in scikit-learn and other products, allows attackers to cause a denial of service (segmentation fault) via a crafted model SVM (introduced via pickle, json, or any other model permanence standard) with a large value in the _n_support array. \r\nNOTE: the scikit-learn vendor's position is that the behavior can only occur if the library's API is violated by an application that changes a private attribute.",
             "is_transitive": false,
@@ -4569,7 +4569,7 @@
                 "name": "scipy",
                 "specifier": "==1.2.0",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Scipy 1.10.0rc1 includes a fix for a Denial of Service vulnerability.\r\nhttps://github.com/scipy/scipy/issues/16235",
             "is_transitive": false,
@@ -4602,7 +4602,7 @@
                 "name": "scipy",
                 "specifier": "==1.2.0",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Scipy 1.8.0 includes a fix for an Use After Free vulnerability.\r\nhttps://github.com/scipy/scipy/issues/14713",
             "is_transitive": false,
@@ -4636,7 +4636,7 @@
                 "name": "Flask",
                 "specifier": "==1.0.2",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Flask 2.2.5 and 2.3.2 include a fix for CVE-2023-30861: When all of the following conditions are met, a response containing data intended for one client may be cached and subsequently sent by the proxy to other clients. If the proxy also caches 'Set-Cookie' headers, it may send one client's 'session' cookie to other clients. The severity depends on the application's use of the session and the proxy's behavior regarding cookies. The risk depends on all these conditions being met:\r\n1. The application must be hosted behind a caching proxy that does not strip cookies or ignore responses with cookies.\r\n2. The application sets 'session.permanent = True'\r\n3. The application does not access or modify the session at any point during a request.\r\n4. 'SESSION_REFRESH_EACH_REQUEST' enabled (the default).\r\n5. The application does not set a 'Cache-Control' header to indicate that a page is private or should not be cached.\r\nThis happens because vulnerable versions of Flask only set the 'Vary: Cookie' header when the session is accessed or modified, not when it is refreshed (re-sent to update the expiration) without being accessed or modified.\r\nhttps://github.com/pallets/flask/security/advisories/GHSA-m2qf-hxjv-5gpq",
             "is_transitive": false,
@@ -4669,7 +4669,7 @@
                 "name": "numpy",
                 "specifier": "==1.16.0",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Numpy 1.16.3 includes a fix for CVE-2019-6446: It uses the pickle Python module unsafely, which allows remote attackers to execute arbitrary code via a crafted serialized object, as demonstrated by a numpy.load call.\r\nNOTE: Third parties dispute this issue because it is  a behavior that might have legitimate applications in (for example) loading serialized Python object arrays from trusted and authenticated  sources.\r\nhttps://github.com/numpy/numpy/commit/89b688732b37616c9d26623f81aaee1703c30ffb",
             "is_transitive": false,
@@ -4702,7 +4702,7 @@
                 "name": "numpy",
                 "specifier": "==1.16.0",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Numpy 1.22.2  includes a fix for CVE-2021-41495: Null Pointer Dereference vulnerability exists in numpy.sort in NumPy in the PyArray_DescrNew function due to missing return-value validation, which allows attackers to conduct DoS attacks by repetitively creating sort arrays. \r\nNOTE: While correct that validation is missing, an error can only occur due to an exhaustion of memory. If the user can exhaust memory, they are already privileged. Further, it should be practically impossible to construct an attack which can target the memory exhaustion to occur at exactly this place.\r\nhttps://github.com/numpy/numpy/issues/19038",
             "is_transitive": false,
@@ -4735,7 +4735,7 @@
                 "name": "numpy",
                 "specifier": "==1.16.0",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Numpy 1.22.0 includes a fix for CVE-2021-34141: An incomplete string comparison in the numpy.core component in NumPy before 1.22.0 allows attackers to trigger slightly incorrect copying by constructing specific string objects. \r\nNOTE: the vendor states that this reported code behavior is \"completely harmless.\"\r\nhttps://github.com/numpy/numpy/issues/18993",
             "is_transitive": false,
@@ -4768,7 +4768,7 @@
                 "name": "numpy",
                 "specifier": "==1.16.0",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Numpy 1.22.0 includes a fix for CVE-2021-41496: Buffer overflow in the array_from_pyobj function of fortranobject.c, which allows attackers to conduct a Denial of Service attacks by carefully constructing an array with negative values. \r\nNOTE: The vendor does not agree this is a vulnerability; the negative dimensions can only be created by an already privileged user (or internally).\r\nhttps://github.com/numpy/numpy/issues/19000",
             "is_transitive": false,
@@ -4801,7 +4801,7 @@
                 "name": "numpy",
                 "specifier": "==1.16.0",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Numpy 1.21.0rc1 includes a fix for CVE-2021-33430: A Buffer Overflow vulnerability in the PyArray_NewFromDescr_int function of ctors.c when specifying arrays of large dimensions (over 32) from Python code, which could let a malicious user cause a Denial of Service. \r\nNOTE: The vendor does not agree this is a vulnerability. In (very limited) circumstances a user may be able provoke the buffer overflow, the user is most likely already privileged to at least provoke denial of service by exhausting memory. Triggering this further requires the use of uncommon API (complicated structured dtypes), which is very unlikely to be available to an unprivileged user.\r\nhttps://github.com/numpy/numpy/issues/18939",
             "is_transitive": false,
@@ -4834,7 +4834,7 @@
                 "name": "requests",
                 "specifier": "==2.20.0",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Requests 2.31.0 includes a fix for CVE-2023-32681: Since Requests 2.3.0, Requests has been leaking Proxy-Authorization headers to destination servers when redirected to an HTTPS endpoint. This is a product of how we use 'rebuild_proxies' to reattach the 'Proxy-Authorization' header to requests. For HTTP connections sent through the tunnel, the proxy will identify the header in the request itself and remove it prior to forwarding to the destination server. However when sent over HTTPS, the 'Proxy-Authorization' header must be sent in the CONNECT request as the proxy has no visibility into the tunneled request. This results in Requests forwarding proxy credentials to the destination server unintentionally, allowing a malicious actor to potentially exfiltrate sensitive information.",
             "is_transitive": false,
@@ -4869,7 +4869,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "In Django 3.2 before 3.2.16, 4.0 before 4.0.8, and 4.1 before 4.1.2, internationalized URLs were subject to a potential denial of service attack via the locale parameter, which is treated as a regular expression.",
             "is_transitive": false,
@@ -4904,7 +4904,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 3.2.17, 4.0.9 and 4.1.6 includes a fix for CVE-2023-23969: In Django 3.2 before 3.2.17, 4.0 before 4.0.9, and 4.1 before 4.1.6, the parsed values of Accept-Language headers are cached in order to avoid repetitive parsing. This leads to a potential denial-of-service vector via excessive memory usage if the raw value of Accept-Language headers is very large.\r\nhttps://www.djangoproject.com/weblog/2023/feb/01/security-releases",
             "is_transitive": false,
@@ -4939,7 +4939,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.26, 3.2.11 and 4.0.1 include a fix for CVE-2021-45115: UserAttributeSimilarityValidator incurred significant overhead in evaluating a submitted password that was artificially large in relation to the comparison values. In a situation where access to user registration was unrestricted, this provided a potential vector for a denial-of-service attack.\r\nhttps://www.djangoproject.com/weblog/2022/jan/04/security-releases/",
             "is_transitive": false,
@@ -4974,7 +4974,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.26, 3.2.11 and 4.0.1 include a fix for CVE-2021-45116: An issue was discovered in Django 2.2 before 2.2.26, 3.2 before 3.2.11, and 4.0 before 4.0.1. Due to leveraging the Django Template Language's variable resolution logic, the dictsort template filter was potentially vulnerable to information disclosure, or an unintended method call, if passed a suitably crafted key.\r\nhttps://www.djangoproject.com/weblog/2022/jan/04/security-releases",
             "is_transitive": false,
@@ -5009,7 +5009,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.26, 3.2.11 and 4.0.1 include a fix for CVE-2021-45452: Storage.save in Django 2.2 before 2.2.26, 3.2 before 3.2.11, and 4.0 before 4.0.1 allows directory traversal if crafted filenames are directly passed to it.\r\nhttps://www.djangoproject.com/weblog/2022/jan/04/security-releases/",
             "is_transitive": false,
@@ -5044,7 +5044,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.21, 3.1.9 and 3.2.1 include a fix for CVE-2021-31542: MultiPartParser, UploadedFile, and FieldFile allowed directory traversal via uploaded files with suitably crafted file names.\r\nhttps://www.djangoproject.com/weblog/2021/may/04/security-releases",
             "is_transitive": false,
@@ -5078,7 +5078,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 3.2.14 and 4.0.6 include a fix for CVE-2022-34265: Potential SQL injection via Trunc(kind) and Extract(lookup_name) arguments.\r\nhttps://www.djangoproject.com/weblog/2022/jul/04/security-releases",
             "is_transitive": false,
@@ -5113,7 +5113,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.24, 3.1.12, and 3.2.4 include a fix for CVE-2021-33571: In Django 2.2 before 2.2.24, 3.x before 3.1.12, and 3.2 before 3.2.4, URLValidator, validate_ipv4_address, and validate_ipv46_address do not prohibit leading zero characters in octal literals. This may allow a bypass of access control that is based on IP addresses. (validate_ipv4_address and validate_ipv46_address are unaffected with Python 3.9.5+).\r\nhttps://www.djangoproject.com/weblog/2021/jun/02/security-releases",
             "is_transitive": false,
@@ -5148,7 +5148,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django before 2.2.24, 3.x before 3.1.12, and 3.2.x before 3.2.4 has a potential directory traversal via django.contrib.admindocs. Staff members could use the TemplateDetailView view to check the existence of arbitrary files. Additionally, if (and only if) the default admindocs templates have been customized by application developers to also show file contents, then not only the existence but also the file contents would have been exposed. In other words, there is directory traversal outside of the template root directories.\r\nhttps://www.djangoproject.com/weblog/2021/jun/02/security-releases",
             "is_transitive": false,
@@ -5183,7 +5183,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django versions 2.2.19, 3.0.13 and 3.1.7 include a fix for CVE-2021-23336: Web cache poisoning via 'django.utils.http.limited_parse_qsl()'. Django contains a copy of 'urllib.parse.parse_qsl' which was added to backport some security fixes. A further security fix has been issued recently such that 'parse_qsl(' no longer allows using ';' as a query parameter separator by default.",
             "is_transitive": true,
@@ -5218,7 +5218,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 4.2.1, 4.1.9 and 3.2.19 include a fix for CVE-2023-31047: In Django 3.2 before 3.2.19, 4.x before 4.1.9, and 4.2 before 4.2.1, it was possible to bypass validation when using one form field to upload multiple files. This multiple upload has never been supported by forms.FileField or forms.ImageField (only the last uploaded file was validated). However, Django's \"Uploading multiple files\" documentation suggested otherwise.\r\nhttps://www.djangoproject.com/weblog/2023/may/03/security-releases",
             "is_transitive": false,
@@ -5253,7 +5253,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "The {% debug %} template tag in Django 2.2 before 2.2.27, 3.2 before 3.2.12, and 4.0 before 4.0.2 does not properly encode the current context. This may lead to XSS.",
             "is_transitive": false,
@@ -5288,7 +5288,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.27, 3.2.12 and 4.0.2 include a fix for CVE-2022-23833: Denial-of-service possibility in file uploads.\r\nhttps://www.djangoproject.com/weblog/2022/feb/01/security-releases",
             "is_transitive": false,
@@ -5323,7 +5323,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Affected versions of Django are vulnerable to potential Denial of Service via certain inputs with a very large number of Unicode characters in django.utils.encoding.uri_to_iri().",
             "is_transitive": false,
@@ -5358,7 +5358,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.16, 3.0.10 and 3.1.1 include a fix for CVE-2020-24583: An issue was discovered in Django 2.2 before 2.2.16, 3.0 before 3.0.10, and 3.1 before 3.1.1 (when Python 3.7+ is used). FILE_UPLOAD_DIRECTORY_PERMISSIONS mode was not applied to intermediate-level directories created in the process of uploading files. It was also not applied to intermediate-level collected static directories when using the collectstatic management command.\r\n#NOTE: This vulnerability affects only users of Python versions above 3.7.\r\nhttps://www.djangoproject.com/weblog/2020/sep/01/security-releases",
             "is_transitive": false,
@@ -5393,7 +5393,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "An issue was discovered in Django 2.2 before 2.2.16, 3.0 before 3.0.10, and 3.1 before 3.1.1 (when Python 3.7+ is used). The intermediate-level directories of the filesystem cache had the system's standard umask rather than 0o077.",
             "is_transitive": false,
@@ -5427,7 +5427,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django versions 2.1.9 and 2.2.2 include a patched bundled jQuery version to avoid a Prototype Pollution vulnerability.",
             "is_transitive": true,
@@ -5462,7 +5462,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 4.2.7, 4.1.13 and 3.2.23 include a fix for CVE-2023-46695: Potential denial of service vulnerability in UsernameField on Windows.\r\nhttps://www.djangoproject.com/weblog/2023/nov/01/security-releases",
             "is_transitive": false,
@@ -5496,7 +5496,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 3.2.15 and 4.0.7 include a fix for CVE-2022-36359: An issue was discovered in the HTTP FileResponse class in Django 3.2 before 3.2.15 and 4.0 before 4.0.7. An application is vulnerable to a reflected file download (RFD) attack that sets the Content-Disposition header of a FileResponse when the filename is derived from user-supplied input.\r\nhttps://www.djangoproject.com/weblog/2022/aug/03/security-releases",
             "is_transitive": false,
@@ -5531,7 +5531,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Affected versions of Django are vulnerable to potential regular expression denial-of-service (REDoS). django.utils.text.Truncator.words() method (with html=True) and truncatewords_html template filter were subject to a potential regular expression denial-of-service attack using a suitably crafted string (follow up to CVE-2019-14232 and CVE-2023-43665).",
             "is_transitive": false,
@@ -5566,7 +5566,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Affected versions of Django are vulnerable to potential denial-of-service in intcomma template filter when used with very long strings.",
             "is_transitive": false,
@@ -5601,7 +5601,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 4.1.7, 4.0.10 and 3.2.18 include a fix for CVE-2023-24580: Potential denial-of-service vulnerability in file uploads.\r\nhttps://www.djangoproject.com/weblog/2023/feb/14/security-releases",
             "is_transitive": false,
@@ -5636,7 +5636,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.28, 3.2.13 and 4.0.4 include a fix for CVE-2022-28347: A SQL injection issue was discovered in QuerySet.explain() in Django 2.2 before 2.2.28, 3.2 before 3.2.13, and 4.0 before 4.0.4. This occurs by passing a crafted dictionary (with dictionary expansion) as the **options argument, and placing the injection payload in an option name.\r\nhttps://www.djangoproject.com/weblog/2022/apr/11/security-releases",
             "is_transitive": false,
@@ -5671,7 +5671,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django 2.2.28, 3.2.13 and 4.0.4 include a fix for CVE-2022-28346: An issue was discovered in Django 2.2 before 2.2.28, 3.2 before 3.2.13, and 4.0 before 4.0.4. QuerySet.annotate(), aggregate(), and extra() methods are subject to SQL injection in column aliases via a crafted dictionary (with dictionary expansion) as the passed **kwargs.\r\nhttps://www.djangoproject.com/weblog/2022/apr/11/security-releases",
             "is_transitive": false,
@@ -5706,7 +5706,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Django versions 2.2.25, 3.1.14 and 3.2.10 include a fix for CVE-2021-44420: In Django 2.2 before 2.2.25, 3.1 before 3.1.14, and 3.2 before 3.2.10, HTTP requests for URLs with trailing newlines could bypass upstream access control based on URL paths.\r\nhttps://www.djangoproject.com/weblog/2021/dec/07/security-releases/",
             "is_transitive": false,
@@ -5741,7 +5741,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Affected versions of Django are vulnerable to a potential ReDoS (regular expression denial of service) in EmailValidator and URLValidator via a very large number of domain name labels of emails and URLs.",
             "is_transitive": false,
@@ -5776,7 +5776,7 @@
                 "name": "Django",
                 "specifier": "==1.11.29",
                 "url": null,
-                "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
             },
             "advisory": "Affected versions of Django are vulnerable to Denial-of-Service via django.utils.text.Truncator. The django.utils.text.Truncator chars() and words() methods (when used with html=True) are subject to a potential DoS (denial of service) attack via certain inputs with very long, potentially malformed HTML text. The chars() and words() methods are used to implement the truncatechars_html and truncatewords_html template filters, which are thus also vulnerable. NOTE: this issue exists because of an incomplete fix for CVE-2019-14232.",
             "is_transitive": false,
@@ -5804,7 +5804,7 @@
                         "name": "urllib3",
                         "specifier": "==1.24.1",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/urllib3/97c/"
                 }
@@ -5827,7 +5827,7 @@
                         "name": "cryptography",
                         "specifier": "==2.6.1",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/cryptography/97c/"
                 }
@@ -5850,7 +5850,7 @@
                         "name": "Pillow",
                         "specifier": "==5.4.1",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/pillow/97c/"
                 }
@@ -5873,7 +5873,7 @@
                         "name": "lxml",
                         "specifier": "==4.2.5",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/lxml/97c/"
                 }
@@ -5896,7 +5896,7 @@
                         "name": "scikit-learn",
                         "specifier": "==0.20.2",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/scikit-learn/97c/"
                 }
@@ -5919,7 +5919,7 @@
                         "name": "scipy",
                         "specifier": "==1.2.0",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/scipy/97c/"
                 }
@@ -5942,7 +5942,7 @@
                         "name": "Flask",
                         "specifier": "==1.0.2",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/flask/97c/"
                 }
@@ -5965,7 +5965,7 @@
                         "name": "numpy",
                         "specifier": "==1.16.0",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/numpy/97c/"
                 }
@@ -5988,7 +5988,7 @@
                         "name": "requests",
                         "specifier": "==2.20.0",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/requests/97c/"
                 }
@@ -6011,7 +6011,7 @@
                         "name": "Django",
                         "specifier": "==1.11.29",
                         "url": null,
-                        "found": "/home/flo/Desktop/Git/dracon/components/producers/python-pip-safety/examples/requirements.txt"
+                        "found": "/home/flo/Desktop/Git/smithy/components/producers/python-pip-safety/examples/requirements.txt"
                     },
                     "more_info_url": "https://data.safetycli.com/p/pypi/django/97c/"
                 }

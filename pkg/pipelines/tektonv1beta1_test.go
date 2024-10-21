@@ -10,9 +10,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	kustomizetypes "sigs.k8s.io/kustomize/api/types"
 
-	"github.com/ocurity/dracon/pkg/components"
-	"github.com/ocurity/dracon/pkg/k8s/fake"
-	"github.com/ocurity/dracon/pkg/manifests"
+	"github.com/smithy-security/smithy/pkg/components"
+	"github.com/smithy-security/smithy/pkg/k8s/fake"
+	"github.com/smithy-security/smithy/pkg/manifests"
 )
 
 func TestResolveKustomizationResourceBase(t *testing.T) {
@@ -74,13 +74,13 @@ func TestComponentPrepareChecks(t *testing.T) {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "producer-aggregator",
-			Namespace: "dracon",
+			Namespace: "smithy",
 			Annotations: map[string]string{
-				"meta.helm.sh/release-name": "dracon-oss-components",
+				"meta.helm.sh/release-name": "smithy-security-oss-components",
 			},
 			Labels: map[string]string{
-				"app.kubernetes.io/managed-by":    "Helm",
-				"v1.dracon.ocurity.com/component": components.ProducerAggregator.String(),
+				"app.kubernetes.io/managed-by":            "Helm",
+				"v1.smithy.smithy-security.com/component": components.ProducerAggregator.String(),
 			},
 		},
 		Spec: tektonv1beta1api.TaskSpec{
@@ -100,14 +100,14 @@ func TestComponentPrepareChecks(t *testing.T) {
 	require.NoError(t, err)
 	orchestrator := k8sOrchestrator{
 		clientset: fakeClient,
-		namespace: "dracon",
+		namespace: "smithy",
 	}
 
 	componentList := []components.Component{
 		{
 			Name:              "producer-aggregator",
-			Reference:         "pkg:helm/dracon-oss-components/producer-aggregator",
-			Repository:        "dracon-oss-components",
+			Reference:         "pkg:helm/smithy-security-oss-components/producer-aggregator",
+			Repository:        "smithy-security-oss-components",
 			Type:              components.ProducerAggregator,
 			OrchestrationType: components.OrchestrationTypeExternalHelm,
 		},

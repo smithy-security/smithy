@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers/zaproxy/types"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers/zaproxy/types"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +24,7 @@ var riskcodetests = []struct {
 	{"5", v1.Severity_SEVERITY_CRITICAL},
 }
 
-func TestZapRiskcodeToDraconSeverityParametrized(t *testing.T) {
+func TestZapRiskcodeToSmithySeverityParametrized(t *testing.T) {
 	for _, riskcode := range riskcodetests {
 		assert.EqualValues(t, riskcode.severityissue, riskcodeToSeverity(riskcode.zapriskcode))
 	}
@@ -42,7 +42,7 @@ var confidencetests = []struct {
 	{"5", v1.Confidence_CONFIDENCE_CRITICAL},
 }
 
-func TestZapConfidenceToDraconConfidenceParametrized(t *testing.T) {
+func TestZapConfidenceToSmithyConfidenceParametrized(t *testing.T) {
 	for _, confidence := range confidencetests {
 		assert.EqualValues(t, confidence.confidenceissue, zapconfidenceToConfidence(confidence.zapconfidence))
 	}

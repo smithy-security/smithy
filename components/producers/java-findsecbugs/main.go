@@ -9,10 +9,10 @@ import (
 	"os"
 	"strconv"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/pkg/sarif"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/pkg/sarif"
 )
 
 type jar struct {
@@ -87,7 +87,7 @@ func readXML(xmlFile []byte) []*v1.Issue {
 	/**
 	Reads a file containing spotbugs XML results
 	and converts the results in the "SECURITY" category
-	into an array Dracon issues
+	into an array Smithy issues
 	*/
 
 	output := []*v1.Issue{}
@@ -177,12 +177,12 @@ func main() {
 
 	issues := []*v1.Issue{}
 	if Sarif {
-		var sarifResults []*sarif.DraconIssueCollection
+		var sarifResults []*sarif.SmithyIssueCollection
 		inFile, err := producers.ReadInFile()
 		if err != nil {
 			log.Fatal(err)
 		}
-		sarifResults, err = sarif.ToDracon(string(inFile))
+		sarifResults, err = sarif.ToSmithy(string(inFile))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -197,7 +197,7 @@ func main() {
 		xmlByteVal, _ := loadXML(producers.InResults)
 		issues = readXML(xmlByteVal)
 	}
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"spotbugs",
 		issues,
 	); err != nil {

@@ -39,23 +39,23 @@ defaultValues:
 ## simple-value: will translate to the special jira use case of "customfield_id":"value"
 ## simple-value is provided as a workaround when single-value does not work with your jira setup
 
-## You can map fields from the Dracon Result into customfields specific to your Jira Workspace
+## You can map fields from the Smithy Result into customfields specific to your Jira Workspace
 ## Note: You don't have to map all (or any) of the fields
 mappings:
   ## This example will map the 'severity_text' field to the customfield_10050 on your Issues
-  # - draconField: severity_text   # you want to map the severity_text field
+  # - smithyField: severity_text   # you want to map the severity_text field
   #   jiraField: customfield_10050 # to this specific customfield used by your workspace
   #   fieldType: single-value      # this customfield is a single-value field (see more info above)  
   
-  ## Below are all the possible draconFields you can map. Use the example above to configure them
-  # - draconField: scan_start_time
-  # - draconField: scan_id
-  # - draconField: tool_name
-  # - draconField: source
-  # - draconField: target
-  # - draconField: type
-  # - draconField: severity_text
-  # - draconField: cvss
-  # - draconField: confidence_text
-  # - draconField: first_found
-  # - draconField: false_positive
+  ## Below are all the possible smithyFields you can map. Use the example above to configure them
+  # - smithyField: scan_start_time
+  # - smithyField: scan_id
+  # - smithyField: tool_name
+  # - smithyField: source
+  # - smithyField: target
+  # - smithyField: type
+  # - smithyField: severity_text
+  # - smithyField: cvss
+  # - smithyField: confidence_text
+  # - smithyField: first_found
+  # - smithyField: false_positive

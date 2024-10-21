@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/ocurity/dracon/components/consumers/defectdojo/types"
+	"github.com/smithy-security/smithy/components/consumers/defectdojo/types"
 )
 
 // Client represents a DefectDojo client.

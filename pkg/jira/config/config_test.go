@@ -22,15 +22,15 @@ var sampleConfig = Config{
 		}},
 	},
 	Mappings: []Mappings{{
-		DraconField: "cvss",
+		SmithyField: "cvss",
 		JiraField:   "customfield_10001",
 		FieldType:   "float",
 	}},
-	SyncMappings: []JiraToDraconVulnMappings{
+	SyncMappings: []JiraToSmithyVulnMappings{
 		{
 			JiraStatus:     "Test",
 			JiraResolution: "Test",
-			DraconStatus:   "Resolved",
+			SmithyStatus:   "Resolved",
 		},
 	},
 }
@@ -69,14 +69,14 @@ func TestGetConfig(t *testing.T) {
 			"hash"
 		],
 		"mappings": [{
-			"draconField": "cvss",
+			"smithyField": "cvss",
 			"jiraField": "customfield_10001",
 			"fieldType": "float"
 		}],
 		"syncMappings": [{
 			"jiraStatus": "Test",
 			"jiraResolution": "Test",
-			"draconStatus": "Resolved"
+			"smithyStatus": "Resolved"
 		}]
 	} 
 `

@@ -1,4 +1,4 @@
-// Package producers provides helper functions for writing Dracon compatible producers that parse tool outputs.
+// Package producers provides helper functions for writing Smithy compatible producers that parse tool outputs.
 // Subdirectories in this package have more complete example usages of this package.
 package producers
 
@@ -17,18 +17,18 @@ import (
 	"strings"
 	"time"
 
-	draconapiv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components"
+	smithyapiv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components"
 
 	"github.com/package-url/packageurl-go"
 
-	"github.com/ocurity/dracon/pkg/putil"
+	"github.com/smithy-security/smithy/pkg/putil"
 )
 
 var (
 	// InResults represents incoming tool output.
 	InResults string
-	// OutFile points to the protobuf file where dracon results will be written.
+	// OutFile points to the protobuf file where smithy results will be written.
 	OutFile string
 	// Append flag will append to the outfile instead of overwriting, useful when there's multiple inresults.
 	Append bool
@@ -54,7 +54,7 @@ func ParseFlags() error {
 	if debug {
 		logLevel = slog.LevelDebug
 	}
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvDraconScanID)))
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvSmithyScanID)))
 
 	if InResults == "" {
 		return fmt.Errorf("in is undefined")
@@ -94,13 +94,13 @@ func ParseMultiJSONMessages(in []byte) ([]interface{}, error) {
 	return res, nil
 }
 
-// WriteDraconOut provides a generic method to write the resulting protobuf to the output file.
-func WriteDraconOut(
+// WriteSmithyOut provides a generic method to write the resulting protobuf to the output file.
+func WriteSmithyOut(
 	toolName string,
-	issues []*draconapiv1.Issue,
+	issues []*smithyapiv1.Issue,
 ) error {
 	source := getSource()
-	cleanIssues := []*draconapiv1.Issue{}
+	cleanIssues := []*smithyapiv1.Issue{}
 	for _, iss := range issues {
 		iss.Description = strings.ReplaceAll(iss.Description, SourceDir, "")
 		iss.Title = strings.ReplaceAll(iss.Title, SourceDir, "")
@@ -109,12 +109,12 @@ func WriteDraconOut(
 		cleanIssues = append(cleanIssues, iss)
 		slog.Debug(fmt.Sprintf("found issue: %+v\n", iss))
 	}
-	scanStartTime, err := time.Parse(time.RFC3339, strings.TrimSpace(os.Getenv(components.EnvDraconStartTime)))
+	scanStartTime, err := time.Parse(time.RFC3339, strings.TrimSpace(os.Getenv(components.EnvSmithyStartTime)))
 	if err != nil {
 		scanStartTime = time.Now().UTC()
 	}
-	scanUUUID := strings.TrimSpace(os.Getenv(components.EnvDraconScanID))
-	scanTagsStr := strings.TrimSpace(os.Getenv(components.EnvDraconScanTags))
+	scanUUUID := strings.TrimSpace(os.Getenv(components.EnvSmithyScanID))
+	scanTagsStr := strings.TrimSpace(os.Getenv(components.EnvSmithyScanTags))
 	scanTags := map[string]string{}
 	err = json.Unmarshal([]byte(scanTagsStr), &scanTags)
 	if err != nil {
@@ -135,7 +135,7 @@ func WriteDraconOut(
 }
 
 func getSource() string {
-	sourceMetaPath := filepath.Join(SourceDir, ".source.dracon")
+	sourceMetaPath := filepath.Join(SourceDir, ".source.smithy")
 	_, err := os.Stat(sourceMetaPath)
 	if os.IsNotExist(err) {
 		return "unknown"

@@ -13,9 +13,9 @@ var (
 			Kind:       "Pipeline",
 			APIVersion: tektonv1beta1api.SchemeGroupVersion.String(),
 		},
-		ObjectMeta: metav1.ObjectMeta{Name: "dracon"},
+		ObjectMeta: metav1.ObjectMeta{Name: "smithy"},
 		Spec: tektonv1beta1api.PipelineSpec{
-			Description: "Base pipeline for all Dracon pipelines",
+			Description: "Base pipeline for all Smithy pipelines",
 		},
 	}
 
@@ -24,7 +24,7 @@ var (
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "base",
 			Labels: map[string]string{
-				"v1.dracon.ocurity.com/component": "base",
+				"v1.smithy.smithy-security.com/component": "base",
 			},
 		},
 		Spec: tektonv1beta1api.TaskSpec{
@@ -42,18 +42,18 @@ var (
 				{
 					Name:   "generate-scan-id-start-time",
 					Image:  "docker.io/busybox:1.35.0",
-					Script: "cat /proc/sys/kernel/random/uuid | tee $(results.dracon-scan-id.path)\ndate +\"%Y-%m-%dT%H:%M:%SZ\" | tee $(results.dracon-scan-start-time.path)\necho \"$(params.base-scan-tags)\" | tee $(results.dracon-scan-tags.path)\n",
+					Script: "cat /proc/sys/kernel/random/uuid | tee $(results.smithy-scan-id.path)\ndate +\"%Y-%m-%dT%H:%M:%SZ\" | tee $(results.smithy-scan-start-time.path)\necho \"$(params.base-scan-tags)\" | tee $(results.smithy-scan-tags.path)\n",
 					Results: []tektonv1api.StepResult{
 						{
-							Name:        "dracon-scan-start-time",
+							Name:        "smithy-scan-start-time",
 							Description: "The scan start time",
 						},
 						{
-							Name:        "dracon-scan-id",
+							Name:        "smithy-scan-id",
 							Description: "The scan unique id",
 						},
 						{
-							Name:        "dracon-scan-tags",
+							Name:        "smithy-scan-tags",
 							Description: "serialized map[string]string of tags for this scan",
 						},
 					},

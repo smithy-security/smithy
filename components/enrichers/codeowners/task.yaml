@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: enricher-codeowners
   labels:
-    v1.dracon.ocurity.com/component: enricher
+    v1.smithy.smithy-security.com/component: enricher
 spec:
   description: Identifies a code owner for each finding.
   params:
@@ -18,13 +18,13 @@ spec:
   steps:
   - name: run-enricher
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/enrichers/codeowners:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/enrichers/codeowners:{{ .Chart.AppVersion }}'
     command: ["/app/components/enrichers/codeowners/codeowners"]
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.dracon/producers
+      value: $(workspaces.output.path)/.smithy/producers
     - name: WRITE_PATH
-      value: "$(workspaces.output.path)/.dracon/enrichers/codeowners"
+      value: "$(workspaces.output.path)/.smithy/enrichers/codeowners"
     - name: REPO_BASE_PATH
       value: "$(workspaces.output.path)/"
     - name: ANNOTATION

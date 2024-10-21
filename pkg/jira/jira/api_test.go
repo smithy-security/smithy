@@ -4,13 +4,13 @@ import (
 	"testing"
 	"time"
 
-	jira "github.com/andygrunwald/go-jira"
+	"github.com/andygrunwald/go-jira"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/trivago/tgo/tcontainer"
 
-	"github.com/ocurity/dracon/pkg/jira/config"
-	"github.com/ocurity/dracon/pkg/jira/document"
+	"github.com/smithy-security/smithy/pkg/jira/config"
+	"github.com/smithy-security/smithy/pkg/jira/document"
 )
 
 var (
@@ -28,7 +28,7 @@ var (
 			}},
 		},
 		Mappings: []config.Mappings{{
-			DraconField: "cvss",
+			SmithyField: "cvss",
 			JiraField:   "customfield_10001",
 			FieldType:   "float",
 		}},

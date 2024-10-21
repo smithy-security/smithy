@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/consumers"
-	"github.com/ocurity/dracon/pkg/enumtransformers"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/consumers"
+	"github.com/smithy-security/smithy/pkg/enumtransformers"
 )
 
 func main() {
@@ -54,7 +54,7 @@ func getRawIssue(scanStartTime time.Time, res *v1.LaunchToolResponse, iss *v1.Is
 			log.Fatalf("error unmarshaling cyclonedx sbom, err:%s", err)
 		}
 	}
-	jBytes, err := json.Marshal(&draconDocument{
+	jBytes, err := json.Marshal(&smithyDocument{
 		ScanStartTime: scanStartTime,
 		ScanID:        res.GetScanInfo().GetScanUuid(),
 		ToolName:      res.GetToolName(),
@@ -87,7 +87,7 @@ func getEnrichedIssue(scanStartTime time.Time, res *v1.EnrichedLaunchToolRespons
 		}
 	}
 	firstSeenTime := iss.GetFirstSeen().AsTime()
-	jBytes, err := json.Marshal(&draconDocument{
+	jBytes, err := json.Marshal(&smithyDocument{
 		ScanStartTime:  scanStartTime,
 		ScanID:         res.GetOriginalResults().GetScanInfo().GetScanUuid(),
 		ToolName:       res.GetOriginalResults().GetToolName(),
@@ -115,7 +115,7 @@ func getEnrichedIssue(scanStartTime time.Time, res *v1.EnrichedLaunchToolRespons
 	return jBytes, nil
 }
 
-type draconDocument struct {
+type smithyDocument struct {
 	ScanStartTime  time.Time              `json:"scan_start_time"`
 	ScanID         string                 `json:"scan_id"`
 	ToolName       string                 `json:"tool_name"`

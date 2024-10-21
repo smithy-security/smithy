@@ -15,10 +15,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/consumers/defectdojo/client"
-	"github.com/ocurity/dracon/components/consumers/defectdojo/types"
-	"github.com/ocurity/dracon/pkg/templating"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/consumers/defectdojo/client"
+	"github.com/smithy-security/smithy/components/consumers/defectdojo/types"
+	"github.com/smithy-security/smithy/pkg/templating"
 )
 
 func createObjects(product int, scanType string) ([]*v1.LaunchToolResponse, []*types.TestCreateRequest, []*types.FindingCreateRequest, []*types.EngagementRequest, []*v1.EnrichedLaunchToolResponse) {
@@ -31,7 +31,7 @@ func createObjects(product int, scanType string) ([]*v1.LaunchToolResponse, []*t
 	var findingsRequests []*types.FindingCreateRequest
 	engagementRequests := []*types.EngagementRequest{
 		{
-			Tags:        []string{"DraconScan", scanType + "Scan", scanID},
+			Tags:        []string{"SmithyScan", scanType + "Scan", scanID},
 			Name:        scanID,
 			Description: "",
 			TargetStart: times.Format(DojoTimeFormat), TargetEnd: times.Format(DojoTimeFormat),
@@ -54,7 +54,7 @@ func createObjects(product int, scanType string) ([]*v1.LaunchToolResponse, []*t
 			OriginalResults: response,
 		}
 		test := &types.TestCreateRequest{
-			Tags:        []string{"DraconScan", scanType + "Test", scanID},
+			Tags:        []string{"SmithyScan", scanType + "Test", scanID},
 			Title:       toolName,
 			TargetStart: times.Format(DojoTestTimeFormat),
 			TargetEnd:   times.Format(DojoTestTimeFormat),
@@ -106,7 +106,7 @@ func createObjects(product int, scanType string) ([]*v1.LaunchToolResponse, []*t
 				d = desc
 			}
 			findingsReq := &types.FindingCreateRequest{
-				Tags:              []string{"DraconScan", scanType + "Finding", scanID, toolName},
+				Tags:              []string{"SmithyScan", scanType + "Finding", scanID, toolName},
 				Title:             x.Title,
 				Date:              times.Format(DojoTimeFormat),
 				Severity:          "Info",

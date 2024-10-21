@@ -14,8 +14,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	cyclonedx "github.com/ocurity/dracon/pkg/cyclonedx"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/pkg/cyclonedx"
 )
 
 func TestUploadBomsFromRaw(t *testing.T) {
@@ -59,7 +59,7 @@ func TestUploadBomsFromRaw(t *testing.T) {
 	require.NoError(t, err)
 
 	client = c
-	issues, err := cyclonedx.ToDracon(rawSaaSBOM, "json", "")
+	issues, err := cyclonedx.ToSmithy(rawSaaSBOM, "json", "")
 
 	require.NoError(t, err)
 	ltr := v1.LaunchToolResponse{
@@ -112,7 +112,7 @@ func TestUploadBomsFromEnriched(t *testing.T) {
 	require.NoError(t, err)
 
 	client = c
-	issues, err := cyclonedx.ToDracon(rawSaaSBOM, "json", "")
+	issues, err := cyclonedx.ToSmithy(rawSaaSBOM, "json", "")
 
 	require.NoError(t, err)
 	ltr := v1.LaunchToolResponse{
@@ -206,7 +206,7 @@ func TestUploadBomsFromEnrichedWithOwners(t *testing.T) {
 	require.NoError(t, err)
 
 	client = c
-	issues, err := cyclonedx.ToDracon(rawSaaSBOM, "json", "")
+	issues, err := cyclonedx.ToSmithy(rawSaaSBOM, "json", "")
 	require.NoError(t, err)
 
 	ltr := v1.LaunchToolResponse{

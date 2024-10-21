@@ -4,9 +4,9 @@ kind: Task
 metadata:
   name: producer-typescript-eslint
   labels:
-    v1.dracon.ocurity.com/component: producer
-    v1.dracon.ocurity.com/test-type: sast
-    v1.dracon.ocurity.com/language: typescript
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: sast
+    v1.smithy.smithy-security.com/language: typescript
 spec:
   description: Static analysis for javascript and typescript projects.
   params:
@@ -21,7 +21,7 @@ spec:
       description: The workspace containing the source-code to scan.
   steps:
   - name: run-eslint
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/typescript-eslint/eslint-wrapper:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/typescript-eslint/eslint-wrapper:{{ .Chart.AppVersion }}'
     command: ["/home/node/workspace/eslint-wrapper"]
     args:
      - -t
@@ -32,11 +32,11 @@ spec:
     - mountPath: /scratch
       name: scratch
   - name: produce-issues
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/typescript-eslint:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/typescript-eslint:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/typescript-eslint/typescript-eslint-parser"]
     args:
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.dracon/producers/typescript-eslint.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/typescript-eslint.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch

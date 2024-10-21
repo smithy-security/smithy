@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/fs"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/fs"
 )
 
 func TestNewReadWriter(t *testing.T) {

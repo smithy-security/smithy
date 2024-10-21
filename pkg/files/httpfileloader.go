@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/ocurity/dracon/pkg/utils"
+	"github.com/smithy-security/smithy/pkg/utils"
 )
 
 var (

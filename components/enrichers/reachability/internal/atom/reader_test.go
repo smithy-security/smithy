@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/atom"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/atom/purl"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
 )
 
 func TestNewReader(t *testing.T) {

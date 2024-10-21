@@ -3,13 +3,13 @@ package utils
 import (
 	"log"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/consumers"
-	"github.com/ocurity/dracon/pkg/jira/document"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/consumers"
+	"github.com/smithy-security/smithy/pkg/jira/document"
 )
 
 // ProcessMessages processess all the v1.LaunchToolResponses (or v1.EnrichedToolResponses if consumers.Raw is false) and returns:
-// :return messages - a list of HashMaps containing all the parsed dracon issues that are equal & above the specified severity threshold
+// :return messages - a list of HashMaps containing all the parsed smithy issues that are equal & above the specified severity threshold
 // :return discardedMsgs - the number of messages that have been discarded by the allowDuplicates or allowFP policies
 // :return error - if there is any error throughout the processing.
 func ProcessMessages(allowDuplicates, allowFP bool, sevThreshold int) ([]document.Document, int, error) {

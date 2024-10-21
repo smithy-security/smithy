@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: enricher-aggregator
   labels:
-    v1.dracon.ocurity.com/component: enricher-aggregator
+    v1.smithy.smithy-security.com/component: enricher-aggregator
 spec:
   description: Combines multiple inputs into a single one.
   params:
@@ -17,12 +17,12 @@ spec:
       description: The workspace containing the source-code to scan.
   steps:
   - name: aggregate-tagged-issues
-    image:  '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/enrichers/aggregator:{{ .Chart.AppVersion }}'
+    image:  '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/enrichers/aggregator:{{ .Chart.AppVersion }}'
     command: ["/app/components/enrichers/aggregator/aggregator"]
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.dracon/enrichers
+      value: $(workspaces.output.path)/.smithy/enrichers
     - name: WRITE_PATH
-      value: "$(workspaces.output.path)/.dracon/enrichers"
+      value: "$(workspaces.output.path)/.smithy/enrichers"
     - name: B64_SIGNATURE_KEY
       value: "$(params.enricher-aggregator-b64-signature-key)"

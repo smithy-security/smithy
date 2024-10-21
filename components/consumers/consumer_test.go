@@ -9,25 +9,25 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	draconapiv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components"
-	"github.com/ocurity/dracon/pkg/putil"
+	smithyapiv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components"
+	"github.com/smithy-security/smithy/pkg/putil"
 )
 
 func TestLoadToolResponse(t *testing.T) {
-	tmpDir, err := os.MkdirTemp("", "dracon-test")
+	tmpDir, err := os.MkdirTemp("", "smithy-test")
 	require.NoError(t, err)
 
-	tmpFile, err := os.CreateTemp(tmpDir, "dracon-test-*.pb")
+	tmpFile, err := os.CreateTemp(tmpDir, "smithy-test-*.pb")
 	require.NoError(t, err)
 
 	defer require.NoError(t, os.Remove(tmpFile.Name()))
 
-	issues := []*draconapiv1.Issue{
+	issues := []*smithyapiv1.Issue{
 		{
-			Target:      "/dracon/source/foobar",
-			Title:       "/dracon/source/barfoo",
-			Description: "/dracon/source/example.yaml",
+			Target:      "/smithy/source/foobar",
+			Title:       "/smithy/source/barfoo",
+			Description: "/smithy/source/example.yaml",
 		},
 	}
 	timestamp := time.Now().UTC()
@@ -39,9 +39,9 @@ func TestLoadToolResponse(t *testing.T) {
 	scanTags, err := json.Marshal(tags)
 	assert.NoError(t, err)
 
-	require.NoError(t, os.Setenv(components.EnvDraconStartTime, timestamp.Format(time.RFC3339)))
-	require.NoError(t, os.Setenv(components.EnvDraconScanID, scanID))
-	require.NoError(t, os.Setenv(components.EnvDraconScanTags, string(scanTags)))
+	require.NoError(t, os.Setenv(components.EnvSmithyStartTime, timestamp.Format(time.RFC3339)))
+	require.NoError(t, os.Setenv(components.EnvSmithyScanID, scanID))
+	require.NoError(t, os.Setenv(components.EnvSmithyScanTags, string(scanTags)))
 
 	resultTempDir := tmpFile.Name()
 	resultFile := "test-tool"

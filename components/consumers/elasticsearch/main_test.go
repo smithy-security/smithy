@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
 	"github.com/stretchr/testify/require"
 )
@@ -42,7 +42,7 @@ var (
 )
 
 func TestEsPushBasicAuth(t *testing.T) {
-	esIndex = "dracon-es-test"
+	esIndex = "smithy-es-test"
 
 	esStub := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		buf := new(bytes.Buffer)
@@ -112,7 +112,7 @@ func TestEsPush(t *testing.T) {
 	require.NoError(t, err)
 }
 func TestEsPushAPIKey(t *testing.T) {
-	esIndex = "dracon-es-test"
+	esIndex = "smithy-es-test"
 
 	esStub := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		buf := new(bytes.Buffer)

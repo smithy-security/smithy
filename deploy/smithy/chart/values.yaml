@@ -1,0 +1,71 @@
+
+elasticsearch:
+  # if set, an ElasticSearch CRD instance will be deployed
+  # the instance is expected to be managed by the Elastic Operator
+  enabled: true
+  # Sets the version of the ElasticSeacrh to be deployed
+  version: 8.3.2
+
+kibana:
+  # if set, a Kibana CRD instance and an Ingress object will be deployed
+  # the instance is expected to be managed by the Elastic Operator
+  enabled: true
+  # Sets the version of the Kibana to be deployed
+  version: 8.3.2
+  # values that set fields of the Kibana ingress
+  ingress:
+    className: ""
+    host: ""
+    tlsEnabled: false
+
+mongodb:
+  # if set, a MongoDB instance will be deployed
+  enabled: true
+  # auth:
+  #   enabled: true
+  #   usernames: ["consumer-mongodb"]
+  #   passwords: ["consumer-mongodb"]
+  #   databases: ["consumer-mongodb"]
+  #   rootUser: "consumer-mongodb"
+  #   rootPassword: "consumer-mongodb"
+
+arangodb:
+  # if set, an ArangoDB instance will be deployed
+  enabled: true
+  version: 3.7.10
+  # values that set fields of the ArangoDB ingress
+  ingress:
+    className: ""
+    host: ""
+
+# this section controls the database that components have access to
+# the database should use the Postgres dialect.
+# the database is used by the deduplication enricher
+database: &psqlConfig
+  host: ""
+  auth:
+    username: ""
+    password: ""
+    database: ""
+    postgresPassword: ""
+    querystringargs: ""
+  fullnameOverride: ""
+
+postgresql:
+  # if set, a PostgreSQL instance will be deployed
+  enabled: true
+  <<: *psqlConfig
+
+
+# this section controls aspects of managing a database used to store deduplication enrichments
+# the database should use the Postgres dialect.
+deduplication-db-migrations:
+  # if set, a Job will be deployed that applies migrations to the deduplication database
+  # the Job will run as part of the post-install/post-upgrade hook
+  enabled: true
+  database: *psqlConfig
+
+
+image:
+  # registry to use for all 
+  registry: ""

@@ -8,10 +8,10 @@ import (
 	"regexp"
 	"strconv"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers/golang-nancy/types"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers/golang-nancy/types"
 
-	"github.com/ocurity/dracon/components/producers"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 var CWERegex = regexp.MustCompile(`CWE-\d+`)
@@ -38,7 +38,7 @@ func main() {
 		}
 	}
 
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"nancy",
 		parseOut(&results),
 	); err != nil {

@@ -15,38 +15,38 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	draconv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/pkg/putil"
+	smithyv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/pkg/putil"
 )
 
-func createObjects() *draconv1.EnrichedLaunchToolResponse {
+func createObjects() *smithyv1.EnrichedLaunchToolResponse {
 	scanID := "7c78f6c9-b4b0-493c-a912-0bb0a4aaaaa0"
 	times, _ := time.Parse(time.RFC3339, "2023-01-19T18:09:06.370037788Z")
 	timestamp := timestamppb.New(times)
-	si := draconv1.ScanInfo{
+	si := smithyv1.ScanInfo{
 		ScanUuid:      scanID,
 		ScanStartTime: timestamp,
 	}
 	toolName := "SAT-Tool"
-	response := draconv1.LaunchToolResponse{
+	response := smithyv1.LaunchToolResponse{
 		ToolName: toolName,
 		ScanInfo: &si,
 	}
-	enrichedResponse := draconv1.EnrichedLaunchToolResponse{}
+	enrichedResponse := smithyv1.EnrichedLaunchToolResponse{}
 
-	var issues []*draconv1.Issue
-	var enrichedIssues []*draconv1.EnrichedIssue
+	var issues []*smithyv1.Issue
+	var enrichedIssues []*smithyv1.EnrichedIssue
 	for j := 0; j < 10; j++ {
 		id := uuid.New()
-		x := draconv1.Issue{
+		x := smithyv1.Issue{
 			Target:     fmt.Sprintf("target-%d", j),
 			Type:       fmt.Sprintf("type-%d", j),
 			Title:      fmt.Sprintf("title-%d", j),
-			Severity:   draconv1.Severity_SEVERITY_INFO,
-			Confidence: draconv1.Confidence_CONFIDENCE_INFO,
+			Severity:   smithyv1.Severity_SEVERITY_INFO,
+			Confidence: smithyv1.Confidence_CONFIDENCE_INFO,
 			Uuid:       id.String(),
 		}
-		y := draconv1.EnrichedIssue{
+		y := smithyv1.EnrichedIssue{
 			RawIssue:      &x,
 			FirstSeen:     response.ScanInfo.ScanStartTime,
 			Count:         uint64(j),
@@ -175,7 +175,7 @@ func TestWriteData(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		enrichedResponse *draconv1.EnrichedLaunchToolResponse
+		enrichedResponse *smithyv1.EnrichedLaunchToolResponse
 		expectError      bool
 	}{
 		{
@@ -190,14 +190,14 @@ func TestWriteData(t *testing.T) {
 		},
 		{
 			name:             "nil originalResults",
-			enrichedResponse: &draconv1.EnrichedLaunchToolResponse{OriginalResults: nil},
+			enrichedResponse: &smithyv1.EnrichedLaunchToolResponse{OriginalResults: nil},
 			expectError:      true,
 		},
 		{
 			name: "no enriched issues while originalResults present",
-			enrichedResponse: &draconv1.EnrichedLaunchToolResponse{
-				OriginalResults: &draconv1.LaunchToolResponse{
-					Issues: []*draconv1.Issue{
+			enrichedResponse: &smithyv1.EnrichedLaunchToolResponse{
+				OriginalResults: &smithyv1.LaunchToolResponse{
+					Issues: []*smithyv1.Issue{
 						{
 							Target: "target",
 						},
@@ -225,14 +225,14 @@ func TestWriteData(t *testing.T) {
 					return x.Nanos == y.Nanos
 				})
 
-				require.True(t, cmp.Equal([]*draconv1.EnrichedLaunchToolResponse{tc.enrichedResponse}, er, protocmp.Transform(), opt),
-					cmp.Diff([]*draconv1.EnrichedLaunchToolResponse{tc.enrichedResponse}, er, protocmp.Transform()))
+				require.True(t, cmp.Equal([]*smithyv1.EnrichedLaunchToolResponse{tc.enrichedResponse}, er, protocmp.Transform(), opt),
+					cmp.Diff([]*smithyv1.EnrichedLaunchToolResponse{tc.enrichedResponse}, er, protocmp.Transform()))
 
 				r, err := putil.LoadToolResponse(filepath.Join(workdir, fmt.Sprintf("%s.raw.pb", tc.enrichedResponse.GetOriginalResults().GetToolName())))
 				require.NoError(t, err)
 
-				require.True(t, cmp.Equal([]*draconv1.LaunchToolResponse{tc.enrichedResponse.OriginalResults}, r, protocmp.Transform(), opt),
-					cmp.Diff([]*draconv1.LaunchToolResponse{tc.enrichedResponse.OriginalResults}, r, protocmp.Transform()))
+				require.True(t, cmp.Equal([]*smithyv1.LaunchToolResponse{tc.enrichedResponse.OriginalResults}, r, protocmp.Transform(), opt),
+					cmp.Diff([]*smithyv1.LaunchToolResponse{tc.enrichedResponse.OriginalResults}, r, protocmp.Transform()))
 			}
 		})
 	}

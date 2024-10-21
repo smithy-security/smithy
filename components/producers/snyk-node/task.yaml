@@ -4,9 +4,9 @@ kind: Task
 metadata:
   name: producer-snyk-node
   labels:
-    v1.dracon.ocurity.com/component: producer
-    v1.dracon.ocurity.com/test-type: sast
-    v1.dracon.ocurity.com/language: docpythoner
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: sast
+    v1.smithy.smithy-security.com/language: docpythoner
 spec:
   params:
   - name: producer-snyk-node-api-key
@@ -62,11 +62,11 @@ spec:
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/snyk-docker:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/snyk-docker:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/snyk-docker/snyk-docker-parser"]
     args:
     - "-in=/scratch/snyk.out"
-    - "-out=$(workspaces.output.path)/.dracon/producers/snyk.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/snyk.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch

@@ -9,8 +9,8 @@ import (
 
 	"github.com/package-url/packageurl-go"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/assert"
@@ -22,15 +22,15 @@ type testJ struct {
 	Foo string
 }
 
-func TestWriteDraconOutEmpty(t *testing.T) {
-	tmpFile, err := os.CreateTemp("", "dracon-test")
+func TestWriteSmithyOutEmpty(t *testing.T) {
+	tmpFile, err := os.CreateTemp("", "smithy-test")
 	require.NoError(t, err)
 	defer require.NoError(t, os.Remove(tmpFile.Name()))
 
 	OutFile = tmpFile.Name()
 	Append = false
 
-	err = WriteDraconOut("dracon-test", nil)
+	err = WriteSmithyOut("smithy-test", nil)
 	require.NoError(t, err)
 
 	pBytes, err := os.ReadFile(tmpFile.Name())
@@ -39,25 +39,25 @@ func TestWriteDraconOutEmpty(t *testing.T) {
 	res := v1.LaunchToolResponse{}
 	require.NoError(t, proto.Unmarshal(pBytes, &res))
 
-	assert.Equal(t, "dracon-test", res.GetToolName())
+	assert.Equal(t, "smithy-test", res.GetToolName())
 	assert.Equal(t, 0, len(res.GetIssues()))
 }
 
-func TestWriteDraconOut(t *testing.T) {
-	tmpFile, err := os.CreateTemp("", "dracon-test")
+func TestWriteSmithyOut(t *testing.T) {
+	tmpFile, err := os.CreateTemp("", "smithy-test")
 	require.NoError(t, err)
 	defer require.NoError(t, os.Remove(tmpFile.Name()))
 
 	baseTime := time.Now().UTC()
 	timestamp := baseTime.Format(time.RFC3339)
-	require.NoError(t, os.Setenv(components.EnvDraconStartTime, timestamp))
-	require.NoError(t, os.Setenv(components.EnvDraconScanID, "ab3d3290-cd9f-482c-97dc-ec48bdfcc4de"))
+	require.NoError(t, os.Setenv(components.EnvSmithyStartTime, timestamp))
+	require.NoError(t, os.Setenv(components.EnvSmithyScanID, "ab3d3290-cd9f-482c-97dc-ec48bdfcc4de"))
 
 	OutFile = tmpFile.Name()
 	Append = false
 
-	err = WriteDraconOut(
-		"dracon-test",
+	err = WriteSmithyOut(
+		"smithy-test",
 		[]*v1.Issue{
 			{
 				Target:      path.Join(SourceDir, "foobar"),
@@ -75,7 +75,7 @@ func TestWriteDraconOut(t *testing.T) {
 	res := v1.LaunchToolResponse{}
 	require.NoError(t, proto.Unmarshal(pBytes, &res))
 
-	require.Equal(t, "dracon-test", res.GetToolName())
+	require.Equal(t, "smithy-test", res.GetToolName())
 	require.NotEmpty(t, res.GetIssues())
 	require.Equal(t, "foobar", res.GetIssues()[0].GetTarget())
 	require.Equal(t, "barfoo", res.GetIssues()[0].GetTitle())
@@ -85,22 +85,22 @@ func TestWriteDraconOut(t *testing.T) {
 	require.Equal(t, "123-321", res.GetIssues()[0].GetCve())
 }
 
-func TestWriteDraconOutAppend(t *testing.T) {
-	tmpFile, err := os.CreateTemp("", "dracon-test")
+func TestWriteSmithyOutAppend(t *testing.T) {
+	tmpFile, err := os.CreateTemp("", "smithy-test")
 	require.NoError(t, err)
 	defer require.NoError(t, os.Remove(tmpFile.Name()))
 
 	baseTime := time.Now().UTC()
 	timestamp := baseTime.Format(time.RFC3339)
-	require.NoError(t, os.Setenv(components.EnvDraconStartTime, timestamp))
-	require.NoError(t, os.Setenv(components.EnvDraconScanID, "ab3d3290-cd9f-482c-97dc-ec48bdfcc4de"))
+	require.NoError(t, os.Setenv(components.EnvSmithyStartTime, timestamp))
+	require.NoError(t, os.Setenv(components.EnvSmithyScanID, "ab3d3290-cd9f-482c-97dc-ec48bdfcc4de"))
 
 	OutFile = tmpFile.Name()
 	Append = true
 
 	for _, i := range []int{0, 1, 2} {
-		err = WriteDraconOut(
-			"dracon-test",
+		err = WriteSmithyOut(
+			"smithy-test",
 			[]*v1.Issue{
 				{
 					Target:      fmt.Sprintf("target%d", i),
@@ -119,7 +119,7 @@ func TestWriteDraconOutAppend(t *testing.T) {
 	res := v1.LaunchToolResponse{}
 	require.NoError(t, proto.Unmarshal(pBytes, &res))
 
-	assert.Equal(t, "dracon-test", res.GetToolName())
+	assert.Equal(t, "smithy-test", res.GetToolName())
 	assert.Equal(t, baseTime.Unix(), res.GetScanInfo().GetScanStartTime().GetSeconds())
 	assert.Equal(t, "ab3d3290-cd9f-482c-97dc-ec48bdfcc4de", res.GetScanInfo().GetScanUuid())
 	assert.Equal(t, 3, len(res.GetIssues()))

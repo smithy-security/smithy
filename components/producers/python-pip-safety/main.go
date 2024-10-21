@@ -7,9 +7,9 @@ import (
 
 	"github.com/package-url/packageurl-go"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/python-pip-safety/types"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/python-pip-safety/types"
 )
 
 func parseIssues(out []types.Vulnerability) []*v1.Issue {
@@ -48,7 +48,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"pip-safety",
 		parseIssues(issues.Vulnerabilities),
 	); err != nil {

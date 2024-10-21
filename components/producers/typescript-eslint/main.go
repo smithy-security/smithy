@@ -5,11 +5,11 @@ import (
 	"log"
 	"log/slog"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers/typescript-eslint/types"
-	"github.com/ocurity/dracon/pkg/context"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers/typescript-eslint/types"
+	"github.com/smithy-security/smithy/pkg/context"
 
-	"github.com/ocurity/dracon/components/producers"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"eslint",
 		issues,
 	); err != nil {

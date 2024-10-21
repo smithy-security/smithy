@@ -16,11 +16,11 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/enrichers"
-	"github.com/ocurity/dracon/pkg/cyclonedx"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/enrichers"
+	"github.com/smithy-security/smithy/pkg/cyclonedx"
 
-	"github.com/ocurity/dracon/components/enrichers/depsdev/types"
+	"github.com/smithy-security/smithy/components/enrichers/depsdev/types"
 )
 
 const (
@@ -142,7 +142,7 @@ func TestParseIssuesDepsDevScoreCardInfoWritten(t *testing.T) {
 	}
 	//  ensure every component has a license attached to it
 	for _, finding := range res.Issues {
-		bom, err := cyclonedx.FromDracon(finding.RawIssue)
+		bom, err := cyclonedx.FromSmithy(finding.RawIssue)
 		require.NoError(t, err, "Could not read enriched cyclone dx info")
 
 		properties := []cdx.Property{}
@@ -183,7 +183,7 @@ func TestParseIssuesDepsDevExternalReferenceLinksWritten(t *testing.T) {
 	}
 	//  ensure every component has a license attached to it
 	for _, finding := range res.Issues {
-		bom, err := cyclonedx.FromDracon(finding.RawIssue)
+		bom, err := cyclonedx.FromSmithy(finding.RawIssue)
 		require.NoError(t, err, "Could not read enriched cyclone dx info")
 
 		externalReferences := []cdx.ExternalReference{}
@@ -213,7 +213,7 @@ func TestParseIssuesLicensesWritten(t *testing.T) {
 
 	//  ensure every component has a license attached to it
 	for _, finding := range res.Issues {
-		bom, err := cyclonedx.FromDracon(finding.RawIssue)
+		bom, err := cyclonedx.FromSmithy(finding.RawIssue)
 		require.NoError(t, err, "Could not read enriched cyclone dx info")
 		found := false
 		for _, component := range *bom.Components {
@@ -243,7 +243,7 @@ func TestParseIssuesLicensesWrittenAccurateLicenses(t *testing.T) {
 
 	//  ensure every component has a license attached to it
 	for _, finding := range res.Issues {
-		bom, err := cyclonedx.FromDracon(finding.RawIssue)
+		bom, err := cyclonedx.FromSmithy(finding.RawIssue)
 		require.NoError(t, err, "Could not read enriched cyclone dx info")
 		found := false
 		for _, component := range *bom.Components {

@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -63,12 +63,12 @@ func Test_ParseOut(t *testing.T) {
 	}
 }
 
-func Test_ToDracon(t *testing.T) {
+func Test_ToSmithy(t *testing.T) {
 	trivyOutput, err := os.ReadFile("./testdata/trivy_output.json")
 	require.NoError(t, err)
 
-	var issues []*DraconIssueCollection
-	issues, err = ToDracon(string(trivyOutput))
+	var issues []*SmithyIssueCollection
+	issues, err = ToSmithy(string(trivyOutput))
 	require.NoError(t, err)
 
 	expectedIssues := []*v1.Issue{
@@ -87,7 +87,7 @@ func Test_ToDracon(t *testing.T) {
 	}
 }
 
-func Test_FromDraconEnrichedIssuesRun(t *testing.T) {
+func Test_FromSmithyEnrichedIssuesRun(t *testing.T) {
 	scanStartTime := "2020-04-13T11:51:53Z"
 	tstampStart, err := time.Parse(time.RFC3339, scanStartTime)
 	require.NoError(t, err)
@@ -241,7 +241,7 @@ func Test_FromDraconEnrichedIssuesRun(t *testing.T) {
 		},
 	}
 
-	report, err := FromDraconEnrichedIssuesRun(responses, false)
+	report, err := FromSmithyEnrichedIssuesRun(responses, false)
 	require.NoError(t, err)
 	require.Len(t, report.Runs, 1)
 	require.Len(t, report.Runs[0].Results, 1)
@@ -257,7 +257,7 @@ func Test_FromDraconEnrichedIssuesRun(t *testing.T) {
 	require.Equal(t, expected, report)
 }
 
-func Test_FromDraconRawIssuesRun(t *testing.T) {
+func Test_FromSmithyRawIssuesRun(t *testing.T) {
 	scanStartTime := "2020-04-13T11:51:53Z"
 	tstampStart, err := time.Parse(time.RFC3339, scanStartTime)
 	require.NoError(t, err)
@@ -343,13 +343,13 @@ func Test_FromDraconRawIssuesRun(t *testing.T) {
 		},
 	}
 
-	report, err := FromDraconRawIssuesRun(responses)
+	report, err := FromSmithyRawIssuesRun(responses)
 	require.NoError(t, err)
 	require.NotNil(t, report)
 	require.EqualValues(t, report, expected)
 }
 
-func Test_draconIssueToSarif(t *testing.T) {
+func Test_smithyIssueToSarif(t *testing.T) {
 	issue := &v1.Issue{
 		Description: "this is a test description",
 		Confidence:  v1.Confidence_CONFIDENCE_INFO,
@@ -388,7 +388,7 @@ func Test_draconIssueToSarif(t *testing.T) {
 		},
 	}
 
-	sarifResults, err := draconIssueToSarif(issue, &sarif.ReportingDescriptor{ID: typ})
+	sarifResults, err := smithyIssueToSarif(issue, &sarif.ReportingDescriptor{ID: typ})
 	require.NoError(t, err)
 	require.NotNil(t, sarifResults)
 	require.EqualValues(t, sarifResults, expected)

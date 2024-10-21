@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: consumer-arangodb
   labels:
-    v1.dracon.ocurity.com/component: consumer
+    v1.smithy.smithy-security.com/component: consumer
 spec:
   workspaces:
     - name: output
@@ -12,13 +12,13 @@ spec:
   steps:
   - name: run-consumer
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/consumers/arangodb:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/arangodb:{{ .Chart.AppVersion }}'
     command: ["/app/components/consumers/arangodb/arangodb"]
     args: [
-      "-in", "$(workspaces.output.path)/.dracon/enrichers/",
-      "-db-url", "https://dracon.arangodb.svc:8529",
-      "-db-name", "dracon",
-      "-collection-name", "dracon",
+      "-in", "$(workspaces.output.path)/.smithy/enrichers/",
+      "-db-url", "https://smithy.arangodb.svc:8529",
+      "-db-name", "smithy",
+      "-collection-name", "smithy",
       "-basic-auth-user", "",
       "-basic-auth-pass", "",
       "-tls-insecure-skip-verify",

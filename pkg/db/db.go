@@ -25,7 +25,7 @@ func ParseConnectionStr(connStr string) (*PGUrl, error) {
 	if err != nil {
 		return nil, err
 	} else if parsedURL.Scheme != "postgres" && parsedURL.Scheme != "postgresql" {
-		return nil, errors.New("currently Dracon only supports postgres or other databases that use the same frontend")
+		return nil, errors.New("currently Smithy only supports postgres or other databases that use the same frontend")
 	}
 
 	if search_paths, found := parsedURL.Query()["search_path"]; found && len(search_paths) > 1 {

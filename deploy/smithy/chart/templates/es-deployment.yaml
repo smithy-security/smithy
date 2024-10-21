@@ -1,0 +1,27 @@
+{{ if .Values.elasticsearch.enabled }}
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: {{ include "dracon.fullname" . }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+  labels:
+    {{- include "dracon.labels" . | nindent 4 }}
+spec:
+  version: {{ .Values.elasticsearch.version }}
+  image: docker.elastic.co/elasticsearch/elasticsearch:{{ .Values.elasticsearch.version }}
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+  - name: default
+    count: 1
+    config:
+      node.store.allow_mmap: false
+      xpack.security.authc:
+        anonymous:
+          username: anonymous
+          roles: superuser
+          authz_exception: false
+{{ end }}

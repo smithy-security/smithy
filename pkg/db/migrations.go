@@ -63,7 +63,7 @@ func (m *Migrations) driver(migrationsDir fs.FS) (*migrate.Migrate, error) {
 		return nil, fmt.Errorf("could not create migration bindata instance: %w", err)
 	}
 
-	return migrate.NewWithInstance("go-bindata", resourcesDriver, "dracon", driver)
+	return migrate.NewWithInstance("go-bindata", resourcesDriver, "smithy", driver)
 }
 
 func (m *Migrations) State(migrationsDir fs.FS) (uint, bool, error) {

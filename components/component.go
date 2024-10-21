@@ -1,10 +1,10 @@
 package components
 
 const (
-	// EnvDraconStartTime Start Time of Dracon Scan in RFC3339.
-	EnvDraconStartTime = "DRACON_SCAN_TIME"
-	// EnvDraconScanID the ID of the dracon scan.
-	EnvDraconScanID = "DRACON_SCAN_ID"
-	// EnvDraconScanTags the tags of the dracon scan.
-	EnvDraconScanTags = "DRACON_SCAN_TAGS"
+	// EnvSmithyStartTime Start Time of Smithy Scan in RFC3339.
+	EnvSmithyStartTime = "SMITHY_SCAN_TIME"
+	// EnvSmithyScanID the ID of the smithy scan.
+	EnvSmithyScanID = "SMITHY_SCAN_ID"
+	// EnvSmithyScanTags the tags of the smithy scan.
+	EnvSmithyScanTags = "SMITHY_SCAN_TAGS"
 )

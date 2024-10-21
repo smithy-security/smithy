@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/pkg/putil"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/pkg/putil"
 )
 
 var (

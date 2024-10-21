@@ -4,8 +4,8 @@ kind: Task
 metadata:
   name: producer-docker-trivy
   labels:
-    v1.dracon.ocurity.com/component: producer
-    v1.dracon.ocurity.com/test-type: sca
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: sca
 spec:
   description: Generate a Trivy report from a Docker image.
   params:
@@ -49,12 +49,12 @@ spec:
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/docker-trivy:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/docker-trivy:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/docker-trivy/docker-trivy-parser"]
     args:
     - "-format=$(params.producer-docker-trivy-format)"
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.dracon/producers/docker-trivy.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/docker-trivy.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch

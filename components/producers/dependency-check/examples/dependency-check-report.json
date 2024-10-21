@@ -22,7 +22,7 @@
     {
       "isVirtual": true,
       "fileName": "Django:1.11.29",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:Django/1.11.29",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:Django/1.11.29",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -1342,7 +1342,7 @@
     {
       "isVirtual": true,
       "fileName": "Flask:1.0.2",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:Flask/1.0.2",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:Flask/1.0.2",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -1431,7 +1431,7 @@
     {
       "isVirtual": true,
       "fileName": "Pillow:5.4.1",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:Pillow/5.4.1",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:Pillow/5.4.1",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -2949,7 +2949,7 @@
     {
       "isVirtual": true,
       "fileName": "beautifulsoup4:4.6.3",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:beautifulsoup4/4.6.3",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:beautifulsoup4/4.6.3",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -2990,7 +2990,7 @@
     {
       "isVirtual": true,
       "fileName": "cryptography:2.6.1",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:cryptography/2.6.1",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:cryptography/2.6.1",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -3308,7 +3308,7 @@
     {
       "isVirtual": true,
       "fileName": "lxml:4.2.5",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:lxml/4.2.5",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:lxml/4.2.5",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -3866,7 +3866,7 @@
     {
       "isVirtual": true,
       "fileName": "matplotlib:2.2.3",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:matplotlib/2.2.3",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:matplotlib/2.2.3",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -3907,7 +3907,7 @@
     {
       "isVirtual": true,
       "fileName": "mysqlclient:1.3.14",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:mysqlclient/1.3.14",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:mysqlclient/1.3.14",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -3948,7 +3948,7 @@
     {
       "isVirtual": true,
       "fileName": "numpy:1.16.0",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:numpy/1.16.0",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:numpy/1.16.0",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -4345,7 +4345,7 @@
     {
       "isVirtual": true,
       "fileName": "pandas:0.23.4",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:pandas/0.23.4",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:pandas/0.23.4",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -4439,7 +4439,7 @@
     {
       "isVirtual": true,
       "fileName": "psycopg2:2.7.6.1",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:psycopg2/2.7.6.1",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:psycopg2/2.7.6.1",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -4480,7 +4480,7 @@
     {
       "isVirtual": true,
       "fileName": "pyOpenSSL:19.0.0",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:pyOpenSSL/19.0.0",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:pyOpenSSL/19.0.0",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -4531,7 +4531,7 @@
     {
       "isVirtual": true,
       "fileName": "pyasn1:0.4.5",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:pyasn1/0.4.5",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:pyasn1/0.4.5",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -4572,7 +4572,7 @@
     {
       "isVirtual": true,
       "fileName": "pytz:2018.7",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:pytz/2018.7",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:pytz/2018.7",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -4613,7 +4613,7 @@
     {
       "isVirtual": true,
       "fileName": "requests:2.20.0",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:requests/2.20.0",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:requests/2.20.0",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -4748,7 +4748,7 @@
     {
       "isVirtual": true,
       "fileName": "scikit-learn:0.20.2",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:scikit-learn/0.20.2",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:scikit-learn/0.20.2",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -4921,7 +4921,7 @@
     {
       "isVirtual": true,
       "fileName": "scipy:1.2.0",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:scipy/1.2.0",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:scipy/1.2.0",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -5078,7 +5078,7 @@
     {
       "isVirtual": true,
       "fileName": "seaborn:0.9.0",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:seaborn/0.9.0",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:seaborn/0.9.0",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -5119,7 +5119,7 @@
     {
       "isVirtual": true,
       "fileName": "six:1.11.0",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:six/1.11.0",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:six/1.11.0",
       "evidenceCollected": {
         "vendorEvidence": [
           {
@@ -5160,7 +5160,7 @@
     {
       "isVirtual": true,
       "fileName": "urllib3:1.24.1",
-      "filePath": "/home/flo/Desktop/Git/dracon/components/producers/dependency-check/examples/requirements.txt:urllib3/1.24.1",
+      "filePath": "/home/flo/Desktop/Git/smithy/components/producers/dependency-check/examples/requirements.txt:urllib3/1.24.1",
       "evidenceCollected": {
         "vendorEvidence": [
           {

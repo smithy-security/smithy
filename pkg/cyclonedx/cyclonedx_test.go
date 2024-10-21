@@ -7,14 +7,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 )
 
-func TestToDraconLibrary(t *testing.T) {
+func TestToSmithyLibrary(t *testing.T) {
 	rawLibraryBOM, err := os.ReadFile("./testdata/libraryBOM.json")
 	require.NoError(t, err)
 
-	issues, err := ToDracon(rawLibraryBOM, "json", "")
+	issues, err := ToSmithy(rawLibraryBOM, "json", "")
 	require.NoError(t, err)
 
 	libraryBOM := string(rawLibraryBOM)
@@ -38,11 +38,11 @@ func TestToDraconLibrary(t *testing.T) {
 	require.Equal(t, sbom1, sbom2)
 }
 
-func TestToDraconSaaSInfra(t *testing.T) {
+func TestToSmithySaaSInfra(t *testing.T) {
 	rawSaaSBOM, err := os.ReadFile("./testdata/saasBOM.json")
 	require.NoError(t, err)
 
-	issues, err := ToDracon(rawSaaSBOM, "json", "")
+	issues, err := ToSmithy(rawSaaSBOM, "json", "")
 	require.NoError(t, err)
 
 	saasBOM := string(rawSaaSBOM)
@@ -66,11 +66,11 @@ func TestToDraconSaaSInfra(t *testing.T) {
 	require.Equal(t, sbom1, sbom2)
 }
 
-func TestToDraconTargetOverride(t *testing.T) {
+func TestToSmithyTargetOverride(t *testing.T) {
 	rawSaaSBOM, err := os.ReadFile("./testdata/saasBOM.json")
 	require.NoError(t, err)
 
-	issues, err := ToDracon(rawSaaSBOM, "json", "my-awesome-infra")
+	issues, err := ToSmithy(rawSaaSBOM, "json", "my-awesome-infra")
 	require.NoError(t, err)
 
 	saasBOM := string(rawSaaSBOM)

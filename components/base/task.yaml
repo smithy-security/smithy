@@ -4,23 +4,23 @@ kind: Task
 metadata:
   name: base
   labels:
-    v1.dracon.ocurity.com/component: base
+    v1.smithy.smithy-security.com/component: base
 spec:
   params:
   - name: base-scan-tags
     type: string
     default: ""
   results:
-  - name: dracon-scan-start-time
+  - name: smithy-scan-start-time
     description: Start time of the scan.
-  - name: dracon-scan-id
+  - name: smithy-scan-id
     description: Unique id of the scan.
-  - name: dracon-scan-tags
+  - name: smithy-scan-tags
     description: serialized map[string]string of tags for this scan
   steps:
   - name: generate-scan-id-start-time
     image: docker.io/busybox:1.35.0
     script: |
-      cat /proc/sys/kernel/random/uuid | tee $(results.dracon-scan-id.path)
-      date +"%Y-%m-%dT%H:%M:%SZ" | tee $(results.dracon-scan-start-time.path)
-      echo "$(params.base-scan-tags)" | tee $(results.dracon-scan-tags.path)
+      cat /proc/sys/kernel/random/uuid | tee $(results.smithy-scan-id.path)
+      date +"%Y-%m-%dT%H:%M:%SZ" | tee $(results.smithy-scan-start-time.path)
+      echo "$(params.base-scan-tags)" | tee $(results.smithy-scan-tags.path)

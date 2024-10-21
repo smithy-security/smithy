@@ -4,9 +4,9 @@ kind: Task
 metadata:
   name: producer-typescript-yarn-audit
   labels:
-    v1.dracon.ocurity.com/component: producer
-    v1.dracon.ocurity.com/test-type: sca
-    v1.dracon.ocurity.com/language: typescript
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: sca
+    v1.smithy.smithy-security.com/language: typescript
 spec:
   description: Dependency scanner for Node.js projects.
   volumes:
@@ -30,12 +30,12 @@ spec:
 
     - name: produce-issues
       imagePullPolicy: IfNotPresent
-      image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/typescript-yarn-audit:{{ .Chart.AppVersion }}'
+      image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/typescript-yarn-audit:{{ .Chart.AppVersion }}'
       command:
         ["/app/components/producers/typescript-yarn-audit/typescript-yarn-audit-parser"]
       args:
         - "-in=/scratch/out.json"
-        - "-out=$(workspaces.output.path)/.dracon/producers/typescript-yarn-audit.pb"
+        - "-out=$(workspaces.output.path)/.smithy/producers/typescript-yarn-audit.pb"
       volumeMounts:
         - mountPath: /scratch
           name: scratch

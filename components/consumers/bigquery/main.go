@@ -1,4 +1,4 @@
-// Package main of the bigquery consumer puts dracon issues into the target bigquery dataset, it will create teh dataset and the schema if one does not exist
+// Package main of the bigquery consumer puts smithy issues into the target bigquery dataset, it will create teh dataset and the schema if one does not exist
 package main
 
 import (
@@ -12,8 +12,8 @@ import (
 	"golang.org/x/oauth2"
 	"google.golang.org/api/option"
 
-	"github.com/ocurity/dracon/components/consumers"
-	"github.com/ocurity/dracon/pkg/enumtransformers"
+	"github.com/smithy-security/smithy/components/consumers"
+	"github.com/smithy-security/smithy/pkg/enumtransformers"
 )
 
 var (
@@ -52,36 +52,36 @@ func run(ctx context.Context) error {
 		log.Println("Dataset", dataset, "does not exist", "creating")
 		if err = dataset.Create(context.Background(), &bigquery.DatasetMetadata{
 			Name:        datasetName,
-			Description: "a dataset to store findings from the Dracon ASOC framework",
+			Description: "a dataset to store findings from the Smithy ASOC framework",
 			Location:    "EU",
 		}); err != nil {
 			return err
 		}
 	}
-	table := dataset.Table("dracon")
+	table := dataset.Table("smithy")
 	tmeta, err := table.Metadata(context.Background())
 	if err != nil {
-		log.Println("Table dracon does not exist creating")
-		schema, err := bigquery.InferSchema(bqDraconIssue{})
+		log.Println("Table smithy does not exist creating")
+		schema, err := bigquery.InferSchema(bqSmithyIssue{})
 		if err != nil {
 			return err
 		}
 		if err = table.Create(context.Background(), &bigquery.TableMetadata{
-			Name:        "dracon",
-			Description: "a table to store dracon findings",
+			Name:        "smithy",
+			Description: "a table to store smithy findings",
 			Schema:      schema,
 		}); err != nil {
 			return err
 		}
 	} else if tmeta.Schema == nil {
-		log.Println("Schema for table dracon does not exist creating")
-		schema, err := bigquery.InferSchema(bqDraconIssue{})
+		log.Println("Schema for table smithy does not exist creating")
+		schema, err := bigquery.InferSchema(bqSmithyIssue{})
 		if err != nil {
 			return err
 		}
 		_, err = table.Update(context.Background(), bigquery.TableMetadataToUpdate{
-			Name:        "dracon",
-			Description: "a table to store dracon findings",
+			Name:        "smithy",
+			Description: "a table to store smithy findings",
 			Schema:      schema,
 		}, tmeta.ETag)
 		if err != nil {
@@ -89,7 +89,7 @@ func run(ctx context.Context) error {
 		}
 	}
 	inserter := table.Inserter()
-	// Enumerate Dracon Issues to consume and create documents for each of them.
+	// Enumerate Smithy Issues to consume and create documents for each of them.
 	if consumers.Raw {
 		log.Println("Parsing Raw results")
 		responses, err := consumers.LoadToolResponse()
@@ -98,7 +98,7 @@ func run(ctx context.Context) error {
 		}
 		for _, res := range responses {
 			for _, iss := range res.GetIssues() {
-				if err = insert(ctx, inserter, bqDraconIssue{
+				if err = insert(ctx, inserter, bqSmithyIssue{
 					Confidence:    enumtransformers.ConfidenceToText(iss.GetConfidence()),
 					Cve:           iss.GetCve(),
 					Cvss:          iss.GetCvss(),
@@ -124,11 +124,11 @@ func run(ctx context.Context) error {
 		}
 		for _, res := range responses {
 			for _, iss := range res.GetIssues() {
-				var annotations []*bqDraconAnnotations
+				var annotations []*bqSmithyAnnotations
 				for k, v := range iss.GetAnnotations() {
-					annotations = append(annotations, &bqDraconAnnotations{Key: k, Value: v})
+					annotations = append(annotations, &bqSmithyAnnotations{Key: k, Value: v})
 				}
-				if err = insert(ctx, inserter, bqDraconIssue{
+				if err = insert(ctx, inserter, bqSmithyIssue{
 					Annotations:    annotations,
 					Confidence:     enumtransformers.ConfidenceToText(iss.GetRawIssue().GetConfidence()),
 					PreviousCounts: int(iss.GetCount()),
@@ -155,8 +155,8 @@ func run(ctx context.Context) error {
 	return nil
 }
 
-func insert(ctx context.Context, inserter *bigquery.Inserter, issue bqDraconIssue, issueUUID string) error {
-	schema, err := bigquery.InferSchema(bqDraconIssue{})
+func insert(ctx context.Context, inserter *bigquery.Inserter, issue bqSmithyIssue, issueUUID string) error {
+	schema, err := bigquery.InferSchema(bqSmithyIssue{})
 	if err != nil {
 		return err
 	}
@@ -168,13 +168,13 @@ func insert(ctx context.Context, inserter *bigquery.Inserter, issue bqDraconIssu
 	return inserter.Put(ctx, data)
 }
 
-type bqDraconAnnotations struct {
+type bqSmithyAnnotations struct {
 	Key   string `bigquery:"key"`
 	Value string `bigquery:"value"`
 }
 
-type bqDraconIssue struct {
-	Annotations    []*bqDraconAnnotations `bigquery:"annotations"`
+type bqSmithyIssue struct {
+	Annotations    []*bqSmithyAnnotations `bigquery:"annotations"`
 	Confidence     string                 `bigquery:"confidence"`
 	Cve            string                 `bigquery:"cve"`
 	Cvss           float64                `bigquery:"cvss"`

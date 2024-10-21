@@ -4,13 +4,13 @@ kind: Task
 metadata:
   name: consumer-mongodb
   labels:
-    v1.dracon.ocurity.com/component: consumer
+    v1.smithy.smithy-security.com/component: consumer
 spec:
   description: Pushes findings to a MongoDB database.
   params:
     - name: consumer-mongodb-db-uri
       type: string
-      default: "mongodb://consumer-mongodb:consumer-mongodb@dracon-mongodb:27017/consumer-mongodb"
+      default: "mongodb://consumer-mongodb:consumer-mongodb@smithy-mongodb:27017/consumer-mongodb"
     - name: consumer-mongodb-db-name
       type: string
       default: "consumer-mongodb"
@@ -23,10 +23,10 @@ spec:
   steps:
   - name: run-consumer
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/consumers/mongodb:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/mongodb:{{ .Chart.AppVersion }}'
     command: ["/app/components/consumers/mongodb/mongodb"]
     args: [
-      "-in", "$(workspaces.output.path)/.dracon/enrichers/",
+      "-in", "$(workspaces.output.path)/.smithy/enrichers/",
       "-db-uri", "$(params.consumer-mongodb-db-uri)",
       "-db-name", "$(params.consumer-mongodb-db-name)",
       "-collection-name", "$(params.consumer-mongodb-collection-name)",

@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	tektonv1beta1api "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 
-	"github.com/ocurity/dracon/pkg/manifests"
+	"github.com/smithy-security/smithy/pkg/manifests"
 )
 
 func TestGatherTasks(t *testing.T) {
@@ -36,7 +36,7 @@ func TestGatherTasks(t *testing.T) {
 }
 
 func TestCreateHelmPackage(t *testing.T) {
-	draconVersion := "v0.10.0"
+	smithyVersion := "v0.10.0"
 	semVer := "0.10.0"
 	taskList, err := LoadTasks(
 		context.Background(),
@@ -53,17 +53,17 @@ func TestCreateHelmPackage(t *testing.T) {
 
 	require.NoError(t, ProcessTasks(taskList...))
 	require.Len(t, taskList[2].Spec.Steps[1].Env, 3)
-	require.Equal(t, "DRACON_SCAN_TIME", taskList[2].Spec.Steps[1].Env[0].Name)
-	require.Equal(t, "DRACON_SCAN_ID", taskList[2].Spec.Steps[1].Env[1].Name)
-	require.Equal(t, "DRACON_SCAN_TAGS", taskList[2].Spec.Steps[1].Env[2].Name)
+	require.Equal(t, "SMITHY_SCAN_TIME", taskList[2].Spec.Steps[1].Env[0].Name)
+	require.Equal(t, "SMITHY_SCAN_ID", taskList[2].Spec.Steps[1].Env[1].Name)
+	require.Equal(t, "SMITHY_SCAN_TAGS", taskList[2].Spec.Steps[1].Env[2].Name)
 	paramLen := len(taskList[2].Spec.Params)
 	require.Equal(t, taskList[2].Spec.Params[paramLen-4].Name, "anchors")
-	require.Equal(t, taskList[2].Spec.Params[paramLen-3].Name, "dracon_scan_id")
-	require.Equal(t, taskList[2].Spec.Params[paramLen-2].Name, "dracon_scan_start_time")
-	require.Equal(t, taskList[2].Spec.Params[paramLen-1].Name, "dracon_scan_tags")
+	require.Equal(t, taskList[2].Spec.Params[paramLen-3].Name, "smithy_scan_id")
+	require.Equal(t, taskList[2].Spec.Params[paramLen-2].Name, "smithy_scan_start_time")
+	require.Equal(t, taskList[2].Spec.Params[paramLen-1].Name, "smithy_scan_tags")
 
 	helmFolder := t.TempDir()
-	require.NoError(t, constructPackage(helmFolder, "dracon-oss-components", semVer, draconVersion, taskList))
+	require.NoError(t, constructPackage(helmFolder, "smithy-security-oss-components", semVer, smithyVersion, taskList))
 	require.FileExists(t, path.Join(helmFolder, "Chart.yaml"))
 	chartFileContents, err := os.ReadFile(path.Join(helmFolder, "Chart.yaml"))
 	require.NoError(t, err)
@@ -71,9 +71,9 @@ func TestCreateHelmPackage(t *testing.T) {
 		t,
 		fmt.Sprintf(`apiVersion: v2
 appVersion: %s
-name: dracon-oss-components
+name: smithy-security-oss-components
 version: %s
-`, draconVersion, semVer),
+`, smithyVersion, semVer),
 		string(chartFileContents),
 	)
 	require.FileExists(t, path.Join(path.Join(helmFolder, "templates", "tasks.yaml")))
@@ -189,8 +189,8 @@ func requireAnchors(t *testing.T, taskList []*tektonv1beta1api.Task) {
 //revive:disable:cyclomatic High complexity score but easy to understand
 //revive:disable:cognitive-complexity High complexity score but easy to understand
 func requireEnvVars(t *testing.T, taskList []*tektonv1beta1api.Task) {
-	envVars := []string{"DRACON_SCAN_TIME", "DRACON_SCAN_ID", "DRACON_SCAN_TAGS"}
-	params := []string{"dracon_scan_id", "dracon_scan_start_time", "dracon_scan_tags"}
+	envVars := []string{"SMITHY_SCAN_TIME", "SMITHY_SCAN_ID", "SMITHY_SCAN_TAGS"}
+	params := []string{"smithy_scan_id", "smithy_scan_start_time", "smithy_scan_tags"}
 	for _, task := range taskList {
 		taskParams := []string{}
 		if !strings.Contains(task.Name, "producer") || strings.Contains(task.Name, "aggregator") { // env vars are for producers only
