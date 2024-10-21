@@ -2,11 +2,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-checkov-project-
-  namespace: dracon
+  generateName: smithy-checkov-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-checkov-project
+    name: smithy-checkov-project
   params:
   - name: git-clone-url
     value:  https://github.com/bridgecrewio/cfngoat

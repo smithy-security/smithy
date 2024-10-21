@@ -2,10 +2,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-snyk-node-project-
+  generateName: smithy-snyk-node-project-
 spec:
   pipelineRef:
-    name: dracon-snyk-node-project
+    name: smithy-snyk-node-project
   params:
   - name: git-clone-url
     value: https://github.com/appsecco/dvna.git

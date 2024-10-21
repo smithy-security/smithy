@@ -2,11 +2,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-nancy-purl-project-
-  namespace: dracon
+  generateName: smithy-nancy-purl-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-nancy-purl-project
+    name: smithy-nancy-purl-project
   params:
   - name: source-dependency-purl
     value: pkg://golang/golang.org/x/text@v0.3.7

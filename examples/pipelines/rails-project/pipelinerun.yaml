@@ -2,10 +2,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-rails-project-
+  generateName: smithy-rails-project-
 spec:
   pipelineRef:
-    name: dracon-rails-project
+    name: smithy-rails-project
   params:
   - name: git-clone-url
     value: https://github.com/guilleiguaran/dvra

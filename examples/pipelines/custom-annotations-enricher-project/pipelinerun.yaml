@@ -2,10 +2,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-annotation-project-
+  generateName: smithy-annotation-project-
 spec:
   pipelineRef:
-    name: dracon-annotation-project
+    name: smithy-annotation-project
   params:
   - name: git-clone-url
     value: https://github.com/sqreen/go-dvwa.git

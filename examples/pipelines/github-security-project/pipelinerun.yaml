@@ -2,16 +2,16 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-ghas-project-
-  namespace: dracon
+  generateName: smithy-ghas-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-ghas-project
+    name: smithy-ghas-project
   params:
   - name: git-clone-url
-    value: https://github.com/ocurity/e2e-monorepo.git
+    value: https://github.com/smithy-security/e2e-monorepo.git
   - name: producer-github-codeql-repository-owner
-    value: ocurity
+    value: smithy-security
   - name: producer-github-codeql-repository-name
     value: e2e-monorepo
   # Insert your GitHub Personal Access Token (PAT) here
@@ -19,7 +19,7 @@ spec:
   - name: producer-github-codeql-github-token
     value: $github_pat_permissions_to_read_alerts_and_repos
   - name: producer-github-dependabot-repository-owner
-    value: ocurity
+    value: smithy-security
   - name: producer-github-dependabot-repository-name
     value: e2e-monorepo
   - name: producer-github-dependabot-github-token

@@ -2,14 +2,14 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-iac-project-
-  namespace: dracon
+  generateName: smithy-iac-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-iac-project
+    name: smithy-iac-project
   params:
   - name: repository_url
-    value: https://github.com/ocurity/e2e-monorepo.git
+    value: https://github.com/smithy-security/e2e-monorepo.git
   - name: producer-docker-trivy-target
     value: "ubuntu:latest"
   - name: producer-docker-trivy-format

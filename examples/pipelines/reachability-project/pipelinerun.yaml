@@ -3,10 +3,10 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   generateName: reachability-project-
-  namespace: dracon
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-reachability-project
+    name: smithy-reachability-project
   params:
   - name: git-clone-url
     value: https://github.com/fportantier/vulpy.git

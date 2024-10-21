@@ -2,10 +2,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-snyk-project-
+  generateName: smithy-snyk-project-
 spec:
   pipelineRef:
-    name: dracon-snyk-project
+    name: smithy-snyk-project
   params:
   - name: git-clone-url
     value: https://github.com/adeyosemanputra/pygoat.git

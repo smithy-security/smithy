@@ -2,14 +2,14 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-python-project-
-  namespace: dracon
+  generateName: smithy-python-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-python-project
+    name: smithy-python-project
   params:
   - name: git-clone-url
-    value: https://github.com/ocurity/e2e-monorepo.git
+    value: https://github.com/smithy-security/e2e-monorepo.git
   workspaces:
   - name: output
     subPath: source-code
