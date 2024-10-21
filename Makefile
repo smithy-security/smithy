@@ -13,12 +13,12 @@ GO_TEST_PACKAGES=$(shell go list ./... | grep -v /vendor/)
 # Deployment vars
 # The following variables are used to define the deployment environment
 # e.g. what are the versions of the components, or the container registry, these are used by make targets that deploy things
-CONTAINER_REPO=ghcr.io/ocurity/dracon
-SOURCE_CODE_REPO=https://github.com/ocurity/dracon
-DRACON_DEV_VERSION=$(shell echo $(latest_tag)$$([ $(commits_since_latest_tag) -eq 0 ] || echo "-$$(git log -n 1 --pretty='format:%h')" )$$([ -z "$$(git status --porcelain=v1 2>/dev/null)" ] || echo "-dirty" ))
-DRACON_VERSION=$(shell (echo $(CONTAINER_REPO) | grep -q '^ghcr' && echo $(latest_tag)) || echo $(DRACON_DEV_VERSION) )
-DRACON_OSS_COMPONENTS_NAME=dracon-oss-components
-DRACON_OSS_COMPONENTS_PACKAGE_URL=oci://ghcr.io/ocurity/dracon/charts/$(DRACON_OSS_COMPONENTS_NAME)
+CONTAINER_REPO=ghcr.io/smithy-security/smithy
+SOURCE_CODE_REPO=https://github.com/smithy-security/smithy
+SMITHY_DEV_VERSION=$(shell echo $(latest_tag)$$([ $(commits_since_latest_tag) -eq 0 ] || echo "-$$(git log -n 1 --pretty='format:%h')" )$$([ -z "$$(git status --porcelain=v1 2>/dev/null)" ] || echo "-dirty" ))
+SMITHY_VERSION=$(shell (echo $(CONTAINER_REPO) | grep -q '^ghcr' && echo $(latest_tag)) || echo $(SMITHY_DEV_VERSION) )
+SMITHY_OSS_COMPONENTS_NAME=smithy-security-oss-components
+SMITHY_OSS_COMPONENTS_PACKAGE_URL=oci://ghcr.io/smithy-security/smithy/charts/$(SMITHY_OSS_COMPONENTS_NAME)
 
 TEKTON_VERSION=0.44.0
 TEKTON_DASHBOARD_VERSION=0.29.2
@@ -31,7 +31,7 @@ ES_OPERATOR_VERSION=2.2.0
 ES_VERSION=8.3.2
 MONGODB_VERSION=13.3.0
 PG_VERSION=11.9.8
-DRACON_NS=dracon
+SMITHY_NS=smithy
 TEKTON_NS=tekton-pipelines
 ARANGODB_NS=arangodb
 
@@ -44,7 +44,7 @@ export
 ########################################
 ############# BUILD TARGETS ############
 ########################################
-.PHONY: components component-binaries cmd/draconctl/bin protos build publish-component-containers publish-containers draconctl-image draconctl-image-publish clean-protos clean
+.PHONY: components component-binaries cmd/smithyctl/bin protos build publish-component-containers publish-containers smithyctl-image smithyctl-image-publish clean-protos clean
 
 $(component_binaries):
 	./scripts/build_component_binary.sh $@
@@ -58,23 +58,23 @@ $(component_containers): %/docker: %/bin
 
 components: $(component_containers)
 
-cmd/draconctl/bin:
+cmd/smithyctl/bin:
 	$(eval GOOS:=linux)
 	$(eval GOARCH:=amd64)
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/cmd/$(GOOS)/$(GOARCH)/draconctl cmd/draconctl/main.go
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/cmd/$(GOOS)/$(GOARCH)/smithyctl cmd/smithyctl/main.go
 
-draconctl-image: cmd/draconctl/bin
+smithyctl-image: cmd/smithyctl/bin
 	$(eval GOOS:=linux)
 	$(eval GOARCH:=amd64)
-	$(DOCKER) build -t "${CONTAINER_REPO}/draconctl:${DRACON_VERSION}" \
+	$(DOCKER) build -t "${CONTAINER_REPO}/smithyctl:${SMITHY_VERSION}" \
 		--build-arg GOOS=$(GOOS) \
 		--build-arg GOARCH=$(GOARCH) \
 		$$([ "${SOURCE_CODE_REPO}" != "" ] && echo "--label=org.opencontainers.image.source=${SOURCE_CODE_REPO}" ) \
-		-f containers/Dockerfile.draconctl . \
+		-f containers/Dockerfile.smithyctl . \
 		--platform "$(GOOS)/$(GOARCH)"
 
-draconctl-image-publish: draconctl-image
-	$(DOCKER) push "${CONTAINER_REPO}/draconctl:${DRACON_VERSION}"
+smithyctl-image-publish: smithyctl-image
+	$(DOCKER) push "${CONTAINER_REPO}/smithyctl:${SMITHY_VERSION}"
 
 third_party/tektoncd/swagger-v$(TEKTON_VERSION).json:
 	@wget "https://raw.githubusercontent.com/tektoncd/pipeline/v$(TEKTON_VERSION)/pkg/apis/pipeline/v1beta1/swagger.json" -O $@
@@ -95,7 +95,7 @@ $(component_containers_publish): %/publish: %/docker
 
 publish-component-containers: $(component_containers_publish)
 
-publish-containers: publish-component-containers draconctl-image-publish
+publish-containers: publish-component-containers smithyctl-image-publish
 
 clean-protos:
 	@find . -not -path './vendor/*' -name '*.pb.go' -delete
@@ -135,7 +135,7 @@ go-tests:
 go-cover: go-tests
 	@go tool cover -html=tests/output/cover.out -o=tests/output/cover.html && open tests/output/cover.html
 
-migration-tests: cmd/draconctl/bin
+migration-tests: cmd/smithyctl/bin
 	cd tests/migrations/ && docker compose up --abort-on-container-exit --build --exit-code-from tester
 
 test: go-tests migration-tests
@@ -169,7 +169,7 @@ print-%:
 ########## DEPLOYMENT TARGETS ##########
 ########################################
 .PHONY: deploy-nginx deploy-arangodb-crds deploy-arangodb-operator add-es-helm-repo deploy-elasticoperator \
-		tektoncd-dashboard-helm deploy-tektoncd-dashboard add-bitnami-repo dev-dracon dev-deploy dev-teardown \
+		tektoncd-dashboard-helm deploy-tektoncd-dashboard add-bitnami-repo dev-smithy dev-deploy dev-teardown \
 		install install-oss-components deploy-cluster
 
 deploy-nginx:
@@ -229,16 +229,16 @@ deploy-cluster:
 
 install: deploy-cluster dev-infra deploy-elasticoperator deploy-arangodb-crds add-bitnami-repo
 	@echo "fetching dependencies if needed"
-	@helm dependency build ./deploy/dracon/chart
+	@helm dependency build ./deploy/smithy/chart
 
-	@echo "deploying dracon"
-	@helm upgrade dracon ./deploy/dracon/chart \
+	@echo "deploying smithy"
+	@helm upgrade smithy ./deploy/smithy/chart \
 		--install \
-		--values ./deploy/dracon/values/dev.yaml \
+		--values ./deploy/smithy/values/dev.yaml \
 		--create-namespace \
 		--set "image.registry=$(CONTAINER_REPO)" \
-		--namespace $(DRACON_NS) \
-		--version $(DRACON_VERSION) \
+		--namespace $(SMITHY_NS) \
+		--version $(SMITHY_VERSION) \
 		--wait
 
 	@echo "Applying migrations"
@@ -247,69 +247,69 @@ install: deploy-cluster dev-infra deploy-elasticoperator deploy-arangodb-crds ad
 		--values ./deploy/deduplication-db-migrations/values/dev.yaml \
 		--create-namespace \
 		--set "image.registry=$(CONTAINER_REPO)" \
-		--namespace $(DRACON_NS) \
-		--set "image.tag=$(DRACON_VERSION)" \
+		--namespace $(SMITHY_NS) \
+		--set "image.tag=$(SMITHY_VERSION)" \
 		--wait
 
 	@echo "Installing Components"
 	# we are setting the container repo to it's own value so that we can override it from other make targets
 	# e.g. when installing oss components from locally built components, we want to `make install` with CONTAINER_REPO being the kind-registry, and the package_url being the component tar.gz
-	$(MAKE) install-oss-components CONTAINER_REPO=$(CONTAINER_REPO) DRACON_OSS_COMPONENTS_PACKAGE_URL=$(DRACON_OSS_COMPONENTS_PACKAGE_URL)
+	$(MAKE) install-oss-components CONTAINER_REPO=$(CONTAINER_REPO) SMITHY_OSS_COMPONENTS_PACKAGE_URL=$(SMITHY_OSS_COMPONENTS_PACKAGE_URL)
 
 dev-deploy-oss-components:
-	@echo "Deploying components in local dracon instance"
+	@echo "Deploying components in local smithy instance"
 	$(MAKE) dev-build-oss-components CONTAINER_REPO=$(CONTAINER_REPO)
-	$(MAKE) install-oss-components CONTAINER_REPO=$(CONTAINER_REPO) DRACON_OSS_COMPONENTS_PACKAGE_URL=$(DRACON_OSS_COMPONENTS_PACKAGE_URL)
+	$(MAKE) install-oss-components CONTAINER_REPO=$(CONTAINER_REPO) SMITHY_OSS_COMPONENTS_PACKAGE_URL=$(SMITHY_OSS_COMPONENTS_PACKAGE_URL)
 
 install-oss-components:
-	@helm upgrade $(DRACON_OSS_COMPONENTS_NAME) \
-		$(DRACON_OSS_COMPONENTS_PACKAGE_URL) \
+	@helm upgrade $(SMITHY_OSS_COMPONENTS_NAME) \
+		$(SMITHY_OSS_COMPONENTS_PACKAGE_URL) \
 		--install \
 		--create-namespace \
-		--namespace $(DRACON_NS) \
+		--namespace $(SMITHY_NS) \
 		--set image.registry=$(CONTAINER_REPO) \
 		--values ./deploy/deduplication-db-migrations/values/dev.yaml
-	@echo "Done! Bumped version to $(DRACON_VERSION)"
+	@echo "Done! Bumped version to $(SMITHY_VERSION)"
 
 dev-build-oss-components:
-	@echo "Building open-source components for local dracon instance..."
+	@echo "Building open-source components for local smithy instance..."
 	$(eval GOOS:=linux)
 	$(eval GOARCH:=amd64)
-	$(eval CONTAINER_REPO:=localhost:5000/ocurity/dracon)
+	$(eval CONTAINER_REPO:=localhost:5000/smithy-security/smithy)
 	$(eval TMP_DIR:=tmp)
 
 	@mkdir $(TMP_DIR)
-	$(MAKE) cmd/draconctl/bin
+	$(MAKE) cmd/smithyctl/bin
 	$(MAKE) -j 16 publish-component-containers CONTAINER_REPO=$(CONTAINER_REPO)
 	@docker run \
 		--platform $(GOOS)/$(GOARCH) \
 		-v ./components:/components \
 		-v ./tmp:/tmp \
-		$(CONTAINER_REPO)/draconctl:$(DRACON_VERSION) components package \
-			--version $(DRACON_VERSION) \
-			--chart-version $(DRACON_VERSION) \
-			--name $(DRACON_OSS_COMPONENTS_NAME) \
+		$(CONTAINER_REPO)/smithyctl:$(SMITHY_VERSION) components package \
+			--version $(SMITHY_VERSION) \
+			--chart-version $(SMITHY_VERSION) \
+			--name $(SMITHY_OSS_COMPONENTS_NAME) \
 			./components
 	@rm -r $(TMP_DIR)
 
-dev-dracon:
+dev-smithy:
 	$(eval GOOS:=linux)
 	$(eval GOARCH:=amd64)
-	$(eval CONTAINER_REPO:=localhost:5000/ocurity/dracon)
-	$(eval DRACON_OSS_COMPONENTS_PACKAGE_URL:=./$(DRACON_OSS_COMPONENTS_NAME)-$(DRACON_VERSION).tgz)
-	$(eval IN_CLUSTER_CONTAINER_REPO:=kind-registry:5000/ocurity/dracon)
+	$(eval CONTAINER_REPO:=localhost:5000/smithy-security/smithy)
+	$(eval SMITHY_OSS_COMPONENTS_PACKAGE_URL:=./$(SMITHY_OSS_COMPONENTS_NAME)-$(SMITHY_VERSION).tgz)
+	$(eval IN_CLUSTER_CONTAINER_REPO:=kind-registry:5000/smithy-security/smithy)
 
-	$(MAKE) -j 16 draconctl-image-publish CONTAINER_REPO=$(CONTAINER_REPO)
+	$(MAKE) -j 16 smithyctl-image-publish CONTAINER_REPO=$(CONTAINER_REPO)
 	$(MAKE) -j 16 dev-build-oss-components CONTAINER_REPO=$(CONTAINER_REPO)
 
-	$(MAKE) install CONTAINER_REPO=$(IN_CLUSTER_CONTAINER_REPO) DRACON_OSS_COMPONENTS_PACKAGE_URL=$(DRACON_OSS_COMPONENTS_PACKAGE_URL)
+	$(MAKE) install CONTAINER_REPO=$(IN_CLUSTER_CONTAINER_REPO) SMITHY_OSS_COMPONENTS_PACKAGE_URL=$(SMITHY_OSS_COMPONENTS_PACKAGE_URL)
 
 dev-infra: deploy-nginx deploy-tektoncd-pipeline deploy-tektoncd-dashboard
 
-dev-deploy: deploy-cluster dev-infra dev-dracon
+dev-deploy: deploy-cluster dev-infra dev-smithy
 
 dev-teardown:
-	@kind delete clusters dracon-demo
+	@kind delete clusters smithy-demo
 
 build-buf-container:
 	$(DOCKER) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf

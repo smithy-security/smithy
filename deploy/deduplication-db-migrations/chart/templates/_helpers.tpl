@@ -70,6 +70,6 @@ Create the name of the service account to use
 {{- if .Values.image.repository }}
 {{- printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion )}}
 {{- else }}
-{{- printf "%s/%s:%s" (.Values.image.registry | default "ghcr.io/ocurity/dracon") "draconctl" (.Values.image.tag | default .Chart.AppVersion )}}
+{{- printf "%s/%s:%s" (.Values.image.registry | default "ghcr.io/smithy-security/smithy") "smithyctl" (.Values.image.tag | default .Chart.AppVersion )}}
 {{- end }}
 {{- end }}

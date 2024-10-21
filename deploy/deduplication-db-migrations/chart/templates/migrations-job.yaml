@@ -24,10 +24,10 @@ spec:
         image: "{{ include "deduplication_db_migrations.imageName" . }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
-          - name: DRACONCTL_MIGRATIONS_PATH
-            value: "/etc/dracon/migrations/enrichment"
+          - name: SMITHYCTL_MIGRATIONS_PATH
+            value: "/etc/smithy/migrations/enrichment"
         command:
-        - draconctl
+        - smithyctl
         - migrations
         - apply
         - --url

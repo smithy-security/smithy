@@ -2,17 +2,17 @@
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: {{ include "dracon.fullname" . }}
+  name: {{ include "smithy.fullname" . }}
   annotations:
     "helm.sh/hook": post-install,post-upgrade
   labels:
-    {{- include "dracon.labels" . | nindent 4 }}
+    {{- include "smithy.labels" . | nindent 4 }}
 spec:
   version: {{ .Values.kibana.version }}
   image: docker.elastic.co/kibana/kibana:{{ .Values.kibana.version }}
   count: 1
   elasticsearchRef:
-    name: {{ include "dracon.fullname" . }}
+    name: {{ include "smithy.fullname" . }}
   http:
     tls:
       selfSignedCertificate:

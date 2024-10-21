@@ -1,7 +1,7 @@
 apiVersion: v2
-name: dracon
+name: smithy
 description: |
-  A Helm chart for Kubernetes containing services needed for Dracon pipelines to run. Please check the documentation for more information
+  A Helm chart for Kubernetes containing services needed for Smithy pipelines to run. Please check the documentation for more information
 type: application
 version: 0.7.0
 appVersion: 0.7.0
