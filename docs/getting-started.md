@@ -74,7 +74,11 @@ This will take a while, so we invite you to go and grab a coffee!
 
 For example, we can deploy a pipeline for the `golang-project`.
 
-You can do so by executing `./bin/cmd/path/to/smithyctl ./examples/pipelines/golang-project`.
+You can do so by executing `./bin/cmd/path/to/smithyctl pipelines deploy ./examples/pipelines/golang-project`.
+
+For example:
+
+`./bin/cmd/linux/amd64/smithyctl pipelines deploy ./examples/pipelines/golang-project`.
 
 ### Execute a pipeline
 
