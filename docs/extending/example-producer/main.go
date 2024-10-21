@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
-	"github.com/ocurity/dracon/components/producers"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 
 	issues := parseIssues(&results)
 
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"example-tool",
 		issues,
 	); err != nil {

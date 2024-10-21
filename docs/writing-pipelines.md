@@ -3,7 +3,7 @@
 Composing pipelines is easy, just 4 steps.
 
 1. Write a `kustomization.yaml` file pointing to the components you want to use.
-2. Run `draconctl pipelines build <path/to/kustomization.yaml>` and redirect the
+2. Run `smithyctl pipelines build <path/to/kustomization.yaml>` and redirect the
    output to a yaml file. This automatically collects all the component yamls to
    a single templated file.
 3. Write a helm `Chart.yaml` for your pipeline
@@ -18,7 +18,7 @@ We can compose this pipeline by writing the following `kustomization.yaml`
 
 In the following file:
 
-* we tell `draconctl` that we want the pipeline pods to have the suffix
+* we tell `smithyctl` that we want the pipeline pods to have the suffix
   `*-golang-project`
 * it should base everything to the official `task.yaml` and `pipeline.yaml`
 * it should start by running a `git clone` to bring the code in for scanning
@@ -26,7 +26,7 @@ In the following file:
 * it should aggregate the scanning results
 * enrich the results by applying policy and deduplicating
 * it should aggregate the enriched results
-* finally `draconctl` should push results to `mongodb` and `elasticsearch`
+* finally `smithyctl` should push results to `mongodb` and `elasticsearch`
 
 ```yaml
 ---
@@ -46,15 +46,15 @@ components:
   - /components/consumers/elasticsearch
 ```
 
-Then executing `draconctl pipelines build ./go-pipeline/kustomization.yaml > ./go-pipeline/templates/all.yaml`
+Then executing `smithyctl pipelines build ./go-pipeline/kustomization.yaml > ./go-pipeline/templates/all.yaml`
 generates a Helm template.
 To make the template into a chart we create the following `Chart.yaml`
 
 ```yaml
 # file: ./go-pipeline/Chart.yaml
 apiVersion: v2
-name: "dracon-golang-project"
-description: "A Helm chart for deploying a Dracon pipeline for a Golang project."
+name: "smithy-golang-project"
+description: "A Helm chart for deploying a Smithy pipeline for a Golang project."
 type: "application"
 version: 0.0.1
 appVersion: "0.0.1"
@@ -64,8 +64,8 @@ We can manage this chart as any other Helm chart and install it with:
 
 ```bash
 helm upgrade go-pipeline ./go-pipeline --install \
-     --set "image.registry=kind-registry:5000/ocurity/dracon" \
-     --set "dracon_os_component_version=$(make print-DRACON_VERSION)"
+     --set "image.registry=kind-registry:5000/smithy-security/smithy" \
+     --set "smithy_os_component_version=$(make print-SMITHY_VERSION)"
 ```
 
 and that's it!

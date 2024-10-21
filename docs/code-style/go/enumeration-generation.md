@@ -11,7 +11,7 @@ anything locally. To generate a new type:
 1. State your desired type in one of your files like so:
 
 ```go
-// ComponentType represents all the types of components that Dracon supports
+// ComponentType represents all the types of components that Smithy supports
 // ENUM(unknown, base, source, producer, producer-aggregator, enricher, enricher-aggregator, consumer)
 type ComponentType string
 ```
@@ -38,11 +38,11 @@ docker run -w /app -v $(pwd):/app abice/go-enum --file /app/pkg/components/mytyp
 
 ENUMs that we have already generated with go-enum
 
-* [/pkg/components/componenttype\_enum.go](https://github.com/ocurity/dracon/blob/6da5a594328861fe09dea9570956276d5291215c/pkg/components/componenttype_enum.go)
+* [/pkg/components/componenttype\_enum.go](https://github.com/smithy-security/smithy/blob/6da5a594328861fe09dea9570956276d5291215c/pkg/components/componenttype_enum.go)
   * ```bash
     docker run -w /app -v $(pwd):/app abice/go-enum --file /app/pkg/components/metadata.go --marshal --mustparse --sqlnullstr --sql --names --values --noprefix -b components 
     ```
-* [/pkg/components/orchestrationtype\_enum.go](https://github.com/ocurity/dracon/blob/8ba832b1cde7bac043d48eaf3401d6b9ea0ed275/pkg/components/orchestrationtype_enum.go)
+* [/pkg/components/orchestrationtype\_enum.go](https://github.com/smithy-security/smithy/blob/8ba832b1cde7bac043d48eaf3401d6b9ea0ed275/pkg/components/orchestrationtype_enum.go)
   * ```bash
     docker run -w /app -v $(pwd):/app abice/go-enum --file /app/pkg/components/types.go --marshal --lower --ptr --mustparse --sqlnullstr --sql --names -b components
     ```

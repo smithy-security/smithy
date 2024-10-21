@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: producer-example-tool
   labels:
-    v1.dracon.ocurity.com/component: producer
+    v1.smithy.smithy-security.com/component: producer
 spec:
   params:
   - name: producer-golang-example-tool
@@ -36,11 +36,11 @@ spec:
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: {{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/example-tool:{{ .Chart.AppVersion }}
+    image: {{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/example-tool:{{ .Chart.AppVersion }}
     command: ["/app/components/producers/example-tool/example-tool-parser"]
     args:
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.dracon/producers/example-tool.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/example-tool.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch
