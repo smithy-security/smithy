@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package ocurity.dracon.v1;
+package smithy.security.smithy.v1;
 
 import "api/proto/v1/issue.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/ocurity/dracon/api/proto/v1";
+option go_package = "github.com/smithy-security/smithy/api/proto/v1";
 
 /*
    Scan related information, unique and immutable per scan run
@@ -29,7 +29,7 @@ message LaunchToolResponse {
   // The name of the tool that ran the scan
   string tool_name = 2;
   // Issues discovered during the scan
-  repeated dracon.v1.Issue issues = 3;
+  repeated smithy.v1.Issue issues = 3;
   // The target of the scan
   string scan_target = 4;
 }

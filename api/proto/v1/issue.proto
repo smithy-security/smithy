@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package ocurity.dracon.v1;
+package smithy.security.smithy.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/ocurity/dracon/api/proto/v1";
+option go_package = "github.com/smithy-security/smithy/api/proto/v1";
 
 /* Confidence represents the tool's confidence that an issue exists */
 enum Confidence {
@@ -54,7 +54,7 @@ message Issue {
   Confidence confidence = 6;
   // human readable description of the issue
   string description = 7;
-  // Source of the scan e.g. https://github.com/ocurity/dracon.git?ref=<revision>, github.com:tektoncd/pipeline.git?ref=<revision>, local?ref=local
+  // Source of the scan e.g. https://github.com/smithy-security/smithy.git?ref=<revision>, github.com:tektoncd/pipeline.git?ref=<revision>, local?ref=local
   string source = 8;
   // [Optional] the CVE causing this vulnerability
   string cve = 9;
