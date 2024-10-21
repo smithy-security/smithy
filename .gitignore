@@ -6,5 +6,5 @@ bin
 .custom_image
 tests/output
 .vscode/
-deploy/dracon/chart/charts
+deploy/smithy/chart/charts
 .idea/
