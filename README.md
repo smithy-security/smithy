@@ -1,18 +1,18 @@
-# Dracon
+# Smithy
 
-[![Lint](https://github.com/ocurity/dracon/actions/workflows/lint.yml/badge.svg)](https://github.com/ocurity/dracon/actions/workflows/lint.yml)
-[![Format](https://github.com/ocurity/dracon/actions/workflows/format.yml/badge.svg)](https://github.com/ocurity/dracon/actions/workflows/format.yml)
-[![Test](https://github.com/ocurity/dracon/actions/workflows/test.yml/badge.svg)](https://github.com/ocurity/dracon/actions/workflows/test.yml)
-[![Publish](https://github.com/ocurity/dracon/actions/workflows/publish.yml/badge.svg)](https://github.com/ocurity/dracon/actions/workflows/publish.yml)
+[![Lint](https://github.com/smithy-security/smithy/actions/workflows/lint.yml/badge.svg)](https://github.com/smithy-security/smithy/actions/workflows/lint.yml)
+[![Format](https://github.com/smithy-security/smithy/actions/workflows/format.yml/badge.svg)](https://github.com/smithy-security/smithy/actions/workflows/format.yml)
+[![Test](https://github.com/smithy-security/smithy/actions/workflows/test.yml/badge.svg)](https://github.com/smithy-security/smithy/actions/workflows/test.yml)
+[![Publish](https://github.com/smithy-security/smithy/actions/workflows/publish.yml/badge.svg)](https://github.com/smithy-security/smithy/actions/workflows/publish.yml)
 
 <p align="center">
-  <img alt="dracon-logo-dark-mode" src="assets/dracon-logo-light.svg#gh-dark-mode-only"/>
+  <img alt="smithy-logo-dark-mode" src="assets/smithy-logo-light.svg#gh-dark-mode-only"/>
 </p>
 <p align="center">
-  <img alt="dracon-logo-light-mode" src="assets/dracon-logo-dark.svg#gh-light-mode-only"/>
+  <img alt="smithy-logo-light-mode" src="assets/smithy-logo-dark.svg#gh-light-mode-only"/>
 </p>
 
-By [Ocurity](https://ocurity.com)
+By [Smithy](https://smithy.security/)
 Security scanning,results unification and enrichment tool
 ([ASOC](https://www.gartner.com/reviews/market/application-security-orchestration-and-correlation-asoc-tools))
 
@@ -66,13 +66,13 @@ flowchart LR
 ## Getting Started
 
 The [Getting Started](docs/getting-started.md) tutorial explains
-how to get started with Dracon.
+how to get started with Smithy.
 You can also access our community contributed pipelines
-[here](https://github.com/ocurity/dracon-community-pipelines).
+[here](https://github.com/smithy-security/smithy-community-pipelines).
 
 ## Announcements
 
-This version of Dracon was announced at OWASP Appsec Dublin in 2023. Check out
+This version of Smithy was announced at OWASP Appsec Dublin in 2023. Check out
 [the slides](docs/presentations/Global_AppSecDublin_Presentation.pdf) and
 [the video](https://www.youtube.com/watch?app=desktop\&list=PLpr-xdpM8wG8479ud_l4W93WU5MP2bg78\&v=i9j7n0WDBO0\&feature=youtu.be)
 of the presentation.
@@ -80,7 +80,7 @@ of the presentation.
 ## Support
 
 If you have questions, reach out to us by opening a new
-[issue](https://github.com/ocurity/dracon/issues/new) on GitHub.
+[issue](https://github.com/smithy-security/smithy/issues/new) on GitHub.
 
 You can also get support on our [Discord server](https://discord.gg/xzsHxUxK).
 
@@ -91,5 +91,5 @@ and [releasing](docs/contributers/RELEASES.md) guides on how to get started.
 
 ## License
 
-Dracon is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for
+Smithy is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for
 details.
