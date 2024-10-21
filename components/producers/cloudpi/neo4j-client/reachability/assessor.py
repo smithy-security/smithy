@@ -1,8 +1,9 @@
 from neo4j import GraphDatabase
-
-uri = "bolt://localhost:7687"
+import os
 
 # Create a Neo4j driver instance
+uri = os.getenv("DATABASE_URI")
+print(f"querying endpoint {uri}")
 driver = GraphDatabase.driver(uri)
 
 def get_snapshosts_exposed():

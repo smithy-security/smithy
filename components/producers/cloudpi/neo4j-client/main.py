@@ -1,6 +1,5 @@
 from reachability import assessor
 from trivy import run
-import os
 
 
 def main():

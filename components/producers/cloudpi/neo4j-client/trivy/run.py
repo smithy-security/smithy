@@ -6,7 +6,7 @@ def scan_ebs(snap_name):
         # Run Trivy scan command for the specified ebs
         # trivy vm --scanners vuln ebs:snap-02f3d4e008898f8d0 --aws-region eu-west-1
         result = subprocess.run(
-            ['trivy', 'vm', '--scanners', 'vuln', '--format', 'json', f"ebs:{snap_name}"],
+            ['trivy', 'vm', '--scanners', 'vuln', '--format', 'json', '--severity', 'CRITICAL', f"ebs:{snap_name}"],
             capture_output=True,
             text=True,
             check=True
