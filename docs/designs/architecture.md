@@ -21,8 +21,8 @@ Smithy has 3 types of components:
 
 Each Task must be labelled with the type of component that is packaged in the
 image it references.
-The label must have the name `v1.smithy.smithy-security.com/component` and the value
-must be one of:
+The label must have the name
+`v1.smithy.smithy-security.com/component` and the value must be one of:
 
 1. consumer
 2. producer
