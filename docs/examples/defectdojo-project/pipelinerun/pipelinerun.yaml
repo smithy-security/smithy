@@ -2,16 +2,16 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-defectdojo-project-
-  namespace: dracon
+  generateName: smithy-defectdojo-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-defectdojo-project
+    name: smithy-defectdojo-project
   params:
   - name: repository_url
     value:  https://github.com/trufflesecurity/test_keys
   - name: consumer-defectdojo-url
-    value: http://defectdojo.cyberdyne.dracon.cloud.localhost:8080/api/v2/
+    value: http://defectdojo.cyberdyne.smithy.cloud.localhost:8080/api/v2/
   - name: consumer-defectdojo-user
     value: "admin"
   - name: consumer-defectdojo-token
@@ -19,7 +19,7 @@ spec:
   - name: consumer-defectdojo-product-id
     value: "the numerical id for a defect dojo product under which these vulns will be created"
   - name: consumer-defectdojo-description-template
-    value: "Dracon found '{{.RawIssue.Title}}' at '{{.RawIssue.Target}}', severity '{{.RawIssue.Severity}}', rule id: '{{.RawIssue.Type}}', CVSS '{{.RawIssue.Cvss}}' Confidence '{{.RawIssue.Confidence}}' Original Description: {{.RawIssue.Description}}, Cve {{.RawIssue.Cve}},\n{{ range $key,$element := .Annotations }}{{$key}}:{{$element}}\n{{end}}"
+    value: "Smithy found '{{.RawIssue.Title}}' at '{{.RawIssue.Target}}', severity '{{.RawIssue.Severity}}', rule id: '{{.RawIssue.Type}}', CVSS '{{.RawIssue.Cvss}}' Confidence '{{.RawIssue.Confidence}}' Original Description: {{.RawIssue.Description}}, Cve {{.RawIssue.Cve}},\n{{ range $key,$element := .Annotations }}{{$key}}:{{$element}}\n{{end}}"
   workspaces:
   - name: output
     subPath: source-code

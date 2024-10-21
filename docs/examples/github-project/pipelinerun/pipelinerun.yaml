@@ -2,11 +2,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-github-project-
-  namespace: dracon
+  generateName: smithy-github-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-github-project
+    name: smithy-github-project
   params:
   - name: repository_url
     value: "some repository to scan e.g. https://github.com/northdpole/go-dvwa"

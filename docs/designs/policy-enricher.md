@@ -12,7 +12,7 @@ As a user of this application I should be able to:
 * Upload and manage a set of rules in some DSL
 * Build policies in a user friendly way
 * Have a set of example default policies available for testing
-* Have Dracon apply the rules to the findings of a pipelinerun
+* Have Smithy apply the rules to the findings of a pipelinerun
 * Get enriched results with information of which policies passed and which
   failed
 * Control which policies apply to which pipeline
@@ -39,7 +39,7 @@ solution that supports the S3 API.
 
 ### API changes
 
-Currently the API dracon uses supports only the following fields in a raw
+Currently the API smithy uses supports only the following fields in a raw
 finding:
 
 ```proto
@@ -54,7 +54,7 @@ double cvss = 5;
 Confidence confidence = 6;
 // human readable description of the issue
 string description = 7; 
-// https://github.com/ocurity/dracon.git?ref=<revision>, github.com:tektoncd/pipeline.git?ref=<revision>, local?ref=local
+// https://github.com/smithy-security/smithy.git?ref=<revision>, github.com:tektoncd/pipeline.git?ref=<revision>, local?ref=local
 string source = 8; 
 // [Optional] the CVE causing this vulnerability
 string cve = 9; 
@@ -100,7 +100,7 @@ message EnrichedIssue {
 }
 ```
 
-This backwards compatible change allows dracon to optionally append policy
+This backwards compatible change allows smithy to optionally append policy
 information to a message.
 
 ### Enricher execution changes
