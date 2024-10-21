@@ -28,26 +28,26 @@ jobs:
       - name: Publish Docker images
         run: |
           make -j 16 publish-containers
-          make draconctl-image-publish DRACON_VERSION=latest
+          make smithyctl-image-publish SMITHY_VERSION=latest
 
       - name: Publish component Helm package
         run: |
           set -e
-          DRACON_VERSION_SEMVER=$(sed 's/v//' <<< ${{ github.ref_name }})
+          SMITHY_VERSION_SEMVER=$(sed 's/v//' <<< ${{ github.ref_name }})
 
           # Package and Publish Migrations
           # this must be the first step, because the migrations are a dependency of the components
           # it is not set explicitly yet as a dependency, but it will be set soon
           helm package --dependency-update \
                        --app-version ${{ github.ref_name }} \
-                       --version ${DRACON_VERSION_SEMVER} \
+                       --version ${SMITHY_VERSION_SEMVER} \
                        ./deploy/deduplication-db-migrations/chart
-          helm push deduplication-db-migrations-${DRACON_VERSION_SEMVER}.tgz oci://ghcr.io/ocurity/dracon/charts
+          helm push deduplication-db-migrations-${SMITHY_VERSION_SEMVER}.tgz oci://ghcr.io/smithy-security/smithy/charts
 
-          make cmd/draconctl/bin
+          make cmd/smithyctl/bin
           # Package and Publish Components
-          bin/cmd/linux/amd64/draconctl components package --version ${{ github.ref_name }} \
-                                               --chart-version ${DRACON_VERSION_SEMVER} \
-                                               --name dracon-oss-components \
+          bin/cmd/linux/amd64/smithyctl components package --version ${{ github.ref_name }} \
+                                               --chart-version ${SMITHY_VERSION_SEMVER} \
+                                               --name smithy-security-oss-components \
                                                ./components
-          helm push dracon-oss-components-${DRACON_VERSION_SEMVER}.tgz oci://ghcr.io/ocurity/dracon/charts
+          helm push smithy-security-oss-components-${SMITHY_VERSION_SEMVER}.tgz oci://ghcr.io/smithy-security/smithy/charts

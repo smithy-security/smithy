@@ -4,13 +4,13 @@ repository:
   # See https://docs.github.com/en/rest/reference/repos#update-a-repository for all available settings.
 
   # The name of the repository. Changing this will rename the repository
-  name: 'dracon'
+  name: 'smithy'
 
   # A short description of the repository that will show up on GitHub
-  description: 'Security scanning & static analysis tool - forked and rewritten from @thought-machine/dracon'
+  description: 'Security scanning & static analysis tool - forked and rewritten from @thought-machine/smithy'
 
   # A URL with more information about the repository
-  homepage: 'https://ocurity.com'
+  homepage: 'https://smithy.security/'
 
   # A comma-separated list of topics to set on the repository
   topics: 'SAST, DAST, DevSecOps, Pipelines, Tekton'
