@@ -2,11 +2,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-sca-project-
-  namespace: dracon
+  generateName: smithy-sca-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-sca-project
+    name: smithy-sca-project
   params:
   - name: producer-docker-trivy-target
     value: python:3.4-alpine

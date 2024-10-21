@@ -2,13 +2,13 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-jira-project-
+  generateName: smithy-jira-project-
 spec:
   pipelineRef:
-    name: dracon-jira-project
+    name: smithy-jira-project
   params:
   - name: git-clone-url
-    value: https://github.com/ocurity/e2e-monorepo.git
+    value: https://github.com/smithy-security/e2e-monorepo.git
   - name: consumer-jira-url
     value: "$jira_url"
   - name: consumer-jira-api-token

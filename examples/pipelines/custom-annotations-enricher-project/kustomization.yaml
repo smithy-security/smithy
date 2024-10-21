@@ -3,10 +3,10 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 nameSuffix: -annotation-project
 components:
-  - pkg:helm/dracon-oss-components/base
-  - pkg:helm/dracon-oss-components/git-clone
-  - pkg:helm/dracon-oss-components/producer-golang-gosec
-  - pkg:helm/dracon-oss-components/producer-aggregator
-  - pkg:helm/dracon-oss-components/enricher-custom-annotation
-  - pkg:helm/dracon-oss-components/enricher-aggregator
-  - pkg:helm/dracon-oss-components/consumer-stdout-json
+  - pkg:helm/smithy-security-oss-components/base
+  - pkg:helm/smithy-security-oss-components/git-clone
+  - pkg:helm/smithy-security-oss-components/producer-golang-gosec
+  - pkg:helm/smithy-security-oss-components/producer-aggregator
+  - pkg:helm/smithy-security-oss-components/enricher-custom-annotation
+  - pkg:helm/smithy-security-oss-components/enricher-aggregator
+  - pkg:helm/smithy-security-oss-components/consumer-stdout-json

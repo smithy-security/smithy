@@ -2,14 +2,14 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-misc-project-
-  namespace: dracon
+  generateName: smithy-misc-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-misc-project
+    name: smithy-misc-project
   params:
   - name: repository_url
-    value: https://github.com/ocurity/e2e-monorepo.git
+    value: https://github.com/smithy-security/e2e-monorepo.git
   - name: producer-ossf-scorecard-input-repo
     value: github.com/ossf-tests/scorecard-check-branch-protection-e2e
   - name: producer-ossf-scorecard-github-auth-token

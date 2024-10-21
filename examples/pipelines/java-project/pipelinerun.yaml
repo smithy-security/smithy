@@ -2,14 +2,14 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-java-project-
-  namespace: dracon
+  generateName: smithy-java-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-java-project
+    name: smithy-java-project
   params:
   - name: repository_url
-    value: https://github.com/ocurity/e2e-monorepo.git
+    value: https://github.com/smithy-security/e2e-monorepo.git
   - name: b64-signature-key
   # THIS IS AN EXAMPLE, PLEASE USE A PROPERLY SECURED SECRET KEY IN PRODUCTION
   # Corresponding public key for verification is MOt7TFuLyGB9yRN5mcIeAPa6jKoFglkwEwGBTOVLeXI=

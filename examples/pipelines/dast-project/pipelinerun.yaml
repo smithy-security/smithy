@@ -2,11 +2,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-dast-project-
-  namespace: dracon
+  generateName: smithy-dast-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-dast-project
+    name: smithy-dast-project
   params:
   - name: b64-signature-key
   # THIS IS AN EXAMPLE, PLEASE USE A PROPERLY SECURED SECRET KEY IN PRODUCTION

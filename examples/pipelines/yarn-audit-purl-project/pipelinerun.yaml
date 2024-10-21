@@ -2,11 +2,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-yarn-audit-purl-project-
-  namespace: dracon
+  generateName: smithy-yarn-audit-purl-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-yarn-audit-purl-project
+    name: smithy-yarn-audit-purl-project
   params:
     - name: source-dependency-purl
       value: pkg:npm/simple-git@3.1.1

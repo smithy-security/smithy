@@ -2,14 +2,14 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: dracon-typescript-project-
-  namespace: dracon
+  generateName: smithy-typescript-project-
+  namespace: smithy
 spec:
   pipelineRef:
-    name: dracon-typescript-project
+    name: smithy-typescript-project
   params:
   - name: git-clone-url
-    # TODO(OCU-154): Switch to ocurity/e2e-monorepo
+    # TODO(OCU-154): Switch to smithy-security/e2e-monorepo
     value: https://github.com/appsecco/dvna.git
   workspaces:
   - name: output
