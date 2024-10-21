@@ -16,8 +16,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/enrichers"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/enrichers"
 )
 
 const (

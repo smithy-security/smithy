@@ -9,8 +9,8 @@ import (
 	"github.com/google/go-github/v65/github"
 	"github.com/stretchr/testify/require"
 
-	v1proto "github.com/ocurity/dracon/api/proto/v1"
-	clientmock "github.com/ocurity/dracon/pkg/github/mock"
+	v1proto "github.com/smithy-security/smithy/api/proto/v1"
+	clientmock "github.com/smithy-security/smithy/pkg/github/mock"
 )
 
 func TestParseIssues(t *testing.T) {

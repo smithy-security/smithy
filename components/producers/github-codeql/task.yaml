@@ -4,8 +4,8 @@ kind: Task
 metadata:
   name: producer-github-codeql
   labels:
-    v1.dracon.ocurity.com/component: producer
-    v1.dracon.ocurity.com/test-type: sast
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: sast
 spec:
   description: Retrieve a GitHub Code Scanning report from a GitHub repository.
   params:
@@ -27,7 +27,7 @@ spec:
   steps:
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    # image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/github-codeql:{{ .Chart.AppVersion }}'
+    # image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql:{{ .Chart.AppVersion }}'
     image: kind-registry:5000/components/producers/github-
     command: ["/app/components/producers/github-codeql/github-codeql-parser"]
     env:
@@ -37,7 +37,7 @@ spec:
         value: "100"
     args:
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.dracon/producers/github-codeql.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/github-codeql.pb"
     - "-github-token=$(params.producer-github-codeql-github-token)"
     - "-repository-owner=$(params.producer-github-codeql-repository-owner)"
     - "-repository-name=$(params.producer-github-codeql-repository-name)"

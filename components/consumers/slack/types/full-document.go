@@ -3,7 +3,7 @@ package types
 import (
 	"time"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 )
 
 // FullDocument represents a complete slack message that will be sent if the long-format switch is set.

@@ -5,23 +5,23 @@ import (
 	"log"
 	"os"
 
-	"github.com/ocurity/dracon/components/consumers"
+	"github.com/smithy-security/smithy/components/consumers"
 
-	"github.com/ocurity/dracon/components/consumers/jira/utils"
-	"github.com/ocurity/dracon/pkg/jira/config"
-	"github.com/ocurity/dracon/pkg/jira/jira"
+	"github.com/smithy-security/smithy/components/consumers/jira/utils"
+	"github.com/smithy-security/smithy/pkg/jira/config"
+	"github.com/smithy-security/smithy/pkg/jira/jira"
 )
 
 const (
 	// EnvJiraUser the Jira Username for the authentication (user@domain.com).
-	EnvJiraUser = "DRACON_JIRA_USER"
+	EnvJiraUser = "SMITHY_JIRA_USER"
 	// EnvJiraToken the Jira API token for the authentication.
 	//nolint:gosec
-	EnvJiraToken = "DRACON_JIRA_TOKEN"
+	EnvJiraToken = "SMITHY_JIRA_TOKEN"
 	// EnvJiraURL the domain to scrape.
-	EnvJiraURL = "DRACON_JIRA_URL"
+	EnvJiraURL = "SMITHY_JIRA_URL"
 	// EnvConfigPath the path towards the config.yaml file.
-	EnvConfigPath = "DRACON_JIRA_CONFIG_PATH"
+	EnvConfigPath = "SMITHY_JIRA_CONFIG_PATH"
 )
 
 var (
@@ -65,8 +65,8 @@ func main() {
 	// Authenticate Jira client
 	apiClient := jira.NewClient(authUser, authToken, jiraURL, dryRunMode, config)
 
-	// Parse Dracon results
-	draconResults, discardedIssues, err := utils.ProcessMessages(allowDuplicates, allowFP, severityThreshold)
+	// Parse Smithy results
+	smithyResults, discardedIssues, err := utils.ProcessMessages(allowDuplicates, allowFP, severityThreshold)
 	if err != nil {
 		log.Fatalf("Could not process messages: %s", err)
 	}
@@ -74,7 +74,7 @@ func main() {
 	// Create issues in Jira
 	createdIssues := 0
 	failedIssues := 0
-	for _, result := range draconResults {
+	for _, result := range smithyResults {
 		if err := apiClient.CreateIssue(result); err != nil {
 			failedIssues++
 			if failOnError {
@@ -88,7 +88,7 @@ func main() {
 
 	// Output metrics
 	log.Printf("%d Issues have been discarded as duplicates or false positives\n", discardedIssues)
-	log.Printf("Dracon results: %d; Created issues: %d; Issues failed to create: %d\n", len(draconResults), createdIssues, failedIssues)
+	log.Printf("Smithy results: %d; Created issues: %d; Issues failed to create: %d\n", len(smithyResults), createdIssues, failedIssues)
 	if failedIssues > 0 {
 		os.Exit(1)
 	}

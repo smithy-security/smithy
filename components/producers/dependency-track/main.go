@@ -1,4 +1,4 @@
-// Package main of the dependency track producer reads a dependency track export and translates it to dracon format
+// Package main of the dependency track producer reads a dependency track export and translates it to smithy format
 package main
 
 import (
@@ -11,9 +11,9 @@ import (
 	dtrack "github.com/DependencyTrack/client-go"
 	"github.com/google/uuid"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
-	"github.com/ocurity/dracon/components/producers"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 var (
@@ -62,7 +62,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"Dependency Track",
 		issues,
 	); err != nil {

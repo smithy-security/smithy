@@ -12,11 +12,11 @@ import (
 
 	"golang.org/x/crypto/nacl/sign"
 
-	apiv1 "github.com/ocurity/dracon/api/proto/v1"
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components"
-	"github.com/ocurity/dracon/components/enrichers"
-	"github.com/ocurity/dracon/pkg/putil"
+	apiv1 "github.com/smithy-security/smithy/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components"
+	"github.com/smithy-security/smithy/components/enrichers"
+	"github.com/smithy-security/smithy/pkg/putil"
 )
 
 const signatureAnnotation = "JSON-Message-Signature"
@@ -151,7 +151,7 @@ func main() {
 	if debug {
 		logLevel = slog.LevelDebug
 	}
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvDraconScanID)))
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvSmithyScanID)))
 	if readPath == "" {
 		log.Fatal("read_path is undefined")
 	}

@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers/kics/types"
-	"github.com/ocurity/dracon/pkg/testutil"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers/kics/types"
+	"github.com/smithy-security/smithy/pkg/testutil"
 )
 
 func TestParseOut(t *testing.T) {

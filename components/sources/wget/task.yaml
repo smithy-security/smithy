@@ -5,7 +5,7 @@ kind: Task
 metadata:
   name: wget
   labels:
-    v1.dracon.ocurity.com/component: source
+    v1.smithy.smithy-security.com/component: source
     app.kubernetes.io/version: "0.6"
   annotations:
     tekton.dev/pipelines.minVersion: "0.29.0"

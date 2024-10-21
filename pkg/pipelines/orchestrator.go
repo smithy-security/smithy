@@ -5,7 +5,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime"
 
-	"github.com/ocurity/dracon/pkg/components"
+	"github.com/smithy-security/smithy/pkg/components"
 )
 
 // Orchestrator represents a piece of code that orchestrates the deployment of

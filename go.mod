@@ -1,4 +1,4 @@
-module github.com/ocurity/dracon
+module github.com/smithy-security/smithy
 
 go 1.22.2
 
@@ -13,7 +13,6 @@ require (
 	github.com/go-errors/errors v1.4.2
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/google/go-cmp v0.6.0
-	github.com/google/go-github/v63 v63.0.0
 	github.com/google/go-github/v65 v65.0.0
 	github.com/google/uuid v1.6.0
 	github.com/hairyhenderson/go-codeowners v0.4.0

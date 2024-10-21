@@ -1,11 +1,11 @@
-// Package enumtransformers transforms from dracon internal enums to text and back
+// Package enumtransformers transforms from smithy internal enums to text and back
 package enumtransformers
 
 import (
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 )
 
-// SeverityToText transforms dracon severity into a nicer textual format for use with third party systems
+// SeverityToText transforms smithy severity into a nicer textual format for use with third party systems
 func SeverityToText(severity v1.Severity) string {
 	switch severity {
 	case v1.Severity_SEVERITY_INFO:
@@ -23,7 +23,7 @@ func SeverityToText(severity v1.Severity) string {
 	}
 }
 
-// TextToSeverity transforms severity str into dracon Severity enum
+// TextToSeverity transforms severity str into smithy Severity enum
 func TextToSeverity(severity string) v1.Severity {
 	switch severity {
 	case "Info":
@@ -41,7 +41,7 @@ func TextToSeverity(severity string) v1.Severity {
 	}
 }
 
-// ConfidenceToText transforms dracon confidence into a nicer textual format for use with third party systems
+// ConfidenceToText transforms smithy confidence into a nicer textual format for use with third party systems
 func ConfidenceToText(confidence v1.Confidence) string {
 	switch confidence {
 	case v1.Confidence_CONFIDENCE_INFO:
@@ -59,7 +59,7 @@ func ConfidenceToText(confidence v1.Confidence) string {
 	}
 }
 
-// TextToConfidence transforms confidence str into dracon Severity enum
+// TextToConfidence transforms confidence str into smithy Severity enum
 func TextToConfidence(confidence string) v1.Confidence {
 	switch confidence {
 	case "Info":

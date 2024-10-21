@@ -11,8 +11,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	draconv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/enrichers"
+	smithyv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/enrichers"
 )
 
 func TestHandlesZeroFindings(t *testing.T) {
@@ -46,7 +46,7 @@ func TestHandlesZeroFindings(t *testing.T) {
 
 		encodedProto, err := os.ReadFile(fmt.Sprintf("%s/%s", outdir, f.Name()))
 		require.NoError(t, err)
-		output := &draconv1.EnrichedLaunchToolResponse{}
+		output := &smithyv1.EnrichedLaunchToolResponse{}
 		require.NoError(t, proto.Unmarshal(encodedProto, output))
 		require.Empty(t, output.Issues)
 	}
@@ -79,10 +79,10 @@ func TestHandlesFindings(t *testing.T) {
 
 	// Check that both of them are EnrichedLaunchToolResponse
 	// and their Issue property is not an empty list
-	expected := map[string]*draconv1.EnrichedLaunchToolResponse{
+	expected := map[string]*smithyv1.EnrichedLaunchToolResponse{
 		"tool1": {
 			OriginalResults: mockLaunchToolResponses[0],
-			Issues: []*draconv1.EnrichedIssue{
+			Issues: []*smithyv1.EnrichedIssue{
 				{
 					RawIssue: mockLaunchToolResponses[0].Issues[0],
 					Annotations: map[string]string{
@@ -103,7 +103,7 @@ func TestHandlesFindings(t *testing.T) {
 		},
 		"tool2": {
 			OriginalResults: mockLaunchToolResponses[1],
-			Issues: []*draconv1.EnrichedIssue{
+			Issues: []*smithyv1.EnrichedIssue{
 				{
 					RawIssue: mockLaunchToolResponses[1].Issues[0],
 					Annotations: map[string]string{
@@ -123,7 +123,7 @@ func TestHandlesFindings(t *testing.T) {
 			},
 		},
 	}
-	var actual draconv1.EnrichedLaunchToolResponse
+	var actual smithyv1.EnrichedLaunchToolResponse
 	for _, f := range files {
 		if strings.HasSuffix(f.Name(), ".raw.pb") {
 			continue

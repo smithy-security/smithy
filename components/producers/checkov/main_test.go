@@ -13,8 +13,8 @@ import (
 	"github.com/CycloneDX/cyclonedx-go"
 	"github.com/stretchr/testify/require"
 
-	draconv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
+	smithyv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 const (
@@ -23,7 +23,7 @@ const (
 )
 
 func TestRunSarif(t *testing.T) {
-	workspace, err := os.MkdirTemp("", "dracon")
+	workspace, err := os.MkdirTemp("", "smithy")
 	require.NoError(t, err)
 
 	defer require.NoError(t, os.RemoveAll(workspace))
@@ -38,33 +38,33 @@ func TestRunSarif(t *testing.T) {
 
 	in, err := os.ReadFile(producers.OutFile)
 	require.NoError(t, err)
-	var wrote draconv1.LaunchToolResponse
+	var wrote smithyv1.LaunchToolResponse
 	err = proto.Unmarshal(in, &wrote)
 	require.NoError(t, err)
-	expectedIssues := []*draconv1.Issue{
+	expectedIssues := []*smithyv1.Issue{
 		{
 			Target:      "code/cfngoat/cfngoat.yaml:891-892",
 			Type:        "CKV_SECRET_6",
 			Title:       "Base64 High Entropy String",
-			Severity:    draconv1.Severity_SEVERITY_HIGH,
+			Severity:    smithyv1.Severity_SEVERITY_HIGH,
 			Description: "MatchedRule: {\"id\":\"CKV_SECRET_6\",\"name\":\"Base64 High Entropy String\",\"shortDescription\":{\"text\":\"Base64 High Entropy String\"},\"fullDescription\":{\"text\":\"Base64 High Entropy String\"},\"defaultConfiguration\":{\"level\":\"error\"},\"help\":{\"text\":\"Base64 High Entropy String\\nResource: c00f1a6e4b20aa64691d50781b810756d6254b8e\"}} \n Message: Base64 High Entropy String",
 		}, {
 			Target:      "code/cfngoat/.github/workflows/checkov.yaml:1-1",
 			Type:        "CKV2_GHA_1",
 			Title:       "Ensure top-level permissions are not set to write-all",
-			Severity:    draconv1.Severity_SEVERITY_HIGH,
+			Severity:    smithyv1.Severity_SEVERITY_HIGH,
 			Description: "MatchedRule: {\"id\":\"CKV2_GHA_1\",\"name\":\"Ensure top-level permissions are not set to write-all\",\"shortDescription\":{\"text\":\"Ensure top-level permissions are not set to write-all\"},\"fullDescription\":{\"text\":\"Ensure top-level permissions are not set to write-all\"},\"defaultConfiguration\":{\"level\":\"error\"},\"help\":{\"text\":\"Ensure top-level permissions are not set to write-all\\nResource: on(build)\"}} \n Message: Ensure top-level permissions are not set to write-all",
 		}, {
 			Target:      "code/cfngoat/.github/workflows/main.yaml:1-1",
 			Type:        "CKV2_GHA_1",
 			Title:       "Ensure top-level permissions are not set to write-all",
-			Severity:    draconv1.Severity_SEVERITY_HIGH,
+			Severity:    smithyv1.Severity_SEVERITY_HIGH,
 			Description: "MatchedRule: {\"id\":\"CKV2_GHA_1\",\"name\":\"Ensure top-level permissions are not set to write-all\",\"shortDescription\":{\"text\":\"Ensure top-level permissions are not set to write-all\"},\"fullDescription\":{\"text\":\"Ensure top-level permissions are not set to write-all\"},\"defaultConfiguration\":{\"level\":\"error\"},\"help\":{\"text\":\"Ensure top-level permissions are not set to write-all\\nResource: on(build)\"}} \n Message: Ensure top-level permissions are not set to write-all",
 		},
 	}
 
-	slices.SortFunc(wrote.Issues, func(a, b *draconv1.Issue) int { return strings.Compare(a.Target, b.Target) })
-	slices.SortFunc(expectedIssues, func(a, b *draconv1.Issue) int { return strings.Compare(a.Target, b.Target) })
+	slices.SortFunc(wrote.Issues, func(a, b *smithyv1.Issue) int { return strings.Compare(a.Target, b.Target) })
+	slices.SortFunc(expectedIssues, func(a, b *smithyv1.Issue) int { return strings.Compare(a.Target, b.Target) })
 	require.Equal(t, len(wrote.Issues), len(expectedIssues))
 	for i, expectedIssue := range expectedIssues {
 		require.Equal(t, expectedIssue.Title, wrote.Issues[i].Title)
@@ -75,7 +75,7 @@ func TestRunSarif(t *testing.T) {
 }
 
 func TestRunCyclonedx(t *testing.T) {
-	workspace, err := os.MkdirTemp("", "dracon")
+	workspace, err := os.MkdirTemp("", "smithy")
 	require.NoError(t, err)
 	defer require.NoError(t, os.RemoveAll(workspace))
 
@@ -91,7 +91,7 @@ func TestRunCyclonedx(t *testing.T) {
 
 	in, err := os.ReadFile(producers.OutFile)
 	require.NoError(t, err)
-	var wrote draconv1.LaunchToolResponse
+	var wrote smithyv1.LaunchToolResponse
 	err = proto.Unmarshal(in, &wrote)
 	require.NoError(t, err)
 	sbom := string(input)

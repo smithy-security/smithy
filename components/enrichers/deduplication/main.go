@@ -6,11 +6,11 @@ import (
 	"log"
 	"log/slog"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/enrichers"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/enrichers"
 
-	"github.com/ocurity/dracon/pkg/db"
-	"github.com/ocurity/dracon/pkg/enrichment"
+	"github.com/smithy-security/smithy/pkg/db"
+	"github.com/smithy-security/smithy/pkg/enrichment"
 )
 
 var (

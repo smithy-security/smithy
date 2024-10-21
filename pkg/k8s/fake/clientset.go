@@ -18,7 +18,7 @@ import (
 	"k8s.io/client-go/restmapper"
 	"k8s.io/client-go/testing"
 
-	"github.com/ocurity/dracon/pkg/k8s"
+	"github.com/smithy-security/smithy/pkg/k8s"
 )
 
 // NewSchemeAndCodecs returns a new scheme populated with the types defined in
@@ -38,7 +38,7 @@ func NewSchemeAndCodecs() (*runtime.Scheme, *serializer.CodecFactory, error) {
 	return scheme, &codecs, nil
 }
 
-var _ k8s.ClientInterface = (*DraconClientSet)(nil)
+var _ k8s.ClientInterface = (*SmithyClientSet)(nil)
 
 // ApplyHookType is the signature of the function that will be called to
 // examine the parameters that the apply function was called with.
@@ -50,8 +50,8 @@ type ClientsetSubset struct {
 	*tektonv1beta1fakeclient.FakeTektonV1beta1
 }
 
-// DraconClientSet is a mock implementation of the `k8s.Clientset`
-type DraconClientSet struct {
+// SmithyClientSet is a mock implementation of the `k8s.Clientset`
+type SmithyClientSet struct {
 	ClientsetSubset
 	objectTracker  testing.ObjectTracker
 	discovery      *fakediscovery.FakeDiscovery
@@ -62,7 +62,7 @@ type DraconClientSet struct {
 // NewFakeTypedClient returns a mock K8s client that implements the
 // `k8s.ClientInterface` and a `meta.RESTMapper` implementation that can return
 // a correct response for all known types offered by the `k8s.ClientInterface`.
-func NewFakeTypedClient(objects ...runtime.Object) (DraconClientSet, error) {
+func NewFakeTypedClient(objects ...runtime.Object) (SmithyClientSet, error) {
 	return NewFakeTypedClientWithApplyHook(
 		func(_ runtime.Object, _ string, _ bool) error { return nil },
 		objects...,
@@ -72,10 +72,10 @@ func NewFakeTypedClient(objects ...runtime.Object) (DraconClientSet, error) {
 // NewFakeTypedClientWithApplyHook returns a mock client that implements the
 // `k8s.ClientInterface` and a `meta.RESTMapper` implementation that can return
 // a correct response for all known types offered by the `k8s.ClientInterface`.
-func NewFakeTypedClientWithApplyHook(applyHook ApplyHookType, objects ...runtime.Object) (DraconClientSet, error) {
+func NewFakeTypedClientWithApplyHook(applyHook ApplyHookType, objects ...runtime.Object) (SmithyClientSet, error) {
 	scheme, codecs, err := NewSchemeAndCodecs()
 	if err != nil {
-		return DraconClientSet{}, err
+		return SmithyClientSet{}, err
 	}
 
 	objectTracker := testing.NewObjectTracker(scheme, codecs.UniversalDecoder())
@@ -97,7 +97,7 @@ func NewFakeTypedClientWithApplyHook(applyHook ApplyHookType, objects ...runtime
 		return true, watch, nil
 	})
 
-	return DraconClientSet{
+	return SmithyClientSet{
 		objectTracker: objectTracker,
 		discovery: &fakediscovery.FakeDiscovery{
 			Fake: &fakeCoreK8sClient.Fake,
@@ -120,7 +120,7 @@ func NewFakeTypedClientWithApplyHook(applyHook ApplyHookType, objects ...runtime
 }
 
 // Apply mocks the `kubectl apply`
-func (f DraconClientSet) Apply(_ context.Context, obj runtime.Object, namespace string, forceConflicts bool) error {
+func (f SmithyClientSet) Apply(_ context.Context, obj runtime.Object, namespace string, forceConflicts bool) error {
 	if err := f.ApplyHook(obj, namespace, forceConflicts); err != nil {
 		return err
 	}
@@ -134,6 +134,6 @@ func (f DraconClientSet) Apply(_ context.Context, obj runtime.Object, namespace 
 }
 
 // RESTMapper returns an instance implementing the `meta.RESTMapper` interface
-func (f DraconClientSet) RESTMapper() meta.RESTMapper {
+func (f SmithyClientSet) RESTMapper() meta.RESTMapper {
 	return f.MetaRESTMapper
 }

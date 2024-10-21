@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/testsslsh/types"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/testsslsh/types"
 )
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	if err := json.Unmarshal(inFile, &results); err != nil {
 		log.Fatal(err)
 	}
-	if err := producers.WriteDraconOut("testssl.sh", parseOut(results)); err != nil {
+	if err := producers.WriteSmithyOut("testssl.sh", parseOut(results)); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -39,7 +39,7 @@ func parseOut(results []types.TestSSLFinding) []*v1.Issue {
 		issues = append(issues, &v1.Issue{
 			Target:      finding.IP,
 			Type:        finding.ID,
-			Severity:    SeverityToDracon(finding.Severity),
+			Severity:    SeverityToSmithy(finding.Severity),
 			Confidence:  v1.Confidence_CONFIDENCE_UNSPECIFIED,
 			Title:       fmt.Sprintf("%s - %s", finding.ID, finding.Finding),
 			Description: string(description),
@@ -49,8 +49,8 @@ func parseOut(results []types.TestSSLFinding) []*v1.Issue {
 	return issues
 }
 
-// SeverityToDracon maps testssl Severity Strings to dracon struct.
-func SeverityToDracon(severity string) v1.Severity {
+// SeverityToSmithy maps testssl Severity Strings to smithy struct.
+func SeverityToSmithy(severity string) v1.Severity {
 	switch severity {
 	case "LOW":
 		return v1.Severity_SEVERITY_LOW

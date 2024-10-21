@@ -3,7 +3,7 @@ package component
 import (
 	"context"
 
-	ocsf "github.com/ocurity/dracon/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 // Helpers interfaces for common functionalities.

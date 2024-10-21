@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: consumer-bigquery
   labels:
-    v1.dracon.ocurity.com/component: consumer
+    v1.smithy.smithy-security.com/component: consumer
 spec:
   description: Pushes findings to a BigQuery database.
   volumes:
@@ -15,7 +15,7 @@ spec:
       type: string
     - name: consumer-bigquery-dataset
       type: string
-      default: "dracon"
+      default: "smithy"
     - name: consumer-bigquery-token
       type: string
   workspaces:
@@ -24,12 +24,12 @@ spec:
   steps:
     - name: run-consumer
       imagePullPolicy: IfNotPresent
-      image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/consumers/bigquery:{{ .Chart.AppVersion }}'
+      image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/bigquery:{{ .Chart.AppVersion }}'
       command: ["/app/components/consumers/bigquery/bigquery"]
       args:
         [
           "-in",
-          "$(workspaces.output.path)/.dracon/enrichers/",
+          "$(workspaces.output.path)/.smithy/enrichers/",
           "-project-id",
           "$(params.consumer-bigquery-project-id)",
           "-dataset",

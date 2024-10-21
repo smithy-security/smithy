@@ -8,12 +8,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/pkg/testutil"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/pkg/testutil"
 )
 
 func TestExtractCodeLineRange(t *testing.T) {
-	file, err := testutil.CreateFile("dracon_context_test", code)
+	file, err := testutil.CreateFile("smithy_context_test", code)
 	require.NoError(t, err)
 	defer func() { require.NoError(t, os.Remove(file.Name())) }()
 
@@ -33,7 +33,7 @@ func TestExtractCodeLineRange(t *testing.T) {
 }
 
 func TestExtractCodeLineRangeLessThanDefault(t *testing.T) {
-	file, err := testutil.CreateFile("dracon_context_test", code)
+	file, err := testutil.CreateFile("smithy_context_test", code)
 	require.NoError(t, err)
 
 	defer func() { require.NoError(t, os.Remove(file.Name())) }()
@@ -54,7 +54,7 @@ func TestExtractCodeLineRangeLessThanDefault(t *testing.T) {
 }
 
 func TestExtractCodeLine(t *testing.T) {
-	file, err := testutil.CreateFile("dracon_context_test", code)
+	file, err := testutil.CreateFile("smithy_context_test", code)
 	require.NoError(t, err)
 	defer func() { require.NoError(t, os.Remove(file.Name())) }()
 

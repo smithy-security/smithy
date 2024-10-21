@@ -9,8 +9,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 const inputPath = "exampleData/snyk-example.sarif"
@@ -146,7 +146,7 @@ func TestWriteOutput(t *testing.T) {
 			},
 		},
 	}
-	workspace, err := os.MkdirTemp("", "dracon")
+	workspace, err := os.MkdirTemp("", "smithy")
 	require.NoError(t, err)
 	defer os.RemoveAll(workspace)
 	producers.OutFile = filepath.Join(workspace, "out.pb")

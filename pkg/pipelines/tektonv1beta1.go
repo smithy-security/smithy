@@ -9,8 +9,8 @@ import (
 	tektonv1beta1api "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/ocurity/dracon/pkg/components"
-	"github.com/ocurity/dracon/pkg/k8s"
+	"github.com/smithy-security/smithy/pkg/components"
+	"github.com/smithy-security/smithy/pkg/k8s"
 )
 
 var (
@@ -211,7 +211,7 @@ func generatePipeline(pipeline *tektonv1beta1api.Pipeline, taskList []*tektonv1b
 			// unless we skip these parameters, we will end up adding them to
 			// the pipeline parameters over and over again. so we leave them
 			// for the end of the method.
-			if param.Name == "dracon_scan_id" || param.Name == "dracon_scan_start_time" || param.Name == "dracon_scan_tags" {
+			if param.Name == "smithy_scan_id" || param.Name == "smithy_scan_start_time" || param.Name == "smithy_scan_tags" {
 				continue
 			}
 
@@ -256,7 +256,7 @@ func generatePipeline(pipeline *tektonv1beta1api.Pipeline, taskList []*tektonv1b
 			pipelineTask.Params = append(pipelineTask.Params, newPipelineParam)
 		}
 
-		if err = addDraconParamsToTask(&pipelineTask, anchors[components.Base][0], task); err != nil {
+		if err = addSmithyParamsToTask(&pipelineTask, anchors[components.Base][0], task); err != nil {
 			return nil, err
 		}
 

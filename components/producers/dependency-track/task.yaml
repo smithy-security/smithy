@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: producer-dependency-track
   labels:
-    v1.dracon.ocurity.com/component: producer
+    v1.smithy.smithy-security.com/component: producer
 spec:
   description: Generate a Dependency-Track report from source code.
   params:
@@ -29,7 +29,7 @@ spec:
   steps:
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/dependency-track:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/dependency-track:{{ .Chart.AppVersion }}'
     command: ["app/components/producers/dependency-track/dependency-track-parser"]
     args:
     - "-fetchVulnerabilities=$(params.producer-dependency-track-fetch-vulnerabilities)"
@@ -37,7 +37,7 @@ spec:
     - "-apiKey=$(params.producer-dependency-track-api-key)"
     - "-url=$(params.producer-dependency-track-url)"
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.source-code-ws.path)/.dracon/producers/dependency-track.pb"
+    - "-out=$(workspaces.source-code-ws.path)/.smithy/producers/dependency-track.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch

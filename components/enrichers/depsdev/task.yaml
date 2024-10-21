@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: enricher-depsdev
   labels:
-    v1.dracon.ocurity.com/component: enricher
+    v1.smithy.smithy-security.com/component: enricher
 spec:
   description: Adds context from deps.dev for each third-party dependency.
   params:
@@ -24,13 +24,13 @@ spec:
   steps:
   - name: run-enricher
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/enrichers/depsdev:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/enrichers/depsdev:{{ .Chart.AppVersion }}'
     command: ["/app/components/enrichers/depsdev/depsdev"]
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.dracon/producers
+      value: $(workspaces.output.path)/.smithy/producers
     - name: WRITE_PATH
-      value: "$(workspaces.output.path)/.dracon/enrichers/depsdev"
+      value: "$(workspaces.output.path)/.smithy/enrichers/depsdev"
     - name: LICENSES_IN_EVIDENCE
       value: "$(params.enricher-depsdev-licenses-in-evidence)"
     - name: ANNOTATION

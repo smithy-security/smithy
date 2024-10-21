@@ -12,7 +12,7 @@ import (
 	jsonserializer "k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/client-go/kubernetes/scheme"
 
-	"github.com/ocurity/dracon/pkg/files"
+	"github.com/smithy-security/smithy/pkg/files"
 )
 
 var K8sObjDecoder runtime.Decoder

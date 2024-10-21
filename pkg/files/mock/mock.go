@@ -3,7 +3,7 @@ package manifests
 import (
 	"context"
 
-	"github.com/ocurity/dracon/pkg/files"
+	"github.com/smithy-security/smithy/pkg/files"
 )
 
 var _ files.Loader = fakeLoader{}

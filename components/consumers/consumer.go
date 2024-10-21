@@ -1,4 +1,4 @@
-// Package consumers provides helper functions for working with Dracon compatible outputs as a Consumer.
+// Package consumers provides helper functions for working with Smithy compatible outputs as a Consumer.
 // Subdirectories in this package have more complete example usages of this package.
 package consumers
 
@@ -8,9 +8,9 @@ import (
 	"log/slog"
 	"os"
 
-	draconapiv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components"
-	"github.com/ocurity/dracon/pkg/putil"
+	smithyapiv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components"
+	"github.com/smithy-security/smithy/pkg/putil"
 )
 
 var (
@@ -22,7 +22,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&inResults, "in", "", "the directory where dracon producer/enricher outputs are")
+	flag.StringVar(&inResults, "in", "", "the directory where smithy producer/enricher outputs are")
 	flag.BoolVar(&Raw, "raw", false, "if the non-enriched results should be used")
 	flag.BoolVar(&debug, "debug", false, "turn on debug logging")
 }
@@ -35,7 +35,7 @@ func ParseFlags() error {
 	if debug {
 		logLevel = slog.LevelDebug
 	}
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvDraconScanID)))
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvSmithyScanID)))
 	if len(inResults) < 1 {
 		return fmt.Errorf("in is undefined")
 	}
@@ -43,11 +43,11 @@ func ParseFlags() error {
 }
 
 // LoadToolResponse loads raw results from producers.
-func LoadToolResponse() ([]*draconapiv1.LaunchToolResponse, error) {
+func LoadToolResponse() ([]*smithyapiv1.LaunchToolResponse, error) {
 	return putil.LoadToolResponse(inResults)
 }
 
 // LoadEnrichedToolResponse loads enriched results from the enricher.
-func LoadEnrichedToolResponse() ([]*draconapiv1.EnrichedLaunchToolResponse, error) {
+func LoadEnrichedToolResponse() ([]*smithyapiv1.EnrichedLaunchToolResponse, error) {
 	return putil.LoadEnrichedToolResponse(inResults)
 }

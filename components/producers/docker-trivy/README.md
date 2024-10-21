@@ -1,8 +1,8 @@
-# Dracon Trivy Producer
+# Smithy Trivy Producer
 
 This producer runs [aquasec/trivy](https://github.com/aquasecurity/trivy)
 against the specified filesystem or image.
-It then parses the results into the Dracon format and exits.
+It then parses the results into the Smithy format and exits.
 
 ## Supported Commands
 
@@ -30,9 +30,9 @@ SBOM from both images and filesystems.
 Accepted parameters and execution details can be found in
 [task.yaml](./task.yaml)
 
-## Testing without Dracon
+## Testing without Smithy
 
-You can run this producer outside of dracon for development with
+You can run this producer outside of smithy for development with
 
 ```bash
 go run ./components/producers/docker-trivy -in <trivy output> -format <what you passed as trivy -f flag> -out ./trivy.pb 

@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: dracon
+  name: smithy
 spec:
   workspaces: []
   tasks: []

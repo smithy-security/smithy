@@ -1,4 +1,4 @@
-// Package enrichers provides helper functions for writing Dracon compatible enrichers that enrich dracon outputs.
+// Package enrichers provides helper functions for writing Smithy compatible enrichers that enrich smithy outputs.
 package enrichers
 
 import (
@@ -10,9 +10,9 @@ import (
 
 	"github.com/go-errors/errors"
 
-	draconV1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components"
-	"github.com/ocurity/dracon/pkg/putil"
+	smithyV1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components"
+	"github.com/smithy-security/smithy/pkg/putil"
 )
 
 var (
@@ -41,7 +41,7 @@ func ParseFlags() error {
 	if debug {
 		logLevel = slog.LevelDebug
 	}
-	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvDraconScanID)))
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvSmithyScanID)))
 	if readPath == "" {
 		return fmt.Errorf("read_path is undefined")
 	}
@@ -52,12 +52,12 @@ func ParseFlags() error {
 }
 
 // LoadData returns the LaunchToolResponses meant for this enricher.
-func LoadData() ([]*draconV1.LaunchToolResponse, error) {
+func LoadData() ([]*smithyV1.LaunchToolResponse, error) {
 	return putil.LoadTaggedToolResponse(readPath)
 }
 
 // WriteData will write the enriched results to the write path.
-func WriteData(enrichedLaunchToolResponse *draconV1.EnrichedLaunchToolResponse, enricherName string) error {
+func WriteData(enrichedLaunchToolResponse *smithyV1.EnrichedLaunchToolResponse, enricherName string) error {
 	if enrichedLaunchToolResponse == nil {
 		return errors.New("enrichedLaunchToolResponse cannot be empty")
 	}

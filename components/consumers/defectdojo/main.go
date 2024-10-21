@@ -5,11 +5,11 @@ import (
 	"log"
 	"strconv"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/consumers"
-	"github.com/ocurity/dracon/components/consumers/defectdojo/client"
-	"github.com/ocurity/dracon/pkg/enumtransformers"
-	"github.com/ocurity/dracon/pkg/templating"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/consumers"
+	"github.com/smithy-security/smithy/components/consumers/defectdojo/client"
+	"github.com/smithy-security/smithy/pkg/enumtransformers"
+	"github.com/smithy-security/smithy/pkg/templating"
 )
 
 // DojoTimeFormat is the time format accepted by defect dojo.
@@ -36,7 +36,7 @@ func handleRawResults(product int, dojoClient *client.Client, responses []*v1.La
 	if scanUUID == "" {
 		log.Fatalln("Non-uuid scan", responses)
 	}
-	tags := []string{"DraconScan", "RawScan", scanUUID}
+	tags := []string{"SmithyScan", "RawScan", scanUUID}
 
 	engagement, err := dojoClient.CreateEngagement( // with current architecture, all responses should have the same scaninfo
 		scanUUID, responses[0].GetScanInfo().GetScanStartTime().AsTime().Format(DojoTimeFormat), tags, int32(product))
@@ -46,7 +46,7 @@ func handleRawResults(product int, dojoClient *client.Client, responses []*v1.La
 	for _, res := range responses {
 		log.Println("handling response for tool", res.GetToolName(), "with", len(res.GetIssues()), "findings")
 		startTime := res.GetScanInfo().GetScanStartTime().AsTime()
-		test, err := dojoClient.CreateTest(startTime.Format(DojoTestTimeFormat), res.GetToolName(), "", []string{"DraconScan", "RawTest", scanUUID}, engagement.ID)
+		test, err := dojoClient.CreateTest(startTime.Format(DojoTestTimeFormat), res.GetToolName(), "", []string{"SmithyScan", "RawTest", scanUUID}, engagement.ID)
 		if err != nil {
 			log.Printf("could not create test in defectdojo, err: %#v", err)
 			return err
@@ -63,7 +63,7 @@ func handleRawResults(product int, dojoClient *client.Client, responses []*v1.La
 				iss.GetTarget(),
 				startTime.Format(DojoTimeFormat),
 				severityToDojoSeverity(iss.Severity),
-				[]string{"DraconScan", "RawFinding", scanUUID, res.GetToolName()},
+				[]string{"SmithyScan", "RawFinding", scanUUID, res.GetToolName()},
 				test.ID,
 				0,
 				0,
@@ -90,7 +90,7 @@ func handleEnrichedResults(product int, dojoClient *client.Client, responses []*
 	if scanUUID == "" {
 		log.Fatalln("Non-uuid scan", responses)
 	}
-	tags := []string{"DraconScan", "EnrichedScan", scanUUID}
+	tags := []string{"SmithyScan", "EnrichedScan", scanUUID}
 	engagement, err := dojoClient.CreateEngagement( // with current architecture, all responses should have the same scaninfo
 		scanUUID,
 		responses[0].GetOriginalResults().GetScanInfo().GetScanStartTime().AsTime().Format(DojoTimeFormat), tags, int32(product))
@@ -102,7 +102,7 @@ func handleEnrichedResults(product int, dojoClient *client.Client, responses []*
 		log.Println("handling response for tool", res.GetOriginalResults().GetToolName(), "with", len(res.GetIssues()), "findings")
 
 		scanStartTime := res.GetOriginalResults().GetScanInfo().GetScanStartTime().AsTime()
-		test, err := dojoClient.CreateTest(scanStartTime.Format(DojoTestTimeFormat), res.GetOriginalResults().GetToolName(), "", []string{"DraconScan", "EnrichedTest", scanUUID}, engagement.ID)
+		test, err := dojoClient.CreateTest(scanStartTime.Format(DojoTestTimeFormat), res.GetOriginalResults().GetToolName(), "", []string{"SmithyScan", "EnrichedTest", scanUUID}, engagement.ID)
 		if err != nil {
 			log.Println("could not create test in defectdojo, err:", err)
 			return err
@@ -124,7 +124,7 @@ func handleEnrichedResults(product int, dojoClient *client.Client, responses []*
 				rawIss.GetTarget(),
 				scanStartTime.Format(DojoTimeFormat),
 				severityToDojoSeverity(rawIss.Severity),
-				[]string{"DraconScan", "EnrichedFinding", scanUUID, res.GetOriginalResults().GetToolName()},
+				[]string{"SmithyScan", "EnrichedFinding", scanUUID, res.GetOriginalResults().GetToolName()},
 				test.ID, 0, 0, dojoClient.UserID,
 				iss.GetFalsePositive(),
 				duplicate,
@@ -149,7 +149,7 @@ func main() {
 	flag.StringVar(&authURL, "dojoURL", "", "defect dojo api base url")
 	flag.StringVar(&productID, "dojoProductID", "", "defect dojo product ID if you want to create an engagement")
 	flag.StringVar(&issueTemplate, "descriptionTemplate", "", "a Go Template string describing how to show Raw or Enriched issues")
-	flag.BoolVar(&newEngagementEveryScan, "createEngagement", false, "for every dracon scan id, create a different engagement")
+	flag.BoolVar(&newEngagementEveryScan, "createEngagement", false, "for every smithy scan id, create a different engagement")
 
 	flag.Parse()
 

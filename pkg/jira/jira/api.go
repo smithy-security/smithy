@@ -5,10 +5,10 @@ import (
 	"io"
 	"log"
 
-	jira "github.com/andygrunwald/go-jira"
+	"github.com/andygrunwald/go-jira"
 
-	"github.com/ocurity/dracon/pkg/jira/config"
-	"github.com/ocurity/dracon/pkg/jira/document"
+	"github.com/smithy-security/smithy/pkg/jira/config"
+	"github.com/smithy-security/smithy/pkg/jira/document"
 )
 
 // Client is a wrapper of a go-jira client with our config on top.
@@ -42,21 +42,21 @@ func authJiraClient(user, token, url string) *jira.Client {
 	return JiraClientlient
 }
 
-// assembleIssue parses the Dracon message and serializes it into a Jira Issue object.
-func (c Client) assembleIssue(draconResult document.Document) *jira.Issue {
-	// Mappings the Dracon Result fields to their corresponding Jira fields specified in the configuration
+// assembleIssue parses the Smithy message and serializes it into a Jira Issue object.
+func (c Client) assembleIssue(smithyResult document.Document) *jira.Issue {
+	// Mappings the Smithy Result fields to their corresponding Jira fields specified in the configuration
 	customFields := c.DefaultFields.CustomFields.Clone()
 
 	for _, m := range c.Config.Mappings {
-		strMap, _ := draconResultToSTRMaps(draconResult)
-		if _, ok := draconResult.Annotations[m.DraconField]; ok {
-			customFields[m.JiraField] = makeCustomField(m.FieldType, []string{draconResult.Annotations[m.DraconField]})
+		strMap, _ := smithyResultToSTRMaps(smithyResult)
+		if _, ok := smithyResult.Annotations[m.SmithyField]; ok {
+			customFields[m.JiraField] = makeCustomField(m.FieldType, []string{smithyResult.Annotations[m.SmithyField]})
 		} else {
-			customFields[m.JiraField] = makeCustomField(m.FieldType, []string{strMap[m.DraconField]})
+			customFields[m.JiraField] = makeCustomField(m.FieldType, []string{strMap[m.SmithyField]})
 		}
 	}
-	summary, extra := makeSummary(draconResult)
-	description := makeDescription(draconResult, c.Config.DescriptionTemplate)
+	summary, extra := makeSummary(smithyResult)
+	description := makeDescription(smithyResult, c.Config.DescriptionTemplate)
 	if extra != "" {
 		description = fmt.Sprintf(".... %s\n%s", extra, description)
 	}
@@ -82,8 +82,8 @@ func (c Client) assembleIssue(draconResult document.Document) *jira.Issue {
 }
 
 // CreateIssue creates a new issue in Jira.
-func (c Client) CreateIssue(draconResult document.Document) error {
-	issue := c.assembleIssue(draconResult)
+func (c Client) CreateIssue(smithyResult document.Document) error {
+	issue := c.assembleIssue(smithyResult)
 
 	if c.DryRunMode {
 		log.Printf("Dry run mode. The following issue would have been created: '%s'", issue.Fields.Summary)

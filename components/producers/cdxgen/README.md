@@ -1,12 +1,12 @@
-# Dracon CDXGEN Producer
+# Smithy CDXGEN Producer
 
 This producer runs [CycloneDX/cdxgen](https://github.com/CycloneDX/cdxgen)
 against the specified filesystem or image.
-It then parses the results into the Dracon format and exits.
+It then parses the results into the Smithy format and exits.
 
-## Testing without Dracon
+## Testing without Smithy
 
-You can run this producer outside of dracon for development with
+You can run this producer outside of smithy for development with
 
 ```bash
 go run ./components/producers/cdxgen -in <any cyclonedx sbom document> -out ./cdxgen.pb 

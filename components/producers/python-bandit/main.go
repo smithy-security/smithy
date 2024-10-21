@@ -7,10 +7,10 @@ import (
 	"log/slog"
 	"strings"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/pkg/context"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/pkg/context"
 
-	"github.com/ocurity/dracon/components/producers"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 func main() {
@@ -38,7 +38,7 @@ func main() {
 		issues = append(issues, iss)
 	}
 
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"bandit",
 		issues,
 	); err != nil {

@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"log"
 
-	driver "github.com/arangodb/go-driver"
+	"github.com/arangodb/go-driver"
 	"github.com/arangodb/go-driver/http"
 
-	"github.com/ocurity/dracon/components/consumers"
+	"github.com/smithy-security/smithy/components/consumers"
 )
 
 var (
@@ -26,8 +26,8 @@ var (
 
 func init() {
 	flag.StringVar(&dbURL, "db-url", "https://localhost:8529", "URL to connect to ArangoDB.")
-	flag.StringVar(&dbName, "db-name", "dracon", "The ArangoDB database name to use.")
-	flag.StringVar(&collectionName, "collection-name", "dracon", "The ArangoDB collection name to use.")
+	flag.StringVar(&dbName, "db-name", "smithy", "The ArangoDB database name to use.")
+	flag.StringVar(&collectionName, "collection-name", "smithy", "The ArangoDB collection name to use.")
 	flag.StringVar(&basicAuthUser, "basic-auth-user", "", "")
 	flag.StringVar(&basicAuthPass, "basic-auth-pass", "", "")
 	flag.BoolVar(&tlsInsecureSkipVerify, "tls-insecure-skip-verify", false, "Setting this skips verification of server TLS certificates.")
@@ -62,19 +62,19 @@ func main() {
 
 	ctx := context.Background()
 
-	// Open the DB for Dracon, creating it if it does not exist.
+	// Open the DB for Smithy, creating it if it does not exist.
 	db, err := getDatabase(ctx, c, dbName)
 	if err != nil {
 		log.Fatalf("could not get database: %s", err)
 	}
 
-	// Open a collection for Dracon, creating it if doest not exist.
+	// Open a collection for Smithy, creating it if doest not exist.
 	col, err := getCollection(ctx, db, collectionName)
 	if err != nil {
 		log.Fatalf("could not get collection: %s", err)
 	}
 
-	// Enumerate Dracon Issues to consume and create documents for each of them.
+	// Enumerate Smithy Issues to consume and create documents for each of them.
 	if consumers.Raw {
 		log.Println("Parsing Raw results")
 		responses, err := consumers.LoadToolResponse()

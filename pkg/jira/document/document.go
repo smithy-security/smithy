@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"time"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 )
 
-// NewRaw returns an []byte containing the parsed Document (dracon result) from the given raw issue.
+// NewRaw returns an []byte containing the parsed Document (smithy result) from the given raw issue.
 func NewRaw(scanStartTime time.Time, res *v1.LaunchToolResponse, iss *v1.Issue) Document {
 	doc := Document{
 		ScanStartTime:  scanStartTime,
@@ -34,7 +34,7 @@ func NewRaw(scanStartTime time.Time, res *v1.LaunchToolResponse, iss *v1.Issue) 
 	return doc
 }
 
-// NewEnriched returns an []byte containing the parsed Document (dracon result) from the given enriched issue.
+// NewEnriched returns an []byte containing the parsed Document (smithy result) from the given enriched issue.
 func NewEnriched(scanStartTime time.Time, res *v1.EnrichedLaunchToolResponse, iss *v1.EnrichedIssue) Document {
 	firstSeenTime := iss.GetFirstSeen().AsTime()
 	doc := Document{
@@ -99,7 +99,7 @@ func confidenceToText(confidence v1.Confidence) string {
 	}
 }
 
-// TextToSeverity maps between dracon Severity and Jira severity textual fields.
+// TextToSeverity maps between smithy Severity and Jira severity textual fields.
 func TextToSeverity(severity string) v1.Severity {
 	// The Severity field is normally mapped into the jira 'Impact' field, so the assumption
 	// is that Severity = Impact; which in practice is generally true with small exceptions
@@ -117,7 +117,7 @@ func TextToSeverity(severity string) v1.Severity {
 	}
 }
 
-// TextToConfidence maps between dracon Confidence and a it's ext representation, used for adding the Confidence to Jira description.
+// TextToConfidence maps between smithy Confidence and a it's ext representation, used for adding the Confidence to Jira description.
 func TextToConfidence(confidence string) v1.Confidence {
 	switch confidence {
 

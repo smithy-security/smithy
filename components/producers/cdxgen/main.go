@@ -1,13 +1,13 @@
 // Package main of the cdxgen producer parses the CycloneDX output of cdxgen and
-// create a singular Dracon issue from it
+// create a singular Smithy issue from it
 package main
 
 import (
 	"log"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/pkg/cyclonedx"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/pkg/cyclonedx"
 )
 
 func main() {
@@ -23,13 +23,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not parse cyclonedx document err:%s", err)
 	}
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"cdxgen", results,
 	); err != nil {
-		log.Fatalf("could not write dracon out err:%s", err)
+		log.Fatalf("could not write smithy out err:%s", err)
 	}
 }
 
 func handleCycloneDX(inFile []byte) ([]*v1.Issue, error) {
-	return cyclonedx.ToDracon(inFile, "json", "")
+	return cyclonedx.ToSmithy(inFile, "json", "")
 }

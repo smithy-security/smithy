@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: consumer-aws-s3
   labels:
-    v1.dracon.ocurity.com/component: consumer
+    v1.smithy.smithy-security.com/component: consumer
 spec:
   description: Pushes findings to an S3 bucket.
   volumes:
@@ -25,7 +25,7 @@ spec:
   steps:
     - name: run-consumer
       imagePullPolicy: IfNotPresent
-      image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/consumers/aws-s3:{{ .Chart.AppVersion }}'
+      image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/aws-s3:{{ .Chart.AppVersion }}'
       env:
         - name: AWS_ACCESS_KEY_ID
           value: "$(params.consumer-aws-s3-access-key-id)"
@@ -35,7 +35,7 @@ spec:
       args:
         [
           "-in",
-          "$(workspaces.output.path)/.dracon/enrichers/",
+          "$(workspaces.output.path)/.smithy/enrichers/",
           "-bucket",
           "$(params.consumer-aws-s3-bucket-name)",
           "-region",

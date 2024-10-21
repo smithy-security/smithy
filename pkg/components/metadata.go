@@ -8,9 +8,9 @@ import (
 
 // LabelKey is the key of the label where the value must be a string of the
 // ComponentType enum
-const LabelKey string = "v1.dracon.ocurity.com/component"
+const LabelKey string = "v1.smithy.smithy-security.com/component"
 
-// ComponentType represents all the types of components that Dracon supports
+// ComponentType represents all the types of components that Smithy supports
 // ENUM(unknown, base, source, producer, producer-aggregator, enricher, enricher-aggregator, consumer)
 type ComponentType string
 

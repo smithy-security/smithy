@@ -8,10 +8,10 @@ import (
 	"math"
 	"os"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/dependency-check/types"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/dependency-check/types"
 )
 
 // DependencyVulnerability represents the Vulnerability block of Dependency check scan json output format.
@@ -110,7 +110,7 @@ func main() {
 	}
 
 	issues := UnmarshalJSON(jsonBytes)
-	if err := producers.WriteDraconOut(
+	if err := producers.WriteSmithyOut(
 		"dependencyCheck",
 		parseIssues(issues),
 	); err != nil {

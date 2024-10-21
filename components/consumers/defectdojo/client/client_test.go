@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/ocurity/dracon/components/consumers/defectdojo/types"
+	"github.com/smithy-security/smithy/components/consumers/defectdojo/types"
 )
 
 func TestDojoClient(t *testing.T) {
@@ -89,18 +89,18 @@ func TestCreateEngagement(t *testing.T) {
 
 		expectedEngagement := types.EngagementRequest{
 			Tags:                      []string{"foo.git/somesha"},
-			Name:                      "dracon scan foo",
+			Name:                      "smithy scan foo",
 			TargetStart:               "2022-06-01",
 			TargetEnd:                 "2022-06-01",
 			DeduplicationOnEngagement: true,
 			Product:                   2,
 		}
 		assert.Equal(t, expectedEngagement, engagement)
-		_, err = w.Write([]byte(`{"id":4,"tags":["foo.git/somesha"],"name":"dracon scan foo","description":null,"version":"string","first_contacted":null,"target_start":"2022-06-01","target_end":"2022-06-01","reason":null,"updated":"2022-06-01T16:29:18.965507Z","created":"2022-06-01T16:29:18.908694Z","active":true,"tracker":null,"test_strategy":null,"threat_model":true,"api_test":true,"pen_test":true,"check_list":true,"status":"","progress":"threat_model","tmodel_path":"none","done_testing":false,"engagement_type":"Interactive","build_id":"foo","commit_hash":null,"branch_tag":null,"source_code_management_uri":null,"deduplication_on_engagement":false,"lead":null,"requester":null,"preset":null,"report_type":null,"product":2,"build_server":null,"source_code_management_server":null,"orchestration_engine":null,"notes":[],"files":[],"risk_acceptance":[]}`))
+		_, err = w.Write([]byte(`{"id":4,"tags":["foo.git/somesha"],"name":"smithy scan foo","description":null,"version":"string","first_contacted":null,"target_start":"2022-06-01","target_end":"2022-06-01","reason":null,"updated":"2022-06-01T16:29:18.965507Z","created":"2022-06-01T16:29:18.908694Z","active":true,"tracker":null,"test_strategy":null,"threat_model":true,"api_test":true,"pen_test":true,"check_list":true,"status":"","progress":"threat_model","tmodel_path":"none","done_testing":false,"engagement_type":"Interactive","build_id":"foo","commit_hash":null,"branch_tag":null,"source_code_management_uri":null,"deduplication_on_engagement":false,"lead":null,"requester":null,"preset":null,"report_type":null,"product":2,"build_server":null,"source_code_management_server":null,"orchestration_engine":null,"notes":[],"files":[],"risk_acceptance":[]}`))
 		require.NoError(t, err)
 	}))
 	c := &Client{host: mockTs.URL, apiToken: "test", user: ""}
-	_, err := c.CreateEngagement("dracon scan foo", "2022-06-01", []string{"foo.git/somesha"}, 2)
+	_, err := c.CreateEngagement("smithy scan foo", "2022-06-01", []string{"foo.git/somesha"}, 2)
 	require.NoError(t, err)
 	assert.True(t, called)
 }

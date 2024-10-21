@@ -4,9 +4,9 @@ import (
 	"flag"
 	"log"
 
-	"github.com/ocurity/dracon/components/consumers/slack/utils"
+	"github.com/smithy-security/smithy/components/consumers/slack/utils"
 
-	"github.com/ocurity/dracon/components/consumers"
+	"github.com/smithy-security/smithy/components/consumers"
 )
 
 var (
@@ -22,7 +22,7 @@ var (
 func main() {
 	flag.StringVar(&Webhook, "webhook", "", "the Webhook to push results to")
 
-	flag.StringVar(&Template, "template", "Dracon scan <scanID>, started at <scanStartTime>, completed with <numResults> out of which, <newResults> new", "the template to use when posting the results")
+	flag.StringVar(&Template, "template", "Smithy scan <scanID>, started at <scanStartTime>, completed with <numResults> out of which, <newResults> new", "the template to use when posting the results")
 	flag.BoolVar(&LongFormat, "long", false, "post the full results to Webhook, not just metrics")
 
 	if err := consumers.ParseFlags(); err != nil {

@@ -4,8 +4,8 @@ kind: Task
 metadata:
   name: producer-github-dependabot
   labels:
-    v1.dracon.ocurity.com/component: producer
-    v1.dracon.ocurity.com/test-type: sca
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: sca
 spec:
   description: Retrieve a GitHub Code Scanning report from a GitHub repository.
   params:
@@ -27,7 +27,7 @@ spec:
   steps:
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    # image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/github-dependabot:{{ .Chart.AppVersion }}'
+    # image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-dependabot:{{ .Chart.AppVersion }}'
     image: kind-registry:5000/components/producers/github-dependabot:v0.55.4-1ddbea3c-dirty
     command: ["/app/components/producers/github-dependabot/github-dependabot-parser"]
     env:
@@ -37,7 +37,7 @@ spec:
         value: "100"
     args:
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.dracon/producers/github-dependabot.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/github-dependabot.pb"
     - "-github-token=$(params.producer-github-dependabot-github-token)"
     - "-repository-owner=$(params.producer-github-dependabot-repository-owner)"
     - "-repository-name=$(params.producer-github-dependabot-repository-name)"

@@ -6,10 +6,10 @@ import (
 	"os"
 	"testing"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/typescript-eslint/types"
-	"github.com/ocurity/dracon/pkg/testutil"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/typescript-eslint/types"
+	"github.com/smithy-security/smithy/pkg/testutil"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

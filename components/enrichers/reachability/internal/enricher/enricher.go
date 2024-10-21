@@ -7,12 +7,12 @@ import (
 	"log/slog"
 	"strconv"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/atom"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/conf"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/fs"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/logging"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/search"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/conf"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/fs"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/logging"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/search"
 )
 
 type (

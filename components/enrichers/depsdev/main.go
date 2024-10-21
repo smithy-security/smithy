@@ -11,12 +11,12 @@ import (
 	"net/url"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	packageurl "github.com/package-url/packageurl-go"
+	"github.com/package-url/packageurl-go"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/enrichers"
-	"github.com/ocurity/dracon/components/enrichers/depsdev/types"
-	"github.com/ocurity/dracon/pkg/cyclonedx"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/enrichers"
+	"github.com/smithy-security/smithy/components/enrichers/depsdev/types"
+	"github.com/smithy-security/smithy/pkg/cyclonedx"
 )
 
 const defaultAnnotation = "Enriched Licenses"
@@ -152,7 +152,7 @@ func addDepsDevInfo(component cdx.Component, annotations map[string]string) (cdx
 func enrichIssue(i *v1.Issue) (*v1.EnrichedIssue, error) {
 	enrichedIssue := v1.EnrichedIssue{}
 	annotations := map[string]string{}
-	bom, err := cyclonedx.FromDracon(i)
+	bom, err := cyclonedx.FromSmithy(i)
 	if err != nil {
 		return &enrichedIssue, err
 	}
@@ -184,7 +184,7 @@ func enrichIssue(i *v1.Issue) (*v1.EnrichedIssue, error) {
 	if err != nil {
 		return &enrichedIssue, err
 	}
-	originalIssue, err := cyclonedx.ToDracon(marshalled, "json", "")
+	originalIssue, err := cyclonedx.ToSmithy(marshalled, "json", "")
 	if err != nil {
 		return &enrichedIssue, err
 	}

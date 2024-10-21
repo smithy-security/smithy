@@ -13,9 +13,9 @@ import (
 	"github.com/google/go-github/v65/github"
 	"github.com/package-url/packageurl-go"
 
-	v1proto "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	wrapper "github.com/ocurity/dracon/pkg/github"
+	v1proto "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	wrapper "github.com/smithy-security/smithy/pkg/github"
 )
 
 var cfg config
@@ -94,7 +94,7 @@ func main() {
 
 	issues := parseIssues(alerts)
 
-	if err := producers.WriteDraconOut("github-code-scanning", issues); err != nil {
+	if err := producers.WriteSmithyOut("github-code-scanning", issues); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -10,12 +10,12 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/atom"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/atom/purl"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/conf"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/enricher"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/fs"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/logging"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/conf"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/enricher"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/fs"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/logging"
 )
 
 func main() {

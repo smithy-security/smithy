@@ -1,5 +1,5 @@
 // Package main of the pdf consumer implements a simple consumer for
-// applying a go-template to a dracon scan, converting the result to pdf and then
+// applying a go-template to a smithy scan, converting the result to pdf and then
 // uploading the result to the S3 bucket passed as an argument
 // the consumer expects the environment variables
 // AWS_ACCESS_KEY_ID
@@ -19,9 +19,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	playwright "github.com/playwright-community/playwright-go"
+	"github.com/playwright-community/playwright-go"
 
-	"github.com/ocurity/dracon/components/consumers"
+	"github.com/smithy-security/smithy/components/consumers"
 )
 
 var (

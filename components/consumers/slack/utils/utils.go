@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ocurity/dracon/components/consumers/slack/types"
+	"github.com/smithy-security/smithy/components/consumers/slack/types"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
 )
 
 func push(b string, webhook string) error {

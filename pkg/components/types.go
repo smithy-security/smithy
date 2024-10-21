@@ -8,13 +8,13 @@ import (
 	"github.com/package-url/packageurl-go"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	"github.com/ocurity/dracon/pkg/manifests"
+	"github.com/smithy-security/smithy/pkg/manifests"
 )
 
 // ENUM(unknown, naive, external-helm)
 type OrchestrationType string
 
-// Component represents a Dracon component. At the moment it can only be a
+// Component represents a Smithy component. At the moment it can only be a
 // Tekton Task, but in the future it might represent other things too.
 type Component struct {
 	// Name of the component. Should be unique

@@ -9,12 +9,12 @@ import (
 )
 
 func TestComponentResolutionFromReference(t *testing.T) {
-	dereferencedComponent, err := FromReference(context.Background(), "pkg:helm/dracon-oss-components/producer-aggregator")
+	dereferencedComponent, err := FromReference(context.Background(), "pkg:helm/smithy-security-oss-components/producer-aggregator")
 	require.NoError(t, err)
 	require.Equal(t, Component{
 		Name:              "producer-aggregator",
-		Reference:         "pkg:helm/dracon-oss-components/producer-aggregator",
-		Repository:        "dracon-oss-components",
+		Reference:         "pkg:helm/smithy-security-oss-components/producer-aggregator",
+		Repository:        "smithy-security-oss-components",
 		OrchestrationType: OrchestrationTypeExternalHelm,
 	}, dereferencedComponent)
 

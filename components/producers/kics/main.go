@@ -7,11 +7,11 @@ import (
 	"log"
 	"log/slog"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/kics/types"
-	"github.com/ocurity/dracon/pkg/context"
-	"github.com/ocurity/dracon/pkg/sarif"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/kics/types"
+	"github.com/smithy-security/smithy/pkg/context"
+	"github.com/smithy-security/smithy/pkg/sarif"
 )
 
 // Sarif flag to indicate the producer is being fed sarif input.
@@ -30,9 +30,9 @@ func main() {
 	}
 
 	if Sarif {
-		var sarifResults []*sarif.DraconIssueCollection
-		var draconResults []*v1.Issue
-		sarifResults, err := sarif.ToDracon(string(inFile))
+		var sarifResults []*sarif.SmithyIssueCollection
+		var smithyResults []*v1.Issue
+		sarifResults, err := sarif.ToSmithy(string(inFile))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -40,9 +40,9 @@ func main() {
 			if result.ToolName != "KICS" {
 				log.Printf("Toolname from Sarif results is not 'KICS' it is %s instead\n", result.ToolName)
 			}
-			draconResults = append(draconResults, result.Issues...)
+			smithyResults = append(smithyResults, result.Issues...)
 		}
-		if err := producers.WriteDraconOut("KICS", draconResults); err != nil {
+		if err := producers.WriteSmithyOut("KICS", smithyResults); err != nil {
 			log.Fatal(err)
 		}
 	} else {
@@ -54,7 +54,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err := producers.WriteDraconOut("KICS", res); err != nil {
+		if err := producers.WriteSmithyOut("KICS", res); err != nil {
 			log.Fatal(err)
 		}
 
@@ -73,7 +73,7 @@ func parseOut(results types.KICSOut) ([]*v1.Issue, error) {
 			iss := &v1.Issue{
 				Target:     fmt.Sprintf("%s:%d", file.FileName, file.Line),
 				Type:       file.IssueType,
-				Severity:   KICSSeverityToDracon(query.Severity),
+				Severity:   KICSSeverityToSmithy(query.Severity),
 				Confidence: v1.Confidence_CONFIDENCE_UNSPECIFIED,
 				Title: fmt.Sprintf("%s %s %s",
 					query.Category,
@@ -96,8 +96,8 @@ func parseOut(results types.KICSOut) ([]*v1.Issue, error) {
 	return issues, nil
 }
 
-// KICSSeverityToDracon maps KCIS Severity Strings to dracon struct.
-func KICSSeverityToDracon(severity string) v1.Severity {
+// KICSSeverityToSmithy maps KCIS Severity Strings to smithy struct.
+func KICSSeverityToSmithy(severity string) v1.Severity {
 	switch severity {
 	case "LOW":
 		return v1.Severity_SEVERITY_LOW

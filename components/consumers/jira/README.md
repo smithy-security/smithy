@@ -1,7 +1,7 @@
 # Jira Consumer
 
 The Jira Consumer allows you to publish Vulnerability Issues to your
-organisation's Jira workspace straight from the Dracon pipeline results.
+organisation's Jira workspace straight from the Smithy pipeline results.
 Result fields such as 'target', 'cvss', 'severity', can either
 be written in the description or mapped to specific custom fields used by your
 workspace.
@@ -20,10 +20,10 @@ The configuration has three components:
 * defaultValues: Here you can specify fields with default values such as:
   Project Key, Issue Type, or even specific custom fields that your workspace
   uses.
-* addToDescription: Here you can specify what fields from the Dracon Results you
+* addToDescription: Here you can specify what fields from the Smithy Results you
   want written in the Issue's description.
 * mappings: In case your organisation has specific fields for CVSS, Severity,
-  etc, you can also map the dracon results straight to these fields.
+  etc, you can also map the smithy results straight to these fields.
   If not, you can just add them to the description (see the point above).
 
 There are more instructions in [docs](/docs/examples/jira-project/pipelinerun)
@@ -35,9 +35,9 @@ Authentication details for the Jira API are passed as environment variables.
 These can be set up in the pipeline.yaml file or in the Dockerfile.
 
 ```text
-DRACON_JIRA_USER="<user@email.com>"
-DRACON_JIRA_TOKEN="your api token"
-DRACON_JIRA_URL="domain your jira workspace is hosted on"
+SMITHY_JIRA_USER="<user@email.com>"
+SMITHY_JIRA_TOKEN="your api token"
+SMITHY_JIRA_URL="domain your jira workspace is hosted on"
 ```
 
 ## Testing
@@ -72,7 +72,7 @@ Below is example configuration and an explanation of each field
     "issueType": "Task",
     "customFields": null
   },
-  "descriptionTemplate":"Dracon found '{{.RawIssue.Title}}' at '{{.RawIssue.Target}}', severity '{{.RawIssue.Severity}}', rule id: '{{.RawIssue.Type}}', CVSS '{{.RawIssue.Cvss}}' Confidence '{{.RawIssue.Confidence}}' Original Description: {{.RawIssue.Description}}, Cve {{.RawIssue.Cve}},\n{{ range $key,$element := .Annotations }}{{$key}}:{{$element}}\n{{end}}",
+  "descriptionTemplate":"Smithy found '{{.RawIssue.Title}}' at '{{.RawIssue.Target}}', severity '{{.RawIssue.Severity}}', rule id: '{{.RawIssue.Type}}', CVSS '{{.RawIssue.Cvss}}' Confidence '{{.RawIssue.Confidence}}' Original Description: {{.RawIssue.Description}}, Cve {{.RawIssue.Cve}},\n{{ range $key,$element := .Annotations }}{{$key}}:{{$element}}\n{{end}}",
   "addToDescription": [
     "scan_start_time",
     "tool_name",
@@ -97,7 +97,7 @@ if you have configured a ticket type named "Vulnerability")
 
 ### customFields
 
-Since Jira supports custom fields this describes what information from a dracon
+Since Jira supports custom fields this describes what information from a smithy
 issue should be mapped to a jira custom field. This element accepts:
 A struct of:
 
@@ -112,10 +112,10 @@ A struct of:
 
 ### addToDescription
 
-An array of which dracon api fields to add to the jira ticket description.
+An array of which smithy api fields to add to the jira ticket description.
 
 ### mappings
 
-Not used for now, it's part of a yet-untested jira-to-dracon syncroniser which
+Not used for now, it's part of a yet-untested jira-to-smithy syncroniser which
 makes jira into a more comprehensive vulnerability management platform.
 If you need this please open a ticket.

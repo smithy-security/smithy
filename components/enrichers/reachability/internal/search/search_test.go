@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/atom"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/search"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/search"
 )
 
 func TestNewSearcher(t *testing.T) {

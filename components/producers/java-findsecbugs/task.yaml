@@ -4,8 +4,8 @@ kind: Task
 metadata:
   name: producer-java-findsecbugs
   labels:
-    v1.dracon.ocurity.com/component: producer
-    v1.dracon.ocurity.com/language: java
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/language: java
 spec:
   description: Generate a FindSecBugs report from source code.
   params:
@@ -51,11 +51,11 @@ spec:
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/java-findsecbugs:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/java-findsecbugs:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/java-findsecbugs/java-findsecbugs-parser"]
     args:
     - "-in=/scratch/out.xml"
-    - "-out=$(workspaces.output.path)/.dracon/producers/java-findsecbugs.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/java-findsecbugs.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch

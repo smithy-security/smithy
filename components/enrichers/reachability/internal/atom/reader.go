@@ -9,8 +9,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/atom/purl"
-	"github.com/ocurity/dracon/components/enrichers/reachability/internal/logging"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/logging"
 )
 
 type (

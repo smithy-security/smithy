@@ -4,7 +4,7 @@ kind: Task
 metadata:
   name: consumer-slack
   labels:
-    v1.dracon.ocurity.com/component: consumer
+    v1.smithy.smithy-security.com/component: consumer
 spec:
   description: Pushes findings to a Slack channel.
   params:
@@ -14,17 +14,17 @@ spec:
     - name: consumer-slack-message-template
       type: string
       description: "The message template to use when sending messages to Slack. The following variables are available: <scanID>, <scanStartTime>, <numResults>, <newResults>"
-      default: 'Dracon scan <scanID>, started at <scanStartTime>, completed with <numResults> findings, out of which, <newResults> new'
+      default: 'Smithy scan <scanID>, started at <scanStartTime>, completed with <numResults> findings, out of which, <newResults> new'
   workspaces:
     - name: output
       description: The workspace containing the source-code to scan.
   steps:
   - name: run-consumer
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/consumers/slack:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/slack:{{ .Chart.AppVersion }}'
     command: ["/app/components/consumers/slack/slack"]
     args: [
-      "-in", "$(workspaces.output.path)/.dracon/enrichers/",
+      "-in", "$(workspaces.output.path)/.smithy/enrichers/",
       "-webhook", "$(params.consumer-slack-webhook)",
       "-template", "$(params.consumer-slack-message-template)",
     ]

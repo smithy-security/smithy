@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Document represents a Dracon result (issue) object.
+// Document represents a Smithy result (issue) object.
 type Document struct {
 	// The fields below are not used in this consumer. We use the text versions instead.
 	Annotations    map[string]string `json:"annotations"`

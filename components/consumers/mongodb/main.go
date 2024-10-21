@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/ocurity/dracon/components/consumers"
+	"github.com/smithy-security/smithy/components/consumers"
 )
 
 var (
@@ -51,7 +51,7 @@ func run(ctx context.Context) error {
 
 	coll := client.Database(dbName).Collection(collectionName)
 
-	// Enumerate Dracon Issues to consume and create documents for each of them.
+	// Enumerate Smithy Issues to consume and create documents for each of them.
 	if consumers.Raw {
 		log.Println("Parsing Raw results")
 		responses, err := consumers.LoadToolResponse()

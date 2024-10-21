@@ -15,8 +15,8 @@ import (
 
 	owners "github.com/hairyhenderson/go-codeowners"
 
-	apiv1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/enrichers"
+	apiv1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/enrichers"
 )
 
 const defaultAnnotation = "Owner"

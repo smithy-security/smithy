@@ -7,7 +7,7 @@ import (
 	tektonv1beta1api "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 	kustomizetypes "sigs.k8s.io/kustomize/api/types"
 
-	"github.com/ocurity/dracon/pkg/manifests"
+	"github.com/smithy-security/smithy/pkg/manifests"
 )
 
 // ResolveBase checks the resources section to find the base pipeline, If its

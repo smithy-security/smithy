@@ -1,7 +1,7 @@
 FROM golang:latest
 
 WORKDIR /playwright
-RUN go mod init github.com/ocurity/pdf-consumer && \
+RUN go mod init github.com/smithy-security/pdf-consumer && \
         go get -u github.com/playwright-community/playwright-go && \
         go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps
 

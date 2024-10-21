@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
 )
 
 func yarnToIssueSeverity(severity string) v1.Severity {
@@ -70,7 +70,7 @@ type auditAdvisoryData struct {
 	Advisory   yarnAdvisory    `json:"advisory"`
 }
 
-// AsIssue returns data as a Dracon v1.Issue.
+// AsIssue returns data as a Smithy v1.Issue.
 func (audit *auditAdvisoryData) AsIssue() *v1.Issue {
 	var targetName string
 	if audit.Resolution.Path != "" {
@@ -223,7 +223,7 @@ func NewReport(reportLines [][]byte) (*YarnAuditReport, []error) {
 	return nil, errs
 }
 
-// AsIssues returns the YarnAuditReport as Dracon v1.Issue list. Currently only converts the YarnAuditReport.AuditAdvisories.
+// AsIssues returns the YarnAuditReport as Smithy v1.Issue list. Currently only converts the YarnAuditReport.AuditAdvisories.
 func (r *YarnAuditReport) AsIssues() []*v1.Issue {
 	issues := make([]*v1.Issue, 0)
 

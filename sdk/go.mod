@@ -1,4 +1,4 @@
-module github.com/ocurity/dracon/sdk
+module github.com/smithy-security/smithy/sdk
 
 go 1.23.0
 

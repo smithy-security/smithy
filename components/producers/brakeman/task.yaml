@@ -4,9 +4,9 @@ kind: Task
 metadata:
   name: producer-brakeman
   labels:
-    v1.dracon.ocurity.com/component: producer
-    v1.dracon.ocurity.com/test-type: sast
-    v1.dracon.ocurity.com/language: brakeman
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: sast
+    v1.smithy.smithy-security.com/language: brakeman
 spec:
   description: Analyse Ruby source code usign brakeman to look for security issues.
   params:
@@ -42,11 +42,11 @@ spec:
       name: scratch
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/brakeman:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/brakeman:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/brakeman/brakeman-parser"]
     args:
     - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.dracon/producers/brakeman.pb"
+    - "-out=$(workspaces.output.path)/.smithy/producers/brakeman.pb"
     volumeMounts:
     - mountPath: /scratch
       name: scratch

@@ -5,7 +5,7 @@ import (
 
 	tektonv1beta1api "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 
-	"github.com/ocurity/dracon/pkg/components"
+	"github.com/smithy-security/smithy/pkg/components"
 )
 
 // func renameParameterRef(oldVal string, newParameterNames map[string]string) string {
@@ -41,7 +41,7 @@ import (
 // 	task.Name = prefix + task.Name + suffix
 // }
 
-func addDraconParamsToTask(pipelineTask *tektonv1beta1api.PipelineTask, baseTaskName string, task *tektonv1beta1api.Task) error {
+func addSmithyParamsToTask(pipelineTask *tektonv1beta1api.PipelineTask, baseTaskName string, task *tektonv1beta1api.Task) error {
 	isProducer, err := components.LabelValueOneOf(task.Labels, components.Producer)
 	if err != nil {
 		return err
@@ -52,24 +52,24 @@ func addDraconParamsToTask(pipelineTask *tektonv1beta1api.PipelineTask, baseTask
 
 	pipelineTask.Params = append(pipelineTask.Params, []tektonv1beta1api.Param{
 		{
-			Name: "dracon_scan_id",
+			Name: "smithy_scan_id",
 			Value: tektonv1beta1api.ParamValue{
 				Type:      tektonv1beta1api.ParamTypeString,
-				StringVal: fmt.Sprintf("$(tasks.%s.results.dracon-scan-id)", baseTaskName),
+				StringVal: fmt.Sprintf("$(tasks.%s.results.smithy-scan-id)", baseTaskName),
 			},
 		},
 		{
-			Name: "dracon_scan_start_time",
+			Name: "smithy_scan_start_time",
 			Value: tektonv1beta1api.ParamValue{
 				Type:      tektonv1beta1api.ParamTypeString,
-				StringVal: fmt.Sprintf("$(tasks.%s.results.dracon-scan-start-time)", baseTaskName),
+				StringVal: fmt.Sprintf("$(tasks.%s.results.smithy-scan-start-time)", baseTaskName),
 			},
 		},
 		{
-			Name: "dracon_scan_tags",
+			Name: "smithy_scan_tags",
 			Value: tektonv1beta1api.ParamValue{
 				Type:      tektonv1beta1api.ParamTypeString,
-				StringVal: fmt.Sprintf("$(tasks.%s.results.dracon-scan-tags)", baseTaskName),
+				StringVal: fmt.Sprintf("$(tasks.%s.results.smithy-scan-tags)", baseTaskName),
 			},
 		},
 	}...)

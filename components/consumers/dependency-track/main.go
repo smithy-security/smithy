@@ -14,9 +14,9 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/google/uuid"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/consumers"
-	cyclonedx "github.com/ocurity/dracon/pkg/cyclonedx"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/consumers"
+	"github.com/smithy-security/smithy/pkg/cyclonedx"
 )
 
 var (
@@ -123,7 +123,7 @@ func uploadBOMSFromEnriched(responses []*v1.EnrichedLaunchToolResponse) ([]strin
 				continue
 			}
 		}
-		cdxbom, err := cyclonedx.FromDracon(bomIssue.GetRawIssue())
+		cdxbom, err := cyclonedx.FromSmithy(bomIssue.GetRawIssue())
 		if err != nil {
 			return tokens, err
 		}
@@ -160,7 +160,7 @@ func uploadBOMsFromRaw(responses []*v1.LaunchToolResponse) ([]string, error) {
 				continue
 			}
 		}
-		cdxbom, err := cyclonedx.FromDracon(bomIssue)
+		cdxbom, err := cyclonedx.FromSmithy(bomIssue)
 		if err != nil {
 			return tokens, err
 		}

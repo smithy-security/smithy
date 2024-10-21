@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	v1 "github.com/ocurity/dracon/api/proto/v1"
-	"github.com/ocurity/dracon/components/producers"
-	"github.com/ocurity/dracon/components/producers/zaproxy/types"
+	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/components/producers/zaproxy/types"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := producers.WriteDraconOut("zap", parseOut(&results)); err != nil {
+	if err := producers.WriteSmithyOut("zap", parseOut(&results)); err != nil {
 		log.Fatal(err)
 	}
 }
