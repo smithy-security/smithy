@@ -15,171 +15,154 @@ import (
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
-func TestRunFilter(t *testing.T) {
+func runEnricherHelper(t *testing.T, ctx context.Context, enricher component.Enricher) error {
+	t.Helper()
+
+	return component.RunEnricher(
+		ctx,
+		enricher,
+		component.RunnerWithLogger(component.NewNoopLogger()),
+		component.RunnerWithComponentName("sample-enricher"),
+	)
+}
+
+func TestRunEnricher(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 
-	panicHandler, err := component.NewDefaultPanicHandler()
-	require.NoError(t, err)
-
 	var (
-		ctrl = gomock.NewController(t)
-		conf = &component.RunnerConfig{
-			Logging: component.RunnerConfigLogging{
-				Logger: component.NewNoopLogger(),
-			},
-			PanicHandler: panicHandler,
-		}
+		ctrl          = gomock.NewController(t)
 		vulns         = make([]*ocsf.VulnerabilityFinding, 0, 2)
-		filteredVulns = make([]*ocsf.VulnerabilityFinding, 0, 1)
+		enrichedVulns = make([]*ocsf.VulnerabilityFinding, 0, 2)
 	)
 
-	t.Run("it should run a filter correctly and filter out one finding", func(t *testing.T) {
-		mockFilter := mocks.NewMockFilter(ctrl)
-		mockFilter.
+	t.Run("it should run a enricher correctly and enrich out one finding", func(t *testing.T) {
+		mockEnricher := mocks.NewMockEnricher(ctrl)
+		mockEnricher.
 			EXPECT().
 			Read(gomock.Any()).
 			Return(vulns, nil)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
-			Filter(vulns).
-			Return(filteredVulns, true, nil)
-		mockFilter.
+			Annotate(gomock.Any(), vulns).
+			Return(enrichedVulns, nil)
+		mockEnricher.
 			EXPECT().
-			Update(gomock.Any(), filteredVulns).
+			Update(gomock.Any(), enrichedVulns).
 			Return(nil)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Close(gomock.Any()).
 			Return(nil)
 
-		require.NoError(t, component.RunFilter(ctx, mockFilter, component.RunnerWithConfig(conf)))
-	})
-
-	t.Run("it should run a filter correctly and return early as no filtering was done", func(t *testing.T) {
-		mockFilter := mocks.NewMockFilter(ctrl)
-
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockFilter.
-			EXPECT().
-			Filter(vulns).
-			Return(nil, false, nil)
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		require.NoError(t, component.RunFilter(ctx, mockFilter, component.RunnerWithConfig(conf)))
+		require.NoError(t, runEnricherHelper(t, ctx, mockEnricher))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
 		ctx, cancel = context.WithCancel(ctx)
 
-		mockFilter := mocks.NewMockFilter(ctrl)
+		mockEnricher := mocks.NewMockEnricher(ctrl)
 
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Read(gomock.Any()).
 			Return(vulns, nil)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
-			Filter(vulns).
-			DoAndReturn(func(vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
+			Annotate(gomock.Any(), vulns).
+			DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
 				cancel()
-				return filteredVulns, true, nil
+				return enrichedVulns, nil
 			})
-		mockFilter.
+		mockEnricher.
 			EXPECT().
-			Update(gomock.Any(), filteredVulns).
+			Update(gomock.Any(), enrichedVulns).
 			DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
 				<-ctx.Done()
 				return nil
 			})
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Close(gomock.Any()).
 			Return(nil)
 
-		require.NoError(t, component.RunFilter(ctx, mockFilter, component.RunnerWithConfig(conf)))
+		require.NoError(t, runEnricherHelper(t, ctx, mockEnricher))
 	})
 
 	t.Run("it should return early when reading errors", func(t *testing.T) {
 		ctx, cancel = context.WithCancel(ctx)
 
 		var (
-			errRead    = errors.New("reader-is-sad")
-			mockFilter = mocks.NewMockFilter(ctrl)
+			errRead      = errors.New("reader-is-sad")
+			mockEnricher = mocks.NewMockEnricher(ctrl)
 		)
 
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Read(gomock.Any()).
 			Return(nil, errRead)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Close(gomock.Any()).
 			Return(nil)
 
-		err := component.RunFilter(ctx, mockFilter, component.RunnerWithConfig(conf))
+		err := runEnricherHelper(t, ctx, mockEnricher)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errRead)
 	})
 
-	t.Run("it should return early when filtering errors", func(t *testing.T) {
+	t.Run("it should return early when annotating errors", func(t *testing.T) {
 		ctx, cancel = context.WithCancel(ctx)
 
 		var (
-			errFilter  = errors.New("filter-is-sad")
-			mockFilter = mocks.NewMockFilter(ctrl)
+			errAnnotation = errors.New("annotator-is-sad")
+			mockEnricher  = mocks.NewMockEnricher(ctrl)
 		)
 
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Read(gomock.Any()).
 			Return(vulns, nil)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
-			Filter(vulns).
-			Return(nil, false, errFilter)
-		mockFilter.
+			Annotate(gomock.Any(), vulns).
+			Return(nil, errAnnotation)
+		mockEnricher.
 			EXPECT().
 			Close(gomock.Any()).
 			Return(nil)
 
-		err := component.RunFilter(ctx, mockFilter, component.RunnerWithConfig(conf))
+		err := runEnricherHelper(t, ctx, mockEnricher)
 		require.Error(t, err)
-		assert.ErrorIs(t, err, errFilter)
+		assert.ErrorIs(t, err, errAnnotation)
 	})
 
 	t.Run("it should return early when updating errors", func(t *testing.T) {
 		ctx, cancel = context.WithCancel(ctx)
 
 		var (
-			errUpdate  = errors.New("update-is-sad")
-			mockFilter = mocks.NewMockFilter(ctrl)
+			errUpdate    = errors.New("update-is-sad")
+			mockEnricher = mocks.NewMockEnricher(ctrl)
 		)
 
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Read(gomock.Any()).
 			Return(vulns, nil)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
-			Filter(vulns).
-			Return(filteredVulns, true, nil)
-		mockFilter.
+			Annotate(gomock.Any(), vulns).
+			Return(enrichedVulns, nil)
+		mockEnricher.
 			EXPECT().
-			Update(gomock.Any(), filteredVulns).
+			Update(gomock.Any(), enrichedVulns).
 			Return(errUpdate)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Close(gomock.Any()).
 			Return(nil)
 
-		err := component.RunFilter(ctx, mockFilter, component.RunnerWithConfig(conf))
+		err := runEnricherHelper(t, ctx, mockEnricher)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errUpdate)
 	})
@@ -187,21 +170,21 @@ func TestRunFilter(t *testing.T) {
 	t.Run("it should keep shutting down the application when a panic is detected during close", func(t *testing.T) {
 		ctx, cancel = context.WithCancel(ctx)
 
-		mockFilter := mocks.NewMockFilter(ctrl)
+		mockEnricher := mocks.NewMockEnricher(ctrl)
 
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Read(gomock.Any()).
 			Return(vulns, nil)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
-			Filter(vulns).
-			Return(filteredVulns, true, nil)
-		mockFilter.
+			Annotate(gomock.Any(), vulns).
+			Return(enrichedVulns, nil)
+		mockEnricher.
 			EXPECT().
-			Update(gomock.Any(), filteredVulns).
+			Update(gomock.Any(), enrichedVulns).
 			Return(nil)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Close(gomock.Any()).
 			DoAndReturn(func(ctx context.Context) error {
@@ -209,35 +192,35 @@ func TestRunFilter(t *testing.T) {
 				return nil
 			})
 
-		require.NoError(t, component.RunFilter(ctx, mockFilter, component.RunnerWithConfig(conf)))
+		require.NoError(t, runEnricherHelper(t, ctx, mockEnricher))
 	})
 
-	t.Run("it should return early when a panic is detected on filtering", func(t *testing.T) {
+	t.Run("it should return early when a panic is detected on enriching", func(t *testing.T) {
 		ctx, cancel = context.WithCancel(ctx)
 
 		var (
-			errFilter  = errors.New("filter-is-sad")
-			mockFilter = mocks.NewMockFilter(ctrl)
+			errAnnotation = errors.New("annotator-is-sad")
+			mockEnricher  = mocks.NewMockEnricher(ctrl)
 		)
 
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Read(gomock.Any()).
 			Return(vulns, nil)
-		mockFilter.
+		mockEnricher.
 			EXPECT().
-			Filter(vulns).
-			DoAndReturn(func(vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
-				panic(errFilter)
-				return filteredVulns, true, nil
+			Annotate(gomock.Any(), vulns).
+			DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+				panic(errAnnotation)
+				return enrichedVulns, nil
 			})
-		mockFilter.
+		mockEnricher.
 			EXPECT().
 			Close(gomock.Any()).
 			Return(nil)
 
-		err := component.RunFilter(ctx, mockFilter, component.RunnerWithConfig(conf))
+		err := runEnricherHelper(t, ctx, mockEnricher)
 		require.Error(t, err)
-		assert.ErrorIs(t, err, errFilter)
+		assert.ErrorIs(t, err, errAnnotation)
 	})
 }
