@@ -349,8 +349,11 @@ dep-update-proto: build-buf-container
 ########################################
 ########### RELEASE UTILITIES ##########
 ########################################
-.PHONY: check-branch check-tag-message patch-release-tag new-minor-release-tag new-major-release-tag
-
+.PHONY: check-branch check-tag-message patch-release-tag new-minor-release-tag new-major-release-tag install-changelog-tool
+	
+install-changelog-tool:
+	@go install github.com/smithy-security/smithy/cmd/changelog
+	
 check-branch:
 	@if [ $$(git branch --show-current | tr -d '\n') != "main" ]; \
 	then \
@@ -369,6 +372,7 @@ new-patch-release-tag: SHELL:=/bin/bash
 new-patch-release-tag: check-branch check-tag-message
 	$(shell \
 		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
+		TAG_MESSAGE="${TAG_MESSAGE}\n\n$$(changelog -repo-path=.)" \
 		git tag "v$${number[0]}.$${number[1]}.$$(($${number[2]}+1))" -m "${TAG_MESSAGE}"; \
 	)
 
@@ -376,6 +380,7 @@ new-minor-release-tag: SHELL:=/bin/bash
 new-minor-release-tag: check-branch check-tag-message
 	$(shell \
 		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
+		TAG_MESSAGE="${TAG_MESSAGE}\n\n$$(changelog -repo-path=.)" \
 		git tag "v$${number[0]}.$$(($${number[1]}+1)).0" -m "${TAG_MESSAGE}"; \
 	)
 
@@ -383,5 +388,9 @@ new-major-release-tag: SHELL:=/bin/bash
 new-major-release-tag: check-branch check-tag-message
 	$(shell \
 		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
+		TAG_MESSAGE="${TAG_MESSAGE}\n\n$$(changelog -repo-path=.)" \
 		git tag "v$$(($${number[0]}+1)).0.0" -m "${TAG_MESSAGE}"; \
 	)
+
+changelog:
+	@changelog -repo-path="."
