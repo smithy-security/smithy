@@ -44,7 +44,7 @@ export
 ########################################
 ############# BUILD TARGETS ############
 ########################################
-.PHONY: components component-binaries cmd/smithyctl/bin protos build publish-component-containers publish-containers smithyctl-image smithyctl-image-publish clean-protos clean
+.PHONY: components component-binaries cmd/smithyctl/bin cmd/changelog/bin protos build publish-component-containers publish-containers smithyctl-image smithyctl-image-publish clean-protos clean
 
 $(component_binaries):
 	./scripts/build_component_binary.sh $@
@@ -57,6 +57,11 @@ $(component_containers): %/docker: %/bin
 	./scripts/build_component_container.sh $@
 
 components: $(component_containers)
+
+cmd/changelog/bin:
+	$(eval GOOS:=linux)
+	$(eval GOARCH:=amd64)
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -C cmd/changelog -o ../../bin/cmd/$(GOOS)/$(GOARCH)/changelog main.go
 
 cmd/smithyctl/bin:
 	$(eval GOOS:=linux)
@@ -349,8 +354,11 @@ dep-update-proto: build-buf-container
 ########################################
 ########### RELEASE UTILITIES ##########
 ########################################
-.PHONY: check-branch check-tag-message patch-release-tag new-minor-release-tag new-major-release-tag
-
+.PHONY: check-branch check-tag-message patch-release-tag new-minor-release-tag new-major-release-tag install-changelog-tool
+	
+install-changelog-tool:
+	@go install github.com/smithy-security/smithy/cmd/changelog
+	
 check-branch:
 	@if [ $$(git branch --show-current | tr -d '\n') != "main" ]; \
 	then \
@@ -366,22 +374,14 @@ check-tag-message:
 	fi
 
 new-patch-release-tag: SHELL:=/bin/bash
-new-patch-release-tag: check-branch check-tag-message
-	$(shell \
-		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
-		git tag "v$${number[0]}.$${number[1]}.$$(($${number[2]}+1))" -m "${TAG_MESSAGE}"; \
-	)
+new-patch-release-tag: check-branch check-tag-message install-changelog-tool
+	@changelog --current-tag "${SMITHY_VERSION}" -repo-path "." -patch -message "${TAG_MESSAGE}"
 
 new-minor-release-tag: SHELL:=/bin/bash
-new-minor-release-tag: check-branch check-tag-message
-	$(shell \
-		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
-		git tag "v$${number[0]}.$$(($${number[1]}+1)).0" -m "${TAG_MESSAGE}"; \
-	)
+new-minor-release-tag: check-branch check-tag-message install-changelog-tool
+	@changelog --current-tag "${SMITHY_VERSION}" -repo-path "." -minor -message "${TAG_MESSAGE}"
+
 
 new-major-release-tag: SHELL:=/bin/bash
-new-major-release-tag: check-branch check-tag-message
-	$(shell \
-		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
-		git tag "v$$(($${number[0]}+1)).0.0" -m "${TAG_MESSAGE}"; \
-	)
+new-major-release-tag: check-branch check-tag-message install-changelog-tool
+	@changelog --current-tag "${SMITHY_VERSION}" -repo-path "." -major -message "${TAG_MESSAGE}"
