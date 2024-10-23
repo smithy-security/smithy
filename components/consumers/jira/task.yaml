@@ -6,7 +6,12 @@ metadata:
   labels:
     v1.smithy.smithy-security.com/component: consumer
 spec:
-  description: Pushes findings to a Jira instance.
+  description: |
+   Pushes findings to a Jira instance.
+   The Project Name parameter needs to match the project name on Jira
+   The Issue Type parameter needs to match the exact issue type of the project on Jira.
+   Jira does not support multiple issue types per board.
+   Keep in mind that you need to provide both the api token and the email of the user who owns the api token for this component to authenticate.
   volumes:
   - name: scratch
     emptyDir: {}
@@ -20,6 +25,10 @@ spec:
     - name: consumer-jira-project-name
       type: string
       default: ""
+    - name: consumer-jira-issue-type
+      type: string
+      default: "Task"
+
   workspaces:
     - name: output
       description: The workspace containing the source-code to scan.
@@ -33,7 +42,7 @@ spec:
        {
       "defaultValues": {
           "project": "$(params.consumer-jira-project-name)",
-          "issueType": "Task",
+          "issueType": "$(params.consumer-jira-issue-type)",
           "customFields": null
       },
       "descriptionTemplate": "",
