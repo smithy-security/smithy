@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/bigquery v1.57.1
 	github.com/CycloneDX/cyclonedx-go v0.9.0
 	github.com/DependencyTrack/client-go v0.13.0
-	github.com/andygrunwald/go-jira v1.15.1
+	github.com/andygrunwald/go-jira v1.16.0
 	github.com/avast/retry-go/v4 v4.3.3
 	github.com/aws/aws-sdk-go v1.17.7
 	github.com/elastic/go-elasticsearch/v8 v8.3.0
