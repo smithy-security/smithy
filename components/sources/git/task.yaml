@@ -225,13 +225,7 @@ spec:
           -submodules="${PARAM_SUBMODULES}" \
           -depth="${PARAM_DEPTH}" \
           -sparseCheckoutDirectories="${PARAM_SPARSE_CHECKOUT_DIRECTORIES}"
-        cd "${CHECKOUT_DIR}"
-        RESULT_SHA="$(git rev-parse HEAD)"
         EXIT_CODE="$?"
         if [ "${EXIT_CODE}" != 0 ] ; then
           exit "${EXIT_CODE}"
         fi
-        RESULT_COMMITTER_DATE="$(git log -1 --pretty=%ct)"
-        printf "%s" "${RESULT_COMMITTER_DATE}" > "$(results.committer-date.path)"
-        printf "%s" "${RESULT_SHA}" > "$(results.commit.path)"
-        printf "%s" "${PARAM_URL}" > "$(results.url.path)"
