@@ -24,16 +24,22 @@ func TestParsesParseable(t *testing.T) {
 		var (
 			loader = makeLoader(map[string]string{"KNOWN_STRING": "a string"})
 			cases  = []struct {
-				searchEnv string
-				expected  string
+				searchEnv     string
+				expected      string
+				fallBackOnErr bool
 			}{
-				{searchEnv: "KNOWN_STRING", expected: "a string"},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
+				{searchEnv: "KNOWN_STRING", expected: "a string", fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
 			}
 		)
 		for _, tt := range cases {
 			t.Run(fmt.Sprintf("with env var %s", tt.searchEnv), func(t *testing.T) {
-				ret, err := component.FromEnvOrDefault(tt.searchEnv, defaultVal, component.WithEnvLoader(loader))
+				ret, err := component.FromEnvOrDefault(
+					tt.searchEnv,
+					defaultVal,
+					component.WithEnvLoader(loader),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
+				)
 				if err != nil {
 					require.NoError(t, err)
 				}
@@ -50,15 +56,21 @@ func TestParsesParseable(t *testing.T) {
 				searchEnv           string
 				expected            bool
 				expectedErrContains string
+				fallBackOnErr       bool
 			}{
-				{searchEnv: "KNOWN_BOOL", expected: true},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
-				{searchEnv: "NOT_BOOL", expected: false, expectedErrContains: "invalid syntax"},
+				{searchEnv: "KNOWN_BOOL", expected: true, fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "NOT_BOOL", expected: false, expectedErrContains: "invalid syntax", fallBackOnErr: true},
 			}
 		)
 		for _, tt := range cases {
 			t.Run(fmt.Sprintf("with env var %s", tt.searchEnv), func(t *testing.T) {
-				ret, err := component.FromEnvOrDefault(tt.searchEnv, defaultVal, component.WithEnvLoader(loader))
+				ret, err := component.FromEnvOrDefault(
+					tt.searchEnv,
+					defaultVal,
+					component.WithEnvLoader(loader),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
+				)
 				if err != nil && tt.expectedErrContains != "" {
 					require.True(t, strings.Contains(err.Error(), tt.expectedErrContains))
 					return
@@ -78,10 +90,11 @@ func TestParsesParseable(t *testing.T) {
 				searchEnv           string
 				expected            int
 				expectedErrContains string
+				fallBackOnErr       bool
 			}{
-				{searchEnv: "KNOWN_INT", expected: 123},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
-				{searchEnv: "NOT_INT", expectedErrContains: "invalid syntax"},
+				{searchEnv: "KNOWN_INT", expected: 123, fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "NOT_INT", expectedErrContains: "invalid syntax", fallBackOnErr: false},
 			}
 		)
 		for _, tt := range cases {
@@ -90,7 +103,7 @@ func TestParsesParseable(t *testing.T) {
 					tt.searchEnv,
 					defaultVal,
 					component.WithEnvLoader(loader),
-					component.WithFallbackToDefaultOnError(false),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
 				)
 				if err != nil && tt.expectedErrContains != "" {
 					require.True(t, strings.Contains(err.Error(), tt.expectedErrContains))
@@ -111,10 +124,11 @@ func TestParsesParseable(t *testing.T) {
 				searchEnv           string
 				expected            uint
 				expectedErrContains string
+				fallBackOnErr       bool
 			}{
-				{searchEnv: "KNOWN_UINT", expected: 123},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
-				{searchEnv: "NOT_UINT", expectedErrContains: "invalid syntax"},
+				{searchEnv: "KNOWN_UINT", expected: 123, fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "NOT_UINT", expectedErrContains: "invalid syntax", fallBackOnErr: false},
 			}
 		)
 		for _, tt := range cases {
@@ -123,7 +137,7 @@ func TestParsesParseable(t *testing.T) {
 					tt.searchEnv,
 					defaultVal,
 					component.WithEnvLoader(loader),
-					component.WithFallbackToDefaultOnError(false),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
 				)
 				if err != nil && tt.expectedErrContains != "" {
 					require.True(t, strings.Contains(err.Error(), tt.expectedErrContains))
@@ -144,10 +158,11 @@ func TestParsesParseable(t *testing.T) {
 				searchEnv           string
 				expected            int64
 				expectedErrContains string
+				fallBackOnErr       bool
 			}{
-				{searchEnv: "KNOWN_INT", expected: 8675309},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
-				{searchEnv: "NOT_INT", expectedErrContains: "invalid syntax"},
+				{searchEnv: "KNOWN_INT", expected: 8675309, fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "NOT_INT", expectedErrContains: "invalid syntax", fallBackOnErr: false},
 			}
 		)
 		for _, tt := range cases {
@@ -156,7 +171,7 @@ func TestParsesParseable(t *testing.T) {
 					tt.searchEnv,
 					defaultVal,
 					component.WithEnvLoader(loader),
-					component.WithFallbackToDefaultOnError(false),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
 				)
 				if err != nil && tt.expectedErrContains != "" {
 					require.True(t, strings.Contains(err.Error(), tt.expectedErrContains))
@@ -177,10 +192,11 @@ func TestParsesParseable(t *testing.T) {
 				searchEnv           string
 				expected            uint64
 				expectedErrContains string
+				fallBackOnErr       bool
 			}{
-				{searchEnv: "KNOWN_UINT", expected: 5555555},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
-				{searchEnv: "NOT_UINT", expectedErrContains: "invalid syntax"},
+				{searchEnv: "KNOWN_UINT", expected: 5555555, fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "NOT_UINT", expectedErrContains: "invalid syntax", fallBackOnErr: false},
 			}
 		)
 		for _, tt := range cases {
@@ -189,7 +205,7 @@ func TestParsesParseable(t *testing.T) {
 					tt.searchEnv,
 					defaultVal,
 					component.WithEnvLoader(loader),
-					component.WithFallbackToDefaultOnError(false),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
 				)
 				if err != nil && tt.expectedErrContains != "" {
 					require.True(t, strings.Contains(err.Error(), tt.expectedErrContains))
@@ -210,10 +226,11 @@ func TestParsesParseable(t *testing.T) {
 				searchEnv           string
 				expected            float64
 				expectedErrContains string
+				fallBackOnErr       bool
 			}{
-				{searchEnv: "KNOWN_FLOAT", expected: 69.69},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
-				{searchEnv: "NOT_FLOAT", expectedErrContains: "invalid syntax"},
+				{searchEnv: "KNOWN_FLOAT", expected: 69.69, fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "NOT_FLOAT", expectedErrContains: "invalid syntax", fallBackOnErr: false},
 			}
 		)
 		for _, tt := range cases {
@@ -222,7 +239,7 @@ func TestParsesParseable(t *testing.T) {
 					tt.searchEnv,
 					defaultVal,
 					component.WithEnvLoader(loader),
-					component.WithFallbackToDefaultOnError(false),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
 				)
 				if err != nil && tt.expectedErrContains != "" {
 					require.True(t, strings.Contains(err.Error(), tt.expectedErrContains))
@@ -243,10 +260,11 @@ func TestParsesParseable(t *testing.T) {
 				searchEnv           string
 				expected            time.Duration
 				expectedErrContains string
+				fallBackOnErr       bool
 			}{
-				{searchEnv: "KNOWN_DURATION", expected: time.Second * 10},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
-				{searchEnv: "NOT_DURATION", expectedErrContains: "invalid duration"},
+				{searchEnv: "KNOWN_DURATION", expected: time.Second * 10, fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "NOT_DURATION", expectedErrContains: "invalid duration", fallBackOnErr: false},
 			}
 		)
 		for _, tt := range cases {
@@ -255,7 +273,7 @@ func TestParsesParseable(t *testing.T) {
 					tt.searchEnv,
 					defaultVal,
 					component.WithEnvLoader(loader),
-					component.WithFallbackToDefaultOnError(false),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
 				)
 				if err != nil && tt.expectedErrContains != "" {
 					require.True(t, strings.Contains(err.Error(), tt.expectedErrContains))
@@ -276,10 +294,11 @@ func TestParsesParseable(t *testing.T) {
 				searchEnv           string
 				expected            time.Time
 				expectedErrContains string
+				fallBackOnErr       bool
 			}{
-				{searchEnv: "KNOWN_TIME", expected: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC)},
-				{searchEnv: "UNKNOWN_ENV", expected: defaultVal},
-				{searchEnv: "NOT_TIME", expectedErrContains: "parsing time"},
+				{searchEnv: "KNOWN_TIME", expected: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC), fallBackOnErr: true},
+				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "NOT_TIME", expectedErrContains: "parsing time", fallBackOnErr: false},
 			}
 		)
 		for _, tt := range cases {
@@ -288,7 +307,7 @@ func TestParsesParseable(t *testing.T) {
 					tt.searchEnv,
 					defaultVal,
 					component.WithEnvLoader(loader),
-					component.WithFallbackToDefaultOnError(false),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
 				)
 				if err != nil {
 					require.Error(t, err)

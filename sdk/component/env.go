@@ -74,6 +74,9 @@ func fromEnvOrDefault[T parseableEnvTypes](envVar string, defaultVal T, opts ...
 
 	envStr := parseOpts.envLoader(envVar)
 	if envStr == "" {
+		if !parseOpts.defaultOnError {
+			return dest, fmt.Errorf("required env variable '%s' not found", envVar)
+		}
 		return defaultVal, nil
 	}
 

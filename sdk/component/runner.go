@@ -26,9 +26,9 @@ type (
 )
 
 // newRunner returns a new runner which is initialised looking at the default configuration
-// and can be customised applying options.
+// and can be customised applying options. // Returns an error if the configuration is invalid.
 func newRunner(opts ...RunnerOption) (*runner, error) {
-	cfg, err := newDefaultRunnerConfig()
+	cfg, err := newRunnerConfig()
 	if err != nil {
 		return nil, fmt.Errorf("could not create default runner configuration: %w", err)
 	}
@@ -41,7 +41,7 @@ func newRunner(opts ...RunnerOption) (*runner, error) {
 		}
 	}
 
-	return r, nil
+	return r, r.config.isValid()
 }
 
 // run is the core of the component SDK.

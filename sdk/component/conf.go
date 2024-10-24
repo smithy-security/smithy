@@ -7,6 +7,11 @@ import (
 )
 
 const (
+	// Err reasons.
+	errReasonCannotBeEmpty = "cannot be empty"
+	errReasonCannotBeNil   = "cannot be nil"
+
+	// Env vars.
 	envVarKeyComponentName   = "SMITHY_COMPONENT_NAME"
 	envVarKeyLoggingLogLevel = "SMITHY_LOGGING_LOG_LEVEL"
 )
@@ -44,22 +49,59 @@ type (
 		OptionName string
 		Reason     string
 	}
+
+	// ErrInvalidRunnerConfig is returned when a configuration is invalid.
+	ErrInvalidRunnerConfig struct {
+		FieldName string
+		Reason    string
+	}
 )
 
 func (er ErrRunnerOption) Error() string {
 	return fmt.Sprintf("could not apply runner option '%s': %s", er.OptionName, er.Reason)
 }
 
-// RunnerWithConfig allows customising the runner configuration.
-func RunnerWithConfig(config *RunnerConfig) RunnerOption {
+func (er ErrInvalidRunnerConfig) Error() string {
+	return fmt.Sprintf("invalid configuration, field '%s': %s", er.FieldName, er.Reason)
+}
+
+func (rc *RunnerConfig) isValid() error {
+	switch {
+	case rc.SDKVersion == "":
+		return ErrInvalidRunnerConfig{
+			FieldName: "sdk_version",
+			Reason:    errReasonCannotBeEmpty,
+		}
+	case rc.ComponentName == "":
+		return ErrInvalidRunnerConfig{
+			FieldName: "component_name",
+			Reason:    errReasonCannotBeEmpty,
+		}
+	case rc.Logging.Logger == nil:
+		return ErrInvalidRunnerConfig{
+			FieldName: "logger",
+			Reason:    errReasonCannotBeNil,
+		}
+	case rc.PanicHandler == nil:
+		return ErrInvalidRunnerConfig{
+			FieldName: "panic_handler",
+			Reason:    errReasonCannotBeNil,
+		}
+	}
+
+	return nil
+}
+
+// RunnerWithLogger allows customising the runner logger.
+func RunnerWithLogger(logger Logger) RunnerOption {
 	return func(r *runner) error {
-		if config == nil {
+		if logger == nil {
 			return ErrRunnerOption{
-				OptionName: "config",
-				Reason:     "cannot be nil",
+				OptionName: "logger",
+				Reason:     errReasonCannotBeNil,
 			}
 		}
-		r.config = config
+		r.config.Logging.Logger = logger
 		return nil
 	}
 }
@@ -70,7 +112,7 @@ func RunnerWithComponentName(name string) RunnerOption {
 		if name == "" {
 			return ErrRunnerOption{
 				OptionName: "component name",
-				Reason:     "cannot be empty",
+				Reason:     errReasonCannotBeEmpty,
 			}
 		}
 		r.config.ComponentName = name
@@ -78,15 +120,15 @@ func RunnerWithComponentName(name string) RunnerOption {
 	}
 }
 
-// newDefaultRunnerConfig initialises a new RunnerConfig by introspecting the required environment variables
+// newRunnerConfig initialises a new RunnerConfig by introspecting the required environment variables
 // and applying acceptable defaults.
-func newDefaultRunnerConfig() (*RunnerConfig, error) {
+func newRunnerConfig() (*RunnerConfig, error) {
 	panicHandler, err := NewDefaultPanicHandler()
 	if err != nil {
 		return nil, fmt.Errorf("could not construct panic handler: %w", err)
 	}
 
-	componentName, err := fromEnvOrDefault(envVarKeyComponentName, "")
+	componentName, err := fromEnvOrDefault(envVarKeyComponentName, "", withFallbackToDefaultOnError(true))
 	if err != nil {
 		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyComponentName, err)
 	}
