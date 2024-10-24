@@ -37,38 +37,49 @@ type (
 		// Unmarshal unmarshals the receiver into vulnerability finding.
 		Unmarshal() (*ocsf.VulnerabilityFinding, error)
 	}
+
+	// Closer allows to define behaviours to close component dependencies gracefully.
+	Closer interface {
+		// Close can be implemented to gracefully close component dependencies.
+		Close(context.Context) error
+	}
 )
 
 // Components interfaces.
 type (
 	// Target prepares the workflow environment.
 	Target interface {
+		Closer
+
 		// Prepare prepares the target to be scanned.
 		Prepare(ctx context.Context) error
 	}
 
 	// Scanner scans a target and produces vulnerability findings.
 	Scanner interface {
+		Closer
 		Storer
 
 		// Scan performs a scan on the prepared target and returns raw data.
 		Scan(ctx context.Context) ([]Unmarshaler, error)
 		// Transform transforms the raw data into vulnerability finding format.
-		Transform(ctx context.Context, payload Unmarshaler) (*ocsf.Vulnerability, error)
+		Transform(ctx context.Context, payload Unmarshaler) (*ocsf.VulnerabilityFinding, error)
 	}
 
 	// Filter allows filtering out vulnerability findings by some criteria.
 	Filter interface {
+		Closer
 		Reader
 		Updater
 
 		// Filter returns filtered findings from the supplied ones applying some criteria.
 		// It returns false if no findings have been filtered out.
-		Filter(findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error)
+		Filter(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error)
 	}
 
 	// Enricher allows enriching vulnerability findings by some criteria.
 	Enricher interface {
+		Closer
 		Reader
 		Updater
 
@@ -78,6 +89,7 @@ type (
 
 	// Reporter advertises behaviours for reporting vulnerability findings.
 	Reporter interface {
+		Closer
 		Reader
 
 		// Report reports vulnerability findings on a specified destination.
