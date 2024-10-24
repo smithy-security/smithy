@@ -21,7 +21,7 @@ spec:
       type: string
     - name: consumer-pdf-template-location
       type: string
-      default: "/playwright/default.html"
+      default: "/app/components/consumers/pdf/default.html"
 
   workspaces:
     - name: output
@@ -35,7 +35,7 @@ spec:
           value: "$(params.consumer-pdf-s3-access-key-id)"
         - name: AWS_SECRET_ACCESS_KEY
           value: "$(params.consumer-pdf-s3-secret-access-key)"
-      command: ["/playwright/pdf"]
+      command: ["/app/components/consumers/pdf/pdf"]
       args:
         [
           "-in",

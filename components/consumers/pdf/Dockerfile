@@ -1,11 +1,17 @@
-FROM golang:latest
+FROM golang:1.22-bookworm
 
-WORKDIR /playwright
-RUN go mod init github.com/smithy-security/pdf-consumer && \
-        go get -u github.com/playwright-community/playwright-go && \
-        go run github.com/playwright-community/playwright-go/cmd/playwright@latest install --with-deps
+ARG EXECUTABLE_SRC_PATH
+ARG EXECUTABLE_TARGET_PATH
+ENV EXECUTABLE_TARGET_PATH=${EXECUTABLE_TARGET_PATH}
+COPY ${EXECUTABLE_SRC_PATH} /app/${EXECUTABLE_TARGET_PATH}
 
-ENV PATH="${PATH}:/go/pkg/mod/github.com/playwright-community"
-COPY components/consumers/pdf/pdf /playwright/pdf
-COPY components/consumers/pdf/default.html /playwright/default.html
-ENTRYPOINT ["/playwright/pdf"]
+# Install playwright cli with right version for later use
+RUN go install github.com/playwright-community/playwright-go/cmd/playwright@v0.4702.0 && \
+    apt-get update && apt-get install -y ca-certificates tzdata &&\
+    playwright install chromium --with-deps &&\
+    ln -s /app/${EXECUTABLE_TARGET_PATH} /bin/component
+
+
+COPY components/consumers/pdf/default.html /app/components/consumers/pdf/default.html
+WORKDIR /app/components/consumers/pdf
+ENTRYPOINT ["/app/components/consumers/pdf/pdf"]
