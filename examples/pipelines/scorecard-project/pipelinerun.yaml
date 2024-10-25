@@ -1,0 +1,24 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: smithy-scorecard-project-
+spec:
+  pipelineRef:
+    name: smithy-scorecard-project
+  params:
+  - name: producer-ossf-scorecard-input-repo
+    value: https://github.com/smithy-security/smithy
+  - name: producer-ossf-scorecard-github-auth-token
+    value: $github-auth-token-permissions-to-read-repos
+  - name: enricher-custom-annotation-base-annotation
+    value: '{"foo":"bar","a":"b","1":"2"}'
+  workspaces:
+  - name: output
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
