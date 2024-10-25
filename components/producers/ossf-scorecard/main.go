@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
@@ -36,19 +37,28 @@ func main() {
 }
 
 func parseIssues(out *ScorecardOut) []*v1.Issue {
+	slog.Info("read ", slog.Int("numChecks", len(out.Checks)))
 	issues := []*v1.Issue{}
 	repo := out.Repo.Name
 	commit := out.Repo.Commit
+
 	for _, r := range out.Checks {
-		desc, _ := json.Marshal(r)
+		desc := fmt.Sprintf("Overall Score: %.1f\nCheck Details:\n", out.Score)
+
+		for i, deet := range r.Details {
+			d := deet
+			if i != len(r.Details)-1 {
+				d += "\n"
+			}
+			desc += d
+		}
 		issues = append(issues, &v1.Issue{
 			Target:      fmt.Sprintf("%s:%s", repo, commit),
 			Type:        r.Name,
 			Title:       r.Reason,
 			Severity:    scorecardToSmithySeverity(r.Score),
-			Cvss:        0.0,
 			Confidence:  v1.Confidence_CONFIDENCE_UNSPECIFIED,
-			Description: string(desc),
+			Description: desc,
 		})
 	}
 	return issues
@@ -72,36 +82,37 @@ func scorecardToSmithySeverity(score float64) v1.Severity {
 
 // ScorecardOut represents the output of a ScoreCard run.
 type ScorecardOut struct {
-	Date      string
-	Repo      RepoInfo
-	Scorecard ScorecardInfo
-	Score     float64
-	Checks    []Check `json:"checks"`
+	Date      string        `json:"date,omitempty"`
+	Repo      RepoInfo      `json:"repo,omitempty"`
+	Scorecard ScorecardInfo `json:"scorecard,omitempty"`
+	Score     float64       `json:"score,omitempty"`
+	Checks    []Check       `json:"checks,omitempty"`
+	Metadata  any           `json:"metadata,omitempty"`
 }
 
 // Check represents a ScoreCard Result.
 type Check struct {
-	Details       []string
-	Score         float64
-	Reason        string
-	Name          string
-	Documentation Docs
+	Details       []string `json:"details,omitempty"`
+	Score         float64  `json:"score,omitempty"`
+	Reason        string   `json:"reason,omitempty"`
+	Name          string   `json:"name,omitempty"`
+	Documentation Docs     `json:"documentation,omitempty"`
 }
 
 // Docs represents a ScoreCard "docs" section.
 type Docs struct {
-	URL   string
-	Short string
+	URL   string `json:"url,omitempty"`
+	Short string `json:"short,omitempty"`
 }
 
 // ScorecardInfo represents a "scorecardinfo" section.
 type ScorecardInfo struct {
-	Version string
-	Commit  string
+	Version string `json:"version,omitempty"`
+	Commit  string `json:"commit,omitempty"`
 }
 
 // RepoInfo represents a repository information section.
 type RepoInfo struct {
-	Name   string
-	Commit string
+	Name   string `json:"name,omitempty"`
+	Commit string `json:"commit,omitempty"`
 }

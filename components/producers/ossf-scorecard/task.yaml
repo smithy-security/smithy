@@ -24,16 +24,16 @@ spec:
       description: The workspace containing the source-code to scan.
   steps:
   - name: run-ossf-scorecard
-    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/ossf-scorecard/scorecard-smithy:{{ .Chart.AppVersion }}'
+    image: 'gcr.io/openssf/scorecard:v5.0.0'
     env:
       - name: GITHUB_AUTH_TOKEN
         value: "$(params.producer-ossf-scorecard-github-auth-token)"
-    script: |
-      /scorecard \
-      --format=json \
-      --show-details \
-      --repo=$(params.producer-ossf-scorecard-input-repo) >/scratch/out.json
-       # TODO(spyros): add flags here once scorecard can write results to file
+    command: ["/scorecard"]
+    args:
+      - --format=json
+      - --show-details
+      - --output=/scratch/out.json
+      - --repo=$(params.producer-ossf-scorecard-input-repo)
     volumeMounts:
     - mountPath: /scratch
       name: scratch
