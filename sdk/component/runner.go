@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"os/signal"
 	"syscall"
 	"time"
@@ -129,22 +128,20 @@ func run(
 		defer func() {
 			if pe := recover(); pe != nil {
 				logger.Error("received an unexpected panic during closing the component, handling...")
-				var logFields []slog.Attr
 				err, ok := r.config.PanicHandler.HandlePanic(ctx, pe)
 				if ok {
 					if err != nil {
-						logFields = append(logFields, slog.String(logKeyError, err.Error()))
+						logger = logger.With(logKeyError, err.Error())
 					}
 				}
-				logger.Error("panic handled during closing the component!", logFields)
+				logger.Error("panic handled during closing the component!")
 			}
 		}()
 
 		// Actually close the component.
 		if err := closer(closeCtx); err != nil {
-			logger.Warn(
+			logger.With(logKeyError, err.Error()).Warn(
 				"could not gracefully close component",
-				slog.String(logKeyError, err.Error()),
 			)
 		}
 
@@ -161,16 +158,15 @@ func run(
 		defer func() {
 			if pe := recover(); pe != nil {
 				logger.Error("received an unexpected panic in the component runner, handling...")
-				var logFields []slog.Attr
 				err, ok := r.config.PanicHandler.HandlePanic(ctx, pe)
 				if ok {
 					if err != nil {
-						logFields = append(logFields, slog.String(logKeyError, err.Error()))
+						logger = logger.With(logKeyError, err.Error())
 					}
-					logger.Error("shutting application down...", logFields)
+					logger.Error("shutting application down...")
 					syncErrs <- fmt.Errorf("unexpected panic error in the component runner: %w", err)
 				}
-				logger.Error("panic handled in the component runner!", logFields)
+				logger.Error("panic handled in the component runner!")
 			}
 		}()
 
