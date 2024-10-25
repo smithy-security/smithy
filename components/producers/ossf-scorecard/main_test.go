@@ -6,7 +6,6 @@ import (
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -53,8 +52,8 @@ func TestParseIssues(t *testing.T) {
 		Type:        "Branch-Protection",
 		Title:       "branch protection is not maximal on development and all release branches",
 		Severity:    v1.Severity_SEVERITY_MEDIUM,
-		Description: "{\"Details\":[\"Info: 'force pushes' disabled on branch 'main'\",\"Info: 'allow deletion' disabled on branch 'main'\",\"Warn: no status checks found to merge onto branch 'main'\",\"Info: number of required reviewers is 2 on branch 'main'\"],\"Score\":6,\"Reason\":\"branch protection is not maximal on development and all release branches\",\"Name\":\"Branch-Protection\",\"Documentation\":{\"URL\":\"https://github.com/ossf/scorecard/blob/23b0ddb8aa96356321cf31a2709723e29b15a951/docs/checks.md#branch-protection\",\"Short\":\"Determines if the default and release branches are protected with GitHub's branch protection settings.\"}}",
+		Description: "Overall Score: 4.0\nCheck Details:\nInfo: 'force pushes' disabled on branch 'main'\nInfo: 'allow deletion' disabled on branch 'main'\nWarn: no status checks found to merge onto branch 'main'\nInfo: number of required reviewers is 2 on branch 'main'",
 	}
 
-	assert.Equal(t, []*v1.Issue{expectedIssue}, issues)
+	require.Equal(t, []*v1.Issue{expectedIssue}, issues)
 }
