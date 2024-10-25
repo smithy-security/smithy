@@ -69,9 +69,8 @@ func run(name, annotations string) error {
 }
 
 func main() {
-	flag.StringVar(&annotations, "annotations", enrichers.LookupEnvOrString("ANNOTATIONS", ""), "what are the annotations this enricher will add to the issues")
+	flag.StringVar(&annotations, "annotations", enrichers.LookupEnvOrString("ANNOTATIONS", "{}"), "what are the annotations this enricher will add to the issues")
 	flag.StringVar(&name, "annotation-name", enrichers.LookupEnvOrString("NAME", defaultName), "what is the name this enricher will masquerade as")
-
 	if err := enrichers.ParseFlags(); err != nil {
 		log.Fatal(err)
 	}
