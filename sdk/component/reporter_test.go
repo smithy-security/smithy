@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,7 +14,12 @@ import (
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
-func runReporterHelper(t *testing.T, ctx context.Context, reporter component.Reporter) error {
+func runReporterHelper(
+	t *testing.T,
+	ctx context.Context,
+	reporter component.Reporter,
+	store component.Storer,
+) error {
 	t.Helper()
 
 	return component.RunReporter(
@@ -23,154 +27,129 @@ func runReporterHelper(t *testing.T, ctx context.Context, reporter component.Rep
 		reporter,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-reporter"),
+		component.RunnerWithStorer(store),
 	)
 }
 
 func TestRunReporter(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-
 	var (
-		ctrl  = gomock.NewController(t)
-		vulns = make([]*ocsf.VulnerabilityFinding, 0)
+		ctrl, ctx    = gomock.WithContext(context.Background(), t)
+		mockCtx      = gomock.AssignableToTypeOf(ctx)
+		mockStore    = mocks.NewMockStorer(ctrl)
+		mockReporter = mocks.NewMockReporter(ctrl)
+		vulns        = make([]*ocsf.VulnerabilityFinding, 0)
 	)
 
 	t.Run("it should run a reporter correctly", func(t *testing.T) {
-		mockReporter := mocks.NewMockReporter(ctrl)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockReporter.
+				EXPECT().
+				Report(mockCtx, vulns).
+				Return(nil),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
 
-		mockReporter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockReporter.
-			EXPECT().
-			Report(gomock.Any(), vulns).
-			Return(nil)
-		mockReporter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		require.NoError(t, runReporterHelper(t, ctx, mockReporter))
+		require.NoError(t, runReporterHelper(t, ctx, mockReporter, mockStore))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
-		ctx, cancel = context.WithCancel(ctx)
+		ctx, cancel := context.WithCancel(ctx)
 
-		mockReporter := mocks.NewMockReporter(ctrl)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				DoAndReturn(func(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+					cancel()
+					return vulns, nil
+				}),
+			mockReporter.
+				EXPECT().
+				Report(mockCtx, vulns).
+				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
+					<-ctx.Done()
+					return nil
+				}),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
 
-		mockReporter.
-			EXPECT().
-			Read(gomock.Any()).
-			DoAndReturn(func(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-				cancel()
-				return vulns, nil
-			})
-		mockReporter.
-			EXPECT().
-			Report(gomock.Any(), vulns).
-			DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
-				<-ctx.Done()
-				return nil
-			})
-		mockReporter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		require.NoError(t, runReporterHelper(t, ctx, mockReporter))
+		require.NoError(t, runReporterHelper(t, ctx, mockReporter, mockStore))
 	})
 
 	t.Run("it should return early when reading errors", func(t *testing.T) {
-		var (
-			errRead      = errors.New("reader-is-sad")
-			mockReporter = mocks.NewMockReporter(ctrl)
+		var errRead = errors.New("reader-is-sad")
+
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(nil, errRead),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
 		)
 
-		mockReporter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(nil, errRead)
-		mockReporter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		err := runReporterHelper(t, ctx, mockReporter)
+		err := runReporterHelper(t, ctx, mockReporter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errRead)
 	})
 
 	t.Run("it should return early when reporting errors", func(t *testing.T) {
-		var (
-			errReporting = errors.New("reporting-is-sad")
-			mockReporter = mocks.NewMockReporter(ctrl)
+		var errReporting = errors.New("reporting-is-sad")
+
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockReporter.
+				EXPECT().
+				Report(mockCtx, vulns).
+				Return(errReporting),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
 		)
 
-		mockReporter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockReporter.
-			EXPECT().
-			Report(gomock.Any(), vulns).
-			Return(errReporting)
-		mockReporter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		err := runReporterHelper(t, ctx, mockReporter)
+		err := runReporterHelper(t, ctx, mockReporter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errReporting)
 	})
 
-	t.Run("it should keep shutting down the application when a panic is detected during close", func(t *testing.T) {
-		mockReporter := mocks.NewMockReporter(ctrl)
-
-		mockReporter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockReporter.
-			EXPECT().
-			Report(gomock.Any(), vulns).
-			Return(nil)
-		mockReporter.
-			EXPECT().
-			Close(gomock.Any()).
-			DoAndReturn(func(ctx context.Context) error {
-				panic(errors.New("close-is-sad"))
-				return nil
-			})
-
-		err := runReporterHelper(t, ctx, mockReporter)
-		require.NoError(t, err)
-	})
-
 	t.Run("it should return early when a panic is detected on reporting", func(t *testing.T) {
-		var (
-			errReporting = errors.New("reporting-is-sad")
-			mockReporter = mocks.NewMockReporter(ctrl)
+		var errReporting = errors.New("reporting-is-sad")
+
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockReporter.
+				EXPECT().
+				Report(mockCtx, vulns).
+				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
+					panic(errReporting)
+					return nil
+				}),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
 		)
 
-		mockReporter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockReporter.
-			EXPECT().
-			Report(gomock.Any(), vulns).
-			DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
-				panic(errReporting)
-				return nil
-			})
-		mockReporter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		err := runReporterHelper(t, ctx, mockReporter)
+		err := runReporterHelper(t, ctx, mockReporter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errReporting)
 	})

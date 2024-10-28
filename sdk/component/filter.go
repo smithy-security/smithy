@@ -9,13 +9,22 @@ import (
 func RunFilter(ctx context.Context, filter Filter, opts ...RunnerOption) error {
 	return run(
 		ctx,
-		func(ctx context.Context) error {
-			logger := LoggerFromContext(ctx).With(logKeyComponentType, "filter")
+		func(ctx context.Context, cfg *RunnerConfig) error {
+			var (
+				logger = LoggerFromContext(ctx).With(logKeyComponentType, "filter")
+				store  = cfg.storerConfig.store
+			)
+
+			defer func() {
+				if err := store.Close(ctx); err != nil {
+					logger.With(logKeyError, err.Error()).Error("closing step failed, ignoring...")
+				}
+			}()
 
 			logger.Debug("preparing to execute filter component...")
 			logger.Debug("preparing to execute read step...")
 
-			findings, err := filter.Read(ctx)
+			findings, err := store.Read(ctx)
 			if err != nil {
 				logger.With(logKeyError, err.Error()).Error("reading step failed")
 				return fmt.Errorf("could not read: %w", err)
@@ -39,7 +48,7 @@ func RunFilter(ctx context.Context, filter Filter, opts ...RunnerOption) error {
 			logger.Debug("filter step completed!")
 			logger.Debug("preparing to execute update step...")
 
-			if err := filter.Update(ctx, filteredFindings); err != nil {
+			if err := store.Update(ctx, filteredFindings); err != nil {
 				logger.With(logKeyError, err.Error()).Error("updating step failed")
 				return fmt.Errorf("could not update: %w", err)
 			}
@@ -49,7 +58,6 @@ func RunFilter(ctx context.Context, filter Filter, opts ...RunnerOption) error {
 
 			return nil
 		},
-		filter.Close,
 		opts...,
 	)
 }

@@ -26,105 +26,58 @@ func runTargetHelper(t *testing.T, ctx context.Context, target component.Target)
 }
 
 func TestRunTarget(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-
 	var (
-		ctrl = gomock.NewController(t)
+		ctrl, ctx  = gomock.WithContext(context.Background(), t)
+		mockCtx    = gomock.AssignableToTypeOf(ctx)
+		mockTarget = mocks.NewMockTarget(ctrl)
 	)
 
 	t.Run("it should run a target correctly", func(t *testing.T) {
-		mockTarget := mocks.NewMockTarget(ctrl)
-
 		mockTarget.
 			EXPECT().
-			Prepare(gomock.Any()).
+			Prepare(mockCtx).
 			Return(nil)
-		mockTarget.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
 		require.NoError(t, runTargetHelper(t, ctx, mockTarget))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
-		ctx, cancel = context.WithTimeout(ctx, 100*time.Millisecond)
+		ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
 		defer cancel()
-
-		mockTarget := mocks.NewMockTarget(ctrl)
 
 		mockTarget.
 			EXPECT().
-			Prepare(gomock.Any()).
+			Prepare(mockCtx).
 			DoAndReturn(func(ctx context.Context) error {
 				<-ctx.Done()
 				return nil
 			})
-		mockTarget.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
 
 		require.NoError(t, runTargetHelper(t, ctx, mockTarget))
 	})
 
-	t.Run("it should return early when prepare errors", func(t *testing.T) {
-		var (
-			errPrepare = errors.New("prepare-is-sad")
-			mockTarget = mocks.NewMockTarget(ctrl)
-		)
+	t.Run("it should return an error when prepare errors", func(t *testing.T) {
+		var errPrepare = errors.New("prepare-is-sad")
 
 		mockTarget.
 			EXPECT().
-			Prepare(gomock.Any()).
+			Prepare(mockCtx).
 			Return(errPrepare)
-		mockTarget.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
 
 		err := runTargetHelper(t, ctx, mockTarget)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errPrepare)
 	})
 
-	t.Run("it should keep shutting down the application when a panic is detected during close", func(t *testing.T) {
-		mockTarget := mocks.NewMockTarget(ctrl)
+	t.Run("it should return early an error when a panic is detected on prepare", func(t *testing.T) {
+		var errPrepare = errors.New("prepare-is-sad")
 
 		mockTarget.
 			EXPECT().
-			Prepare(gomock.Any()).
-			Return(nil)
-		mockTarget.
-			EXPECT().
-			Close(gomock.Any()).
-			DoAndReturn(func(ctx context.Context) error {
-				panic(errors.New("close-is-sad"))
-				return nil
-			})
-
-		err := runTargetHelper(t, ctx, mockTarget)
-		require.NoError(t, err)
-	})
-
-	t.Run("it should return early when a panic is detected on prepare", func(t *testing.T) {
-		var (
-			errPrepare = errors.New("prepare-is-sad")
-			mockTarget = mocks.NewMockTarget(ctrl)
-		)
-
-		mockTarget.
-			EXPECT().
-			Prepare(gomock.Any()).
+			Prepare(mockCtx).
 			DoAndReturn(func(ctx context.Context) error {
 				panic(errPrepare)
 				return nil
 			})
-		mockTarget.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
 
 		err := runTargetHelper(t, ctx, mockTarget)
 		require.Error(t, err)

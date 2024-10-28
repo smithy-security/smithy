@@ -3,53 +3,54 @@ package component
 import (
 	"context"
 	"fmt"
-
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 // RunScanner runs a scanner after initialising the run context.
 func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) error {
 	return run(
 		ctx,
-		func(ctx context.Context) error {
-			logger := LoggerFromContext(ctx).With(logKeyComponentType, "scanner")
+		func(ctx context.Context, cfg *RunnerConfig) error {
+			var (
+				logger = LoggerFromContext(ctx).With(logKeyComponentType, "scanner")
+				store  = cfg.storerConfig.store
+			)
+
+			defer func() {
+				if err := store.Close(ctx); err != nil {
+					logger.With(logKeyError, err.Error()).Error("closing step failed, ignoring...")
+				}
+			}()
 
 			logger.Debug("preparing to execute component...")
-			logger.Debug("preparing to execute scan step...")
+			logger.Debug("preparing to execute transform step...")
 
-			rawVulns, err := scanner.Scan(ctx)
+			rawFindings, err := scanner.Transform(ctx)
 			if err != nil {
 				logger.
 					With(logKeyError, err.Error()).
-					Debug("could not execute scan step")
-				return fmt.Errorf("could not scan: %w", err)
+					Debug("could not execute transform step")
+				return fmt.Errorf("could not transform raw findings: %w", err)
 			}
 
-			logger = logger.With(logKeyNumRawFindings, len(rawVulns))
-			logger.Debug("scan step completed!")
-			logger.Debug("preparing to execute transform step...")
+			logger = logger.
+				With(logKeyNumRawFindings, len(rawFindings))
+			logger.Debug("transform step completed!")
+			logger.Debug("preparing to execute validate step...")
 
-			var vulns = make([]*ocsf.VulnerabilityFinding, 0, len(rawVulns))
-
-			for _, rv := range rawVulns {
-				parsedVuln, err := scanner.Transform(ctx, rv)
-				if err != nil {
+			for _, rv := range rawFindings {
+				if err := store.Validate(rv); err != nil {
 					logger.
 						With(logKeyError, err.Error()).
-						Debug("could not execute transform step")
-					return fmt.Errorf("could not transform raw vulnerability: %w", err)
+						With(logKeyRawFinding, rv).
+						Error("invalid raw finding")
+					return fmt.Errorf("invalid raw finding: %w", err)
 				}
-				vulns = append(vulns, parsedVuln)
 			}
 
-			logger = logger.With(
-				logKeyNumParsedFindings, len(vulns),
-				logKeyNumFindingsMatch, len(vulns) == len(rawVulns),
-			)
-			logger.Debug("transform step completed!")
+			logger.Debug("validate step completed!")
 			logger.Debug("preparing to execute store step...")
 
-			if err := scanner.Store(ctx, vulns); err != nil {
+			if err := store.Write(ctx, rawFindings); err != nil {
 				logger.
 					With(logKeyError, err.Error()).
 					Debug("could not execute store step")
@@ -61,7 +62,6 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 
 			return nil
 		},
-		scanner.Close,
 		opts...,
 	)
 }

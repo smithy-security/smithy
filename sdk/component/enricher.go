@@ -9,13 +9,22 @@ import (
 func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) error {
 	return run(
 		ctx,
-		func(ctx context.Context) error {
-			logger := LoggerFromContext(ctx).With(logKeyComponentType, "enricher")
+		func(ctx context.Context, cfg *RunnerConfig) error {
+			var (
+				logger = LoggerFromContext(ctx).With(logKeyComponentType, "enricher")
+				store  = cfg.storerConfig.store
+			)
+
+			defer func() {
+				if err := store.Close(ctx); err != nil {
+					logger.With(logKeyError, err.Error()).Error("closing step failed, ignoring...")
+				}
+			}()
 
 			logger.Debug("preparing to execute enricher component...")
 			logger.Debug("preparing to execute read step...")
 
-			findings, err := enricher.Read(ctx)
+			findings, err := store.Read(ctx)
 			if err != nil {
 				logger.With(logKeyError, err.Error()).Error("reading step failed")
 				return fmt.Errorf("could not read: %w", err)
@@ -35,7 +44,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 			logger.Debug("enricher step completed!")
 			logger.Debug("preparing to execute update step...")
 
-			if err := enricher.Update(ctx, enrichedFindings); err != nil {
+			if err := store.Update(ctx, enrichedFindings); err != nil {
 				logger.With(logKeyError, err.Error()).Error("updating step failed")
 				return fmt.Errorf("could not update: %w", err)
 			}
@@ -45,7 +54,6 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 
 			return nil
 		},
-		enricher.Close,
 		opts...,
 	)
 }

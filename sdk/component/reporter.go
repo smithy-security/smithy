@@ -9,13 +9,22 @@ import (
 func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) error {
 	return run(
 		ctx,
-		func(ctx context.Context) error {
-			logger := LoggerFromContext(ctx).With(logKeyComponentType, "reporter")
+		func(ctx context.Context, cfg *RunnerConfig) error {
+			var (
+				logger = LoggerFromContext(ctx).With(logKeyComponentType, "reporter")
+				store  = cfg.storerConfig.store
+			)
+
+			defer func() {
+				if err := store.Close(ctx); err != nil {
+					logger.With(logKeyError, err.Error()).Error("closing step failed, ignoring...")
+				}
+			}()
 
 			logger.Debug("preparing to execute component...")
 			logger.Debug("preparing to execute read step...")
 
-			res, err := reporter.Read(ctx)
+			res, err := store.Read(ctx)
 			if err != nil {
 				logger.
 					With(logKeyError, err.Error()).
@@ -38,7 +47,6 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 
 			return nil
 		},
-		reporter.Close,
 		opts...,
 	)
 }

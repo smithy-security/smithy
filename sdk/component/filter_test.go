@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,7 +14,12 @@ import (
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
-func runFilterHelper(t *testing.T, ctx context.Context, filter component.Filter) error {
+func runFilterHelper(
+	t *testing.T,
+	ctx context.Context,
+	filter component.Filter,
+	store component.Storer,
+) error {
 	t.Helper()
 
 	return component.RunFilter(
@@ -23,222 +27,184 @@ func runFilterHelper(t *testing.T, ctx context.Context, filter component.Filter)
 		filter,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-filter"),
+		component.RunnerWithStorer(store),
 	)
 }
 
 func TestRunFilter(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-
 	var (
-		ctrl          = gomock.NewController(t)
+		ctrl, ctx     = gomock.WithContext(context.Background(), t)
+		mockCtx       = gomock.AssignableToTypeOf(ctx)
+		mockStore     = mocks.NewMockStorer(ctrl)
+		mockFilter    = mocks.NewMockFilter(ctrl)
 		vulns         = make([]*ocsf.VulnerabilityFinding, 0, 2)
 		filteredVulns = make([]*ocsf.VulnerabilityFinding, 0, 1)
 	)
 
 	t.Run("it should run a filter correctly and filter out one finding", func(t *testing.T) {
-		mockFilter := mocks.NewMockFilter(ctrl)
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockFilter.
-			EXPECT().
-			Filter(gomock.Any(), vulns).
-			Return(filteredVulns, true, nil)
-		mockFilter.
-			EXPECT().
-			Update(gomock.Any(), filteredVulns).
-			Return(nil)
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockFilter.
+				EXPECT().
+				Filter(mockCtx, vulns).
+				Return(filteredVulns, true, nil),
+			mockStore.
+				EXPECT().
+				Update(mockCtx, filteredVulns).
+				Return(nil),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
 
-		require.NoError(t, runFilterHelper(t, ctx, mockFilter))
+		require.NoError(t, runFilterHelper(t, ctx, mockFilter, mockStore))
 	})
 
 	t.Run("it should run a filter correctly and return early as no filtering was done", func(t *testing.T) {
-		mockFilter := mocks.NewMockFilter(ctrl)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockFilter.
+				EXPECT().
+				Filter(mockCtx, vulns).
+				Return(nil, false, nil),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
 
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockFilter.
-			EXPECT().
-			Filter(gomock.Any(), vulns).
-			Return(nil, false, nil)
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		require.NoError(t, runFilterHelper(t, ctx, mockFilter))
+		require.NoError(t, runFilterHelper(t, ctx, mockFilter, mockStore))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
-		ctx, cancel = context.WithCancel(ctx)
+		ctx, cancel := context.WithCancel(ctx)
 
-		mockFilter := mocks.NewMockFilter(ctrl)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockFilter.
+				EXPECT().
+				Filter(mockCtx, vulns).
+				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
+					cancel()
+					return filteredVulns, true, nil
+				}),
+			mockStore.
+				EXPECT().
+				Update(mockCtx, filteredVulns).
+				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
+					<-ctx.Done()
+					return nil
+				}),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
 
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockFilter.
-			EXPECT().
-			Filter(gomock.Any(), vulns).
-			DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
-				cancel()
-				return filteredVulns, true, nil
-			})
-		mockFilter.
-			EXPECT().
-			Update(gomock.Any(), filteredVulns).
-			DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
-				<-ctx.Done()
-				return nil
-			})
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		require.NoError(t, runFilterHelper(t, ctx, mockFilter))
+		require.NoError(t, runFilterHelper(t, ctx, mockFilter, mockStore))
 	})
 
 	t.Run("it should return early when reading errors", func(t *testing.T) {
-		ctx, cancel = context.WithCancel(ctx)
+		var errRead = errors.New("reader-is-sad")
 
-		var (
-			errRead    = errors.New("reader-is-sad")
-			mockFilter = mocks.NewMockFilter(ctrl)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(nil, errRead),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
 		)
 
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(nil, errRead)
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		err := runFilterHelper(t, ctx, mockFilter)
+		err := runFilterHelper(t, ctx, mockFilter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errRead)
 	})
 
 	t.Run("it should return early when filtering errors", func(t *testing.T) {
-		ctx, cancel = context.WithCancel(ctx)
+		var errFilter = errors.New("filter-is-sad")
 
-		var (
-			errFilter  = errors.New("filter-is-sad")
-			mockFilter = mocks.NewMockFilter(ctrl)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockFilter.
+				EXPECT().
+				Filter(mockCtx, vulns).
+				Return(nil, false, errFilter),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
 		)
 
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockFilter.
-			EXPECT().
-			Filter(gomock.Any(), vulns).
-			Return(nil, false, errFilter)
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		err := runFilterHelper(t, ctx, mockFilter)
+		err := runFilterHelper(t, ctx, mockFilter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errFilter)
 	})
 
 	t.Run("it should return early when updating errors", func(t *testing.T) {
-		ctx, cancel = context.WithCancel(ctx)
+		var errUpdate = errors.New("update-is-sad")
 
-		var (
-			errUpdate  = errors.New("update-is-sad")
-			mockFilter = mocks.NewMockFilter(ctrl)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockFilter.
+				EXPECT().
+				Filter(mockCtx, vulns).
+				Return(filteredVulns, true, nil),
+			mockStore.
+				EXPECT().
+				Update(mockCtx, filteredVulns).
+				Return(errUpdate),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
 		)
 
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockFilter.
-			EXPECT().
-			Filter(gomock.Any(), vulns).
-			Return(filteredVulns, true, nil)
-		mockFilter.
-			EXPECT().
-			Update(gomock.Any(), filteredVulns).
-			Return(errUpdate)
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		err := runFilterHelper(t, ctx, mockFilter)
+		err := runFilterHelper(t, ctx, mockFilter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errUpdate)
 	})
 
-	t.Run("it should keep shutting down the application when a panic is detected during close", func(t *testing.T) {
-		ctx, cancel = context.WithCancel(ctx)
-
-		mockFilter := mocks.NewMockFilter(ctrl)
-
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockFilter.
-			EXPECT().
-			Filter(gomock.Any(), vulns).
-			Return(filteredVulns, true, nil)
-		mockFilter.
-			EXPECT().
-			Update(gomock.Any(), filteredVulns).
-			Return(nil)
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			DoAndReturn(func(ctx context.Context) error {
-				panic(errors.New("close-is-sad"))
-				return nil
-			})
-
-		require.NoError(t, runFilterHelper(t, ctx, mockFilter))
-	})
-
 	t.Run("it should return early when a panic is detected on filtering", func(t *testing.T) {
-		ctx, cancel = context.WithCancel(ctx)
+		var errFilter = errors.New("filter-is-sad")
 
-		var (
-			errFilter  = errors.New("filter-is-sad")
-			mockFilter = mocks.NewMockFilter(ctrl)
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx).
+				Return(vulns, nil),
+			mockFilter.
+				EXPECT().
+				Filter(mockCtx, vulns).
+				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
+					panic(errFilter)
+					return filteredVulns, true, nil
+				}),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
 		)
 
-		mockFilter.
-			EXPECT().
-			Read(gomock.Any()).
-			Return(vulns, nil)
-		mockFilter.
-			EXPECT().
-			Filter(gomock.Any(), vulns).
-			DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
-				panic(errFilter)
-				return filteredVulns, true, nil
-			})
-		mockFilter.
-			EXPECT().
-			Close(gomock.Any()).
-			Return(nil)
-
-		err := runFilterHelper(t, ctx, mockFilter)
+		err := runFilterHelper(t, ctx, mockFilter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errFilter)
 	})
