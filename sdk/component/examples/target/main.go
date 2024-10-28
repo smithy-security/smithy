@@ -10,11 +10,6 @@ import (
 
 type sampleTarget struct{}
 
-func (s sampleTarget) Close(ctx context.Context) error {
-	component.LoggerFromContext(ctx).Info("Closing target.")
-	return nil
-}
-
 func (s sampleTarget) Prepare(ctx context.Context) error {
 	component.LoggerFromContext(ctx).Info("Preparing.")
 	return nil
