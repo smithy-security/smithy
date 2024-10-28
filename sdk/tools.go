@@ -1,6 +1,6 @@
 //go:build tools
 
-package tools
+package sdk
 
 import (
 	_ "go.uber.org/mock/mockgen"
