@@ -5,6 +5,7 @@ metadata:
   name: producer-kics
   labels:
     v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy.security/component/maturity: experimental
 spec:
   description: Generate a KICS report from source code.
   volumes:

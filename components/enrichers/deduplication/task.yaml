@@ -5,6 +5,7 @@ metadata:
   name: enricher-deduplication
   labels:
     v1.smithy.smithy-security.com/component: enricher
+    v1.smithy.smithy.security/component/maturity: experimental
 spec:
   description: Compares multiple inputs and removes duplicates.
   workspaces:

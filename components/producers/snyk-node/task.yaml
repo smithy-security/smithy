@@ -7,6 +7,7 @@ metadata:
     v1.smithy.smithy-security.com/component: producer
     v1.smithy.smithy-security.com/test-type: sast
     v1.smithy.smithy-security.com/language: docpythoner
+    v1.smithy.smithy.security/component/maturity: experimental
 spec:
   params:
   - name: producer-snyk-node-api-key

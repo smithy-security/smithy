@@ -7,6 +7,7 @@ metadata:
     v1.smithy.smithy-security.com/component: producer
     v1.smithy.smithy-security.com/test-type: sast
     v1.smithy.smithy-security.com/language: typescript
+    v1.smithy.smithy.security/component/maturity: experimental
 spec:
   description: Static analysis for javascript and typescript projects.
   params:
