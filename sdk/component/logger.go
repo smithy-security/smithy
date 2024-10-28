@@ -2,26 +2,24 @@ package component
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 )
 
-type loggerKey string
-
 const (
 	logKeyError               = "error"
+	logKeyPanicStackTrace     = "panic_stack_trace"
 	logKeySDKVersion          = "sdk_version"
 	logKeyComponentName       = "component_name"
 	logKeyComponentType       = "component_type"
 	logKeyNumRawFindings      = "num_raw_findings"
+	logKeyRawFinding          = "raw_finding"
 	logKeyNumParsedFindings   = "num_parsed_findings"
-	logKeyNumFindingsMatch    = "num_findings_match"
 	logKeyNumFilteredFindings = "num_filtered_findings"
 	logKeyNumEnrichedFindings = "num_enriched_findings"
 
-	logLevelDebug = "debug"
-
-	ctxLoggerKey = loggerKey("logging")
+	ctxLoggerKey = ctxgKey("logging")
 )
 
 type (
@@ -33,6 +31,8 @@ type (
 		Error(msg string, keyvals ...any)
 		With(args ...any) Logger
 	}
+
+	ctxgKey string
 
 	defaultLogger struct {
 		logger *slog.Logger
@@ -84,28 +84,31 @@ func ContextWithLogger(ctx context.Context, logger Logger) context.Context {
 func LoggerFromContext(ctx context.Context) Logger {
 	logger := ctx.Value(ctxLoggerKey)
 	if logger == nil {
-		return newDefaultLogger(logLevelDebug)
+		l, _ := newDefaultLogger(logLevelDebug)
+		return l
 	}
 	return logger.(Logger)
 }
 
-func newDefaultLogger(level string) *defaultLogger {
+func newDefaultLogger(level RunnerConfigLoggingLevel) (*defaultLogger, error) {
 	var logLevel slog.Level
 
 	switch level {
-	case "debug":
+	case logLevelDebug:
 		logLevel = slog.LevelDebug
-	case "info":
+	case logLevelInfo:
 		logLevel = slog.LevelInfo
-	case "error":
+	case logLevelError:
 		logLevel = slog.LevelError
-	case "warn":
+	case logLevelWarn:
 		logLevel = slog.LevelWarn
+	default:
+		return nil, fmt.Errorf("unknown logger level: %s", level)
 	}
 
 	return &defaultLogger{
 		logger: slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level: logLevel,
 		})),
-	}
+	}, nil
 }

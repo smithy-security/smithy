@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"os/signal"
 	"syscall"
-	"time"
 
-	_ "go.uber.org/automaxprocs"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -19,13 +17,12 @@ type (
 	}
 
 	// componentRunnerFunc is an alias for executing component run functions.
-	componentRunnerFunc func(context.Context) error
-	// closerFunc is an alias for Close methods in components.
-	closerFunc func(ctx context.Context) error
+	componentRunnerFunc func(context.Context, *RunnerConfig) error
 )
 
 // newRunner returns a new runner which is initialised looking at the default configuration
-// and can be customised applying options. // Returns an error if the configuration is invalid.
+// and can be customised applying options.
+// Returns an error if the configuration is invalid.
 func newRunner(opts ...RunnerOption) (*runner, error) {
 	cfg, err := newRunnerConfig()
 	if err != nil {
@@ -40,7 +37,11 @@ func newRunner(opts ...RunnerOption) (*runner, error) {
 		}
 	}
 
-	return r, r.config.isValid()
+	if err := r.config.isValid(); err != nil {
+		return nil, fmt.Errorf("invalid configuration: %w", err)
+	}
+
+	return r, nil
 }
 
 // run is the core of the component SDK.
@@ -48,18 +49,14 @@ func newRunner(opts ...RunnerOption) (*runner, error) {
 // run takes care of:
 // - signal termination: gracefully close components when a termination signal is detected.
 // - context cancellation: gracefully close components when a cancellation is detected.
-// - automatically setting GOMAXPROCS: Automatically set GOMAXPROCS to match Linux container CPU quota - https://github.com/uber-go/automaxprocs.
 // - panic handling.
 // - logging: initialisation and centralisation.
 // - running components: reliably and respecting cancellations.
-// - closing components: gracefully closing components to avoid inconsistencies.
 // - TODO: metrics.
-// - TODO: profiling.
 // - TODO: tracing.
 func run(
 	ctx context.Context,
 	componentRunner componentRunnerFunc,
-	closer closerFunc,
 	opts ...RunnerOption,
 ) error {
 	r, err := newRunner(opts...)
@@ -73,9 +70,7 @@ func run(
 			config.Logging.Logger.
 			With(logKeySDKVersion, conf.SDKVersion).
 			With(logKeyComponentName, conf.ComponentName)
-		syncClose = make(chan struct{}, 1)
-		syncDone  = make(chan struct{}, 1)
-		syncErrs  = make(chan error, 1)
+		syncErrs = make(chan error, 1)
 	)
 
 	ctx, cancel := signal.NotifyContext(
@@ -93,59 +88,15 @@ func run(
 	// shutdown the application in case of:
 	// - cancellations
 	// - components being done with their work
-	// - fatal errors
 	g.Go(func() error {
-		var e error
 		select {
 		case <-ctx.Done():
 			logger.Debug("received a context cancellation, exiting...")
-		case <-syncDone:
-			logger.Debug("component done, exiting...")
 		case err := <-syncErrs:
 			logger.Debug("received an unexpected error, exiting...")
-			e = err
+			return err
 		}
 
-		syncClose <- struct{}{}
-		close(syncClose)
-
-		return e
-	})
-
-	// Make sure we wait for errors or the channel being closed so we can report them safely.
-	g.Go(func() error {
-		return <-syncErrs
-	})
-
-	// Gracefully close components when we're done.
-	g.Go(func() error {
-		<-syncClose
-		logger.Debug("gracefully shutting down component...")
-		closeCtx, closeCanc := context.WithTimeout(ctx, 10*time.Second)
-		defer closeCanc()
-
-		// Just in case the provided Close implementation fails.
-		defer func() {
-			if pe := recover(); pe != nil {
-				logger.Error("received an unexpected panic during closing the component, handling...")
-				err, ok := r.config.PanicHandler.HandlePanic(ctx, pe)
-				if ok {
-					if err != nil {
-						logger = logger.With(logKeyError, err.Error())
-					}
-				}
-				logger.Error("panic handled during closing the component!")
-			}
-		}()
-
-		// Actually close the component.
-		if err := closer(closeCtx); err != nil {
-			logger.With(logKeyError, err.Error()).Warn(
-				"could not gracefully close component",
-			)
-		}
-
-		logger.Debug("gracefully shutdown component successfully!")
 		return nil
 	})
 
@@ -158,13 +109,9 @@ func run(
 		defer func() {
 			if pe := recover(); pe != nil {
 				logger.Error("received an unexpected panic in the component runner, handling...")
-				err, ok := r.config.PanicHandler.HandlePanic(ctx, pe)
-				if ok {
-					if err != nil {
-						logger = logger.With(logKeyError, err.Error())
-					}
+				if panicErr, ok := r.config.PanicHandler.HandlePanic(ctx, pe); ok {
 					logger.Error("shutting application down...")
-					syncErrs <- fmt.Errorf("unexpected panic error in the component runner: %w", err)
+					syncErrs <- fmt.Errorf("unexpected panic error in the component runner: %w", panicErr)
 				}
 				logger.Error("panic handled in the component runner!")
 			}
@@ -173,15 +120,13 @@ func run(
 		logger.Debug("running component...")
 		// TODO: potentially decompose run steps to handle cancellations separately.
 		// Actually run the component.
-		if err := componentRunner(ctx); err != nil {
-			syncErrs <- fmt.Errorf("could not run component: %w", err)
-			return nil
+		if err := componentRunner(ctx, conf); err != nil {
+			return fmt.Errorf("could not run component: %w", err)
 		}
 
 		logger.Debug("component done! Preparing to exit...")
 		// We're done, telling the runner to exit.
-		syncDone <- struct{}{}
-		close(syncDone)
+		cancel()
 		return nil
 	})
 

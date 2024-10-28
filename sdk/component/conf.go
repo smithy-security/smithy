@@ -7,13 +7,20 @@ import (
 )
 
 const (
+	logLevelDebug RunnerConfigLoggingLevel = "debug"
+	logLevelInfo  RunnerConfigLoggingLevel = "info"
+	logLevelError RunnerConfigLoggingLevel = "error"
+	logLevelWarn  RunnerConfigLoggingLevel = "warn"
+
 	// Err reasons.
-	errReasonCannotBeEmpty = "cannot be empty"
-	errReasonCannotBeNil   = "cannot be nil"
+	errReasonCannotBeEmpty    = "cannot be empty"
+	errReasonUnsupportedValue = "unsupported value"
+	errReasonCannotBeNil      = "cannot be nil"
 
 	// Env vars.
 	envVarKeyComponentName   = "SMITHY_COMPONENT_NAME"
-	envVarKeyLoggingLogLevel = "SMITHY_LOGGING_LOG_LEVEL"
+	envVarKeyLoggingLogLevel = "SMITHY_LOG_LEVEL"
+	envVarKeyBackedStoreType = "SMITHY_BACKEND_STORE_TYPE"
 )
 
 type (
@@ -27,14 +34,24 @@ type (
 		PanicHandler PanicHandler
 		// TODO: add MetricsHandler.
 		// TODO: add TracingHandler.
-		// TODO: add ProfilingHandler.
+
+		storerConfig runnerConfigStorer
 	}
+
+	// RunnerConfigLoggingLevel is used to represent log levels.
+	RunnerConfigLoggingLevel string
 
 	// RunnerConfigLogging contains the configuration related with the runner logger.
 	RunnerConfigLogging struct {
-		Level string
+		Level RunnerConfigLoggingLevel
 
 		Logger Logger
+	}
+
+	runnerConfigStorer struct {
+		enabled   bool
+		storeType storeType
+		store     Storer
 	}
 
 	// RunnerConfigOption can be used to override runner configuration defaults.
@@ -65,6 +82,10 @@ func (er ErrInvalidRunnerConfig) Error() string {
 	return fmt.Sprintf("invalid configuration, field '%s': %s", er.FieldName, er.Reason)
 }
 
+func (rl RunnerConfigLoggingLevel) String() string {
+	return string(rl)
+}
+
 func (rc *RunnerConfig) isValid() error {
 	switch {
 	case rc.SDKVersion == "":
@@ -85,6 +106,11 @@ func (rc *RunnerConfig) isValid() error {
 	case rc.PanicHandler == nil:
 		return ErrInvalidRunnerConfig{
 			FieldName: "panic_handler",
+			Reason:    errReasonCannotBeNil,
+		}
+	case rc.storerConfig.enabled && rc.storerConfig.store == nil:
+		return ErrInvalidRunnerConfig{
+			FieldName: "store_type",
 			Reason:    errReasonCannotBeNil,
 		}
 	}
@@ -120,9 +146,32 @@ func RunnerWithComponentName(name string) RunnerOption {
 	}
 }
 
+// RunnerWithStorer can be used to customise the underlying storage.
+func RunnerWithStorer(stType string, store Storer) RunnerOption {
+	return func(r *runner) error {
+		switch {
+		case !isAllowedStoreType(storeType(stType)):
+			return ErrRunnerOption{
+				OptionName: "store_type",
+				Reason:     errReasonUnsupportedValue,
+			}
+		case store == nil:
+			return ErrRunnerOption{
+				OptionName: "storer",
+				Reason:     errReasonCannotBeNil,
+			}
+		}
+		r.config.storerConfig.enabled = true
+		r.config.storerConfig.store = store
+		r.config.storerConfig.storeType = storeTypeLocal
+		return nil
+	}
+}
+
 // newRunnerConfig initialises a new RunnerConfig by introspecting the required environment variables
 // and applying acceptable defaults.
 func newRunnerConfig() (*RunnerConfig, error) {
+	// --- BEGIN - BASIC ENV - BEGIN ---
 	panicHandler, err := NewDefaultPanicHandler()
 	if err != nil {
 		return nil, fmt.Errorf("could not construct panic handler: %w", err)
@@ -132,18 +181,56 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyComponentName, err)
 	}
+	// --- END - BASIC ENV - END ---
 
-	logLevel, err := fromEnvOrDefault(envVarKeyLoggingLogLevel, logLevelDebug, withFallbackToDefaultOnError(true))
+	// --- BEGIN - LOGGING ENV - BEGIN ---
+	logLevel, err := fromEnvOrDefault(envVarKeyLoggingLogLevel, logLevelDebug.String(), withFallbackToDefaultOnError(true))
 	if err != nil {
 		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyLoggingLogLevel, err)
 	}
+
+	logger, err := newDefaultLogger(RunnerConfigLoggingLevel(logLevel))
+	if err != nil {
+		return nil, fmt.Errorf("could not initialised default logger for '%s': %w", envVarKeyLoggingLogLevel, err)
+	}
+	// --- END - LOGGING ENV - END ---
+
+	// --- BEGIN - STORER ENV - BEGIN ---
+	st, err := fromEnvOrDefault(envVarKeyBackedStoreType, "", withFallbackToDefaultOnError(true))
+	if err != nil {
+		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyBackedStoreType, err)
+	}
+
+	var (
+		storageType         = storeType(st)
+		store        Storer = nil
+		storeEnabled        = false
+	)
+
+	if st != "" {
+		if !isAllowedStoreType(storageType) {
+			return nil, fmt.Errorf("invalid store type for '%s': %w", envVarKeyBackedStoreType, err)
+		}
+		store, err = newStorer(storageType)
+		if err != nil {
+			return nil, fmt.Errorf("could not initialise store for '%s': %w", envVarKeyBackedStoreType, err)
+		}
+		storeEnabled = true
+	}
+	// --- END - STORER ENV - END ---
 
 	return &RunnerConfig{
 		ComponentName: componentName,
 		SDKVersion:    sdk.Version,
 		Logging: RunnerConfigLogging{
-			Logger: newDefaultLogger(logLevel),
+			Level:  RunnerConfigLoggingLevel(logLevel),
+			Logger: logger,
 		},
 		PanicHandler: panicHandler,
+		storerConfig: runnerConfigStorer{
+			storeType: storageType,
+			store:     store,
+			enabled:   storeEnabled,
+		},
 	}, nil
 }

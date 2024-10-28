@@ -2,6 +2,7 @@ package component
 
 import (
 	"context"
+	"runtime/debug"
 )
 
 type (
@@ -24,11 +25,14 @@ func NewDefaultPanicHandler() (*defaultPanicHandler, error) {
 func (dph *defaultPanicHandler) HandlePanic(ctx context.Context, err any) (error, bool) {
 	logger := LoggerFromContext(ctx)
 	if err != nil {
-		logger.With(logKeyError, err).Error("received a panic. Exiting.")
 		e, ok := err.(error)
 		if !ok {
+			logger = logger.With(logKeyError, e.Error())
 			return nil, true
 		}
+		logger.With(
+			logKeyPanicStackTrace, string(debug.Stack()),
+		).Error("received a panic. Check the stacktrace for more information. Exiting.")
 		return e, true
 	}
 	return nil, false
