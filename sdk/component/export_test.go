@@ -18,19 +18,3 @@ func FromEnvOrDefault[T parseableEnvTypes](envVar string, defaultVal T, opts ...
 }
 
 // -- END env.go exports --
-
-// -- START conf.go exports --
-func RunnerWithStorer(storer Storer) RunnerOption {
-	return func(r *runner) error {
-		if storer == nil {
-			return ErrRunnerOption{
-				OptionName: "storer",
-				Reason:     errReasonCannotBeNil,
-			}
-		}
-		r.config.storerConfig.store = storer
-		r.config.storerConfig.enabled = true
-		r.config.storerConfig.storeType = storeTypeTest
-		return nil
-	}
-}

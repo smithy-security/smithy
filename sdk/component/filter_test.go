@@ -27,7 +27,7 @@ func runFilterHelper(
 		filter,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-filter"),
-		component.RunnerWithStorer(store),
+		component.RunnerWithStorer("local", store),
 	)
 }
 

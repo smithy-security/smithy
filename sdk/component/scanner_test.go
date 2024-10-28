@@ -27,7 +27,7 @@ func runScannerHelper(
 		reporter,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-scanner"),
-		component.RunnerWithStorer(storer),
+		component.RunnerWithStorer("local", storer),
 	)
 }
 

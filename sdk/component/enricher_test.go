@@ -27,7 +27,7 @@ func runEnricherHelper(
 		enricher,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-enricher"),
-		component.RunnerWithStorer(store),
+		component.RunnerWithStorer("local", store),
 	)
 }
 

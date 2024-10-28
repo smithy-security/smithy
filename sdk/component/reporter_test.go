@@ -27,7 +27,7 @@ func runReporterHelper(
 		reporter,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-reporter"),
-		component.RunnerWithStorer(store),
+		component.RunnerWithStorer("local", store),
 	)
 }
 
