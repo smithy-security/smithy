@@ -15,7 +15,6 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 
-	component "github.com/smithy-security/smithy/sdk/component"
 	pb "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
@@ -96,44 +95,6 @@ func (mr *MockReaderMockRecorder) Read(ctx any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockReader)(nil).Read), ctx)
 }
 
-// MockStorer is a mock of Storer interface.
-type MockStorer struct {
-	ctrl     *gomock.Controller
-	recorder *MockStorerMockRecorder
-	isgomock struct{}
-}
-
-// MockStorerMockRecorder is the mock recorder for MockStorer.
-type MockStorerMockRecorder struct {
-	mock *MockStorer
-}
-
-// NewMockStorer creates a new mock instance.
-func NewMockStorer(ctrl *gomock.Controller) *MockStorer {
-	mock := &MockStorer{ctrl: ctrl}
-	mock.recorder = &MockStorerMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockStorer) EXPECT() *MockStorerMockRecorder {
-	return m.recorder
-}
-
-// Store mocks base method.
-func (m *MockStorer) Store(ctx context.Context, findings []*pb.VulnerabilityFinding) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Store", ctx, findings)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Store indicates an expected call of Store.
-func (mr *MockStorerMockRecorder) Store(ctx, findings any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockStorer)(nil).Store), ctx, findings)
-}
-
 // MockUpdater is a mock of Updater interface.
 type MockUpdater struct {
 	ctrl     *gomock.Controller
@@ -172,43 +133,42 @@ func (mr *MockUpdaterMockRecorder) Update(ctx, findings any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUpdater)(nil).Update), ctx, findings)
 }
 
-// MockUnmarshaler is a mock of Unmarshaler interface.
-type MockUnmarshaler struct {
+// MockWriter is a mock of Writer interface.
+type MockWriter struct {
 	ctrl     *gomock.Controller
-	recorder *MockUnmarshalerMockRecorder
+	recorder *MockWriterMockRecorder
 	isgomock struct{}
 }
 
-// MockUnmarshalerMockRecorder is the mock recorder for MockUnmarshaler.
-type MockUnmarshalerMockRecorder struct {
-	mock *MockUnmarshaler
+// MockWriterMockRecorder is the mock recorder for MockWriter.
+type MockWriterMockRecorder struct {
+	mock *MockWriter
 }
 
-// NewMockUnmarshaler creates a new mock instance.
-func NewMockUnmarshaler(ctrl *gomock.Controller) *MockUnmarshaler {
-	mock := &MockUnmarshaler{ctrl: ctrl}
-	mock.recorder = &MockUnmarshalerMockRecorder{mock}
+// NewMockWriter creates a new mock instance.
+func NewMockWriter(ctrl *gomock.Controller) *MockWriter {
+	mock := &MockWriter{ctrl: ctrl}
+	mock.recorder = &MockWriterMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockUnmarshaler) EXPECT() *MockUnmarshalerMockRecorder {
+func (m *MockWriter) EXPECT() *MockWriterMockRecorder {
 	return m.recorder
 }
 
-// Unmarshal mocks base method.
-func (m *MockUnmarshaler) Unmarshal() (*pb.VulnerabilityFinding, error) {
+// Write mocks base method.
+func (m *MockWriter) Write(ctx context.Context, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Unmarshal")
-	ret0, _ := ret[0].(*pb.VulnerabilityFinding)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "Write", ctx, findings)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
-// Unmarshal indicates an expected call of Unmarshal.
-func (mr *MockUnmarshalerMockRecorder) Unmarshal() *gomock.Call {
+// Write indicates an expected call of Write.
+func (mr *MockWriterMockRecorder) Write(ctx, findings any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Unmarshal", reflect.TypeOf((*MockUnmarshaler)(nil).Unmarshal))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockWriter)(nil).Write), ctx, findings)
 }
 
 // MockCloser is a mock of Closer interface.
@@ -249,6 +209,101 @@ func (mr *MockCloserMockRecorder) Close(arg0 any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockCloser)(nil).Close), arg0)
 }
 
+// MockStorer is a mock of Storer interface.
+type MockStorer struct {
+	ctrl     *gomock.Controller
+	recorder *MockStorerMockRecorder
+	isgomock struct{}
+}
+
+// MockStorerMockRecorder is the mock recorder for MockStorer.
+type MockStorerMockRecorder struct {
+	mock *MockStorer
+}
+
+// NewMockStorer creates a new mock instance.
+func NewMockStorer(ctrl *gomock.Controller) *MockStorer {
+	mock := &MockStorer{ctrl: ctrl}
+	mock.recorder = &MockStorerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockStorer) EXPECT() *MockStorerMockRecorder {
+	return m.recorder
+}
+
+// Close mocks base method.
+func (m *MockStorer) Close(arg0 context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Close", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Close indicates an expected call of Close.
+func (mr *MockStorerMockRecorder) Close(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockStorer)(nil).Close), arg0)
+}
+
+// Read mocks base method.
+func (m *MockStorer) Read(ctx context.Context) ([]*pb.VulnerabilityFinding, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Read", ctx)
+	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Read indicates an expected call of Read.
+func (mr *MockStorerMockRecorder) Read(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockStorer)(nil).Read), ctx)
+}
+
+// Update mocks base method.
+func (m *MockStorer) Update(ctx context.Context, findings []*pb.VulnerabilityFinding) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, findings)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockStorerMockRecorder) Update(ctx, findings any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockStorer)(nil).Update), ctx, findings)
+}
+
+// Validate mocks base method.
+func (m *MockStorer) Validate(finding *pb.VulnerabilityFinding) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Validate", finding)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Validate indicates an expected call of Validate.
+func (mr *MockStorerMockRecorder) Validate(finding any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Validate", reflect.TypeOf((*MockStorer)(nil).Validate), finding)
+}
+
+// Write mocks base method.
+func (m *MockStorer) Write(ctx context.Context, findings []*pb.VulnerabilityFinding) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Write", ctx, findings)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Write indicates an expected call of Write.
+func (mr *MockStorerMockRecorder) Write(ctx, findings any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockStorer)(nil).Write), ctx, findings)
+}
+
 // MockTarget is a mock of Target interface.
 type MockTarget struct {
 	ctrl     *gomock.Controller
@@ -271,20 +326,6 @@ func NewMockTarget(ctrl *gomock.Controller) *MockTarget {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTarget) EXPECT() *MockTargetMockRecorder {
 	return m.recorder
-}
-
-// Close mocks base method.
-func (m *MockTarget) Close(arg0 context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Close", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Close indicates an expected call of Close.
-func (mr *MockTargetMockRecorder) Close(arg0 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockTarget)(nil).Close), arg0)
 }
 
 // Prepare mocks base method.
@@ -325,62 +366,19 @@ func (m *MockScanner) EXPECT() *MockScannerMockRecorder {
 	return m.recorder
 }
 
-// Close mocks base method.
-func (m *MockScanner) Close(arg0 context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Close", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Close indicates an expected call of Close.
-func (mr *MockScannerMockRecorder) Close(arg0 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockScanner)(nil).Close), arg0)
-}
-
-// Scan mocks base method.
-func (m *MockScanner) Scan(ctx context.Context) ([]component.Unmarshaler, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Scan", ctx)
-	ret0, _ := ret[0].([]component.Unmarshaler)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Scan indicates an expected call of Scan.
-func (mr *MockScannerMockRecorder) Scan(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Scan", reflect.TypeOf((*MockScanner)(nil).Scan), ctx)
-}
-
-// Store mocks base method.
-func (m *MockScanner) Store(ctx context.Context, findings []*pb.VulnerabilityFinding) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Store", ctx, findings)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Store indicates an expected call of Store.
-func (mr *MockScannerMockRecorder) Store(ctx, findings any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockScanner)(nil).Store), ctx, findings)
-}
-
 // Transform mocks base method.
-func (m *MockScanner) Transform(ctx context.Context, payload component.Unmarshaler) (*pb.VulnerabilityFinding, error) {
+func (m *MockScanner) Transform(ctx context.Context) ([]*pb.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Transform", ctx, payload)
-	ret0, _ := ret[0].(*pb.VulnerabilityFinding)
+	ret := m.ctrl.Call(m, "Transform", ctx)
+	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Transform indicates an expected call of Transform.
-func (mr *MockScannerMockRecorder) Transform(ctx, payload any) *gomock.Call {
+func (mr *MockScannerMockRecorder) Transform(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Transform", reflect.TypeOf((*MockScanner)(nil).Transform), ctx, payload)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Transform", reflect.TypeOf((*MockScanner)(nil).Transform), ctx)
 }
 
 // MockFilter is a mock of Filter interface.
@@ -407,20 +405,6 @@ func (m *MockFilter) EXPECT() *MockFilterMockRecorder {
 	return m.recorder
 }
 
-// Close mocks base method.
-func (m *MockFilter) Close(arg0 context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Close", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Close indicates an expected call of Close.
-func (mr *MockFilterMockRecorder) Close(arg0 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockFilter)(nil).Close), arg0)
-}
-
 // Filter mocks base method.
 func (m *MockFilter) Filter(ctx context.Context, findings []*pb.VulnerabilityFinding) ([]*pb.VulnerabilityFinding, bool, error) {
 	m.ctrl.T.Helper()
@@ -435,35 +419,6 @@ func (m *MockFilter) Filter(ctx context.Context, findings []*pb.VulnerabilityFin
 func (mr *MockFilterMockRecorder) Filter(ctx, findings any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Filter", reflect.TypeOf((*MockFilter)(nil).Filter), ctx, findings)
-}
-
-// Read mocks base method.
-func (m *MockFilter) Read(ctx context.Context) ([]*pb.VulnerabilityFinding, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx)
-	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Read indicates an expected call of Read.
-func (mr *MockFilterMockRecorder) Read(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockFilter)(nil).Read), ctx)
-}
-
-// Update mocks base method.
-func (m *MockFilter) Update(ctx context.Context, findings []*pb.VulnerabilityFinding) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, findings)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Update indicates an expected call of Update.
-func (mr *MockFilterMockRecorder) Update(ctx, findings any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockFilter)(nil).Update), ctx, findings)
 }
 
 // MockEnricher is a mock of Enricher interface.
@@ -505,49 +460,6 @@ func (mr *MockEnricherMockRecorder) Annotate(ctx, findings any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Annotate", reflect.TypeOf((*MockEnricher)(nil).Annotate), ctx, findings)
 }
 
-// Close mocks base method.
-func (m *MockEnricher) Close(arg0 context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Close", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Close indicates an expected call of Close.
-func (mr *MockEnricherMockRecorder) Close(arg0 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockEnricher)(nil).Close), arg0)
-}
-
-// Read mocks base method.
-func (m *MockEnricher) Read(ctx context.Context) ([]*pb.VulnerabilityFinding, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx)
-	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Read indicates an expected call of Read.
-func (mr *MockEnricherMockRecorder) Read(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockEnricher)(nil).Read), ctx)
-}
-
-// Update mocks base method.
-func (m *MockEnricher) Update(ctx context.Context, findings []*pb.VulnerabilityFinding) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, findings)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Update indicates an expected call of Update.
-func (mr *MockEnricherMockRecorder) Update(ctx, findings any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockEnricher)(nil).Update), ctx, findings)
-}
-
 // MockReporter is a mock of Reporter interface.
 type MockReporter struct {
 	ctrl     *gomock.Controller
@@ -570,35 +482,6 @@ func NewMockReporter(ctrl *gomock.Controller) *MockReporter {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockReporter) EXPECT() *MockReporterMockRecorder {
 	return m.recorder
-}
-
-// Close mocks base method.
-func (m *MockReporter) Close(arg0 context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Close", arg0)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Close indicates an expected call of Close.
-func (mr *MockReporterMockRecorder) Close(arg0 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockReporter)(nil).Close), arg0)
-}
-
-// Read mocks base method.
-func (m *MockReporter) Read(ctx context.Context) ([]*pb.VulnerabilityFinding, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx)
-	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// Read indicates an expected call of Read.
-func (mr *MockReporterMockRecorder) Read(ctx any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockReporter)(nil).Read), ctx)
 }
 
 // Report mocks base method.

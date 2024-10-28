@@ -66,15 +66,15 @@ func (t testEnricher) Close(ctx context.Context) error {
 	return nil
 }
 
-func (t testScanner) Store(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
+func (t testScanner) Write(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
 	return nil
 }
 
-func (t testScanner) Scan(ctx context.Context) ([]component.Unmarshaler, error) {
-	return nil, nil
+func (t testScanner) Validate(finding *ocsf.VulnerabilityFinding) error {
+	return nil
 }
 
-func (t testScanner) Transform(ctx context.Context, payload component.Unmarshaler) (*ocsf.VulnerabilityFinding, error) {
+func (t testScanner) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
 
