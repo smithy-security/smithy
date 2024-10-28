@@ -15,18 +15,23 @@ This package allows you to focus on writing the business logic for your componen
 while taking care of the boring things for you:
 
 * running the components steps in a predictable and reliable way
+* deal with persisting and updating findings data in an underlying storage
 * handle intricacies like cancellations and graceful shutdown
 * taking care of logging and panic handling
 * reporting common metrics to track what your component is doing
 
 You can customise a component using the following environment variables:
 
-| Environment Variable       | Type   | Required | Possible Values                |
-|----------------------------|--------|----------|--------------------------------|
-| SMITHY\_COMPONENT\_NAME       | string | yes      | -                              |
-| SMITHY\_LOGGING\_LOG\_LEVEL    | string | false    | info, debug, warn, error       |
+| Environment Variable       | Type   | Required | Possible Values          |
+|----------------------------|--------|----------|--------------------------|
+| SMITHY\_COMPONENT\_NAME    | string | yes      | -                        |
+| SMITHY\_BACKEND\_STORE\_TYPE  | string | yes      | local, test, \*remote     |
+| SMITHY\_LOG\_LEVEL         | string | false    | info, debug, warn, error |
 
-Or you can use the supplied options `RunOption`, like in this example:
+For `local` development, an `SQLite` Backend Store Type will be used.
+
+`Runners` can be supplied with `RunnerConfigOption`s to customise how a component runs.
+In the following example you can see how we change the component name:
 
 ```go
 component.RunTarget(
@@ -43,6 +48,7 @@ component.RunTarget(
 A `Target` component should be used to prepare a target for scanning.
 
 For example, cloning a repository and make it available for a `Scanner` to scan.
+A `git-clone` component is an example of a `Target`.
 
 You can create a new `Target` component like follows:
 
@@ -59,13 +65,12 @@ import (
 
 type sampleTarget struct{}
 
-func (s sampleTarget) Close(ctx context.Context) error {
-	// Close your component here!
-	return nil
-}
-
 func (s sampleTarget) Prepare(ctx context.Context) error {
 	// Prepare the target here!
+	// This is the main execution method of the Target component type. 
+	// Here you need to implement your logic.
+	// For example for a target component that clones a repository here is where you 
+	// setup your arguments and call git clone.
 	return nil
 }
 
@@ -83,6 +88,8 @@ func main() {
 
 A `Scanner` scans a `Target` to find vulnerabilities.
 
+`Go-Sec` component is an example of a scanner component.
+
 You can create a new `Scanner` component like follows:
 
 ```go
@@ -97,35 +104,12 @@ import (
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
-type (
-	sampleScanner struct{}
+type sampleScanner struct{}
 
-	sampleRawVuln struct{}
-)
-
-func (s sampleRawVuln) Unmarshal() (*ocsf.VulnerabilityFinding, error) {
-	// Tell us how to convert your payload to ocsf format here!
-	return &ocsf.VulnerabilityFinding{}, nil
-}
-
-func (s sampleScanner) Close(ctx context.Context) error {
-	// Close your component here!
-	return nil
-}
-
-func (s sampleScanner) Store(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
-	// Store your findings here!
-	return nil
-}
-
-func (s sampleScanner) Scan(ctx context.Context) ([]component.Unmarshaler, error) {
-	// Scan a target and return a payload here!
-	return nil, nil
-}
-
-func (s sampleScanner) Transform(ctx context.Context, payload component.Unmarshaler) (*ocsf.VulnerabilityFinding, error) {
-	// Transform your payload to ocsf format!
-	return &ocsf.VulnerabilityFinding{}, nil
+func (s sampleScanner) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+	// Transform your payload to ocsf format here!
+	// Read raw findings prepared by a Target and transform them to a format that makes sense!
+	return make([]*ocsf.VulnerabilityFinding, 0, 10), nil
 }
 
 func main() {
@@ -141,6 +125,8 @@ func main() {
 #### Enricher
 
 An `Enricher` annotates vulnerability findings with extra information.
+
+`Deduplication` component is an example `Enricher`.
 
 You can create a new `Enricher` component like follows:
 
@@ -158,23 +144,9 @@ import (
 
 type sampleEnricher struct{}
 
-func (s sampleEnricher) Close(ctx context.Context) error {
-	// Close your component here!
-	return nil
-}
-
-func (s sampleEnricher) Read(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	// Read the prepared vulnerability reports here.
-	return make([]*ocsf.VulnerabilityFinding, 0, 10), nil
-}
-
-func (s sampleEnricher) Update(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
-	// Update your vulnerability findings here.
-	return nil
-}
-
 func (s sampleEnricher) Annotate(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
-	// Enrich your vulnerability findings here.
+	// Enrich your vulnerability findings here!
+	// Make sense of you vulnerability data and add enriching annotations to take smarter decisions.
 	return make([]*ocsf.VulnerabilityFinding, 0, 10), nil
 }
 
@@ -211,23 +183,9 @@ import (
 
 type sampleFilter struct{}
 
-func (s sampleFilter) Close(ctx context.Context) error {
-	// Close your component here!
-    return nil
-}
-
-func (s sampleFilter) Read(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	// Read the prepared vulnerability reports here.
-	return make([]*ocsf.VulnerabilityFinding, 0, 100), nil
-}
-
-func (s sampleFilter) Update(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
-	// Update your vulnerability findings here.
-	return nil
-}
-
 func (s sampleFilter) Filter(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
-	// Filter out your vulnerability findings here.
+	// Filter out your vulnerability findings here!
+	// Remove the noise from your pipeline and ignore findings based on a supplied criteria.
 	return make([]*ocsf.VulnerabilityFinding, 0, 80), true, nil
 }
 
@@ -247,7 +205,7 @@ A `Reporter` component allows you to report vulnerabilities on your favourite
 destination.
 
 For example, report each one of them as ticket on a ticketing system or dump
-them into a data lake.
+them into a data lake. `Slack` is an example `Reporter`.
 
 You can create a new `Reporter` component like follows:
 
@@ -265,18 +223,9 @@ import (
 
 type sampleReporter struct{}
 
-func (s sampleReporter) Close(ctx context.Context) error {
-	// Close your component here!
-	return nil
-}
-
-func (s sampleReporter) Read(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	// Read the prepared vulnerability reports here.
-	return make([]*ocsf.VulnerabilityFinding, 0, 100), nil
-}
-
 func (s sampleReporter) Report(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
 	// Report your vulnerability findings here.
+	// Raise them as tickets on Jira or post a message on Slack here!
 	return nil
 }
 
