@@ -8,6 +8,10 @@ metadata:
     v1.smithy.smithy-security.com/test-type: sca
 spec:
   description: Generate a Dependency-Check report from source code.
+  params:
+    - name: producer-dependency-check-nvd-api-key
+      type: string
+      default: ""
   volumes:
     - name: scratch
       emptyDir: {}
@@ -19,6 +23,8 @@ spec:
     image: owasp/dependency-check:10.0.3
     command: [/usr/share/dependency-check/bin/dependency-check.sh]
     args:
+    - --nvdApiKey
+    - $(params.producer-dependency-check-nvd-api-key)
     - -f
     - JSON
     - -o
