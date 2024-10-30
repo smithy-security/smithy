@@ -9,15 +9,16 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
-
 	"github.com/smithy-security/smithy/sdk/component"
+	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 func runReporterHelper(
 	t *testing.T,
 	ctx context.Context,
+	workflowID uuid.UUID,
 	reporter component.Reporter,
 	store component.Storer,
 ) error {
@@ -28,6 +29,7 @@ func runReporterHelper(
 		reporter,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-reporter"),
+		component.RunnerWithWorkflowID(workflowID),
 		component.RunnerWithStorer("local", store),
 	)
 }
@@ -35,6 +37,7 @@ func runReporterHelper(
 func TestRunReporter(t *testing.T) {
 	var (
 		ctrl, ctx    = gomock.WithContext(context.Background(), t)
+		workflowID   = uuid.New()
 		mockCtx      = gomock.AssignableToTypeOf(ctx)
 		mockStore    = mocks.NewMockStorer(ctrl)
 		mockReporter = mocks.NewMockReporter(ctrl)
@@ -45,7 +48,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(vulns, nil),
 			mockReporter.
 				EXPECT().
@@ -57,7 +60,7 @@ func TestRunReporter(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runReporterHelper(t, ctx, mockReporter, mockStore))
+		require.NoError(t, runReporterHelper(t, ctx, workflowID, mockReporter, mockStore))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
@@ -66,8 +69,8 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
-				DoAndReturn(func(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+				Read(mockCtx, workflowID).
+				DoAndReturn(func(ctx context.Context, workflowID uuid.UUID) ([]*ocsf.VulnerabilityFinding, error) {
 					cancel()
 					return vulns, nil
 				}),
@@ -84,7 +87,7 @@ func TestRunReporter(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runReporterHelper(t, ctx, mockReporter, mockStore))
+		require.NoError(t, runReporterHelper(t, ctx, workflowID, mockReporter, mockStore))
 	})
 
 	t.Run("it should return early when reading errors", func(t *testing.T) {
@@ -93,7 +96,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(nil, errRead),
 			mockStore.
 				EXPECT().
@@ -101,7 +104,7 @@ func TestRunReporter(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runReporterHelper(t, ctx, mockReporter, mockStore)
+		err := runReporterHelper(t, ctx, workflowID, mockReporter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errRead)
 	})
@@ -112,7 +115,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(vulns, nil),
 			mockReporter.
 				EXPECT().
@@ -124,7 +127,7 @@ func TestRunReporter(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runReporterHelper(t, ctx, mockReporter, mockStore)
+		err := runReporterHelper(t, ctx, workflowID, mockReporter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errReporting)
 	})
@@ -135,7 +138,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(vulns, nil),
 			mockReporter.
 				EXPECT().
@@ -150,7 +153,7 @@ func TestRunReporter(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runReporterHelper(t, ctx, mockReporter, mockStore)
+		err := runReporterHelper(t, ctx, workflowID, mockReporter, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errReporting)
 	})

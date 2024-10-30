@@ -10,6 +10,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
@@ -18,6 +19,7 @@ import (
 func runEnricherHelper(
 	t *testing.T,
 	ctx context.Context,
+	workflowID uuid.UUID,
 	enricher component.Enricher,
 	store component.Storer,
 ) error {
@@ -28,6 +30,7 @@ func runEnricherHelper(
 		enricher,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-enricher"),
+		component.RunnerWithWorkflowID(workflowID),
 		component.RunnerWithStorer("local", store),
 	)
 }
@@ -35,6 +38,7 @@ func runEnricherHelper(
 func TestRunEnricher(t *testing.T) {
 	var (
 		ctrl, ctx     = gomock.WithContext(context.Background(), t)
+		workflowID    = uuid.New()
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockEnricher  = mocks.NewMockEnricher(ctrl)
@@ -46,7 +50,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -54,7 +58,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(enrichedVulns, nil),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, enrichedVulns).
+				Update(mockCtx, workflowID, enrichedVulns).
 				Return(nil),
 			mockStore.
 				EXPECT().
@@ -62,7 +66,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runEnricherHelper(t, ctx, mockEnricher, mockStore))
+		require.NoError(t, runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
@@ -71,29 +75,35 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
 				Annotate(mockCtx, vulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
-					cancel()
-					return enrichedVulns, nil
-				}),
+				DoAndReturn(
+					func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+						cancel()
+						return enrichedVulns, nil
+					}),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, enrichedVulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
-					<-ctx.Done()
-					return nil
-				}),
+				Update(mockCtx, workflowID, enrichedVulns).
+				DoAndReturn(
+					func(
+						ctx context.Context,
+						workflowID uuid.UUID,
+						vulns []*ocsf.VulnerabilityFinding,
+					) error {
+						<-ctx.Done()
+						return nil
+					}),
 			mockStore.
 				EXPECT().
 				Close(mockCtx).
 				Return(nil),
 		)
 
-		require.NoError(t, runEnricherHelper(t, ctx, mockEnricher, mockStore))
+		require.NoError(t, runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore))
 	})
 
 	t.Run("it should return early when reading errors", func(t *testing.T) {
@@ -102,7 +112,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(nil, errRead),
 			mockStore.
 				EXPECT().
@@ -110,7 +120,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runEnricherHelper(t, ctx, mockEnricher, mockStore)
+		err := runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errRead)
 	})
@@ -121,7 +131,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -133,7 +143,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runEnricherHelper(t, ctx, mockEnricher, mockStore)
+		err := runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errAnnotation)
 	})
@@ -144,7 +154,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -152,7 +162,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(enrichedVulns, nil),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, enrichedVulns).
+				Update(mockCtx, workflowID, enrichedVulns).
 				Return(errUpdate),
 			mockStore.
 				EXPECT().
@@ -160,7 +170,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runEnricherHelper(t, ctx, mockEnricher, mockStore)
+		err := runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errUpdate)
 	})
@@ -171,22 +181,23 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx).
+				Read(mockCtx, workflowID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
 				Annotate(mockCtx, vulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
-					panic(errAnnotation)
-					return enrichedVulns, nil
-				}),
+				DoAndReturn(
+					func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+						panic(errAnnotation)
+						return enrichedVulns, nil
+					}),
 			mockStore.
 				EXPECT().
 				Close(mockCtx).
 				Return(nil),
 		)
 
-		err := runEnricherHelper(t, ctx, mockEnricher, mockStore)
+		err := runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errAnnotation)
 	})

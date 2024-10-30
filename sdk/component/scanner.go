@@ -11,8 +11,9 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 		ctx,
 		func(ctx context.Context, cfg *RunnerConfig) error {
 			var (
-				logger = LoggerFromContext(ctx).With(logKeyComponentType, "scanner")
-				store  = cfg.storerConfig.store
+				workflowID = cfg.WorkflowID
+				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "scanner")
+				store      = cfg.storerConfig.store
 			)
 
 			defer func() {
@@ -50,7 +51,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 			logger.Debug("validate step completed!")
 			logger.Debug("preparing to execute store step...")
 
-			if err := store.Write(ctx, rawFindings); err != nil {
+			if err := store.Write(ctx, workflowID, rawFindings); err != nil {
 				logger.
 					With(logKeyError, err.Error()).
 					Debug("could not execute store step")

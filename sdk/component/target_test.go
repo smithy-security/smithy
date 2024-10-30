@@ -11,6 +11,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 
 	"github.com/smithy-security/smithy/sdk/component"
 )
@@ -23,6 +24,7 @@ func runTargetHelper(t *testing.T, ctx context.Context, target component.Target)
 		target,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-target"),
+		component.RunnerWithWorkflowID(uuid.New()),
 	)
 }
 

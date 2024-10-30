@@ -9,15 +9,16 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
-
 	"github.com/smithy-security/smithy/sdk/component"
+	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 func runScannerHelper(
 	t *testing.T,
 	ctx context.Context,
+	workflowID uuid.UUID,
 	reporter component.Scanner,
 	storer component.Storer,
 ) error {
@@ -28,6 +29,7 @@ func runScannerHelper(
 		reporter,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-scanner"),
+		component.RunnerWithWorkflowID(workflowID),
 		component.RunnerWithStorer("local", storer),
 	)
 }
@@ -35,6 +37,7 @@ func runScannerHelper(
 func TestRunScanner(t *testing.T) {
 	var (
 		ctrl, ctx   = gomock.WithContext(context.Background(), t)
+		workflowID  = uuid.New()
 		mockCtx     = gomock.AssignableToTypeOf(ctx)
 		mockStore   = mocks.NewMockStorer(ctrl)
 		mockScanner = mocks.NewMockScanner(ctrl)
@@ -57,7 +60,7 @@ func TestRunScanner(t *testing.T) {
 				Return(nil),
 			mockStore.
 				EXPECT().
-				Write(mockCtx, vulns).
+				Write(mockCtx, workflowID, vulns).
 				Return(nil),
 			mockStore.
 				EXPECT().
@@ -65,7 +68,7 @@ func TestRunScanner(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runScannerHelper(t, ctx, mockScanner, mockStore))
+		require.NoError(t, runScannerHelper(t, ctx, workflowID, mockScanner, mockStore))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
@@ -89,18 +92,23 @@ func TestRunScanner(t *testing.T) {
 				Return(nil),
 			mockStore.
 				EXPECT().
-				Write(mockCtx, vulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
-					<-ctx.Done()
-					return nil
-				}),
+				Write(mockCtx, workflowID, vulns).
+				DoAndReturn(
+					func(
+						ctx context.Context,
+						workflowID uuid.UUID,
+						vulns []*ocsf.VulnerabilityFinding,
+					) error {
+						<-ctx.Done()
+						return nil
+					}),
 			mockStore.
 				EXPECT().
 				Close(mockCtx).
 				Return(nil),
 		)
 
-		require.NoError(t, runScannerHelper(t, ctx, mockScanner, mockStore))
+		require.NoError(t, runScannerHelper(t, ctx, workflowID, mockScanner, mockStore))
 	})
 
 	t.Run("it should return early when transforming errors", func(t *testing.T) {
@@ -117,7 +125,7 @@ func TestRunScanner(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runScannerHelper(t, ctx, mockScanner, mockStore)
+		err := runScannerHelper(t, ctx, workflowID, mockScanner, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errTransform)
 	})
@@ -140,7 +148,7 @@ func TestRunScanner(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runScannerHelper(t, ctx, mockScanner, mockStore)
+		err := runScannerHelper(t, ctx, workflowID, mockScanner, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errValidate)
 	})
@@ -163,7 +171,7 @@ func TestRunScanner(t *testing.T) {
 				Return(nil),
 			mockStore.
 				EXPECT().
-				Write(mockCtx, vulns).
+				Write(mockCtx, workflowID, vulns).
 				Return(errStore),
 			mockStore.
 				EXPECT().
@@ -171,7 +179,7 @@ func TestRunScanner(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runScannerHelper(t, ctx, mockScanner, mockStore)
+		err := runScannerHelper(t, ctx, workflowID, mockScanner, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errStore)
 	})
@@ -194,18 +202,23 @@ func TestRunScanner(t *testing.T) {
 				Return(nil),
 			mockStore.
 				EXPECT().
-				Write(mockCtx, vulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
-					panic(errStore)
-					return nil
-				}),
+				Write(mockCtx, workflowID, vulns).
+				DoAndReturn(
+					func(
+						ctx context.Context,
+						workflowID uuid.UUID,
+						vulns []*ocsf.VulnerabilityFinding,
+					) error {
+						panic(errStore)
+						return nil
+					}),
 			mockStore.
 				EXPECT().
 				Close(mockCtx).
 				Return(nil),
 		)
 
-		err := runScannerHelper(t, ctx, mockScanner, mockStore)
+		err := runScannerHelper(t, ctx, workflowID, mockScanner, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errStore)
 	})
