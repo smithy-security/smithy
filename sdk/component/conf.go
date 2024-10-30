@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/smithy-security/smithy/sdk"
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 )
 
 const (
@@ -19,6 +20,7 @@ const (
 
 	// Env vars.
 	envVarKeyComponentName   = "SMITHY_COMPONENT_NAME"
+	envVarKeyWorkflowID      = "SMITHY_WORKFLOW_ID"
 	envVarKeyLoggingLogLevel = "SMITHY_LOG_LEVEL"
 	envVarKeyBackedStoreType = "SMITHY_BACKEND_STORE_TYPE"
 )
@@ -29,6 +31,7 @@ type (
 	RunnerConfig struct {
 		SDKVersion    string
 		ComponentName string
+		WorkflowID    uuid.UUID
 
 		Logging      RunnerConfigLogging
 		PanicHandler PanicHandler
@@ -98,6 +101,11 @@ func (rc *RunnerConfig) isValid() error {
 			FieldName: "component_name",
 			Reason:    errReasonCannotBeEmpty,
 		}
+	case rc.WorkflowID.IsNil():
+		return ErrInvalidRunnerConfig{
+			FieldName: "workflow_id",
+			Reason:    errReasonCannotBeNil,
+		}
 	case rc.Logging.Logger == nil:
 		return ErrInvalidRunnerConfig{
 			FieldName: "logger",
@@ -146,6 +154,20 @@ func RunnerWithComponentName(name string) RunnerOption {
 	}
 }
 
+// RunnerWithWorkflowID allows customising the workflow id.
+func RunnerWithWorkflowID(id uuid.UUID) RunnerOption {
+	return func(r *runner) error {
+		if id.IsNil() {
+			return ErrRunnerOption{
+				OptionName: "workflow id",
+				Reason:     errReasonCannotBeEmpty,
+			}
+		}
+		r.config.WorkflowID = id
+		return nil
+	}
+}
+
 // RunnerWithStorer can be used to customise the underlying storage.
 func RunnerWithStorer(stType string, store Storer) RunnerOption {
 	return func(r *runner) error {
@@ -180,6 +202,16 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	componentName, err := fromEnvOrDefault(envVarKeyComponentName, "", withFallbackToDefaultOnError(true))
 	if err != nil {
 		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyComponentName, err)
+	}
+
+	workflowIDStr, err := fromEnvOrDefault(envVarKeyWorkflowID, "", withFallbackToDefaultOnError(true))
+	if err != nil {
+		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyWorkflowID, err)
+	}
+
+	workflowID, err := uuid.Parse(workflowIDStr)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse workflow ID '%s': %w", workflowIDStr, err)
 	}
 	// --- END - BASIC ENV - END ---
 
@@ -222,6 +254,7 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	return &RunnerConfig{
 		ComponentName: componentName,
 		SDKVersion:    sdk.Version,
+		WorkflowID:    workflowID,
 		Logging: RunnerConfigLogging{
 			Level:  RunnerConfigLoggingLevel(logLevel),
 			Logger: logger,

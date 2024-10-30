@@ -7,13 +7,15 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 )
 
 type (
 	// parseableEnvTypes represents the types the parser is capable of handling.
 	// TODO: extend with slices if needed.
 	parseableEnvTypes interface {
-		string | bool | int | uint | int64 | uint64 | float64 | time.Duration | time.Time | url.URL
+		string | bool | int | uint | int64 | uint64 | float64 | time.Duration | time.Time | url.URL | uuid.UUID
 	}
 
 	// envLoader is an alias for a function that loads values from the env. It mirrors the signature of os.Getenv.
@@ -105,6 +107,8 @@ func fromEnvOrDefault[T parseableEnvTypes](envVar string, defaultVal T, opts ...
 		v, err = time.Parse(parseOpts.timeLayout, envStr)
 	case url.URL:
 		v, err = url.Parse(envStr)
+	case uuid.UUID:
+		v, err = uuid.Parse(envStr)
 	}
 	if err != nil {
 		if parseOpts.defaultOnError {
