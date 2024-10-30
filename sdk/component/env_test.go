@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/smithy-security/smithy/sdk/component"
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 )
 
 func TestParsesParseable(t *testing.T) {
@@ -299,6 +300,46 @@ func TestParsesParseable(t *testing.T) {
 				{searchEnv: "KNOWN_TIME", expected: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC), fallBackOnErr: true},
 				{searchEnv: "UNKNOWN_ENV", expected: defaultVal, fallBackOnErr: true},
 				{searchEnv: "NOT_TIME", expectedErrContains: "parsing time", fallBackOnErr: false},
+			}
+		)
+		for _, tt := range cases {
+			t.Run(fmt.Sprintf("with env var %s", tt.searchEnv), func(t *testing.T) {
+				ret, err := component.FromEnvOrDefault(
+					tt.searchEnv,
+					defaultVal,
+					component.WithEnvLoader(loader),
+					component.WithFallbackToDefaultOnError(tt.fallBackOnErr),
+				)
+				if err != nil {
+					require.Error(t, err)
+					if tt.expectedErrContains != "" {
+						require.True(t, strings.Contains(err.Error(), tt.expectedErrContains))
+					}
+					return
+				}
+
+				require.NoError(t, err)
+				require.Equal(t, tt.expected, ret)
+			})
+		}
+	})
+
+	t.Run("UUID", func(t *testing.T) {
+		const uuidStr = "3b778fbc-93e5-4f85-bda4-c7b56e964695"
+
+		defaultVal, err := uuid.Parse(uuidStr)
+		require.NoError(t, err)
+
+		var (
+			loader = makeLoader(map[string]string{"VALID_ID": uuidStr, "INVALID_ID": "abcd"})
+			cases  = []struct {
+				searchEnv           string
+				expected            uuid.UUID
+				expectedErrContains string
+				fallBackOnErr       bool
+			}{
+				{searchEnv: "VALID_ID", expected: defaultVal, fallBackOnErr: true},
+				{searchEnv: "INVALID_ID", expectedErrContains: "invalid UUID string", fallBackOnErr: false},
 			}
 		)
 		for _, tt := range cases {
