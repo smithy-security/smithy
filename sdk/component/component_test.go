@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/smithy-security/smithy/sdk/component"
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
@@ -22,11 +23,17 @@ type (
 	testFilter struct{}
 )
 
-func (t testFilter) Read(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+func (t testFilter) Read(
+	ctx context.Context,
+	workflowID uuid.UUID,
+) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
 
-func (t testFilter) Filter(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
+func (t testFilter) Filter(
+	ctx context.Context,
+	findings []*ocsf.VulnerabilityFinding,
+) ([]*ocsf.VulnerabilityFinding, bool, error) {
 	return nil, false, nil
 }
 
@@ -34,11 +41,18 @@ func (t testFilter) Close(ctx context.Context) error {
 	return nil
 }
 
-func (t testFilter) Update(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
+func (t testFilter) Update(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	findings []*ocsf.VulnerabilityFinding,
+) error {
 	return nil
 }
 
-func (t testReporter) Read(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+func (t testReporter) Read(
+	ctx context.Context,
+	workflowID uuid.UUID,
+) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
 
@@ -50,15 +64,25 @@ func (t testReporter) Close(ctx context.Context) error {
 	return nil
 }
 
-func (t testEnricher) Read(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+func (t testEnricher) Read(
+	ctx context.Context,
+	workflowID uuid.UUID,
+) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
 
-func (t testEnricher) Update(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
+func (t testEnricher) Update(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	findings []*ocsf.VulnerabilityFinding,
+) error {
 	return nil
 }
 
-func (t testEnricher) Annotate(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+func (t testEnricher) Annotate(
+	ctx context.Context,
+	findings []*ocsf.VulnerabilityFinding,
+) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
 
@@ -66,7 +90,11 @@ func (t testEnricher) Close(ctx context.Context) error {
 	return nil
 }
 
-func (t testScanner) Write(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
+func (t testScanner) Write(
+	ctx context.Context,
+	workflowID uuid.UUID,
+	findings []*ocsf.VulnerabilityFinding,
+) error {
 	return nil
 }
 

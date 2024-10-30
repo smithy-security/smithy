@@ -3,6 +3,7 @@ package component
 import (
 	"context"
 
+	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
@@ -17,19 +18,19 @@ type (
 	// Reader allows reading vulnerability findings from a storage.
 	Reader interface {
 		// Read reads vulnerability findings from a storage.
-		Read(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error)
+		Read(ctx context.Context, workflowID uuid.UUID) ([]*ocsf.VulnerabilityFinding, error)
 	}
 
 	// Updater allows updating vulnerability findings in an underlying storage.
 	Updater interface {
 		// Update updates existing vulnerability findings.
-		Update(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error
+		Update(ctx context.Context, workflowID uuid.UUID, findings []*ocsf.VulnerabilityFinding) error
 	}
 
 	// Writer allows writing non-existent vulnerability findings in an underlying storage.
 	Writer interface {
 		// Write writes non-existing vulnerability findings.
-		Write(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error
+		Write(ctx context.Context, workflowID uuid.UUID, findings []*ocsf.VulnerabilityFinding) error
 	}
 
 	// Closer allows to define behaviours to close component dependencies gracefully.
