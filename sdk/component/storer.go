@@ -1,20 +1,26 @@
 package component
 
-import "github.com/smithy-security/smithy/sdk/component/internal/storer/local"
+import (
+	"fmt"
+
+	"github.com/smithy-security/smithy/sdk/component/internal/storer/local/sqlite"
+)
 
 type storeType string
 
-const (
-	storeTypeTest  storeType = "test"
-	storeTypeLocal storeType = "local"
-)
+const storeTypeLocal storeType = "local"
 
 func isAllowedStoreType(st storeType) bool {
 	return st == storeTypeLocal
 }
 
-// newStore - TODO - implement in another PR.
-func newStorer(storeType storeType) (Storer, error) {
-	localMgr, _ := local.NewStoreManager()
-	return localMgr, nil
+func newStorer(conf runnerConfigStorer) (Storer, error) {
+	if conf.storeType == storeTypeLocal {
+		localMgr, err := sqlite.NewManager(conf.localConf.dbDSN)
+		if err != nil {
+			return nil, fmt.Errorf("unable to initialize local sqlite manager: %w", err)
+		}
+		return localMgr, nil
+	}
+	return nil, fmt.Errorf("curently unsupported store type: %s", conf.storeType)
 }

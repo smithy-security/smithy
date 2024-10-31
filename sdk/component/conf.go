@@ -19,10 +19,14 @@ const (
 	errReasonCannotBeNil      = "cannot be nil"
 
 	// Env vars.
-	envVarKeyComponentName   = "SMITHY_COMPONENT_NAME"
-	envVarKeyWorkflowID      = "SMITHY_WORKFLOW_ID"
+	// -- BASE
+	envVarKeyComponentName = "SMITHY_COMPONENT_NAME"
+	envVarKeyInstanceID    = "SMITHY_INSTANCE_ID"
+	// -- LOGGING
 	envVarKeyLoggingLogLevel = "SMITHY_LOG_LEVEL"
-	envVarKeyBackedStoreType = "SMITHY_BACKEND_STORE_TYPE"
+	// -- STORE
+	envVarKeyBackendStoreType = "SMITHY_BACKEND_STORE_TYPE"
+	envVarKeyBackendStoreDSN  = "SMITHY_BACKEND_STORE_DSN"
 )
 
 type (
@@ -31,7 +35,7 @@ type (
 	RunnerConfig struct {
 		SDKVersion    string
 		ComponentName string
-		WorkflowID    uuid.UUID
+		InstanceID    uuid.UUID
 
 		Logging      RunnerConfigLogging
 		PanicHandler PanicHandler
@@ -52,8 +56,8 @@ type (
 	}
 
 	runnerConfigStorer struct {
-		enabled   bool
 		storeType storeType
+		dbDSN     string
 		store     Storer
 	}
 
@@ -101,9 +105,9 @@ func (rc *RunnerConfig) isValid() error {
 			FieldName: "component_name",
 			Reason:    errReasonCannotBeEmpty,
 		}
-	case rc.WorkflowID.IsNil():
+	case rc.InstanceID.IsNil():
 		return ErrInvalidRunnerConfig{
-			FieldName: "workflow_id",
+			FieldName: "instance_id",
 			Reason:    errReasonCannotBeNil,
 		}
 	case rc.Logging.Logger == nil:
@@ -116,7 +120,7 @@ func (rc *RunnerConfig) isValid() error {
 			FieldName: "panic_handler",
 			Reason:    errReasonCannotBeNil,
 		}
-	case rc.storerConfig.enabled && rc.storerConfig.store == nil:
+	case rc.storerConfig.store == nil:
 		return ErrInvalidRunnerConfig{
 			FieldName: "store_type",
 			Reason:    errReasonCannotBeNil,
@@ -154,16 +158,16 @@ func RunnerWithComponentName(name string) RunnerOption {
 	}
 }
 
-// RunnerWithWorkflowID allows customising the workflow id.
-func RunnerWithWorkflowID(id uuid.UUID) RunnerOption {
+// RunnerWithInstanceID allows customising the instance id.
+func RunnerWithInstanceID(id uuid.UUID) RunnerOption {
 	return func(r *runner) error {
 		if id.IsNil() {
 			return ErrRunnerOption{
-				OptionName: "workflow id",
+				OptionName: "instance id",
 				Reason:     errReasonCannotBeEmpty,
 			}
 		}
-		r.config.WorkflowID = id
+		r.config.InstanceID = id
 		return nil
 	}
 }
@@ -183,7 +187,6 @@ func RunnerWithStorer(stType string, store Storer) RunnerOption {
 				Reason:     errReasonCannotBeNil,
 			}
 		}
-		r.config.storerConfig.enabled = true
 		r.config.storerConfig.store = store
 		r.config.storerConfig.storeType = storeTypeLocal
 		return nil
@@ -204,14 +207,14 @@ func newRunnerConfig() (*RunnerConfig, error) {
 		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyComponentName, err)
 	}
 
-	workflowIDStr, err := fromEnvOrDefault(envVarKeyWorkflowID, "", withFallbackToDefaultOnError(true))
+	instanceIDStr, err := fromEnvOrDefault(envVarKeyInstanceID, "", withFallbackToDefaultOnError(true))
 	if err != nil {
-		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyWorkflowID, err)
+		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyInstanceID, err)
 	}
 
-	workflowID, err := uuid.Parse(workflowIDStr)
+	instanceID, err := uuid.Parse(instanceIDStr)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse workflow ID '%s': %w", workflowIDStr, err)
+		return nil, fmt.Errorf("could not parse instance ID '%s': %w", instanceIDStr, err)
 	}
 	// --- END - BASIC ENV - END ---
 
@@ -228,42 +231,46 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	// --- END - LOGGING ENV - END ---
 
 	// --- BEGIN - STORER ENV - BEGIN ---
-	st, err := fromEnvOrDefault(envVarKeyBackedStoreType, "", withFallbackToDefaultOnError(true))
+	st, err := fromEnvOrDefault(envVarKeyBackendStoreType, "", withFallbackToDefaultOnError(true))
 	if err != nil {
-		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyBackedStoreType, err)
+		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyBackendStoreType, err)
 	}
 
-	var (
-		storageType         = storeType(st)
-		store        Storer = nil
-		storeEnabled        = false
-	)
-
-	if st != "" {
-		if !isAllowedStoreType(storageType) {
-			return nil, fmt.Errorf("invalid store type for '%s': %w", envVarKeyBackedStoreType, err)
-		}
-		store, err = newStorer(storageType)
-		if err != nil {
-			return nil, fmt.Errorf("could not initialise store for '%s': %w", envVarKeyBackedStoreType, err)
-		}
-		storeEnabled = true
-	}
-	// --- END - STORER ENV - END ---
-
-	return &RunnerConfig{
+	conf := &RunnerConfig{
 		ComponentName: componentName,
 		SDKVersion:    sdk.Version,
-		WorkflowID:    workflowID,
+		InstanceID:    instanceID,
 		Logging: RunnerConfigLogging{
 			Level:  RunnerConfigLoggingLevel(logLevel),
 			Logger: logger,
 		},
 		PanicHandler: panicHandler,
-		storerConfig: runnerConfigStorer{
-			storeType: storageType,
-			store:     store,
-			enabled:   storeEnabled,
-		},
-	}, nil
+	}
+
+	if st != "" {
+		var storageType = storeType(st)
+		if !isAllowedStoreType(storageType) {
+			return nil, fmt.Errorf("invalid store type for '%s': %w", envVarKeyBackendStoreType, err)
+		}
+
+		conf.storerConfig.storeType = storageType
+
+		dbDSN, err := fromEnvOrDefault(
+			envVarKeyBackendStoreDSN,
+			"smithy.db",
+			withFallbackToDefaultOnError(true),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyBackendStoreDSN, err)
+		}
+
+		conf.storerConfig.dbDSN = dbDSN
+		conf.storerConfig.store, err = newStorer(conf.storerConfig)
+		if err != nil {
+			return nil, fmt.Errorf("could not initialise store for '%s': %w", envVarKeyBackendStoreType, err)
+		}
+	}
+	// --- END - STORER ENV - END ---
+
+	return conf, nil
 }

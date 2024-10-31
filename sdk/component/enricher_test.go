@@ -19,7 +19,7 @@ import (
 func runEnricherHelper(
 	t *testing.T,
 	ctx context.Context,
-	workflowID uuid.UUID,
+	instanceID uuid.UUID,
 	enricher component.Enricher,
 	store component.Storer,
 ) error {
@@ -30,7 +30,7 @@ func runEnricherHelper(
 		enricher,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-enricher"),
-		component.RunnerWithWorkflowID(workflowID),
+		component.RunnerWithInstanceID(instanceID),
 		component.RunnerWithStorer("local", store),
 	)
 }
@@ -38,7 +38,7 @@ func runEnricherHelper(
 func TestRunEnricher(t *testing.T) {
 	var (
 		ctrl, ctx     = gomock.WithContext(context.Background(), t)
-		workflowID    = uuid.New()
+		instanceID    = uuid.New()
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockEnricher  = mocks.NewMockEnricher(ctrl)
@@ -50,7 +50,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -58,7 +58,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(enrichedVulns, nil),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, workflowID, enrichedVulns).
+				Update(mockCtx, instanceID, enrichedVulns).
 				Return(nil),
 			mockStore.
 				EXPECT().
@@ -66,7 +66,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore))
+		require.NoError(t, runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -87,11 +87,11 @@ func TestRunEnricher(t *testing.T) {
 					}),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, workflowID, enrichedVulns).
+				Update(mockCtx, instanceID, enrichedVulns).
 				DoAndReturn(
 					func(
 						ctx context.Context,
-						workflowID uuid.UUID,
+						instanceID uuid.UUID,
 						vulns []*ocsf.VulnerabilityFinding,
 					) error {
 						<-ctx.Done()
@@ -103,7 +103,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore))
+		require.NoError(t, runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore))
 	})
 
 	t.Run("it should return early when reading errors", func(t *testing.T) {
@@ -112,7 +112,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(nil, errRead),
 			mockStore.
 				EXPECT().
@@ -120,7 +120,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore)
+		err := runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errRead)
 	})
@@ -131,7 +131,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -143,9 +143,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore)
-		require.Error(t, err)
-		assert.ErrorIs(t, err, errAnnotation)
+		require.ErrorIs(t, runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore), errAnnotation)
 	})
 
 	t.Run("it should return early when updating errors", func(t *testing.T) {
@@ -154,7 +152,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -162,7 +160,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(enrichedVulns, nil),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, workflowID, enrichedVulns).
+				Update(mockCtx, instanceID, enrichedVulns).
 				Return(errUpdate),
 			mockStore.
 				EXPECT().
@@ -170,9 +168,7 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore)
-		require.Error(t, err)
-		assert.ErrorIs(t, err, errUpdate)
+		require.ErrorIs(t, runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore), errUpdate)
 	})
 
 	t.Run("it should return early when a panic is detected on enriching", func(t *testing.T) {
@@ -181,7 +177,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -197,8 +193,6 @@ func TestRunEnricher(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runEnricherHelper(t, ctx, workflowID, mockEnricher, mockStore)
-		require.Error(t, err)
-		assert.ErrorIs(t, err, errAnnotation)
+		require.ErrorIs(t, runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore), errAnnotation)
 	})
 }

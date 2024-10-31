@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
@@ -18,7 +17,7 @@ import (
 func runFilterHelper(
 	t *testing.T,
 	ctx context.Context,
-	workflowID uuid.UUID,
+	instanceID uuid.UUID,
 	filter component.Filter,
 	store component.Storer,
 ) error {
@@ -29,7 +28,7 @@ func runFilterHelper(
 		filter,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-filter"),
-		component.RunnerWithWorkflowID(workflowID),
+		component.RunnerWithInstanceID(instanceID),
 		component.RunnerWithStorer("local", store),
 	)
 }
@@ -37,7 +36,7 @@ func runFilterHelper(
 func TestRunFilter(t *testing.T) {
 	var (
 		ctrl, ctx     = gomock.WithContext(context.Background(), t)
-		workflowID    = uuid.New()
+		instanceID    = uuid.New()
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockFilter    = mocks.NewMockFilter(ctrl)
@@ -49,7 +48,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -57,7 +56,7 @@ func TestRunFilter(t *testing.T) {
 				Return(filteredVulns, true, nil),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, workflowID, filteredVulns).
+				Update(mockCtx, instanceID, filteredVulns).
 				Return(nil),
 			mockStore.
 				EXPECT().
@@ -65,14 +64,14 @@ func TestRunFilter(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runFilterHelper(t, ctx, workflowID, mockFilter, mockStore))
+		require.NoError(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore))
 	})
 
 	t.Run("it should run a filter correctly and return early as no filtering was done", func(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -84,7 +83,7 @@ func TestRunFilter(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runFilterHelper(t, ctx, workflowID, mockFilter, mockStore))
+		require.NoError(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore))
 	})
 
 	t.Run("it should return early when the context is cancelled", func(t *testing.T) {
@@ -93,7 +92,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -104,11 +103,11 @@ func TestRunFilter(t *testing.T) {
 				}),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, workflowID, filteredVulns).
+				Update(mockCtx, instanceID, filteredVulns).
 				DoAndReturn(
 					func(
 						ctx context.Context,
-						workflowID uuid.UUID,
+						instanceID uuid.UUID,
 						vulns []*ocsf.VulnerabilityFinding,
 					) error {
 						<-ctx.Done()
@@ -120,7 +119,7 @@ func TestRunFilter(t *testing.T) {
 				Return(nil),
 		)
 
-		require.NoError(t, runFilterHelper(t, ctx, workflowID, mockFilter, mockStore))
+		require.NoError(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore))
 	})
 
 	t.Run("it should return early when reading errors", func(t *testing.T) {
@@ -129,7 +128,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(nil, errRead),
 			mockStore.
 				EXPECT().
@@ -137,9 +136,7 @@ func TestRunFilter(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runFilterHelper(t, ctx, workflowID, mockFilter, mockStore)
-		require.Error(t, err)
-		assert.ErrorIs(t, err, errRead)
+		require.ErrorIs(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore), errRead)
 	})
 
 	t.Run("it should return early when filtering errors", func(t *testing.T) {
@@ -148,7 +145,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -160,9 +157,7 @@ func TestRunFilter(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runFilterHelper(t, ctx, workflowID, mockFilter, mockStore)
-		require.Error(t, err)
-		assert.ErrorIs(t, err, errFilter)
+		require.ErrorIs(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore), errFilter)
 	})
 
 	t.Run("it should return early when updating errors", func(t *testing.T) {
@@ -171,7 +166,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -179,7 +174,7 @@ func TestRunFilter(t *testing.T) {
 				Return(filteredVulns, true, nil),
 			mockStore.
 				EXPECT().
-				Update(mockCtx, workflowID, filteredVulns).
+				Update(mockCtx, instanceID, filteredVulns).
 				Return(errUpdate),
 			mockStore.
 				EXPECT().
@@ -187,9 +182,7 @@ func TestRunFilter(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runFilterHelper(t, ctx, workflowID, mockFilter, mockStore)
-		require.Error(t, err)
-		assert.ErrorIs(t, err, errUpdate)
+		require.ErrorIs(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore), errUpdate)
 	})
 
 	t.Run("it should return early when a panic is detected on filtering", func(t *testing.T) {
@@ -198,7 +191,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, workflowID).
+				Read(mockCtx, instanceID).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -213,8 +206,6 @@ func TestRunFilter(t *testing.T) {
 				Return(nil),
 		)
 
-		err := runFilterHelper(t, ctx, workflowID, mockFilter, mockStore)
-		require.Error(t, err)
-		assert.ErrorIs(t, err, errFilter)
+		require.ErrorIs(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore), errFilter)
 	})
 }
