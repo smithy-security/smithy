@@ -16,7 +16,7 @@ func isAllowedStoreType(st storeType) bool {
 
 func newStorer(conf runnerConfigStorer) (Storer, error) {
 	if conf.storeType == storeTypeLocal {
-		localMgr, err := sqlite.NewManager(conf.localConf.dbDSN)
+		localMgr, err := sqlite.NewManager(conf.dbDSN)
 		if err != nil {
 			return nil, fmt.Errorf("unable to initialize local sqlite manager: %w", err)
 		}
