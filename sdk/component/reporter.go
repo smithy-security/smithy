@@ -11,7 +11,7 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 		ctx,
 		func(ctx context.Context, cfg *RunnerConfig) error {
 			var (
-				workflowID = cfg.WorkflowID
+				instanceID = cfg.InstanceID
 				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "reporter")
 				store      = cfg.storerConfig.store
 			)
@@ -25,7 +25,7 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 			logger.Debug("preparing to execute component...")
 			logger.Debug("preparing to execute read step...")
 
-			res, err := store.Read(ctx, workflowID)
+			res, err := store.Read(ctx, instanceID)
 			if err != nil {
 				logger.
 					With(logKeyError, err.Error()).

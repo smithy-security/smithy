@@ -69,7 +69,7 @@ func run(
 		logger = r.
 			config.Logging.Logger.
 			With(logKeySDKVersion, conf.SDKVersion).
-			With(logKeyWorkflowID, conf.WorkflowID.String()).
+			With(logKeyInstanceID, conf.InstanceID.String()).
 			With(logKeyComponentName, conf.ComponentName)
 		syncErrs = make(chan error, 1)
 	)

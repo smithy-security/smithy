@@ -82,18 +82,18 @@ func (m *MockReader) EXPECT() *MockReaderMockRecorder {
 }
 
 // Read mocks base method.
-func (m *MockReader) Read(ctx context.Context, workflowID uuid.UUID) ([]*pb.VulnerabilityFinding, error) {
+func (m *MockReader) Read(ctx context.Context, instanceID uuid.UUID) ([]*pb.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, workflowID)
+	ret := m.ctrl.Call(m, "Read", ctx, instanceID)
 	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Read indicates an expected call of Read.
-func (mr *MockReaderMockRecorder) Read(ctx, workflowID any) *gomock.Call {
+func (mr *MockReaderMockRecorder) Read(ctx, instanceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockReader)(nil).Read), ctx, workflowID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockReader)(nil).Read), ctx, instanceID)
 }
 
 // MockUpdater is a mock of Updater interface.
@@ -121,17 +121,17 @@ func (m *MockUpdater) EXPECT() *MockUpdaterMockRecorder {
 }
 
 // Update mocks base method.
-func (m *MockUpdater) Update(ctx context.Context, workflowID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockUpdater) Update(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, workflowID, findings)
+	ret := m.ctrl.Call(m, "Update", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockUpdaterMockRecorder) Update(ctx, workflowID, findings any) *gomock.Call {
+func (mr *MockUpdaterMockRecorder) Update(ctx, instanceID, findings any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUpdater)(nil).Update), ctx, workflowID, findings)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockUpdater)(nil).Update), ctx, instanceID, findings)
 }
 
 // MockWriter is a mock of Writer interface.
@@ -159,17 +159,17 @@ func (m *MockWriter) EXPECT() *MockWriterMockRecorder {
 }
 
 // Write mocks base method.
-func (m *MockWriter) Write(ctx context.Context, workflowID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockWriter) Write(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Write", ctx, workflowID, findings)
+	ret := m.ctrl.Call(m, "Write", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Write indicates an expected call of Write.
-func (mr *MockWriterMockRecorder) Write(ctx, workflowID, findings any) *gomock.Call {
+func (mr *MockWriterMockRecorder) Write(ctx, instanceID, findings any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockWriter)(nil).Write), ctx, workflowID, findings)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockWriter)(nil).Write), ctx, instanceID, findings)
 }
 
 // MockCloser is a mock of Closer interface.
@@ -249,32 +249,32 @@ func (mr *MockStorerMockRecorder) Close(arg0 any) *gomock.Call {
 }
 
 // Read mocks base method.
-func (m *MockStorer) Read(ctx context.Context, workflowID uuid.UUID) ([]*pb.VulnerabilityFinding, error) {
+func (m *MockStorer) Read(ctx context.Context, instanceID uuid.UUID) ([]*pb.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, workflowID)
+	ret := m.ctrl.Call(m, "Read", ctx, instanceID)
 	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Read indicates an expected call of Read.
-func (mr *MockStorerMockRecorder) Read(ctx, workflowID any) *gomock.Call {
+func (mr *MockStorerMockRecorder) Read(ctx, instanceID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockStorer)(nil).Read), ctx, workflowID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockStorer)(nil).Read), ctx, instanceID)
 }
 
 // Update mocks base method.
-func (m *MockStorer) Update(ctx context.Context, workflowID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockStorer) Update(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, workflowID, findings)
+	ret := m.ctrl.Call(m, "Update", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Update indicates an expected call of Update.
-func (mr *MockStorerMockRecorder) Update(ctx, workflowID, findings any) *gomock.Call {
+func (mr *MockStorerMockRecorder) Update(ctx, instanceID, findings any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockStorer)(nil).Update), ctx, workflowID, findings)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockStorer)(nil).Update), ctx, instanceID, findings)
 }
 
 // Validate mocks base method.
@@ -292,17 +292,17 @@ func (mr *MockStorerMockRecorder) Validate(finding any) *gomock.Call {
 }
 
 // Write mocks base method.
-func (m *MockStorer) Write(ctx context.Context, workflowID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockStorer) Write(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Write", ctx, workflowID, findings)
+	ret := m.ctrl.Call(m, "Write", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Write indicates an expected call of Write.
-func (mr *MockStorerMockRecorder) Write(ctx, workflowID, findings any) *gomock.Call {
+func (mr *MockStorerMockRecorder) Write(ctx, instanceID, findings any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockStorer)(nil).Write), ctx, workflowID, findings)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockStorer)(nil).Write), ctx, instanceID, findings)
 }
 
 // MockTarget is a mock of Target interface.

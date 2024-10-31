@@ -24,7 +24,7 @@ func runTargetHelper(t *testing.T, ctx context.Context, target component.Target)
 		target,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-target"),
-		component.RunnerWithWorkflowID(uuid.New()),
+		component.RunnerWithInstanceID(uuid.New()),
 	)
 }
 

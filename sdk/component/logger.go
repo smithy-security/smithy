@@ -12,7 +12,7 @@ const (
 	logKeyPanicStackTrace     = "panic_stack_trace"
 	logKeySDKVersion          = "sdk_version"
 	logKeyComponentName       = "component_name"
-	logKeyWorkflowID          = "workflow_id"
+	logKeyInstanceID          = "instance_id"
 	logKeyComponentType       = "component_type"
 	logKeyNumRawFindings      = "num_raw_findings"
 	logKeyRawFinding          = "raw_finding"
