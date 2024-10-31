@@ -31,12 +31,12 @@ var (
 	issueTemplate          string
 )
 
-func getEngagementTime(engagementTime *timestamppb.Timestamp, scanID string) string {
+func getEngagementTime(engagementTime *timestamppb.Timestamp, scanID string) time.Time {
 	if engagementTime.AsTime().IsZero() {
 		slog.Error("sanStartTime is zero for scan", slog.String("id", scanID))
 		engagementTime = timestamppb.New(time.Now())
 	}
-	return engagementTime.AsTime().Format(DojoTimeFormat)
+	return engagementTime.AsTime()
 }
 
 func handleRawResults(product int, dojoClient *client.Client, responses []*v1.LaunchToolResponse) error {
@@ -49,16 +49,14 @@ func handleRawResults(product int, dojoClient *client.Client, responses []*v1.La
 		log.Fatalln("Non-uuid scan", responses)
 	}
 	tags := []string{"SmithyScan", "RawScan", scanUUID}
-	scanStartTime := responses[0].GetScanInfo().GetScanStartTime() // with current architecture, all responses should have the same scaninfo
-	scanID := responses[0].GetScanInfo().ScanUuid
-	engagement, err := dojoClient.CreateEngagement(scanUUID, getEngagementTime(scanStartTime, scanID), tags, int32(product))
+	scanStartTime := getEngagementTime(responses[0].GetScanInfo().GetScanStartTime(), scanUUID) // with current architecture, all responses should have the same scaninfo
+	engagement, err := dojoClient.CreateEngagement(scanUUID, scanStartTime.Format(DojoTimeFormat), tags, int32(product))
 	if err != nil {
 		return err
 	}
 	for _, res := range responses {
 		log.Println("handling response for tool", res.GetToolName(), "with", len(res.GetIssues()), "findings")
-		startTime := res.GetScanInfo().GetScanStartTime().AsTime()
-		test, err := dojoClient.CreateTest(startTime.Format(DojoTestTimeFormat), res.GetToolName(), "", []string{"SmithyScan", "RawTest", scanUUID}, engagement.ID)
+		test, err := dojoClient.CreateTest(scanStartTime.Format(DojoTestTimeFormat), res.GetToolName(), "", []string{"SmithyScan", "RawTest", scanUUID}, engagement.ID)
 		if err != nil {
 			log.Printf("could not create test in defectdojo, err: %#v", err)
 			return err
@@ -73,7 +71,7 @@ func handleRawResults(product int, dojoClient *client.Client, responses []*v1.La
 				*description,
 				enumtransformers.SeverityToText(iss.GetSeverity()),
 				iss.GetTarget(),
-				startTime.Format(DojoTimeFormat),
+				scanStartTime.Format(DojoTimeFormat),
 				severityToDojoSeverity(iss.Severity),
 				[]string{"SmithyScan", "RawFinding", scanUUID, res.GetToolName()},
 				test.ID,
@@ -104,18 +102,14 @@ func handleEnrichedResults(product int, dojoClient *client.Client, responses []*
 	}
 	tags := []string{"SmithyScan", "EnrichedScan", scanUUID}
 
-	scanStartTime := responses[0].GetOriginalResults().GetScanInfo().GetScanStartTime() // with current architecture, all responses should have the same scaninfo
-	scanID := responses[0].GetOriginalResults().GetScanInfo().ScanUuid
-
-	engagement, err := dojoClient.CreateEngagement(scanUUID, getEngagementTime(scanStartTime, scanID), tags, int32(product))
+	scanStartTime := getEngagementTime(responses[0].GetOriginalResults().GetScanInfo().GetScanStartTime(), scanUUID) // with current architecture, all responses should have the same scaninfo
+	engagement, err := dojoClient.CreateEngagement(scanUUID, scanStartTime.Format(DojoTimeFormat), tags, int32(product))
 	if err != nil {
 		log.Println("could not create Engagement, err:", err)
 		return err
 	}
 	for _, res := range responses {
 		log.Println("handling response for tool", res.GetOriginalResults().GetToolName(), "with", len(res.GetIssues()), "findings")
-
-		scanStartTime := res.GetOriginalResults().GetScanInfo().GetScanStartTime().AsTime()
 		test, err := dojoClient.CreateTest(scanStartTime.Format(DojoTestTimeFormat), res.GetOriginalResults().GetToolName(), "", []string{"SmithyScan", "EnrichedTest", scanUUID}, engagement.ID)
 		if err != nil {
 			log.Println("could not create test in defectdojo, err:", err)
@@ -154,10 +148,6 @@ func handleEnrichedResults(product int, dojoClient *client.Client, responses []*
 }
 
 func main() {
-	// envUser := os.Getenv(EnvDojoUser)
-	// envToken := os.Getenv(EnvDojoToken)
-	// envURL := os.Getenv(EnvDojoURL)
-
 	flag.StringVar(&authUser, "dojoUser", "", "defect dojo user")
 	flag.StringVar(&authToken, "dojoToken", "", "defect dojo api token")
 	flag.StringVar(&authURL, "dojoURL", "", "defect dojo api base url")
