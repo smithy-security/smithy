@@ -22,11 +22,12 @@ while taking care of the boring things for you:
 
 You can customise a component using the following environment variables:
 
-| Environment Variable       | Type   | Required | Possible Values          |
-|----------------------------|--------|----------|--------------------------|
-| SMITHY\_COMPONENT\_NAME    | string | yes      | -                        |
-| SMITHY\_BACKEND\_STORE\_TYPE  | string | yes      | local, test, \*remote     |
-| SMITHY\_LOG\_LEVEL         | string | false    | info, debug, warn, error |
+| Environment Variable                | Type   | Required | Default                  | Possible Values          |
+|-------------------------------------|--------|-----------|--------------------------|--------------------------|
+| SMITHY\_COMPONENT\_NAME             | string | yes      | -                        | -                        |
+| SMITHY\_BACKEND\_STORE\_TYPE        | string | yes     | -                        | local, test, \*remote    |
+| SSMITHY\_BACKEND\_STORE\_DSN   | string | no    | smithy.db                | \*                        |
+| SMITHY\_LOG\_LEVEL                  | string | false     | info, debug, warn, error |
 
 For `local` development, an `SQLite` Backend Store Type will be used.
 
