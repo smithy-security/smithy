@@ -3,7 +3,11 @@ package main
 import (
 	"flag"
 	"log"
+	"log/slog"
 	"strconv"
+	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components/consumers"
@@ -27,6 +31,14 @@ var (
 	issueTemplate          string
 )
 
+func getEngagementTime(engagementTime *timestamppb.Timestamp, scanID string) string {
+	if engagementTime.AsTime().IsZero() {
+		slog.Error("sanStartTime is zero for scan", slog.String("id", scanID))
+		engagementTime = timestamppb.New(time.Now())
+	}
+	return engagementTime.AsTime().Format(DojoTimeFormat)
+}
+
 func handleRawResults(product int, dojoClient *client.Client, responses []*v1.LaunchToolResponse) error {
 	if len(responses) == 0 {
 		log.Println("No tool responses provided")
@@ -37,9 +49,9 @@ func handleRawResults(product int, dojoClient *client.Client, responses []*v1.La
 		log.Fatalln("Non-uuid scan", responses)
 	}
 	tags := []string{"SmithyScan", "RawScan", scanUUID}
-
-	engagement, err := dojoClient.CreateEngagement( // with current architecture, all responses should have the same scaninfo
-		scanUUID, responses[0].GetScanInfo().GetScanStartTime().AsTime().Format(DojoTimeFormat), tags, int32(product))
+	scanStartTime := responses[0].GetScanInfo().GetScanStartTime() // with current architecture, all responses should have the same scaninfo
+	scanID := responses[0].GetScanInfo().ScanUuid
+	engagement, err := dojoClient.CreateEngagement(scanUUID, getEngagementTime(scanStartTime, scanID), tags, int32(product))
 	if err != nil {
 		return err
 	}
@@ -91,9 +103,11 @@ func handleEnrichedResults(product int, dojoClient *client.Client, responses []*
 		log.Fatalln("Non-uuid scan", responses)
 	}
 	tags := []string{"SmithyScan", "EnrichedScan", scanUUID}
-	engagement, err := dojoClient.CreateEngagement( // with current architecture, all responses should have the same scaninfo
-		scanUUID,
-		responses[0].GetOriginalResults().GetScanInfo().GetScanStartTime().AsTime().Format(DojoTimeFormat), tags, int32(product))
+
+	scanStartTime := responses[0].GetOriginalResults().GetScanInfo().GetScanStartTime() // with current architecture, all responses should have the same scaninfo
+	scanID := responses[0].GetOriginalResults().GetScanInfo().ScanUuid
+
+	engagement, err := dojoClient.CreateEngagement(scanUUID, getEngagementTime(scanStartTime, scanID), tags, int32(product))
 	if err != nil {
 		log.Println("could not create Engagement, err:", err)
 		return err
