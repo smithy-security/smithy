@@ -11,7 +11,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 		ctx,
 		func(ctx context.Context, cfg *RunnerConfig) error {
 			var (
-				workflowID = cfg.WorkflowID
+				instanceID = cfg.InstanceID
 				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "enricher")
 				store      = cfg.storerConfig.store
 			)
@@ -25,7 +25,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 			logger.Debug("preparing to execute enricher component...")
 			logger.Debug("preparing to execute read step...")
 
-			findings, err := store.Read(ctx, workflowID)
+			findings, err := store.Read(ctx, instanceID)
 			if err != nil {
 				logger.With(logKeyError, err.Error()).Error("reading step failed")
 				return fmt.Errorf("could not read: %w", err)
@@ -45,7 +45,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 			logger.Debug("enricher step completed!")
 			logger.Debug("preparing to execute update step...")
 
-			if err := store.Update(ctx, workflowID, enrichedFindings); err != nil {
+			if err := store.Update(ctx, instanceID, enrichedFindings); err != nil {
 				logger.With(logKeyError, err.Error()).Error("updating step failed")
 				return fmt.Errorf("could not update: %w", err)
 			}

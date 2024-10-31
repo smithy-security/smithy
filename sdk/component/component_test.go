@@ -25,7 +25,7 @@ type (
 
 func (t testFilter) Read(
 	ctx context.Context,
-	workflowID uuid.UUID,
+	instanceID uuid.UUID,
 ) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
@@ -43,7 +43,7 @@ func (t testFilter) Close(ctx context.Context) error {
 
 func (t testFilter) Update(
 	ctx context.Context,
-	workflowID uuid.UUID,
+	instanceID uuid.UUID,
 	findings []*ocsf.VulnerabilityFinding,
 ) error {
 	return nil
@@ -51,7 +51,7 @@ func (t testFilter) Update(
 
 func (t testReporter) Read(
 	ctx context.Context,
-	workflowID uuid.UUID,
+	instanceID uuid.UUID,
 ) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
@@ -66,14 +66,14 @@ func (t testReporter) Close(ctx context.Context) error {
 
 func (t testEnricher) Read(
 	ctx context.Context,
-	workflowID uuid.UUID,
+	instanceID uuid.UUID,
 ) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
 
 func (t testEnricher) Update(
 	ctx context.Context,
-	workflowID uuid.UUID,
+	instanceID uuid.UUID,
 	findings []*ocsf.VulnerabilityFinding,
 ) error {
 	return nil
@@ -92,7 +92,7 @@ func (t testEnricher) Close(ctx context.Context) error {
 
 func (t testScanner) Write(
 	ctx context.Context,
-	workflowID uuid.UUID,
+	instanceID uuid.UUID,
 	findings []*ocsf.VulnerabilityFinding,
 ) error {
 	return nil
