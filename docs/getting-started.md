@@ -35,8 +35,7 @@ pipeline which will:
 * Scan the repository with [gosec](https://github.com/securego/gosec)
   and [nancy](https://github.com/sonatype-nexus-community/nancy)
 * Enrich the findings with CODEOWNERS annotation
-* Report the enriched results on [MongoDB](https://github.com/mongodb/mongo)
-  and [ElasticSearch](https://github.com/elastic/elasticsearch)
+* Log the enriched results
 
 ### Set up Smithy and its dependencies
 
@@ -48,10 +47,8 @@ This command will:
   TBD - if not KIND
 * deploy Smithy dependencies and Custom Resource Definitions (CRDs).
   Most of these dependencies are required by the example pipelines:
-  * MongoDB
   * Elasticsearch
   * Kibana
-  * MongoDB
   * Postgres
 
 All the dependencies are built using smithy's current [latest release](https://github.com/smithy-security/smithy/tags).
@@ -106,8 +103,7 @@ And of its tasks by executing:
 kubectl get taskruns -w -n smithy
 NAME                                                 SUCCEEDED   REASON      STARTTIME   COMPLETIONTIME
 smithy-golang-project-7hqmc-base                     True        Succeeded   27m         26m
-smithy-golang-project-7hqmc-consumer-elasticsearch   True        Succeeded   23m         23m
-smithy-golang-project-7hqmc-consumer-mongodb         True        Succeeded   23m         17m
+smithy-golang-project-7hqmc-consumer-stdout-json-pod True        Succeeded   23m         23m
 smithy-golang-project-7hqmc-enricher-aggregator      True        Succeeded   24m         23m
 smithy-golang-project-7hqmc-enricher-codeowners      True        Succeeded   24m         24m
 smithy-golang-project-7hqmc-git-clone                True        Succeeded   27m         25m
@@ -123,8 +119,7 @@ kubectl get pods -w -n smithy
 NAME                                                     READY   STATUS      RESTARTS   AGE
 smithy-es-default-0                                      1/1     Running     0          24m
 smithy-golang-project-7hqmc-base-pod                     0/1     Completed   0          22m
-smithy-golang-project-7hqmc-consumer-elasticsearch-pod   0/1     Running     0          19m
-smithy-golang-project-7hqmc-consumer-mongodb-pod         0/1     Running     0          19m
+smithy-golang-project-7hqmc-consumer-stdout-json-pod     0/1     Completed   0          19m
 smithy-golang-project-7hqmc-enricher-aggregator-pod      0/2     Completed   0          19m
 smithy-golang-project-7hqmc-enricher-codeowners-pod      0/2     Completed   0          19m
 smithy-golang-project-7hqmc-git-clone-pod                0/2     Completed   0          22m
@@ -135,7 +130,11 @@ smithy-kb-5df6fcb8c7-tsbg6                               1/1     Running     0  
 smithy-postgresql-0                                      1/1     Running     0          25m
 ```
 
-You can then check the enriched results stored in MongoDB and Elasticsearch.
+You can then check the enriched results on the logs of the json consumer:
+
+```shell
+kubectl logs smithy-golang-project-7hqmc-consumer-stdout-json-pod -n smithy
+```
 
 ### Debugging
 
