@@ -10,5 +10,4 @@ components:
   - pkg:helm/smithy-security-oss-components/producer-aggregator
   - pkg:helm/smithy-security-oss-components/enricher-deduplication
   - pkg:helm/smithy-security-oss-components/enricher-aggregator
-  - pkg:helm/smithy-security-oss-components/consumer-mongodb
   - pkg:helm/smithy-security-oss-components/consumer-elasticsearch
