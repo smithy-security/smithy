@@ -13,7 +13,10 @@ kibana:
     tlsEnabled: false
 
 mongodb:
-  enabled: true
+  # Disabled as there's currently an issue with M1-M3 processors and workarounds are necessary
+  # https://github.com/bitnami/containers/issues/53407
+  # It's better to stop leveraging MongoDB locally until the issue is resolved.
+  enabled: false
   auth:
     enabled: true
     usernames: ["consumer-mongodb"]
