@@ -8,7 +8,7 @@ spec:
   pipelineRef:
     name: smithy-iac-project
   params:
-  - name: repository_url
+  - name: git-clone-url
     value: https://github.com/smithy-security/e2e-monorepo.git
   - name: producer-docker-trivy-target
     value: "ubuntu:latest"

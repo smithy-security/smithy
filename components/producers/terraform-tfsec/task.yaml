@@ -36,7 +36,7 @@ spec:
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/terraform-tfsec:{{ .Chart.AppVersion }}'
-    command: ["/app/components/producers/terraform-tfsec/tfsec-parser"]
+    command: ["/app/components/producers/terraform-tfsec/terraform-tfsec-parser"]
     args:
     - "-in=/scratch/out.json"
     - "-out=$(workspaces.output.path)/.smithy/producers/terraform-tfsec.pb"
