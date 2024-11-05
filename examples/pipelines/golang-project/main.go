@@ -2,23 +2,53 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/smithy-security/smithy/sdk/component"
+)
+
+const (
+	repoPath = "repo"
 )
 
 func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
+	if err := Main(ctx); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func Main(ctx context.Context) error {
 	if err := migrate(); err != nil {
 		log.Fatalf("failed to migrate: %v", err)
 	}
 
+	if err := os.Mkdir(repoPath, os.ModePerm); err != nil {
+		return fmt.Errorf("failed to create clone path %s: %v", repoPath, err)
+	}
+
+	//defer func() {
+	//	if err := os.RemoveAll(repoPath); err != nil {
+	//		log.Printf("failed to remove clone path %s: %v\n", repoPath, err)
+	//	}
+	//}()
+
+	gitClone, err := NewGitCloneTarget("https://github.com/andream16/tree.git", repoPath)
+	if err != nil {
+		return fmt.Errorf("failed to create git clone target: %w", err)
+	}
+
+	goSec, err := NewGoSecScanner(repoPath)
+	if err != nil {
+		return fmt.Errorf("failed to create gosec scanner: %w", err)
+	}
+
 	var (
-		gitClone      = &gitCloneTarget{}
-		goSec         = &goSecScanner{}
 		deduplication = &deduplicationEnricher{}
 		jsonLogger    = &jsonReporter{}
 	)
@@ -28,7 +58,7 @@ func main() {
 		gitClone,
 		component.RunnerWithComponentName("git-clone"),
 	); err != nil {
-		log.Fatalf("target failed: %v", err)
+		return fmt.Errorf("target failed: %w", err)
 	}
 
 	if err := component.RunScanner(
@@ -36,7 +66,7 @@ func main() {
 		goSec,
 		component.RunnerWithComponentName("go-sec"),
 	); err != nil {
-		log.Fatalf("scanner failed: %v", err)
+		return fmt.Errorf("scanner failed: %w", err)
 	}
 
 	if err := component.RunEnricher(
@@ -44,7 +74,7 @@ func main() {
 		deduplication,
 		component.RunnerWithComponentName("deduplication"),
 	); err != nil {
-		log.Fatalf("enricher failed: %v", err)
+		return fmt.Errorf("enricher failed: %w", err)
 	}
 
 	if err := component.RunReporter(
@@ -52,6 +82,8 @@ func main() {
 		jsonLogger,
 		component.RunnerWithComponentName("json-logger"),
 	); err != nil {
-		log.Fatalf("reporter failed: %v", err)
+		return fmt.Errorf("reporter failed: %w", err)
 	}
+
+	return nil
 }

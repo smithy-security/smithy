@@ -12,7 +12,7 @@ func migrate() error {
 	}
 
 	stmt, err := db.Prepare(`
-		CREATE TABLE finding (
+		CREATE TABLE IF NOT EXISTS finding (
 			id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 			instance_id UUID NOT NULL UNIQUE,
 			findings TEXT NOT NULL,
