@@ -86,7 +86,7 @@ func ContextWithLogger(ctx context.Context, logger Logger) context.Context {
 func LoggerFromContext(ctx context.Context) Logger {
 	logger := ctx.Value(ctxLoggerKey)
 	if logger == nil {
-		l, _ := newDefaultLogger(logLevelDebug)
+		l, _ := newDefaultLogger(RunnerConfigLoggingLevelDebug)
 		return l
 	}
 	return logger.(Logger)
@@ -96,13 +96,13 @@ func newDefaultLogger(level RunnerConfigLoggingLevel) (*defaultLogger, error) {
 	var logLevel slog.Level
 
 	switch level {
-	case logLevelDebug:
+	case RunnerConfigLoggingLevelDebug:
 		logLevel = slog.LevelDebug
-	case logLevelInfo:
+	case RunnerConfigLoggingLevelInfo:
 		logLevel = slog.LevelInfo
-	case logLevelError:
+	case RunnerConfigLoggingLevelError:
 		logLevel = slog.LevelError
-	case logLevelWarn:
+	case RunnerConfigLoggingLevelWarn:
 		logLevel = slog.LevelWarn
 	default:
 		return nil, errors.Errorf("unknown logger level: %s", level)

@@ -10,11 +10,6 @@ import (
 )
 
 const (
-	logLevelDebug RunnerConfigLoggingLevel = "debug"
-	logLevelInfo  RunnerConfigLoggingLevel = "info"
-	logLevelError RunnerConfigLoggingLevel = "error"
-	logLevelWarn  RunnerConfigLoggingLevel = "warn"
-
 	// Err reasons.
 	errReasonCannotBeEmpty    = "cannot be empty"
 	errReasonUnsupportedValue = "unsupported value"
@@ -47,13 +42,9 @@ type (
 		storerConfig runnerConfigStorer
 	}
 
-	// RunnerConfigLoggingLevel is used to represent log levels.
-	RunnerConfigLoggingLevel string
-
 	// RunnerConfigLogging contains the configuration related with the runner logger.
 	RunnerConfigLogging struct {
-		Level RunnerConfigLoggingLevel
-
+		Level  RunnerConfigLoggingLevel
 		Logger Logger
 	}
 
@@ -89,10 +80,6 @@ func (er ErrRunnerOption) Error() string {
 
 func (er ErrInvalidRunnerConfig) Error() string {
 	return fmt.Sprintf("invalid configuration, field '%s': %s", er.FieldName, er.Reason)
-}
-
-func (rl RunnerConfigLoggingLevel) String() string {
-	return string(rl)
 }
 
 func (rc *RunnerConfig) isValid() error {
@@ -190,7 +177,7 @@ func RunnerWithStorer(stType string, store Storer) RunnerOption {
 			}
 		}
 		r.config.storerConfig.store = store
-		r.config.storerConfig.storeType = storeTypeLocal
+		r.config.storerConfig.storeType = StoreTypeLocal
 		return nil
 	}
 }
@@ -221,7 +208,11 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	// --- END - BASIC ENV - END ---
 
 	// --- BEGIN - LOGGING ENV - BEGIN ---
-	logLevel, err := fromEnvOrDefault(envVarKeyLoggingLogLevel, logLevelDebug.String(), withFallbackToDefaultOnError(true))
+	logLevel, err := fromEnvOrDefault(
+		envVarKeyLoggingLogLevel,
+		RunnerConfigLoggingLevelDebug.String(),
+		withFallbackToDefaultOnError(true),
+	)
 	if err != nil {
 		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyLoggingLogLevel, err)
 	}
