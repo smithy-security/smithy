@@ -17,13 +17,7 @@ import (
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
-const (
-	errInvalidConstructorEmptyReason = "cannot be empty"
-
-	columnNameFindings   columnName = "findings"
-	columnNameinstanceID columnName = "instance_id"
-	columnNameUpdatedAt  columnName = "updated_at"
-)
+const errInvalidConstructorEmptyReason = "cannot be empty"
 
 type (
 	manager struct {
@@ -32,8 +26,6 @@ type (
 	}
 
 	managerOption func(*manager) error
-
-	columnName string
 
 	// ErrInvalidConstructor should be used for invalid manager constructor errors.
 	ErrInvalidConstructor struct {
@@ -51,10 +43,6 @@ func ManagerWithClock(clock clockwork.Clock) managerOption {
 		m.clock = clock
 		return nil
 	}
-}
-
-func (cn columnName) String() string {
-	return string(cn)
 }
 
 func (e ErrInvalidConstructor) Error() string {
@@ -113,7 +101,7 @@ func (m *manager) Read(ctx context.Context, instanceID uuid.UUID) ([]*ocsf.Vulne
 	err = stmt.
 		QueryRowContext(
 			ctx,
-			sql.Named(columnNameinstanceID.String(), instanceID.String()),
+			sql.Named(ColumnNameInstanceId.String(), instanceID.String()),
 		).
 		Scan(&jsonFindingsStr)
 	if err != nil {
@@ -159,8 +147,8 @@ func (m *manager) Write(ctx context.Context, instanceID uuid.UUID, findings []*o
 	defer stmt.Close()
 
 	if _, err = stmt.Exec(
-		sql.Named(columnNameinstanceID.String(), instanceID.String()),
-		sql.Named(columnNameFindings.String(), jsonFindings),
+		sql.Named(ColumnNameInstanceId.String(), instanceID.String()),
+		sql.Named(ColumnNameFindings.String(), jsonFindings),
 	); err != nil {
 		return errors.Errorf("could not insert findings: %w", err)
 	}
@@ -192,9 +180,9 @@ func (m *manager) Update(ctx context.Context, instanceID uuid.UUID, findings []*
 	defer stmt.Close()
 
 	res, err := stmt.Exec(
-		sql.Named(columnNameinstanceID.String(), instanceID.String()),
-		sql.Named(columnNameUpdatedAt.String(), m.clock.Now().UTC().Format(time.RFC3339)),
-		sql.Named(columnNameFindings.String(), jsonFindings),
+		sql.Named(ColumnNameInstanceId.String(), instanceID.String()),
+		sql.Named(ColumnNameUpdatedAt.String(), m.clock.Now().UTC().Format(time.RFC3339)),
+		sql.Named(ColumnNameFindings.String(), jsonFindings),
 	)
 	if err != nil {
 		return errors.Errorf("could not update findings: %w", err)

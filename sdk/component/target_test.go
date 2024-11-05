@@ -9,10 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
+	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
 	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
-
-	"github.com/smithy-security/smithy/sdk/component"
 )
 
 func runTargetHelper(t *testing.T, ctx context.Context, target component.Target, store component.Storer) error {
