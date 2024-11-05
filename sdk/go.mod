@@ -3,6 +3,7 @@ module github.com/smithy-security/smithy/sdk
 go 1.23.0
 
 require (
+	github.com/go-errors/errors v1.5.1
 	github.com/google/uuid v1.6.0
 	github.com/jonboulle/clockwork v0.4.0
 	github.com/mattn/go-sqlite3 v1.14.24
