@@ -2,7 +2,8 @@ package component
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/go-errors/errors"
 )
 
 // RunScanner runs a scanner after initialising the run context.
@@ -30,7 +31,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 				logger.
 					With(logKeyError, err.Error()).
 					Debug("could not execute transform step")
-				return fmt.Errorf("could not transform raw findings: %w", err)
+				return errors.Errorf("could not transform raw findings: %w", err)
 			}
 
 			logger = logger.
@@ -44,7 +45,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 						With(logKeyError, err.Error()).
 						With(logKeyRawFinding, rv).
 						Error("invalid raw finding")
-					return fmt.Errorf("invalid raw finding: %w", err)
+					return errors.Errorf("invalid raw finding: %w", err)
 				}
 			}
 
@@ -55,7 +56,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 				logger.
 					With(logKeyError, err.Error()).
 					Debug("could not execute store step")
-				return fmt.Errorf("could not store vulnerabilities: %w", err)
+				return errors.Errorf("could not store vulnerabilities: %w", err)
 			}
 
 			logger.Debug("store step completed!")

@@ -2,7 +2,8 @@ package component
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/go-errors/errors"
 )
 
 // RunFilter runs a filter after initialising the run context.
@@ -28,7 +29,7 @@ func RunFilter(ctx context.Context, filter Filter, opts ...RunnerOption) error {
 			findings, err := store.Read(ctx, instanceID)
 			if err != nil {
 				logger.With(logKeyError, err.Error()).Error("reading step failed")
-				return fmt.Errorf("could not read: %w", err)
+				return errors.Errorf("could not read: %w", err)
 			}
 
 			logger = logger.With(logKeyNumParsedFindings, len(findings))
@@ -39,7 +40,7 @@ func RunFilter(ctx context.Context, filter Filter, opts ...RunnerOption) error {
 			switch {
 			case err != nil:
 				logger.With(logKeyError, err.Error()).Error("filter step failed")
-				return fmt.Errorf("could not filter: %w", err)
+				return errors.Errorf("could not filter: %w", err)
 			case !ok:
 				logger.Debug("no findings were filtered, returning")
 				return nil
@@ -51,7 +52,7 @@ func RunFilter(ctx context.Context, filter Filter, opts ...RunnerOption) error {
 
 			if err := store.Update(ctx, instanceID, filteredFindings); err != nil {
 				logger.With(logKeyError, err.Error()).Error("updating step failed")
-				return fmt.Errorf("could not update: %w", err)
+				return errors.Errorf("could not update: %w", err)
 			}
 
 			logger.Debug("updated step completed!")

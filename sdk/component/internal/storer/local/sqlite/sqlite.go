@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 
+	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -72,7 +72,7 @@ func NewManager(dsn string, opts ...managerOption) (*manager, error) {
 
 	db, err := sql.Open("sqlite3", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("could not open sqlite db: %w", err)
+		return nil, errors.Errorf("could not open sqlite db: %w", err)
 	}
 
 	mgr := &manager{
@@ -82,7 +82,7 @@ func NewManager(dsn string, opts ...managerOption) (*manager, error) {
 
 	for _, opt := range opts {
 		if err := opt(mgr); err != nil {
-			return nil, fmt.Errorf("could not apply option: %w", err)
+			return nil, errors.Errorf("could not apply option: %w", err)
 		}
 	}
 
@@ -104,7 +104,7 @@ func (m *manager) Read(ctx context.Context, instanceID uuid.UUID) ([]*ocsf.Vulne
 		;
 	`)
 	if err != nil {
-		return nil, fmt.Errorf("could not prepare select statement: %w", err)
+		return nil, errors.Errorf("could not prepare select statement: %w", err)
 	}
 
 	defer stmt.Close()
@@ -118,21 +118,21 @@ func (m *manager) Read(ctx context.Context, instanceID uuid.UUID) ([]*ocsf.Vulne
 		Scan(&jsonFindingsStr)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("%s: %w", instanceID.String(), storer.ErrNoFindingsFound)
+			return nil, errors.Errorf("%s: %w", instanceID.String(), storer.ErrNoFindingsFound)
 		}
-		return nil, fmt.Errorf("could not select findings: %w", err)
+		return nil, errors.Errorf("could not select findings: %w", err)
 	}
 
 	var jsonFindings []json.RawMessage
 	if err := json.Unmarshal([]byte(jsonFindingsStr), &jsonFindings); err != nil {
-		return nil, fmt.Errorf("could not unmarshal json findings to []json.RawMessage: %w", err)
+		return nil, errors.Errorf("could not unmarshal json findings to []json.RawMessage: %w", err)
 	}
 
 	var findings []*ocsf.VulnerabilityFinding
 	for _, jsonFinding := range jsonFindings {
 		var finding ocsf.VulnerabilityFinding
 		if err := protojson.Unmarshal(jsonFinding, &finding); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal JSON findings to *ocsf.VulnerabilityFinding: %w", err)
+			return nil, errors.Errorf("failed to unmarshal JSON findings to *ocsf.VulnerabilityFinding: %w", err)
 		}
 		findings = append(findings, &finding)
 	}
@@ -153,7 +153,7 @@ func (m *manager) Write(ctx context.Context, instanceID uuid.UUID, findings []*o
 		;
 	`)
 	if err != nil {
-		return fmt.Errorf("could not prepare write statement: %w", err)
+		return errors.Errorf("could not prepare write statement: %w", err)
 	}
 
 	defer stmt.Close()
@@ -162,7 +162,7 @@ func (m *manager) Write(ctx context.Context, instanceID uuid.UUID, findings []*o
 		sql.Named(columnNameinstanceID.String(), instanceID.String()),
 		sql.Named(columnNameFindings.String(), jsonFindings),
 	); err != nil {
-		return fmt.Errorf("could not insert findings: %w", err)
+		return errors.Errorf("could not insert findings: %w", err)
 	}
 
 	return nil
@@ -186,7 +186,7 @@ func (m *manager) Update(ctx context.Context, instanceID uuid.UUID, findings []*
 		;
 	`)
 	if err != nil {
-		return fmt.Errorf("could not prepare update statement: %w", err)
+		return errors.Errorf("could not prepare update statement: %w", err)
 	}
 
 	defer stmt.Close()
@@ -197,15 +197,15 @@ func (m *manager) Update(ctx context.Context, instanceID uuid.UUID, findings []*
 		sql.Named(columnNameFindings.String(), jsonFindings),
 	)
 	if err != nil {
-		return fmt.Errorf("could not update findings: %w", err)
+		return errors.Errorf("could not update findings: %w", err)
 	}
 
 	r, err := res.RowsAffected()
 	switch {
 	case err != nil:
-		return fmt.Errorf("could not get rows affected: %w", err)
+		return errors.Errorf("could not get rows affected: %w", err)
 	case r <= 0:
-		return fmt.Errorf(
+		return errors.Errorf(
 			"could not update findings for instance '%s': %w",
 			instanceID.String(),
 			storer.ErrNoFindingsFound,
@@ -218,7 +218,7 @@ func (m *manager) Update(ctx context.Context, instanceID uuid.UUID, findings []*
 // Close closes the connection to the underlying database.
 func (m *manager) Close(ctx context.Context) error {
 	if err := m.db.Close(); err != nil {
-		return fmt.Errorf("could not close sqlite db: %w", err)
+		return errors.Errorf("could not close sqlite db: %w", err)
 	}
 	return nil
 }
@@ -228,14 +228,14 @@ func (m *manager) marshalFindings(findings []*ocsf.VulnerabilityFinding) (string
 	for _, finding := range findings {
 		b, err := protojson.Marshal(finding)
 		if err != nil {
-			return "", fmt.Errorf("could not json marshal finding: %w", err)
+			return "", errors.Errorf("could not json marshal finding: %w", err)
 		}
 		rawFindings = append(rawFindings, b)
 	}
 
 	jsonFindings, err := json.Marshal(rawFindings)
 	if err != nil {
-		return "", fmt.Errorf("could not json marshal findings: %w", err)
+		return "", errors.Errorf("could not json marshal findings: %w", err)
 	}
 
 	return string(jsonFindings), nil

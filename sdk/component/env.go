@@ -1,12 +1,12 @@
 package component
 
 import (
-	"errors"
-	"fmt"
 	"net/url"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 )
@@ -70,14 +70,14 @@ func fromEnvOrDefault[T parseableEnvTypes](envVar string, defaultVal T, opts ...
 	parseOpts := &defaultEnvParseOptions
 	for _, opt := range opts {
 		if err := opt(parseOpts); err != nil {
-			return dest, fmt.Errorf("option error: %w", err)
+			return dest, errors.Errorf("option error: %w", err)
 		}
 	}
 
 	envStr := parseOpts.envLoader(envVar)
 	if envStr == "" {
 		if !parseOpts.defaultOnError {
-			return dest, fmt.Errorf("required env variable '%s' not found", envVar)
+			return dest, errors.Errorf("required env variable '%s' not found", envVar)
 		}
 		return defaultVal, nil
 	}
@@ -115,12 +115,12 @@ func fromEnvOrDefault[T parseableEnvTypes](envVar string, defaultVal T, opts ...
 			return defaultVal, nil
 		}
 
-		return dest, fmt.Errorf("failed to parse env %s to %T: %v", envVar, dest, err)
+		return dest, errors.Errorf("failed to parse env %s to %T: %v", envVar, dest, err)
 	}
 
 	dest, ok := v.(T)
 	if !ok {
-		return dest, fmt.Errorf("failed to cast env %s to %T", envVar, dest)
+		return dest, errors.Errorf("failed to cast env %s to %T", envVar, dest)
 	}
 
 	return dest, nil

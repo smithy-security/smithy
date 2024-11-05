@@ -1,5 +1,5 @@
 package storer
 
-import "errors"
+import "github.com/go-errors/errors"
 
 var ErrNoFindingsFound = errors.New("no findings found")

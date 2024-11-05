@@ -2,7 +2,8 @@ package component
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/go-errors/errors"
 )
 
 // RunReporter runs a reporter after initialising the run context.
@@ -30,7 +31,7 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 				logger.
 					With(logKeyError, err.Error()).
 					Debug("could not execute read step")
-				return fmt.Errorf("could not read findings: %w", err)
+				return errors.Errorf("could not read findings: %w", err)
 			}
 
 			logger.Debug("read step completed!")
@@ -40,7 +41,7 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 				logger.
 					With(logKeyError, err.Error()).
 					Debug("could not execute report step")
-				return fmt.Errorf("could not report findings: %w", err)
+				return errors.Errorf("could not report findings: %w", err)
 			}
 
 			logger.Debug("reporter step completed!")

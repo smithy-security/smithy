@@ -3,6 +3,8 @@ package component
 import (
 	"fmt"
 
+	"github.com/go-errors/errors"
+
 	"github.com/smithy-security/smithy/sdk"
 	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 )
@@ -199,41 +201,41 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	// --- BEGIN - BASIC ENV - BEGIN ---
 	panicHandler, err := NewDefaultPanicHandler()
 	if err != nil {
-		return nil, fmt.Errorf("could not construct panic handler: %w", err)
+		return nil, errors.Errorf("could not construct panic handler: %w", err)
 	}
 
 	componentName, err := fromEnvOrDefault(envVarKeyComponentName, "", withFallbackToDefaultOnError(true))
 	if err != nil {
-		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyComponentName, err)
+		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyComponentName, err)
 	}
 
 	instanceIDStr, err := fromEnvOrDefault(envVarKeyInstanceID, "", withFallbackToDefaultOnError(true))
 	if err != nil {
-		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyInstanceID, err)
+		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyInstanceID, err)
 	}
 
 	instanceID, err := uuid.Parse(instanceIDStr)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse instance ID '%s': %w", instanceIDStr, err)
+		return nil, errors.Errorf("could not parse instance ID '%s': %w", instanceIDStr, err)
 	}
 	// --- END - BASIC ENV - END ---
 
 	// --- BEGIN - LOGGING ENV - BEGIN ---
 	logLevel, err := fromEnvOrDefault(envVarKeyLoggingLogLevel, logLevelDebug.String(), withFallbackToDefaultOnError(true))
 	if err != nil {
-		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyLoggingLogLevel, err)
+		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyLoggingLogLevel, err)
 	}
 
 	logger, err := newDefaultLogger(RunnerConfigLoggingLevel(logLevel))
 	if err != nil {
-		return nil, fmt.Errorf("could not initialised default logger for '%s': %w", envVarKeyLoggingLogLevel, err)
+		return nil, errors.Errorf("could not initialised default logger for '%s': %w", envVarKeyLoggingLogLevel, err)
 	}
 	// --- END - LOGGING ENV - END ---
 
 	// --- BEGIN - STORER ENV - BEGIN ---
 	st, err := fromEnvOrDefault(envVarKeyBackendStoreType, "", withFallbackToDefaultOnError(true))
 	if err != nil {
-		return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyBackendStoreType, err)
+		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyBackendStoreType, err)
 	}
 
 	conf := &RunnerConfig{
@@ -250,7 +252,7 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	if st != "" {
 		var storageType = storeType(st)
 		if !isAllowedStoreType(storageType) {
-			return nil, fmt.Errorf("invalid store type for '%s': %w", envVarKeyBackendStoreType, err)
+			return nil, errors.Errorf("invalid store type for '%s': %w", envVarKeyBackendStoreType, err)
 		}
 
 		conf.storerConfig.storeType = storageType
@@ -261,13 +263,13 @@ func newRunnerConfig() (*RunnerConfig, error) {
 			withFallbackToDefaultOnError(true),
 		)
 		if err != nil {
-			return nil, fmt.Errorf("could not lookup environment for '%s': %w", envVarKeyBackendStoreDSN, err)
+			return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyBackendStoreDSN, err)
 		}
 
 		conf.storerConfig.dbDSN = dbDSN
 		conf.storerConfig.store, err = newStorer(conf.storerConfig)
 		if err != nil {
-			return nil, fmt.Errorf("could not initialise store for '%s': %w", envVarKeyBackendStoreType, err)
+			return nil, errors.Errorf("could not initialise store for '%s': %w", envVarKeyBackendStoreType, err)
 		}
 	}
 	// --- END - STORER ENV - END ---
