@@ -1,8 +1,6 @@
 package sqlite
 
-import (
-	"fmt"
-)
+import "github.com/go-errors/errors"
 
 // CreateTable is used to create a table in testing settings.
 func (m *manager) CreateTable() error {
@@ -16,11 +14,11 @@ func (m *manager) CreateTable() error {
 		);
 	`)
 	if err != nil {
-		return fmt.Errorf("could not prepare statement for creating table: %w", err)
+		return errors.Errorf("could not prepare statement for creating table: %w", err)
 	}
 
 	if _, err := stmt.Exec(); err != nil {
-		return fmt.Errorf("could not create table: %w", err)
+		return errors.Errorf("could not create table: %w", err)
 	}
 
 	return stmt.Close()

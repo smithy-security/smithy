@@ -2,11 +2,10 @@ package component
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"os/signal"
 	"syscall"
 
+	"github.com/go-errors/errors"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -26,7 +25,7 @@ type (
 func newRunner(opts ...RunnerOption) (*runner, error) {
 	cfg, err := newRunnerConfig()
 	if err != nil {
-		return nil, fmt.Errorf("could not create default runner configuration: %w", err)
+		return nil, errors.Errorf("could not create default runner configuration: %w", err)
 	}
 
 	r := &runner{config: cfg}
@@ -38,7 +37,7 @@ func newRunner(opts ...RunnerOption) (*runner, error) {
 	}
 
 	if err := r.config.isValid(); err != nil {
-		return nil, fmt.Errorf("invalid configuration: %w", err)
+		return nil, errors.Errorf("invalid configuration: %w", err)
 	}
 
 	return r, nil
@@ -61,7 +60,7 @@ func run(
 ) error {
 	r, err := newRunner(opts...)
 	if err != nil {
-		return fmt.Errorf("could not create runner: %w", err)
+		return errors.Errorf("could not create runner: %w", err)
 	}
 
 	var (
@@ -112,7 +111,7 @@ func run(
 				logger.Error("received an unexpected panic in the component runner, handling...")
 				if panicErr, ok := r.config.PanicHandler.HandlePanic(ctx, pe); ok {
 					logger.Error("shutting application down...")
-					syncErrs <- fmt.Errorf("unexpected panic error in the component runner: %w", panicErr)
+					syncErrs <- errors.Errorf("unexpected panic error in the component runner: %w", panicErr)
 				}
 				logger.Error("panic handled in the component runner!")
 			}
@@ -122,7 +121,7 @@ func run(
 		// TODO: potentially decompose run steps to handle cancellations separately.
 		// Actually run the component.
 		if err := componentRunner(ctx, conf); err != nil {
-			return fmt.Errorf("could not run component: %w", err)
+			return errors.Errorf("could not run component: %w", err)
 		}
 
 		logger.Debug("component done! Preparing to exit...")
@@ -133,7 +132,7 @@ func run(
 
 	// Wait for all the runner bits to be done and report an error if fatal and unexpected.
 	if err := g.Wait(); err != nil && !isContextErr(err) {
-		return fmt.Errorf("unexpected run error: %w", err)
+		return errors.Errorf("unexpected run error: %w", err)
 	}
 
 	return nil

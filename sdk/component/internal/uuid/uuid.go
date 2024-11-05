@@ -1,8 +1,7 @@
 package uuid
 
 import (
-	"fmt"
-
+	"github.com/go-errors/errors"
 	"github.com/google/uuid"
 )
 
@@ -23,7 +22,7 @@ func Parse(s string) (UUID, error) {
 	}
 	u, err := uuid.Parse(s)
 	if err != nil {
-		return Nil, fmt.Errorf("invalid UUID string: %s", s)
+		return Nil, errors.Errorf("invalid UUID string: %s", s)
 	}
 	return UUID(u), nil
 }

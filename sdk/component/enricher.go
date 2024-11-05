@@ -2,7 +2,8 @@ package component
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/go-errors/errors"
 )
 
 // RunEnricher runs an enricher after initialising the run context.
@@ -28,7 +29,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 			findings, err := store.Read(ctx, instanceID)
 			if err != nil {
 				logger.With(logKeyError, err.Error()).Error("reading step failed")
-				return fmt.Errorf("could not read: %w", err)
+				return errors.Errorf("could not read: %w", err)
 			}
 
 			logger = logger.With(logKeyNumParsedFindings, len(findings))
@@ -38,7 +39,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 			enrichedFindings, err := enricher.Annotate(ctx, findings)
 			if err != nil {
 				logger.With(logKeyError, err.Error()).Error("enricher step failed")
-				return fmt.Errorf("could not enricher: %w", err)
+				return errors.Errorf("could not enricher: %w", err)
 			}
 
 			logger = logger.With(logKeyNumEnrichedFindings, len(enrichedFindings))
@@ -47,7 +48,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 
 			if err := store.Update(ctx, instanceID, enrichedFindings); err != nil {
 				logger.With(logKeyError, err.Error()).Error("updating step failed")
-				return fmt.Errorf("could not update: %w", err)
+				return errors.Errorf("could not update: %w", err)
 			}
 
 			logger.Debug("updated step completed!")

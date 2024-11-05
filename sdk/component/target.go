@@ -2,7 +2,8 @@ package component
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/go-errors/errors"
 )
 
 // RunTarget runs a target after initialising the run context.
@@ -16,7 +17,7 @@ func RunTarget(ctx context.Context, target Target, opts ...RunnerOption) error {
 
 			if err := target.Prepare(ctx); err != nil {
 				logger.With(logKeyError, err.Error()).Error("preparing target failed")
-				return fmt.Errorf("could not prepare target: %w", err)
+				return errors.Errorf("could not prepare target: %w", err)
 			}
 
 			logger.Debug("component has completed successfully!")

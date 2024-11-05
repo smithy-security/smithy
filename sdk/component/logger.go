@@ -2,9 +2,10 @@ package component
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
+
+	"github.com/go-errors/errors"
 )
 
 const (
@@ -104,7 +105,7 @@ func newDefaultLogger(level RunnerConfigLoggingLevel) (*defaultLogger, error) {
 	case logLevelWarn:
 		logLevel = slog.LevelWarn
 	default:
-		return nil, fmt.Errorf("unknown logger level: %s", level)
+		return nil, errors.Errorf("unknown logger level: %s", level)
 	}
 
 	return &defaultLogger{

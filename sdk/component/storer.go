@@ -1,7 +1,7 @@
 package component
 
 import (
-	"fmt"
+	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/sdk/component/internal/storer/local/sqlite"
 )
@@ -18,9 +18,9 @@ func newStorer(conf runnerConfigStorer) (Storer, error) {
 	if conf.storeType == storeTypeLocal {
 		localMgr, err := sqlite.NewManager(conf.dbDSN)
 		if err != nil {
-			return nil, fmt.Errorf("unable to initialize local sqlite manager: %w", err)
+			return nil, errors.Errorf("unable to initialize local sqlite manager: %w", err)
 		}
 		return localMgr, nil
 	}
-	return nil, fmt.Errorf("curently unsupported store type: %s", conf.storeType)
+	return nil, errors.Errorf("curently unsupported store type: %s", conf.storeType)
 }
