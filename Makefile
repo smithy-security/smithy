@@ -146,8 +146,8 @@ install-go-fmt-tools:
 
 fmt-go:
 	@echo "Tidying up Go files"
-	@gofmt -l -w $$(find . -name *.go -not -path "./vendor/*" | xargs -n 1 dirname | uniq)
-	@goimports -local $$(cat go.mod | grep -E "^module" | sed 's/module //') -w $$(find . -name *.go -not -path "./vendor/*" | xargs -n 1 dirname | uniq)
+	@gofmt -l -w $$(find . -name *.go -not -path "**/vendor/*" | xargs -n 1 dirname | uniq)
+	@goimports -local $$(cat go.mod | grep -E "^module" | sed 's/module //') -w $$(find . -name *.go -not -path "**/vendor/*" | xargs -n 1 dirname | uniq)
 
 install-md-fmt-tools:
 	@npm ci
