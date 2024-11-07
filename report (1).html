@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Scan Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .report {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .scan {
+            margin-bottom: 20px;
+        }
+
+        .scan-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .scan-details {
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .finding {
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+             
+        }
+
+        .finding:nth-child(even) {
+            background-color: #f5f5f5;
+             
+        }
+
+        .finding-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .finding-details {
+            color: #777;
+        }
+
+        .introduction {
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            color: #555;
+        }
+
+        .placeholder-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .placeholder-graph {
+            height: 200px;
+            background-color: #eaeaea;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <img src="https://github.com/smithy-security/smithy/raw/main/assets/smithy-logo-light.svg#gh-dark-mode-only" alt="Logo">
+        <h1>Smithy Report</h1>
+    </header>
+
+    <div class="report">
+        <div class="report-title">Scan Results</div>
+
+        
+        <div class="introduction">
+            <p>This report summarizes the results of running Smithy.</p>
+        </div>
+        
+        <div class="summary">
+            <h2>Summary</h2>
+
+            
+            <div class="placeholder-metrics">
+                <div>
+                    <h3>Total Number of Findings</h3>
+                    <p>10</p>
+                </div>
+                <div>
+                    <h3>Total High Severity Findings</h3>
+                    <p>10</p>
+                </div>
+            </div>
+
+            
+            <div class="placeholder-graph"></div>
+
+            <p>The vulnerability scans have identified potential issues that need attention. It is recommended to review
+                and address the findings promptly to enhance the security of our systems.</p>
+        </div>
+
+        
+        
+        <div class="scan">
+            <div class="scan-title"> - gosec</div>
+            <div class="scan-details">
+                <div><strong>Start Time:</strong> seconds:1727708036  nanos:973858846</div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">Use of weak random number generator (math/rand or math/rand/v2 instead of crypto/rand)</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/vulnerable/sql.go:52-52 </div>
+                    <div>Type: G404 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_MEDIUM </div>
+                    <div>Severity: SEVERITY_HIGH </div>
+                    <div>Description: 51: 			&#34;sneaker&#34;,
+52: 			rand.Intn(500))
+53: 		if err != nil {
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">Use of net/http serve function that has no support for setting timeouts</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/server/main.go:27-27 </div>
+                    <div>Type: G114 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_HIGH </div>
+                    <div>Severity: SEVERITY_MEDIUM </div>
+                    <div>Description: 26: 	log.Println(&#34;Serving application on&#34;, addr)
+27: 	err = http.ListenAndServe(addr, sqhttp.Middleware(router))
+28: 	if err != nil {
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">SQL string concatenation</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/vulnerable/sql.go:69-69 </div>
+                    <div>Type: G202 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_HIGH </div>
+                    <div>Severity: SEVERITY_MEDIUM </div>
+                    <div>Description: 68: func GetProducts(ctx context.Context, db *sql.DB, category string) ([]Product, error) {
+69: 	rows, err := db.QueryContext(ctx, &#34;SELECT * FROM product WHERE category=&#39;&#34;&#43;category&#43;&#34;&#39;&#34;)
+70: 	if err != nil {
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">Potential file inclusion via variable</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/vulnerable/open.go:13-13 </div>
+                    <div>Type: G304 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_HIGH </div>
+                    <div>Severity: SEVERITY_MEDIUM </div>
+                    <div>Description: 12: 	// restricted.
+13: 	return os.Open(filepath)
+14: }
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">Errors unhandled.</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/server/router.go:55-59 </div>
+                    <div>Type: G104 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_HIGH </div>
+                    <div>Severity: SEVERITY_LOW </div>
+                    <div>Description: 54: 		enc := json.NewEncoder(w)
+55: 		enc.Encode(struct {
+56: 			Output string
+57: 		}{
+58: 			Output: string(output),
+59: 		})
+60: 	})
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+
+            
+
+        </div>
+        
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Scan Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .report {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .scan {
+            margin-bottom: 20px;
+        }
+
+        .scan-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .scan-details {
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .finding {
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+             
+        }
+
+        .finding:nth-child(even) {
+            background-color: #f5f5f5;
+             
+        }
+
+        .finding-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .finding-details {
+            color: #777;
+        }
+
+        .introduction {
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+            color: #555;
+        }
+
+        .placeholder-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .placeholder-graph {
+            height: 200px;
+            background-color: #eaeaea;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <img src="https://github.com/smithy-security/smithy/raw/main/assets/smithy-logo-light.svg#gh-dark-mode-only" alt="Logo">
+        <h1>Smithy Report</h1>
+    </header>
+
+    <div class="report">
+        <div class="report-title">Scan Results</div>
+
+        
+        <div class="introduction">
+            <p>This report summarizes the results of running Smithy.</p>
+        </div>
+        
+        <div class="summary">
+            <h2>Summary</h2>
+
+            
+            <div class="placeholder-metrics">
+                <div>
+                    <h3>Total Number of Findings</h3>
+                    <p>10</p>
+                </div>
+                <div>
+                    <h3>Total High Severity Findings</h3>
+                    <p>10</p>
+                </div>
+            </div>
+
+            
+            <div class="placeholder-graph"></div>
+
+            <p>The vulnerability scans have identified potential issues that need attention. It is recommended to review
+                and address the findings promptly to enhance the security of our systems.</p>
+        </div>
+
+        
+        
+        <div class="scan">
+            <div class="scan-title"> - gosec</div>
+            <div class="scan-details">
+                <div><strong>Start Time:</strong> seconds:1727708036  nanos:973858846</div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">Use of weak random number generator (math/rand or math/rand/v2 instead of crypto/rand)</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/vulnerable/sql.go:52-52 </div>
+                    <div>Type: G404 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_MEDIUM </div>
+                    <div>Severity: SEVERITY_HIGH </div>
+                    <div>Description: 51: 			&#34;sneaker&#34;,
+52: 			rand.Intn(500))
+53: 		if err != nil {
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">Use of net/http serve function that has no support for setting timeouts</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/server/main.go:27-27 </div>
+                    <div>Type: G114 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_HIGH </div>
+                    <div>Severity: SEVERITY_MEDIUM </div>
+                    <div>Description: 26: 	log.Println(&#34;Serving application on&#34;, addr)
+27: 	err = http.ListenAndServe(addr, sqhttp.Middleware(router))
+28: 	if err != nil {
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">SQL string concatenation</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/vulnerable/sql.go:69-69 </div>
+                    <div>Type: G202 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_HIGH </div>
+                    <div>Severity: SEVERITY_MEDIUM </div>
+                    <div>Description: 68: func GetProducts(ctx context.Context, db *sql.DB, category string) ([]Product, error) {
+69: 	rows, err := db.QueryContext(ctx, &#34;SELECT * FROM product WHERE category=&#39;&#34;&#43;category&#43;&#34;&#39;&#34;)
+70: 	if err != nil {
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">Potential file inclusion via variable</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/vulnerable/open.go:13-13 </div>
+                    <div>Type: G304 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_HIGH </div>
+                    <div>Severity: SEVERITY_MEDIUM </div>
+                    <div>Description: 12: 	// restricted.
+13: 	return os.Open(filepath)
+14: }
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+            <div class="finding">
+                <div class="finding-title">Errors unhandled.</div>
+                <div class="finding-details">
+                    <div>Target: file:///tmp/wspc/go-dvwa/server/router.go:55-59 </div>
+                    <div>Type: G104 </div>
+                    <div>CVSS: 0 </div>
+                    <div>CVE:  </div>
+                    <div>Confidence: CONFIDENCE_HIGH </div>
+                    <div>Severity: SEVERITY_LOW </div>
+                    <div>Description: 54: 		enc := json.NewEncoder(w)
+55: 		enc.Encode(struct {
+56: 			Output string
+57: 		}{
+58: 			Output: string(output),
+59: 		})
+60: 	})
+ </div>
+                    <div>First Seen: &lt;nil&gt; </div>
+                    <div>Seen Before Times: 0 </div>
+                    <div>False Positive?:false </div>
+                    <div>Last Updated: &lt;nil&gt; </div>
+                    
+                    <div>SBOM<pre>&lt;nil&gt;</pre></div>
+                </div>
+            </div>
+            
+
+            
+
+        </div>
+        
+</body>
+
+</html>

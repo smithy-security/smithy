@@ -44,7 +44,7 @@ spec:
       description: Revision to checkout. (branch, tag, sha, ref, etc...)
       type: string
       default: ""
-    - name: git-clone-refspec
+    - name: git-clone-revision
       description: Refspec to fetch before checking out revision.
       default: ""
       type: string
