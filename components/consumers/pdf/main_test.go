@@ -42,7 +42,6 @@ func Test_run(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, pdfCalled)
 	require.True(t, s3Called)
-
 }
 
 func Test_buildPdf(t *testing.T) {

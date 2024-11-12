@@ -15,6 +15,9 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/smithy-security/smithy/components/consumers"
 	playwright "github.com/smithy-security/smithy/pkg/playwright"
@@ -25,23 +28,25 @@ var (
 	bucket         string
 	region         string
 	reportTemplate string
+	skipS3Upload   bool
 )
 
 func main() {
 
 	flag.StringVar(&bucket, "bucket", "", "s3 bucket name")
 	flag.StringVar(&region, "region", "", "s3 bucket region")
-	flag.StringVar(&reportTemplate, "template", "", "report html template location")
+	flag.StringVar(&reportTemplate, "template", "default.html", "report html template location")
+	flag.BoolVar(&skipS3Upload, "skips3", false, "skip s3 upload")
 
 	if err := consumers.ParseFlags(); err != nil {
 		log.Fatal(err)
 	}
 
-	if bucket == "" {
+	if bucket == "" && !skipS3Upload {
 		log.Fatal("bucket is empty, you need to provide a bucket value")
 	}
 
-	if region == "" {
+	if region == "" && !skipS3Upload {
 		log.Fatal("region is empty, you need to provide a region value")
 	}
 
@@ -63,18 +68,16 @@ func main() {
 		scanID = r[0].OriginalResults.ScanInfo.ScanUuid
 	}
 
-	cleanupRun := func(msg string, cleanup func() error) {
-		if err := cleanup(); err != nil {
-			slog.Error(msg, "error", err)
-		}
-	}
-
 	pw, err := playwright.NewClient()
 	if err != nil {
 		log.Fatalf("could not launch playwright: %s", err)
 	}
 
-	defer cleanupRun("could not stop Playwright: %w", pw.Stop)
+	defer func() {
+		if err := pw.Stop(); err != nil {
+			slog.Error("could not stop Playwright", slog.String("err", err.Error()))
+		}
+	}()
 
 	client, err := s3client.NewClient(region)
 	if err != nil {
@@ -90,17 +93,29 @@ func run(responses any, s3FilenamePostfix string, pw playwright.Wrapper, s3Wrapp
 	slog.Info("reading pdf")
 	resultFilename, pdfBytes, err := buildPdf(responses, pw)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not build pdf: %w", err)
 	}
+	slog.Info("result filename", slog.String("filename", resultFilename))
 
-	slog.Info("uploading pdf to s3", slog.String("filename", resultFilename), slog.String("bucket", bucket), slog.String("region", region))
-	return s3Wrapper.UpsertFile(resultFilename, bucket, s3FilenamePostfix, pdfBytes)
+	if !skipS3Upload {
+		slog.Info("uploading pdf to s3", slog.String("filename", resultFilename), slog.String("bucket", bucket), slog.String("region", region))
+		return s3Wrapper.UpsertFile(resultFilename, bucket, s3FilenamePostfix, pdfBytes)
+	}
+	return nil
 }
 
 func buildPdf(data any, pw playwright.Wrapper) (string, []byte, error) {
-	tmpl, err := template.ParseFiles("default.html")
+	templateFile := reportTemplate
+	if templateFile == "" {
+		templateFile = "default.html"
+	}
+
+	// process the default template into a html result
+	tmpl, err := template.New("default.html").Funcs(template.FuncMap{
+		"formatTime": formatTime,
+	}).ParseFiles(templateFile)
 	if err != nil {
-		return "", nil, err
+		return "", nil, fmt.Errorf("could not parse files: %w", err)
 	}
 
 	currentPath, err := os.Getwd()
@@ -118,11 +133,18 @@ func buildPdf(data any, pw playwright.Wrapper) (string, []byte, error) {
 		return "", nil, fmt.Errorf("could not apply data to template: %w", err)
 	}
 
+	reportPDFPath := filepath.Join(currentPath, "report.pdf")
 	reportPage := fmt.Sprintf("file:///%s", reportHTMLPath)
-	pdfBytes, err := pw.GetPDFOfPage(reportPage, reportHTMLPath)
+	pdfBytes, err := pw.GetPDFOfPage(reportPage, reportPDFPath)
 	if err != nil {
 		return "", nil, fmt.Errorf("could not generate pdf from page %s, err: %w", reportPage, err)
 
 	}
-	return reportHTMLPath, pdfBytes, err
+	return reportPDFPath, pdfBytes, err
+}
+
+// formatTime is a template function that converts a timestamp to a human-readable format
+func formatTime(timestamp *timestamppb.Timestamp) string {
+	parsedTime := timestamp.AsTime()
+	return parsedTime.Format(time.DateTime)
 }
