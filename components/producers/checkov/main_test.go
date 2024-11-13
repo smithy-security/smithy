@@ -43,19 +43,19 @@ func TestRunSarif(t *testing.T) {
 	require.NoError(t, err)
 	expectedIssues := []*smithyv1.Issue{
 		{
-			Target:      "code/cfngoat/cfngoat.yaml:891-892",
+			Target:      "file://code/cfngoat/cfngoat.yaml:891-892",
 			Type:        "CKV_SECRET_6",
 			Title:       "Base64 High Entropy String",
 			Severity:    smithyv1.Severity_SEVERITY_HIGH,
 			Description: "MatchedRule: {\"id\":\"CKV_SECRET_6\",\"name\":\"Base64 High Entropy String\",\"shortDescription\":{\"text\":\"Base64 High Entropy String\"},\"fullDescription\":{\"text\":\"Base64 High Entropy String\"},\"defaultConfiguration\":{\"level\":\"error\"},\"help\":{\"text\":\"Base64 High Entropy String\\nResource: c00f1a6e4b20aa64691d50781b810756d6254b8e\"}} \n Message: Base64 High Entropy String",
 		}, {
-			Target:      "code/cfngoat/.github/workflows/checkov.yaml:1-1",
+			Target:      "file://code/cfngoat/.github/workflows/checkov.yaml:1-1",
 			Type:        "CKV2_GHA_1",
 			Title:       "Ensure top-level permissions are not set to write-all",
 			Severity:    smithyv1.Severity_SEVERITY_HIGH,
 			Description: "MatchedRule: {\"id\":\"CKV2_GHA_1\",\"name\":\"Ensure top-level permissions are not set to write-all\",\"shortDescription\":{\"text\":\"Ensure top-level permissions are not set to write-all\"},\"fullDescription\":{\"text\":\"Ensure top-level permissions are not set to write-all\"},\"defaultConfiguration\":{\"level\":\"error\"},\"help\":{\"text\":\"Ensure top-level permissions are not set to write-all\\nResource: on(build)\"}} \n Message: Ensure top-level permissions are not set to write-all",
 		}, {
-			Target:      "code/cfngoat/.github/workflows/main.yaml:1-1",
+			Target:      "file://code/cfngoat/.github/workflows/main.yaml:1-1",
 			Type:        "CKV2_GHA_1",
 			Title:       "Ensure top-level permissions are not set to write-all",
 			Severity:    smithyv1.Severity_SEVERITY_HIGH,

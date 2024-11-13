@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"log/slog"
 
@@ -14,13 +15,18 @@ func main() {
 	if err := producers.ParseFlags(); err != nil {
 		log.Fatal(err)
 	}
+
+	var producerLang string
+	flag.StringVar(&producerLang, "language", "", "")
+	flag.Parse()
+
 	producers.Append = true
 
 	inFile, err := producers.ReadInFile()
 	if err != nil {
 		log.Fatal(err)
 	}
-	results, err := processInput(string(inFile))
+	results, err := processInput(string(inFile), producerLang)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,7 +40,7 @@ func writeOutput(results map[string][]*v1.Issue) error {
 		slog.Info(
 			"appending",
 			slog.Int("issues", len(issues)),
-			slog.String("tool", "snuk"),
+			slog.String("tool", "snyk"),
 		)
 		if err := producers.WriteSmithyOut(
 			"snyk",
@@ -46,11 +52,22 @@ func writeOutput(results map[string][]*v1.Issue) error {
 	return nil
 }
 
-func processInput(input string) (map[string][]*v1.Issue, error) {
-	issues, err := sarif.ToSmithy(string(input))
+func processInput(input string, language string) (map[string][]*v1.Issue, error) {
+	var (
+		issues []*sarif.SmithyIssueCollection
+		err    error
+	)
+
+	if language == "" {
+		issues, err = sarif.ToSmithy(input, sarif.ExtraContextLanguageUnspecified)
+	} else {
+		issues, err = sarif.ToSmithy(input, sarif.ExtraContextLanguage(language))
+	}
+
 	if err != nil {
 		return nil, err
 	}
+
 	results := map[string][]*v1.Issue{}
 	for _, output := range issues {
 		results[output.ToolName] = append(results[output.ToolName], output.Issues...)

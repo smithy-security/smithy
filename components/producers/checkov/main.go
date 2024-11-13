@@ -51,7 +51,7 @@ func run(inFile []byte, target string) error {
 func handleSarif(inFile []byte) ([]*smithyv1.Issue, error) {
 	var sarifResults []*sarif.SmithyIssueCollection
 	var smithyResults []*smithyv1.Issue
-	sarifResults, err := sarif.ToSmithy(string(inFile))
+	sarifResults, err := sarif.ToSmithy(string(inFile), sarif.ExtraContextLanguageUnspecified)
 	if err != nil {
 		return smithyResults, err
 	}

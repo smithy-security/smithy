@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Scan Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #2b2722;
+            margin: 20px;
+            -webkit-print-color-adjust: exact;
+        }
+
+        @media print {
+            .finding {
+                break-inside: avoid;
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header img {
+            max-width: 100px;
+            height: auto;
+        }
+        h2 {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .report {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+        }
+
+        .scan {
+            margin-bottom: 20px;
+        }
+
+        .scan-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f65f1e;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .scan-title span:not(:empty) + span::before{
+            content: ' - ';
+        }
+
+        .scan-details {
+            margin-top: 10px;
+        }
+
+
+        .summary {
+            margin-top: 30px;
+        }
+
+        .introduction {
+            text-align: center;
+        }
+
+        .placeholder-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .placeholder-metrics > div {
+            border-radius: 4px;
+            background-color: #fbf7f1;
+            border: 1px solid #d4c9b6;
+            flex-grow: 1;
+            text-align: center;
+            width: 50%;
+        }
+
+        .placeholder-metrics .high-severity {
+            background-color: #ffe3e3;
+            color: #982714;
+            border: 1px solid #ffb8b8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #d4c9b6;
+        }
+
+        table th {
+            background-color: #fbf7f1;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #d4c9b6;
+            padding: 4px 10px;
+        }
+
+        .summary-table {
+            margin: 40px 0;
+        }
+
+        .summary-table th {
+            text-align: left;
+        }
+
+         
+        .scan-title,
+        .scan-details {
+            text-align: center;
+        }
+
+        .finding {
+            padding: 20px 0;
+        }
+
+        .finding-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 10px;
+        }
+
+        .finding-table th {
+            text-align: right;
+            vertical-align: top;
+            width: 110px;
+        }
+
+        pre {
+            margin: 0;
+            font-size: 0.7em;
+        }
+
+         
+        .SEVERITY_CRITICAL {
+            background-color: #f88691;
+        }
+
+        .SEVERITY_HIGH {
+            background-color: #ffe3e3;
+        }
+
+        .SEVERITY_MEDIUM {
+            background-color: #fde8cb;
+        }
+
+        .SEVERITY_LOW {
+            background-color: #fdf7bd;
+        }
+
+        .SEVERITY_INFO {
+            background-color: #dafbfb;
+        }
+
+        .SEVERITY_UNSPECIFIED {
+            background-color: #fbf7f1;
+        }
+
+        .summary-table .new {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="https://smithy.security"><img
+            src="https://github.com/smithy-security/smithy/raw/main/assets/smithy-logo-light.svg#gh-dark-mode-only"
+            alt="Logo"></a>
+    <h1>Smithy Report</h1>
+</header>
+
+
+<div class="report">
+    <div class="summary">
+        <p class="introduction">This report summarizes the results of running Smithy.</p>
+
+        
+        <div class="placeholder-metrics">
+            <div class="high-severity"><h3><span id="total-high"></span> High Severity</h3></div>
+            <div><h3><span id="total"></span> Total</h3></div>
+        </div>
+
+        <table class="summary-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th style="width:95px">Seen before</th>
+                <th>Severity</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            
+            <tr class="issue-summary">
+                <td><a href="#There&#43;is&#43;a&#43;%60foo%60&#43;type&#43;issue">There is a `foo` type issue</a></td>
+                <td class="seen">0 times</td>
+                <td class="summary severity SEVERITY_INFO">SEVERITY_INFO </td>
+            </tr>
+            
+            <tr class="issue-summary">
+                <td><a href="#There&#43;is&#43;a&#43;%60bar%60&#43;type&#43;issue">There is a `bar` type issue</a></td>
+                <td class="seen">1 times</td>
+                <td class="summary severity SEVERITY_UNSPECIFIED">SEVERITY_UNSPECIFIED </td>
+            </tr>
+            
+            <tr class="issue-summary">
+                <td><a href="#There&#43;is&#43;a&#43;%60foobar%60&#43;type&#43;issue">There is a `foobar` type issue</a></td>
+                <td class="seen">2 times</td>
+                <td class="summary severity SEVERITY_CRITICAL">SEVERITY_CRITICAL </td>
+            </tr>
+            
+            
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Detailed Results</h2>
+
+    
+    
+    <div class="scan">
+        <h3 class="scan-title">tests</h3>
+        
+            <div class="scan-details">
+                <div class="scan-start-time">0001-01-01 00:00:00</div>
+            </div>
+        
+        
+        <div class="finding">
+            <h4 class="finding-title" id="There&#43;is&#43;a&#43;%60foo%60&#43;type&#43;issue">There is a `foo` type issue</h4>
+            <table class="finding-table">
+                <tbody>
+
+                
+                <tr>
+                    <th>Severity</th>
+                    <td class="severity SEVERITY_INFO">SEVERITY_INFO</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th><a href="https://nvd.nist.gov/vuln-metrics/cvss">CVSS</a></th>
+                    <td>2</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Confidence</th>
+                    <td class="confidence">CONFIDENCE_HIGH</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Type</th>
+                    <td>G456</td>
+                </tr>
+                
+
+                
+
+                
+
+                
+                <tr>
+                    <th>Target</th>
+                    <td>file://foo/bar/baz.go:1-1</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <pre>We found `foo` on bar</pre>
+                    </td>
+                </tr>
+                
+
+                
+
+                <tr>
+                    <th>Seen Before</th>
+                    <td class="seen">0 times</td>
+                </tr>
+
+                
+
+                
+
+                
+                <tr>
+                    <th>issueNum</th>
+                    <td>0</td>
+                </tr>
+                
+                <tr>
+                    <th>someOther</th>
+                    <td>Annotation</td>
+                </tr>
+                
+                </tbody>
+            </table>
+
+            
+        </div>
+        
+        <div class="finding">
+            <h4 class="finding-title" id="There&#43;is&#43;a&#43;%60bar%60&#43;type&#43;issue">There is a `bar` type issue</h4>
+            <table class="finding-table">
+                <tbody>
+
+                
+
+                
+                <tr>
+                    <th><a href="https://nvd.nist.gov/vuln-metrics/cvss">CVSS</a></th>
+                    <td>3.1</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Confidence</th>
+                    <td class="confidence">CONFIDENCE_CRITICAL</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Type</th>
+                    <td>G457</td>
+                </tr>
+                
+
+                
+
+                
+
+                
+                <tr>
+                    <th>Target</th>
+                    <td>file://foo/bar/baz.go:2-10</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <pre>We found `bar` on bar</pre>
+                    </td>
+                </tr>
+                
+
+                
+
+                <tr>
+                    <th>Seen Before</th>
+                    <td class="seen">1 times</td>
+                </tr>
+
+                
+
+                
+
+                
+                <tr>
+                    <th>issueNum</th>
+                    <td>1</td>
+                </tr>
+                
+                <tr>
+                    <th>someOther</th>
+                    <td>Annotation</td>
+                </tr>
+                
+                </tbody>
+            </table>
+
+            
+        </div>
+        
+        <div class="finding">
+            <h4 class="finding-title" id="There&#43;is&#43;a&#43;%60foobar%60&#43;type&#43;issue">There is a `foobar` type issue</h4>
+            <table class="finding-table">
+                <tbody>
+
+                
+                <tr>
+                    <th>Severity</th>
+                    <td class="severity SEVERITY_CRITICAL">SEVERITY_CRITICAL</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th><a href="https://nvd.nist.gov/vuln-metrics/cvss">CVSS</a></th>
+                    <td>3.1</td>
+                </tr>
+                
+
+                
+
+                
+                <tr>
+                    <th>Type</th>
+                    <td>G458</td>
+                </tr>
+                
+
+                
+
+                
+
+                
+                <tr>
+                    <th>Target</th>
+                    <td>file://foo/bar/foobar.go</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <pre>We found `foobar` on bar</pre>
+                    </td>
+                </tr>
+                
+
+                
+
+                <tr>
+                    <th>Seen Before</th>
+                    <td class="seen">2 times</td>
+                </tr>
+
+                
+
+                
+
+                
+                <tr>
+                    <th>issueNum</th>
+                    <td>2</td>
+                </tr>
+                
+                <tr>
+                    <th>someOther</th>
+                    <td>Annotation</td>
+                </tr>
+                
+                </tbody>
+            </table>
+
+            
+        </div>
+        
+
+        
+
+    </div>
+    
+</div>
+
+</body>
+<footer>
+    <script>
+        
+        document.getElementById("total").innerHTML = document.querySelectorAll('.issue-summary').length;
+        document.getElementById("total-high").innerHTML = document.querySelectorAll('.summary.SEVERITY_CRITICAL').length + document.querySelectorAll('.summary.SEVERITY_HIGH').length;
+
+        
+        document.querySelectorAll('.severity').forEach(function(element) {
+            if (element.textContent.startsWith("SEVERITY_")) {
+                element.textContent = element.textContent.replace("SEVERITY_", "");
+            }
+        });
+
+        
+        document.querySelectorAll('.confidence').forEach(function(element) {
+            if (element.textContent.startsWith("CONFIDENCE_")) {
+                element.textContent = element.textContent.replace("CONFIDENCE_", "");
+            }
+        });
+
+        
+        document.querySelectorAll('.seen').forEach(function(element) {
+            if (element.textContent === "0 times") {
+                element.textContent = element.textContent.replace("0 times", "Never");
+                element.classList.add("new");
+            }
+        });
+    </script>
+</footer>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Scan Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #2b2722;
+            margin: 20px;
+            -webkit-print-color-adjust: exact;
+        }
+
+        @media print {
+            .finding {
+                break-inside: avoid;
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header img {
+            max-width: 100px;
+            height: auto;
+        }
+        h2 {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .report {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+        }
+
+        .scan {
+            margin-bottom: 20px;
+        }
+
+        .scan-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f65f1e;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .scan-title span:not(:empty) + span::before{
+            content: ' - ';
+        }
+
+        .scan-details {
+            margin-top: 10px;
+        }
+
+
+        .summary {
+            margin-top: 30px;
+        }
+
+        .introduction {
+            text-align: center;
+        }
+
+        .placeholder-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .placeholder-metrics > div {
+            border-radius: 4px;
+            background-color: #fbf7f1;
+            border: 1px solid #d4c9b6;
+            flex-grow: 1;
+            text-align: center;
+            width: 50%;
+        }
+
+        .placeholder-metrics .high-severity {
+            background-color: #ffe3e3;
+            color: #982714;
+            border: 1px solid #ffb8b8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #d4c9b6;
+        }
+
+        table th {
+            background-color: #fbf7f1;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #d4c9b6;
+            padding: 4px 10px;
+        }
+
+        .summary-table {
+            margin: 40px 0;
+        }
+
+        .summary-table th {
+            text-align: left;
+        }
+
+         
+        .scan-title,
+        .scan-details {
+            text-align: center;
+        }
+
+        .finding {
+            padding: 20px 0;
+        }
+
+        .finding-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 10px;
+        }
+
+        .finding-table th {
+            text-align: right;
+            vertical-align: top;
+            width: 110px;
+        }
+
+        pre {
+            margin: 0;
+            font-size: 0.7em;
+        }
+
+         
+        .SEVERITY_CRITICAL {
+            background-color: #f88691;
+        }
+
+        .SEVERITY_HIGH {
+            background-color: #ffe3e3;
+        }
+
+        .SEVERITY_MEDIUM {
+            background-color: #fde8cb;
+        }
+
+        .SEVERITY_LOW {
+            background-color: #fdf7bd;
+        }
+
+        .SEVERITY_INFO {
+            background-color: #dafbfb;
+        }
+
+        .SEVERITY_UNSPECIFIED {
+            background-color: #fbf7f1;
+        }
+
+        .summary-table .new {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="https://smithy.security"><img
+            src="https://github.com/smithy-security/smithy/raw/main/assets/smithy-logo-light.svg#gh-dark-mode-only"
+            alt="Logo"></a>
+    <h1>Smithy Report</h1>
+</header>
+
+
+<div class="report">
+    <div class="summary">
+        <p class="introduction">This report summarizes the results of running Smithy.</p>
+
+        
+        <div class="placeholder-metrics">
+            <div class="high-severity"><h3><span id="total-high"></span> High Severity</h3></div>
+            <div><h3><span id="total"></span> Total</h3></div>
+        </div>
+
+        <table class="summary-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th style="width:95px">Seen before</th>
+                <th>Severity</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            
+            <tr class="issue-summary">
+                <td><a href="#There&#43;is&#43;a&#43;%60foo%60&#43;type&#43;issue">There is a `foo` type issue</a></td>
+                <td class="seen">0 times</td>
+                <td class="summary severity SEVERITY_INFO">SEVERITY_INFO </td>
+            </tr>
+            
+            <tr class="issue-summary">
+                <td><a href="#There&#43;is&#43;a&#43;%60bar%60&#43;type&#43;issue">There is a `bar` type issue</a></td>
+                <td class="seen">1 times</td>
+                <td class="summary severity SEVERITY_UNSPECIFIED">SEVERITY_UNSPECIFIED </td>
+            </tr>
+            
+            <tr class="issue-summary">
+                <td><a href="#There&#43;is&#43;a&#43;%60foobar%60&#43;type&#43;issue">There is a `foobar` type issue</a></td>
+                <td class="seen">2 times</td>
+                <td class="summary severity SEVERITY_CRITICAL">SEVERITY_CRITICAL </td>
+            </tr>
+            
+            
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Detailed Results</h2>
+
+    
+    
+    <div class="scan">
+        <h3 class="scan-title">tests</h3>
+        
+            <div class="scan-details">
+                <div class="scan-start-time">0001-01-01 00:00:00</div>
+            </div>
+        
+        
+        <div class="finding">
+            <h4 class="finding-title" id="There&#43;is&#43;a&#43;%60foo%60&#43;type&#43;issue">There is a `foo` type issue</h4>
+            <table class="finding-table">
+                <tbody>
+
+                
+                <tr>
+                    <th>Severity</th>
+                    <td class="severity SEVERITY_INFO">SEVERITY_INFO</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th><a href="https://nvd.nist.gov/vuln-metrics/cvss">CVSS</a></th>
+                    <td>2</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Confidence</th>
+                    <td class="confidence">CONFIDENCE_HIGH</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Type</th>
+                    <td>G456</td>
+                </tr>
+                
+
+                
+
+                
+
+                
+                <tr>
+                    <th>Target</th>
+                    <td>file://foo/bar/baz.go:1-1</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <pre>We found `foo` on bar</pre>
+                    </td>
+                </tr>
+                
+
+                
+
+                <tr>
+                    <th>Seen Before</th>
+                    <td class="seen">0 times</td>
+                </tr>
+
+                
+
+                
+
+                
+                <tr>
+                    <th>issueNum</th>
+                    <td>0</td>
+                </tr>
+                
+                <tr>
+                    <th>someOther</th>
+                    <td>Annotation</td>
+                </tr>
+                
+                </tbody>
+            </table>
+
+            
+        </div>
+        
+        <div class="finding">
+            <h4 class="finding-title" id="There&#43;is&#43;a&#43;%60bar%60&#43;type&#43;issue">There is a `bar` type issue</h4>
+            <table class="finding-table">
+                <tbody>
+
+                
+
+                
+                <tr>
+                    <th><a href="https://nvd.nist.gov/vuln-metrics/cvss">CVSS</a></th>
+                    <td>3.1</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Confidence</th>
+                    <td class="confidence">CONFIDENCE_CRITICAL</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Type</th>
+                    <td>G457</td>
+                </tr>
+                
+
+                
+
+                
+
+                
+                <tr>
+                    <th>Target</th>
+                    <td>file://foo/bar/baz.go:2-10</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <pre>We found `bar` on bar</pre>
+                    </td>
+                </tr>
+                
+
+                
+
+                <tr>
+                    <th>Seen Before</th>
+                    <td class="seen">1 times</td>
+                </tr>
+
+                
+
+                
+
+                
+                <tr>
+                    <th>issueNum</th>
+                    <td>1</td>
+                </tr>
+                
+                <tr>
+                    <th>someOther</th>
+                    <td>Annotation</td>
+                </tr>
+                
+                </tbody>
+            </table>
+
+            
+        </div>
+        
+        <div class="finding">
+            <h4 class="finding-title" id="There&#43;is&#43;a&#43;%60foobar%60&#43;type&#43;issue">There is a `foobar` type issue</h4>
+            <table class="finding-table">
+                <tbody>
+
+                
+                <tr>
+                    <th>Severity</th>
+                    <td class="severity SEVERITY_CRITICAL">SEVERITY_CRITICAL</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th><a href="https://nvd.nist.gov/vuln-metrics/cvss">CVSS</a></th>
+                    <td>3.1</td>
+                </tr>
+                
+
+                
+
+                
+                <tr>
+                    <th>Type</th>
+                    <td>G458</td>
+                </tr>
+                
+
+                
+
+                
+
+                
+                <tr>
+                    <th>Target</th>
+                    <td>file://foo/bar/foobar.go</td>
+                </tr>
+                
+
+                
+                <tr>
+                    <th>Description</th>
+                    <td>
+                        <pre>We found `foobar` on bar</pre>
+                    </td>
+                </tr>
+                
+
+                
+
+                <tr>
+                    <th>Seen Before</th>
+                    <td class="seen">2 times</td>
+                </tr>
+
+                
+
+                
+
+                
+                <tr>
+                    <th>issueNum</th>
+                    <td>2</td>
+                </tr>
+                
+                <tr>
+                    <th>someOther</th>
+                    <td>Annotation</td>
+                </tr>
+                
+                </tbody>
+            </table>
+
+            
+        </div>
+        
+
+        
+
+    </div>
+    
+</div>
+
+</body>
+<footer>
+    <script>
+        
+        document.getElementById("total").innerHTML = document.querySelectorAll('.issue-summary').length;
+        document.getElementById("total-high").innerHTML = document.querySelectorAll('.summary.SEVERITY_CRITICAL').length + document.querySelectorAll('.summary.SEVERITY_HIGH').length;
+
+        
+        document.querySelectorAll('.severity').forEach(function(element) {
+            if (element.textContent.startsWith("SEVERITY_")) {
+                element.textContent = element.textContent.replace("SEVERITY_", "");
+            }
+        });
+
+        
+        document.querySelectorAll('.confidence').forEach(function(element) {
+            if (element.textContent.startsWith("CONFIDENCE_")) {
+                element.textContent = element.textContent.replace("CONFIDENCE_", "");
+            }
+        });
+
+        
+        document.querySelectorAll('.seen').forEach(function(element) {
+            if (element.textContent === "0 times") {
+                element.textContent = element.textContent.replace("0 times", "Never");
+                element.classList.add("new");
+            }
+        });
+    </script>
+</footer>
+</html>

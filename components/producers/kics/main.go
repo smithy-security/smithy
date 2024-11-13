@@ -32,7 +32,7 @@ func main() {
 	if Sarif {
 		var sarifResults []*sarif.SmithyIssueCollection
 		var smithyResults []*v1.Issue
-		sarifResults, err := sarif.ToSmithy(string(inFile))
+		sarifResults, err := sarif.ToSmithy(string(inFile), sarif.ExtraContextLanguageUnspecified)
 		if err != nil {
 			log.Fatal(err)
 		}
