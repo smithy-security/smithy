@@ -61,6 +61,7 @@ spec:
     args:
     - "-in=/scratch/snyk.out"
     - "-out=$(workspaces.output.path)/.smithy/producers/snyk.pb"
+    - "-language=python"
     volumeMounts:
     - mountPath: /scratch
       name: scratch
