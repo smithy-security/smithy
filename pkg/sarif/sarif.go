@@ -8,16 +8,33 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-errors/errors"
 	"github.com/owenrumney/go-sarif/v2/sarif"
+	"github.com/package-url/packageurl-go"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components/producers"
 )
 
-// SmithyIssueCollection represents all the findings in a single Sarif file converted to smithy format.
-type SmithyIssueCollection struct {
-	ToolName string
-	Issues   []*v1.Issue
+const (
+	ExtraContextLanguageUnspecified ExtraContextLanguage = "unspecified"
+	ExtraContextLanguagePython      ExtraContextLanguage = "python"
+	ExtraContextLanguageJS          ExtraContextLanguage = "javascript"
+)
+
+type (
+	// SmithyIssueCollection represents all the findings in a single Sarif file converted to smithy format.
+	SmithyIssueCollection struct {
+		ToolName string
+		Issues   []*v1.Issue
+	}
+
+	ExtraContextLanguage string
+)
+
+var extraCtxLangToPURLNS = map[ExtraContextLanguage]string{
+	ExtraContextLanguagePython: "pypi",
+	ExtraContextLanguageJS:     "npm",
 }
 
 // FromSmithyEnrichedIssuesRun transforms a set of LaunchToolResponse to ONE sarif document with
@@ -159,7 +176,7 @@ func smithyIssueToSarif(issue *v1.Issue, rule *sarif.ReportingDescriptor) (*sari
 }
 
 // ToSmithy accepts a sarif file and transforms each run to SmithyIssueCollection ready to be written to a results file.
-func ToSmithy(inFile string) ([]*SmithyIssueCollection, error) {
+func ToSmithy(inFile string, language ExtraContextLanguage) ([]*SmithyIssueCollection, error) {
 	issueCollection := []*SmithyIssueCollection{}
 	inSarif, err := sarif.FromString(inFile)
 	if err != nil {
@@ -171,53 +188,59 @@ func ToSmithy(inFile string) ([]*SmithyIssueCollection, error) {
 		for _, rule := range run.Tool.Driver.Rules {
 			rules[rule.ID] = rule
 		}
+
+		issues, err := parseOut(*run, rules, tool, language)
+		if err != nil {
+			return nil, errors.Errorf("unexpected parse errors: %w", err)
+		}
+
+		if len(issues) == 0 {
+			continue
+		}
+
 		issueCollection = append(issueCollection, &SmithyIssueCollection{
 			ToolName: tool,
-			Issues:   parseOut(*run, rules, tool),
+			Issues:   issues,
 		})
 	}
 	return issueCollection, err
 }
 
-func parseOut(run sarif.Run, rules map[string]*sarif.ReportingDescriptor, toolName string) []*v1.Issue {
-	issues := []*v1.Issue{}
+// parseOut parses a sarif report by extracting physical and logical targets from it
+// and generating issues.
+func parseOut(
+	run sarif.Run,
+	rules map[string]*sarif.ReportingDescriptor,
+	toolName string,
+	lang ExtraContextLanguage,
+) ([]*v1.Issue, error) {
+	var (
+		issues   = make([]*v1.Issue, 0)
+		parseErr error
+	)
+
 	for _, res := range run.Results {
 		for _, loc := range res.Locations {
-			target, uri, sl, el := "", "", "", ""
-			if loc.PhysicalLocation == nil {
-				for _, ll := range loc.LogicalLocations {
-					// do the same for logical locs
-					target = *ll.FullyQualifiedName
-					issues = addIssue(rules, issues, target, toolName, res)
-				}
-			} else {
-				if loc.PhysicalLocation.ArtifactLocation.URI != nil {
-					uri = *loc.PhysicalLocation.ArtifactLocation.URI
-				}
-				if loc.PhysicalLocation.Region != nil {
-					if loc.PhysicalLocation.Region.StartLine != nil {
-						sl = fmt.Sprintf("%d", *loc.PhysicalLocation.Region.StartLine)
-					}
-					if loc.PhysicalLocation.Region.EndLine != nil {
-						el = fmt.Sprintf("%d", *loc.PhysicalLocation.Region.EndLine)
-					} else {
-						el = sl
-					}
-					target = fmt.Sprintf("%s:%s-%s", uri, sl, el)
-				} else {
-					target = uri
-				}
+
+			targets, err := parseTargets(loc, lang)
+			if err != nil {
+				parseErr = errors.Join(parseErr, err)
+			}
+
+			for _, target := range targets {
 				issues = addIssue(rules, issues, target, toolName, res)
 			}
 
 		}
 	}
-	return issues
+
+	return issues, parseErr
 }
 
 func addIssue(rules map[string]*sarif.ReportingDescriptor, issues []*v1.Issue, target, toolName string, res *sarif.Result) []*v1.Issue {
-	rule, ok := rules[*res.RuleID]
 	var description string
+
+	rule, ok := rules[*res.RuleID]
 	if !ok {
 		log.Printf("could not find rule with id %s, double check tool %s output contains a tool.driver.rules section ", *res.RuleID, toolName)
 		description = fmt.Sprintf("Message: %s", *res.Message.Text)
@@ -230,15 +253,15 @@ func addIssue(rules map[string]*sarif.ReportingDescriptor, issues []*v1.Issue, t
 		Title:       *res.Message.Text,
 		Description: description,
 		Type:        *res.RuleID,
-		Severity:    levelToseverity(*res.Level),
+		Severity:    levelToSeverity(*res.Level),
 		Confidence:  v1.Confidence_CONFIDENCE_UNSPECIFIED,
 	})
 
 	return issues
 }
 
-// levelToseverity transforms error, warning and note levels to high, medium and low respectively.
-func levelToseverity(level string) v1.Severity {
+// levelToSeverity transforms error, warning and note levels to high, medium and low respectively.
+func levelToSeverity(level string) v1.Severity {
 	if level == LevelError {
 		return v1.Severity_SEVERITY_HIGH
 	} else if level == LevelWarning {
@@ -261,6 +284,180 @@ func severityToLevel(severity v1.Severity) string {
 		return LevelNote
 	default:
 		return LevelNone
-
 	}
+}
+
+// parseTargets parses the passes sarif location and returns all the valid physical and logical targets in it.
+func parseTargets(loc *sarif.Location, lang ExtraContextLanguage) ([]string, error) {
+	var (
+		targets   = make([]string, 0)
+		parseErrs error
+	)
+
+	// We can have cases were both locations are defined but, in these cases,
+	// the physical location doesn't make much sense, so we just should leverage the logical one.
+	if isLogicalLocation(loc) {
+		tts, err := parseLogicalTargets(loc, lang)
+		if err != nil {
+			parseErrs = errors.Join(parseErrs, err)
+		}
+		targets = append(targets, tts...)
+	} else if isPhysicalLocation(loc) {
+		tt, err := parsePhysicalTarget(loc)
+		if err != nil {
+			parseErrs = errors.Join(parseErrs, err)
+		}
+		targets = append(targets, tt)
+	}
+
+	return targets, parseErrs
+}
+
+func isPhysicalLocation(loc *sarif.Location) bool {
+	return loc.PhysicalLocation != nil
+}
+
+// parsePhysicalTarget parses a sarif physical location target.
+// We prefix the target with 'file://' so that we know that it's a physical target.
+// We add start and end lines information if provided.
+// In the case of missing start or end line, we default the undefined one to the same value of the defined one
+// because it usually means that the finding affects one line only.
+// It can be possible for a target URI to contain a pURL. In that case we simply return that.
+func parsePhysicalTarget(loc *sarif.Location) (string, error) {
+	if loc.PhysicalLocation == nil {
+		return "", nil
+	}
+
+	var (
+		target    string
+		phyLoc    = loc.PhysicalLocation
+		targetURI = phyLoc.ArtifactLocation.URI
+	)
+
+	if targetURI == nil || *targetURI == "" {
+		return "", errors.New("target URI is empty")
+	}
+
+	// This means that it's a purl in a physical path.
+	if _, err := packageurl.FromString(*targetURI); err == nil {
+		return *targetURI, nil
+	}
+
+	// Safety check to make sure that we don't end up with malformed targets if
+	// the upstream tool is already doing this.
+	if !strings.Contains(*targetURI, "file://") {
+		target = fmt.Sprintf("file://%s", *targetURI)
+	}
+
+	if phyLoc.Region != nil {
+		var (
+			isStartLineDefined = phyLoc.Region.StartLine != nil
+			isEndLineDefined   = phyLoc.Region.EndLine != nil
+		)
+
+		switch {
+		case isStartLineDefined && isEndLineDefined:
+			target = fmt.Sprintf(
+				"%s:%d-%d",
+				target,
+				*phyLoc.Region.StartLine,
+				*phyLoc.Region.EndLine,
+			)
+		case isStartLineDefined && !isEndLineDefined:
+			target = fmt.Sprintf(
+				"%s:%d-%d",
+				target,
+				*phyLoc.Region.StartLine,
+				*phyLoc.Region.StartLine,
+			)
+		case !isStartLineDefined && isEndLineDefined:
+			target = fmt.Sprintf(
+				"%s:%d-%d",
+				target,
+				*phyLoc.Region.EndLine,
+				*phyLoc.Region.EndLine,
+			)
+		}
+	}
+
+	return target, nil
+}
+
+func isLogicalLocation(loc *sarif.Location) bool {
+	return len(loc.LogicalLocations) > 0
+}
+
+// parseLogicalTargets parses all the targets found in the logical locations.
+// A logical target must be a valid pURL.
+func parseLogicalTargets(loc *sarif.Location, lang ExtraContextLanguage) ([]string, error) {
+	var (
+		targets  = make([]string, 0)
+		parseErr error
+	)
+
+	if len(loc.LogicalLocations) == 0 {
+		return targets, nil
+	}
+
+	for idx, logicLoc := range loc.LogicalLocations {
+		if logicLoc == nil {
+			parseErr = errors.Join(parseErr, errors.Errorf("logic location is nil at index %d", idx))
+			continue
+		}
+
+		qualifiedName := *logicLoc.FullyQualifiedName
+		// If we have a valid pURL, we are done.
+		// Otherwise, we can see if we can leverage the supplied extra context language to see if we can get a valid one.
+		if _, err := packageurl.FromString(qualifiedName); err != nil {
+			// If we don't have the language, just report an error.
+			if lang == "" || lang == ExtraContextLanguageUnspecified {
+				parseErr = errors.Join(
+					parseErr,
+					errors.Errorf(
+						"invalid pURL '%s' at index %d: %w",
+						qualifiedName,
+						idx,
+						err,
+					),
+				)
+				continue
+			}
+
+			// Otherwise, let's check if we support the language.
+			purlNS, ok := extraCtxLangToPURLNS[lang]
+			if !ok {
+				parseErr = errors.Join(
+					parseErr,
+					errors.Errorf(
+						"invalid pURL '%s' at index %d. The supplied language '%s' is not supported.",
+						qualifiedName,
+						idx,
+						lang,
+					),
+				)
+				continue
+			}
+
+			// Now let's put together a potentially valid pURL.
+			qualifiedName = fmt.Sprintf("pkg:%s/%s", purlNS, qualifiedName)
+			// And check again for its validity.
+			if _, err := packageurl.FromString(qualifiedName); err != nil {
+				// If invalid, report as an error.
+				parseErr = errors.Join(
+					parseErr,
+					errors.Errorf(
+						"invalid pURL '%s' at index %d. Enhanced qualified name '%s' is still not a valid pURL.",
+						qualifiedName,
+						idx,
+						qualifiedName,
+					),
+				)
+				continue
+			}
+		}
+
+		targets = append(targets, qualifiedName)
+	}
+
+	return targets, parseErr
 }
