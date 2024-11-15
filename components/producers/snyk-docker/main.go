@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"log/slog"
 
@@ -10,6 +11,8 @@ import (
 )
 
 func main() {
+	var producerLang string
+	flag.StringVar(&producerLang, "language", "", "")
 
 	if err := producers.ParseFlags(); err != nil {
 		log.Fatal(err)
@@ -20,7 +23,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	results, err := processInput(string(inFile))
+	results, err := processInput(string(inFile), producerLang)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,11 +49,22 @@ func writeOutput(results map[string][]*v1.Issue) error {
 	return nil
 }
 
-func processInput(input string) (map[string][]*v1.Issue, error) {
-	issues, err := sarif.ToSmithy(string(input))
+func processInput(input string, language string) (map[string][]*v1.Issue, error) {
+	var (
+		issues       []*sarif.SmithyIssueCollection
+		extraCtxLang = sarif.ExtraContextLanguageUnspecified
+		err          error
+	)
+
+	if language != "" {
+		extraCtxLang = sarif.ExtraContextLanguage(language)
+	}
+
+	issues, err = sarif.ToSmithy(input, extraCtxLang)
 	if err != nil {
 		return nil, err
 	}
+
 	results := map[string][]*v1.Issue{}
 	for _, output := range issues {
 		results[output.ToolName] = append(results[output.ToolName], output.Issues...)
