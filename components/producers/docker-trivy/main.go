@@ -78,7 +78,7 @@ func handleJSON(inFile []byte) ([]*v1.Issue, error) {
 func handleSarif(inFile []byte) ([]*v1.Issue, error) {
 	var sarifResults []*sarif.SmithyIssueCollection
 	var smithyResults []*v1.Issue
-	sarifResults, err := sarif.ToSmithy(string(inFile))
+	sarifResults, err := sarif.ToSmithy(string(inFile), sarif.ExtraContextLanguageUnspecified)
 	if err != nil {
 		return smithyResults, err
 	}
