@@ -8,3 +8,4 @@ tests/output
 .vscode/
 deploy/smithy/chart/charts
 .idea/
+components/consumers/pdf/report.html
