@@ -182,7 +182,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		sarifResults, err = sarif.ToSmithy(string(inFile))
+		sarifResults, err = sarif.ToSmithy(string(inFile), sarif.ExtraContextLanguageUnspecified)
 		if err != nil {
 			log.Fatal(err)
 		}
