@@ -11,50 +11,45 @@ spec:
   params:
   - name: producer-snyk-node-api-key
     type: string
+  - name: producer-snyk-node-directories
+    type: array
+    default:
+    - .
   description: Run Snyk For Javascript, Typescript, Node
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: run-snyk
     imagePullPolicy: IfNotPresent
     env:
       - name: SNYK_INTEGRATION_VERSION 
         value: docker
-
-    image: 'snyk/snyk:node'
+    image: snyk/snyk:node
     script: |
       #!/usr/bin/env bash
-      set -x
-      set +e
+      set -ex
+
       echo "authenticating to snyk"
       snyk auth $(params.producer-snyk-node-api-key)
-      
+
       baseDir = $(pwd)
-      if [ ! -d $(workspaces.source-code.path)/node_modules ]; then
-        cd $(workspaces.source-code.path)/
+      cd $(workspaces.source-code.path)/
+      if [ -e yarn.lock ]
+      then
+        yarn install
+      else
         npm install
         exitCode=$?
-        if [[ $exitCode -eq 1 ]]; then
-          echo "npm install failed, trying yarn"
-           cd $(workspaces.source-code.path)/
-            yarn install
-          
-        fi
       fi
 
-      cd $baseDir
+      cd ${baseDir}
       echo "running snyk test"
       snyk test --prune-repeated-subdependencies --skip-unresolved --sarif-file-output=$(workspaces.scratch.path)/snyk.out $(workspaces.source-code.path)/
       exitCode=$?
-      if [[ $exitCode -ne 0 && $exitCode -ne 1 ]]; then
-        echo "Snyk failed with exit code $exitCode"
-        exit $exitCode
+      if [[ ${exitCode} -ne 0 && ${exitCode} -ne 1 ]]
+      then
+        echo "Snyk failed with exit code ${exitCode}"
+        exit ${exitCode}
       else
-        echo "Snyk completed successfully! exitcode $exitCode"
+        echo "Snyk completed successfully! exitcode ${exitCode}"
       fi
   - name: produce-issues
     imagePullPolicy: IfNotPresent
