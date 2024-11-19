@@ -89,7 +89,7 @@ func main() {
 	}
 }
 
-func run(responses any, s3FilenamePostfix string, pw playwright.Wrapper, s3Wrapper s3client.Wrapper) error {
+func run(responses any, s3FilenamePrefix string, pw playwright.Wrapper, s3Wrapper s3client.Wrapper) error {
 	slog.Info("reading pdf")
 	resultFilename, pdfBytes, err := buildPdf(responses, pw)
 	if err != nil {
@@ -99,7 +99,7 @@ func run(responses any, s3FilenamePostfix string, pw playwright.Wrapper, s3Wrapp
 
 	if !skipS3Upload {
 		slog.Info("uploading pdf to s3", slog.String("filename", resultFilename), slog.String("bucket", bucket), slog.String("region", region))
-		return s3Wrapper.UpsertFile(resultFilename, bucket, s3FilenamePostfix, pdfBytes)
+		return s3Wrapper.UpsertFile(resultFilename, bucket, s3FilenamePrefix, pdfBytes)
 	}
 	return nil
 }
@@ -132,6 +132,13 @@ func buildPdf(data any, pw playwright.Wrapper) (string, []byte, error) {
 	if err = tmpl.Execute(f, data); err != nil {
 		return "", nil, fmt.Errorf("could not apply data to template: %w", err)
 	}
+	// close the file after writing it
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			slog.Error("could not close file", slog.String("err", err.Error()))
+		}
+	}(f)
 
 	reportPDFPath := filepath.Join(currentPath, "report.pdf")
 	reportPage := fmt.Sprintf("file:///%s", reportHTMLPath)
@@ -139,6 +146,11 @@ func buildPdf(data any, pw playwright.Wrapper) (string, []byte, error) {
 	if err != nil {
 		return "", nil, fmt.Errorf("could not generate pdf from page %s, err: %w", reportPage, err)
 
+	}
+
+	// delete the intermediate HTML file
+	if err := os.Remove(reportHTMLPath); err != nil {
+		slog.Error("could not delete report.html", slog.String("err", err.Error()))
 	}
 	return reportPDFPath, pdfBytes, err
 }

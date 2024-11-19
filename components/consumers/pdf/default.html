@@ -17,6 +17,12 @@
             .finding {
                 break-inside: avoid;
             }
+            h2:first-of-type {
+                break-before: page;
+            }
+            .scan-title:not(:first-of-type) {
+                break-before: page;
+            }
         }
 
         header {
@@ -94,6 +100,8 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
+            max-width: 100%;
             border: 1px solid #d4c9b6;
         }
 
@@ -140,6 +148,10 @@
         pre {
             margin: 0;
             font-size: 0.7em;
+            word-wrap: break-word;
+            font-family: monospace;
+            white-space: pre-wrap;
+            tab-size: 2;
         }
 
         /*severities*/
@@ -291,7 +303,7 @@
                 <tr>
                     <th>Description</th>
                     <td>
-                        <pre>{{.RawIssue.Description}}</pre>
+                        <pre><code>{{.RawIssue.Description}}</code></pre>
                     </td>
                 </tr>
                 {{ end }}
