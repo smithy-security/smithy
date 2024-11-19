@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -34,17 +36,31 @@ func NewClient(region string) (Client, error) {
 	}, nil
 }
 
-func (c Client) UpsertFile(filename, bucket, filenamePrefix string, pdfBytes []byte) error {
+// FormatFilename prepares a filename for S3:
+// - removes the filepath
+// - adds a suffix if it exists
+func FormatFilename(filename, suffix string) string {
+	ext := filepath.Ext(filename)        // Get the file extension (e.g., .pdf)
+	name := filepath.Base(filename)      // remove the filepath from the filename
+	name = strings.TrimSuffix(name, ext) // Remove the extension from the filename
+	if suffix != "" {
+		return fmt.Sprintf("%s-%s%s", name, suffix, ext) // Add the suffix if it exists
+	}
+	return fmt.Sprintf("%s%s", name, ext) // Return the original filename if no suffix
+}
+
+// UpsertFile uploads or replaces a file on s3
+func (c Client) UpsertFile(filename, bucket, s3FilenameSuffix string, pdfBytes []byte) error {
 	//#nosec:G304
 	data, err := os.ReadFile(filename) //#nosec:G304
 	if err != nil {
 		return fmt.Errorf("could not open file: %w", err)
 	}
-
+	uploadFilename := FormatFilename(filename, s3FilenameSuffix)
 	uploader := s3manager.NewUploader(c.session)
 	_, err = uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
-		Key:    aws.String(filenamePrefix + filename),
+		Key:    aws.String(uploadFilename),
 		Body:   bytes.NewReader(data),
 	})
 	if err != nil {
