@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -35,9 +34,9 @@ func NewClient(region string) (Client, error) {
 	}, nil
 }
 
-func (c Client) UpsertFile(htmlFilename, bucket, filenamePostfix string, pdfBytes []byte) error {
+func (c Client) UpsertFile(filename, bucket, filenamePrefix string, pdfBytes []byte) error {
 	//#nosec:G304
-	data, err := os.ReadFile(htmlFilename) //#nosec:G304
+	data, err := os.ReadFile(filename) //#nosec:G304
 	if err != nil {
 		return fmt.Errorf("could not open file: %w", err)
 	}
@@ -45,23 +44,12 @@ func (c Client) UpsertFile(htmlFilename, bucket, filenamePostfix string, pdfByte
 	uploader := s3manager.NewUploader(c.session)
 	_, err = uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
-		Key:    aws.String(htmlFilename + filenamePostfix),
+		Key:    aws.String(filenamePrefix + filename),
 		Body:   bytes.NewReader(data),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to upload %s to %s: %w", htmlFilename, bucket, err)
+		return fmt.Errorf("unable to upload %s to %s: %w", filename, bucket, err)
 	}
-	slog.Info("uploaded", "filename", htmlFilename, "to", "bucket", bucket, "successfully")
-
-	pdfFilename := strings.Replace(htmlFilename, ".html", "", -1) + ".pdf"
-	_, err = uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(pdfFilename + filenamePostfix),
-		Body:   bytes.NewReader(pdfBytes),
-	})
-	if err != nil {
-		return fmt.Errorf("unable to upload %s to %s: %w", string(pdfBytes), bucket, err)
-	}
-	slog.Info("uploaded successfully", slog.String("filename", pdfFilename+filenamePostfix), slog.String("bucket", bucket))
+	slog.Info("uploaded", "filename", filename, "to", "bucket", bucket, "successfully")
 	return nil
 }
