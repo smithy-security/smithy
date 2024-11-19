@@ -17,10 +17,8 @@
             .finding {
                 break-inside: avoid;
             }
-            h2:first-of-type {
-                break-before: page;
-            }
-            .scan-title:not(:first-of-type) {
+
+            .scan-title {
                 break-before: page;
             }
         }
@@ -33,10 +31,6 @@
         header img {
             max-width: 100px;
             height: auto;
-        }
-        h2 {
-            margin-top: 40px;
-            text-align: center;
         }
 
         .report {
@@ -58,14 +52,14 @@
             gap: 8px;
             justify-content: center;
         }
-        .scan-title span:not(:empty) + span::before{
+
+        .scan-title span:not(:empty) + span::before {
             content: ' - ';
         }
 
         .scan-details {
             margin-top: 10px;
         }
-
 
         .summary {
             margin-top: 30px;
@@ -113,6 +107,7 @@
         table td {
             border: 1px solid #d4c9b6;
             padding: 4px 10px;
+            word-wrap: break-word;
         }
 
         .summary-table {
@@ -227,16 +222,14 @@
         </table>
     </div>
 
-    <h2>Detailed Results</h2>
-
     <!-- Scan -->
     {{range .}}
     <div class="scan">
         <h3 class="scan-title">{{.OriginalResults.ToolName}}</h3>
         {{ if and .OriginalResults.ScanInfo.ScanStartTime (ne .OriginalResults.ScanInfo.ScanStartTime.Seconds 0) }}
-            <div class="scan-details">
-                <div class="scan-start-time">{{.OriginalResults.ScanInfo.ScanStartTime | formatTime}}</div>
-            </div>
+        <div class="scan-details">
+            <div class="scan-start-time">{{.OriginalResults.ScanInfo.ScanStartTime | formatTime}}</div>
+        </div>
         {{ end }}
         {{range .Issues}}
         <div class="finding">
@@ -282,14 +275,14 @@
                 {{ end }}
 
                 {{if gt (len .RawIssue.Cwe) 0}}
-                    <tr class="cwe-list">
-                        <th>CWE</th>
-                        <td>
-                            {{range .RawIssue.Cwe}}
-                                <a href="https://cwe.mitre.org/data/definitions/{{ . }}.html">{{ . }}</a>
-                            {{end}}
-                        </td>
-                    </tr>
+                <tr class="cwe-list">
+                    <th>CWE</th>
+                    <td>
+                        {{range .RawIssue.Cwe}}
+                        <a href="https://cwe.mitre.org/data/definitions/{{ . }}.html">{{ . }}</a>
+                        {{end}}
+                    </td>
+                </tr>
                 {{end}}
 
                 {{ if and .RawIssue.Target (ne .RawIssue.Target "") }}
@@ -366,21 +359,21 @@
         document.getElementById("total-high").innerHTML = document.querySelectorAll('.summary.SEVERITY_CRITICAL').length + document.querySelectorAll('.summary.SEVERITY_HIGH').length;
 
         // Remove the "SEVERITY_" prefix
-        document.querySelectorAll('.severity').forEach(function(element) {
+        document.querySelectorAll('.severity').forEach(function (element) {
             if (element.textContent.startsWith("SEVERITY_")) {
                 element.textContent = element.textContent.replace("SEVERITY_", "");
             }
         });
 
         // Remove the "CONFIDENCE_" prefix
-        document.querySelectorAll('.confidence').forEach(function(element) {
+        document.querySelectorAll('.confidence').forEach(function (element) {
             if (element.textContent.startsWith("CONFIDENCE_")) {
                 element.textContent = element.textContent.replace("CONFIDENCE_", "");
             }
         });
 
         // Reformat ".seen" results to show which vulns are New
-        document.querySelectorAll('.seen').forEach(function(element) {
+        document.querySelectorAll('.seen').forEach(function (element) {
             if (element.textContent === "0 times") {
                 element.textContent = element.textContent.replace("0 times", "Never");
                 element.classList.add("new");

@@ -89,7 +89,7 @@ func main() {
 	}
 }
 
-func run(responses any, s3FilenamePrefix string, pw playwright.Wrapper, s3Wrapper s3client.Wrapper) error {
+func run(responses any, s3FilenameSuffix string, pw playwright.Wrapper, s3Wrapper s3client.Wrapper) error {
 	slog.Info("reading pdf")
 	resultFilename, pdfBytes, err := buildPdf(responses, pw)
 	if err != nil {
@@ -99,7 +99,7 @@ func run(responses any, s3FilenamePrefix string, pw playwright.Wrapper, s3Wrappe
 
 	if !skipS3Upload {
 		slog.Info("uploading pdf to s3", slog.String("filename", resultFilename), slog.String("bucket", bucket), slog.String("region", region))
-		return s3Wrapper.UpsertFile(resultFilename, bucket, s3FilenamePrefix, pdfBytes)
+		return s3Wrapper.UpsertFile(resultFilename, bucket, s3FilenameSuffix, pdfBytes)
 	}
 	return nil
 }
