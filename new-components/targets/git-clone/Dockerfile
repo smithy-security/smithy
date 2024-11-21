@@ -6,17 +6,21 @@ WORKDIR /wrk
 # Copy only go related files.
 COPY go.mod go.sum ./
 COPY vendor ./vendor
-COPY cmd/git-clone ./cmd/git-clone
+COPY cmd ./cmd
 COPY pkg ./pkg
-# And builder.
-COPY Makefile .
 
-# Install make
-RUN apt-get update && \
-    apt-get install -y make && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN make build-target
+# Security hardening and building flags for minimal binaries.
+#
+# These CGO_CPPFLAGS help preventing overflows.
+# Add a small overhead at compile time.
+ENV CGO_CPPFLAGS="-D_FORTIFY_SOURCE=2 -fstack-protector-all"
+# Makes memory exploitation harder.
+# Add a small overhead at compile time.
+ENV GOFLAGS="-buildmode=pie"
+ENV CGO_ENABLED=0
+ENV GOOS="linux"
+ENV GOARCH="amd64"
+RUN go build -ldflags "-s -w" -trimpath -o app ./cmd/main.go
 
 # Create a workspace to clone repos to.
 RUN mkdir -p /workspace
@@ -24,7 +28,7 @@ RUN mkdir -p /workspace
 # Used to actually run the binary in minimal image.
 FROM gcr.io/distroless/base-debian12:nonroot
 
-COPY --from=builder --chown=65534:65534 /wrk/target /bin/target
+COPY --from=builder --chown=65534:65534 /wrk/app /bin/app
 COPY --from=builder --chown=65534:65534 /workspace /workspace
 
 # Run as UID for 'nobody' since k8s pod securityContext runAsNonRoot can't resolve the user ID:
@@ -35,4 +39,4 @@ USER 65534
 WORKDIR /workspace
 
 # Set the binary as the entry point
-ENTRYPOINT ["/bin/target"]
+ENTRYPOINT ["/bin/app"]
