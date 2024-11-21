@@ -32,11 +32,7 @@ func Main(ctx context.Context) error {
 		return errors.Errorf("could not create git clone target: %w", err)
 	}
 
-	if err := component.RunTarget(
-		ctx,
-		gitCloneTarget,
-		component.RunnerWithComponentName("git-clone"),
-	); err != nil {
+	if err := component.RunTarget(ctx, gitCloneTarget); err != nil {
 		return errors.Errorf("could not run target: %w", err)
 	}
 
