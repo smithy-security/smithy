@@ -1,0 +1,46 @@
+services:
+  # Main git-clone target.
+  # It starts when gitea is running and the seeder created the admin in it.
+  target:
+    build:
+      context: .
+      dockerfile: dockerfiles/git-clone/Dockerfile
+    platform: linux/amd64
+    env_file:
+      - env/.env.git-clone
+    volumes:
+      - ./testing/testdata/testrepo:/workspace
+    depends_on:
+      gitea:
+        condition: service_healthy
+      seeder:
+        condition: service_completed_successfully
+  # Creates an admin in gitea and a testrepo.
+  # It starts when gitea is running.
+  seeder:
+    build:
+      context: .
+      dockerfile: dockerfiles/seeder/Dockerfile
+    platform: linux/amd64
+    env_file:
+      - env/.env.seeder
+    depends_on:
+      gitea:
+        condition: service_healthy
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    restart: always
+    env_file:
+      - env/.env.gitea
+    volumes:
+      - ./pkg/git/testdata/gitea/data:/data
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    healthcheck:
+      test: "curl --fail http://localhost:3000 || exit 1"
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 1s
