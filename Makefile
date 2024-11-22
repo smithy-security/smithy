@@ -9,6 +9,9 @@ go_protos=$(protos:.proto=.pb.go)
 latest_tag=$(shell git tag --list --sort="-version:refname" | head -n 1)
 commits_since_latest_tag=$(shell git log --oneline $(latest_tag)..HEAD | wc -l)
 GO_TEST_PACKAGES=$(shell go list ./... | grep -v /vendor/)
+VENDOR_DIRS=$(shell find . -type d -name "vendor")
+NOT_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "-not -path \""$$i"/*\""}' | tr '\n' ' ')
+EXCLUDE_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "--exclude-path \""$$i"\""}' | tr '\n' ' ')
 
 # Deployment vars
 # The following variables are used to define the deployment environment
@@ -98,7 +101,7 @@ publish-component-containers: $(component_containers_publish)
 publish-containers: publish-component-containers smithyctl-image-publish
 
 clean-protos:
-	@find . -not -path './vendor/*' -name '*.pb.go' -delete
+	@find . $(NOT_VENDOR_PATHS) -name '*.pb.go' -delete
 
 clean-migrations-compose:
 	cd tests/migrations/ && docker compose rm --force
@@ -145,9 +148,9 @@ install-go-fmt-tools:
 	@go install golang.org/x/tools/cmd/goimports@latest
 
 fmt-go:
-	@echo "Tidying up Go files"
-	@gofmt -l -w $$(find . -name *.go -not -path "**/vendor/*" | xargs -n 1 dirname | uniq)
-	@goimports -local $$(cat go.mod | grep -E "^module" | sed 's/module //') -w $$(find . -name *.go -not -path "**/vendor/*" | xargs -n 1 dirname | uniq)
+	echo "Tidying up Go files"
+	$(shell find . -type f -name "*.go" -not -name "*.pb.*" $(NOT_VENDOR_PATHS) | xargs gofmt -w | uniq)
+	@goimports -local $$(cat go.mod | grep -E "^module" | sed 's/module //') -w $$(find . -type f -name *.go -not -name "*.pb.*" $(NOT_VENDOR_PATHS) | xargs -n 1 dirname | uniq)
 
 install-md-fmt-tools:
 	@npm ci
@@ -327,11 +330,11 @@ run-buf: build-buf-container
 
 fmt-proto: build-buf-container
 	@echo "Tidying up Proto files"
-	$(MAKE) run-buf ARGS="format -w --exclude-path vendor/"
+	$(MAKE) run-buf ARGS="format -w $(EXCLUDE_VENDOR_PATHS)"
 
 lint-proto: build-buf-container
 	@echo "Linting Proto files"
-	$(MAKE) run-buf ARGS="lint --exclude-path vendor/"
+	$(MAKE) run-buf ARGS="lint $(EXCLUDE_VENDOR_PATHS)"
 
 # Buf doesn't have a way to configure where to put the generated code from remote repositories;
 # that's why we make sure to correctly move it around. In this case it's just COM for OCSF types.

@@ -8,7 +8,7 @@ RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.35.1
 
 # Install git and its dependencies to enable cloning as we generate protos from remote for OCSF.
 FROM alpine AS git
-RUN apk --no-cache add git ca-certificates openssl
+RUN apk --no-cache add git ca-certificates openssl diffutils
 RUN mkdir -p /git-deps/bin /git-deps/lib /git-deps/etc/ssl/certs
 RUN cp /usr/bin/git /git-deps/bin
 RUN cp /usr/libexec/git-core/git-remote-https /git-deps/bin/
@@ -25,6 +25,7 @@ COPY --from=git /git-deps/bin/git /usr/bin/
 COPY --from=git /git-deps/bin/git-remote-https /usr/bin/
 COPY --from=git /git-deps/lib /lib/
 COPY --from=git /git-deps/etc/ssl/certs /etc/ssl/certs/
+COPY --from=git /usr/bin/diff /usr/bin/diff
 ENV GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt
 ENV PATH="/go/bin:/usr/bin:${PATH}"
 ENTRYPOINT ["/go/bin/buf"]
