@@ -13,7 +13,10 @@ import (
 	"github.com/smithy-security/pkg/env"
 )
 
-const errInvalidConfigurationReasonEmpty = "cannot be empty"
+const (
+	errInvalidConfigurationStr         = "invalid option field '%s': %s"
+	errInvalidConfigurationReasonEmpty = "cannot be empty"
+)
 
 type (
 	// Conf wraps the component configuration.
@@ -37,30 +40,11 @@ type (
 		repo *git.Repository
 	}
 
-	// ErrInvalidConfiguration is used in the constructor.
-	ErrInvalidConfiguration struct {
-		fieldName     string
-		reason        string
-		underlyingErr error
-	}
-
 	manager struct {
 		clonePath    string
 		cloneOptions *git.CloneOptions
 	}
 )
-
-func (e ErrInvalidConfiguration) Error() string {
-	errStr := fmt.Sprintf("invalid option field '%s': %s", e.fieldName, e.reason)
-	if e.underlyingErr != nil {
-		errStr += fmt.Sprintf(": %s", e.underlyingErr.Error())
-	}
-	return errStr
-}
-
-func (e ErrInvalidConfiguration) Unwrap() error {
-	return e.underlyingErr
-}
 
 // NewConf returns a new configuration build from environment lookup.
 func NewConf(envLoader env.Loader) (*Conf, error) {
@@ -75,17 +59,17 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 		append(envOpts, env.WithDefaultOnError(true))...,
 	)
 	if err != nil {
-		return nil, errors.Errorf("failed to get GIT_CLONE_PATH: %w", err)
+		return nil, err
 	}
 
 	repoURL, err := env.GetOrDefault("GIT_CLONE_REPO_URL", "", envOpts...)
 	if err != nil {
-		return nil, errors.Errorf("failed to get GIT_CLONE_REPO_URL: %w", err)
+		return nil, err
 	}
 
 	reference, err := env.GetOrDefault("GIT_CLONE_REFERENCE", "", envOpts...)
 	if err != nil {
-		return nil, errors.Errorf("failed to get GIT_CLONE_REFERENCE: %w", err)
+		return nil, err
 	}
 
 	authEnabled, err := env.GetOrDefault(
@@ -94,13 +78,13 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 		append(envOpts, env.WithDefaultOnError(true))...,
 	)
 	if err != nil {
-		return nil, errors.Errorf("failed to get GIT_CLONE_AUTH_ENABLED: %w", err)
+		return nil, err
 	}
 
 	accessToken, err := env.GetOrDefault(
 		"GIT_CLONE_ACCESS_TOKEN", "", append(envOpts, env.WithDefaultOnError(true))...)
 	if err != nil {
-		return nil, errors.Errorf("failed to get GIT_CLONE_ACCESS_TOKEN: %w", err)
+		return nil, err
 	}
 
 	accessUsername, err := env.GetOrDefault(
@@ -109,7 +93,7 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 		append(envOpts, env.WithDefaultOnError(true))...,
 	)
 	if err != nil {
-		return nil, errors.Errorf("failed to get GIT_CLONE_ACCESS_USERNAME: %w", err)
+		return nil, err
 	}
 
 	return &Conf{
@@ -128,29 +112,16 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 func NewManager(conf *Conf) (*manager, error) {
 	switch {
 	case conf.RepoURL == "":
-		return nil, ErrInvalidConfiguration{
-			fieldName: "repo_url",
-			reason:    errInvalidConfigurationReasonEmpty,
-		}
+		return nil, fmt.Errorf(errInvalidConfigurationStr, "repo_url", errInvalidConfigurationReasonEmpty)
 	case conf.Reference == "":
-		return nil, ErrInvalidConfiguration{
-			fieldName: "reference",
-			reason:    errInvalidConfigurationReasonEmpty,
-		}
+		return nil, fmt.Errorf(errInvalidConfigurationStr, "reference", errInvalidConfigurationReasonEmpty)
 	case conf.ClonePath == "":
-		return nil, ErrInvalidConfiguration{
-			fieldName: "clone_path",
-			reason:    errInvalidConfigurationReasonEmpty,
-		}
+		return nil, fmt.Errorf(errInvalidConfigurationStr, "clone_path", errInvalidConfigurationReasonEmpty)
 	}
 
 	u, err := url.Parse(conf.RepoURL)
 	if err != nil {
-		return nil, ErrInvalidConfiguration{
-			fieldName:     "repo_url",
-			reason:        "couldn't parse",
-			underlyingErr: err,
-		}
+		return nil, fmt.Errorf(errInvalidConfigurationStr+": %w", "repo_url", "couldn't parse", err)
 	}
 
 	opts := &git.CloneOptions{
@@ -172,16 +143,10 @@ func NewManager(conf *Conf) (*manager, error) {
 	// This is off by default to facilitate local setup.
 	if conf.ConfAuth.AuthEnabled {
 		if conf.ConfAuth.AccessToken == "" {
-			return nil, ErrInvalidConfiguration{
-				fieldName: "auth_access_token",
-				reason:    errInvalidConfigurationReasonEmpty,
-			}
+			return nil, fmt.Errorf(errInvalidConfigurationStr, "auth_access_token", errInvalidConfigurationReasonEmpty)
 		}
 		if conf.ConfAuth.Username == "" {
-			return nil, ErrInvalidConfiguration{
-				fieldName: "auth_username",
-				reason:    errInvalidConfigurationReasonEmpty,
-			}
+			return nil, fmt.Errorf(errInvalidConfigurationStr, "auth_username", errInvalidConfigurationReasonEmpty)
 		}
 		opts.Auth = &http.BasicAuth{
 			Username: conf.ConfAuth.Username,
