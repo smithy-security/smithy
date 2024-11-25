@@ -9,3 +9,4 @@ tests/output
 deploy/smithy/chart/charts
 .idea/
 components/consumers/pdf/report.html
+new-components/targets/git-clone/pkg/git/testdata/gitea

@@ -32,8 +32,6 @@ func TestTestGitCloneSuite(t *testing.T) {
 	suite.Run(t, new(TestGitCloneSuite))
 }
 
-func (s *TestGitCloneSuite) SetupSuite() {}
-
 func (s *TestGitCloneSuite) SetupTest() {
 	pool, err := dockertest.NewPool("")
 	require.NoError(s.T(), err)
@@ -156,7 +154,6 @@ func (s *TestGitCloneSuite) SetupTest() {
 		&dockertest.RunOptions{
 			Name: "target",
 			Env: []string{
-				"SMITHY_COMPONENT_NAME=git-clone",
 				"SMITHY_INSTANCE_ID=8d719c1c-c569-4078-87b3-4951bd4012ee",
 				"SMITHY_LOG_LEVEL=debug",
 				"SMITHY_BACKEND_STORE_TYPE=local",
