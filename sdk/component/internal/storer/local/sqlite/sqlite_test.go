@@ -29,8 +29,6 @@ type (
 		component.Reader
 		component.Updater
 		component.Writer
-
-		CreateTable() error
 	}
 
 	ManagerTestSuite struct {
@@ -54,7 +52,6 @@ func (mts *ManagerTestSuite) SetupTest() {
 
 	mts.manager, err = sqlite.NewManager("smithy.db", sqlite.ManagerWithClock(clock))
 	require.NoError(mts.t, err)
-	require.NoError(mts.T(), mts.manager.CreateTable())
 }
 
 func (mts *ManagerTestSuite) TearDownTest() {
