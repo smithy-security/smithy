@@ -74,6 +74,10 @@ func NewManager(dsn string, opts ...managerOption) (*manager, error) {
 		}
 	}
 
+	if err := mgr.migrate(); err != nil {
+		return nil, errors.Errorf("could not apply migrations: %w", err)
+	}
+
 	return mgr, nil
 }
 
@@ -209,6 +213,29 @@ func (m *manager) Close(ctx context.Context) error {
 		return errors.Errorf("could not close sqlite db: %w", err)
 	}
 	return nil
+}
+
+// TODO: potentially leverage migrations here but this is simple enough for now for local setup.
+// Tracked here https://linear.app/smithy/issue/OCU-274/automigrate-on-sqlite-storage.
+func (m *manager) migrate() error {
+	stmt, err := m.db.Prepare(`
+		CREATE TABLE IF NOT EXISTS finding (
+			id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+			instance_id UUID NOT NULL UNIQUE,
+			findings TEXT NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		);
+	`)
+	if err != nil {
+		return fmt.Errorf("could not prepare statement for creating table: %w", err)
+	}
+
+	if _, err := stmt.Exec(); err != nil {
+		return fmt.Errorf("could not create table: %w", err)
+	}
+
+	return stmt.Close()
 }
 
 func (m *manager) marshalFindings(findings []*ocsf.VulnerabilityFinding) (string, error) {
