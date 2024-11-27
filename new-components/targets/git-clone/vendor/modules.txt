@@ -302,8 +302,8 @@ github.com/skeema/knownhosts
 # github.com/smithy-security/pkg/env v0.0.1
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/smithy/sdk v0.0.0-20241113104632-54476f7ce983
-## explicit; go 1.23.0
+# github.com/smithy-security/smithy/sdk v0.0.2-alpha
+## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component
 github.com/smithy-security/smithy/sdk/component/internal/storer

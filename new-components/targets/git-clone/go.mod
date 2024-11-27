@@ -9,7 +9,7 @@ require (
 	github.com/jonboulle/clockwork v0.4.0
 	github.com/ory/dockertest/v3 v3.11.0
 	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/smithy/sdk v0.0.0-20241113104632-54476f7ce983
+	github.com/smithy-security/smithy/sdk v0.0.2-alpha
 	github.com/stretchr/testify v1.9.0
 )
 
