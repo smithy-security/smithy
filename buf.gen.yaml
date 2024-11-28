@@ -3,10 +3,3 @@ plugins:
   - local: protoc-gen-go
     out: .
     opt: paths=source_relative
-inputs:
-  - proto_file: api/proto/v1/issue.proto
-  - proto_file: api/proto/v1/engine.proto
-  - git_repo: https://github.com/ocsf/examples
-    branch: main
-    ref: ba2a49f2bb1faf0c75ece9b6a9c5cd608eafbc67
-    subdir: encodings/protobuf/proto

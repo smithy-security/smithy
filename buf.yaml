@@ -1,12 +1,13 @@
 ---
 version: v2
-lint:
-  use:
-    - STANDARD
-    - COMMENTS
-    - UNARY_RPC
-    - PACKAGE_NO_IMPORT_CYCLE
-  except:
-    # we use Please to run protoc where we only need the last part of the
-    # package name to match the directory name.
-    - PACKAGE_DIRECTORY_MATCH
+modules:
+  - path: proto
+    name: smithy-security/smithy/ocsf_ext
+    lint:
+      use:
+        - STANDARD
+        - COMMENTS
+        - UNARY_RPC
+        - PACKAGE_NO_IMPORT_CYCLE
+      except:
+        - PACKAGE_DIRECTORY_MATCH
