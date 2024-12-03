@@ -22,7 +22,7 @@ import (
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
-const goSecOutPath = "gosec_out.json"
+const goSecOutPath = "gosec.sarif"
 
 var (
 	confidences = map[string]*ocsf.VulnerabilityFinding_ConfidenceId{
@@ -104,7 +104,7 @@ func (g *goSecScanner) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFind
 func (g *goSecScanner) parseVulns(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	f, err := os.Open(goSecOutPath)
 	if err != nil {
-		return nil, fmt.Errorf("could not open gosec_out.json: %w", err)
+		return nil, fmt.Errorf("could not open gosec.sarif: %w", err)
 	}
 
 	defer func() {
@@ -112,7 +112,7 @@ func (g *goSecScanner) parseVulns(ctx context.Context) ([]*ocsf.VulnerabilityFin
 			component.
 				LoggerFromContext(ctx).
 				Error(
-					"could not close gosec_out.json",
+					"could not close gosec.sarif",
 					slog.String("err", err.Error()),
 				)
 		}
@@ -121,7 +121,7 @@ func (g *goSecScanner) parseVulns(ctx context.Context) ([]*ocsf.VulnerabilityFin
 			component.
 				LoggerFromContext(ctx).
 				Error(
-					"could not remove gosec_out.json",
+					"could not remove gosec.sarif",
 					slog.String("err", err.Error()),
 				)
 		}
@@ -129,12 +129,12 @@ func (g *goSecScanner) parseVulns(ctx context.Context) ([]*ocsf.VulnerabilityFin
 
 	b, err := io.ReadAll(f)
 	if err != nil {
-		return nil, fmt.Errorf("could not read gosec_out.json: %w", err)
+		return nil, fmt.Errorf("could not read gosec.sarif: %w", err)
 	}
 
 	var out GoSecOut
 	if err := json.Unmarshal(b, &out); err != nil {
-		return nil, fmt.Errorf("could not decode gosec_out.json: %w", err)
+		return nil, fmt.Errorf("could not decode gosec.sarif: %w", err)
 	}
 
 	var (
@@ -224,12 +224,8 @@ func (g *goSecScanner) runGoSec(ctx context.Context) error {
 		Tag:        "2.15.0",
 		WorkingDir: "/workspace",
 		Cmd: []string{
-			"-r",
-			"-sort",
-			"-nosec",
-			"-fmt=json",
+			"-fmt=sarif",
 			fmt.Sprintf("-out=%s", goSecOutPath),
-			"-no-fail",
 			fmt.Sprintf("./%s", g.repoPath),
 		},
 	}, func(config *docker.HostConfig) {

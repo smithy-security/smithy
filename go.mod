@@ -1,6 +1,6 @@
 module github.com/smithy-security/smithy
 
-go 1.23
+go 1.23.2
 
 require (
 	cloud.google.com/go/bigquery v1.57.1
@@ -24,7 +24,7 @@ require (
 	github.com/owenrumney/go-sarif/v2 v2.1.2
 	github.com/package-url/packageurl-go v0.1.0
 	github.com/playwright-community/playwright-go v0.4702.0
-	github.com/smithy-security/smithy/sdk v0.0.0-20241105123058-5f86d13d1f37
+	github.com/smithy-security/smithy/sdk v0.0.2-alpha
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.11.0
 	github.com/stretchr/testify v1.9.0
@@ -162,6 +162,7 @@ require (
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/skeema/knownhosts v1.2.1 // indirect
+	github.com/smithy-security/pkg/env v0.0.1 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/urfave/cli/v2 v2.26.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
