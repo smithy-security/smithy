@@ -793,8 +793,11 @@ github.com/sirupsen/logrus
 # github.com/skeema/knownhosts v1.2.1
 ## explicit; go 1.17
 github.com/skeema/knownhosts
-# github.com/smithy-security/smithy/sdk v0.0.0-20241105123058-5f86d13d1f37
-## explicit; go 1.23.0
+# github.com/smithy-security/pkg/env v0.0.1
+## explicit; go 1.23.2
+github.com/smithy-security/pkg/env
+# github.com/smithy-security/smithy/sdk v0.0.2-alpha
+## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component
 github.com/smithy-security/smithy/sdk/component/internal/storer

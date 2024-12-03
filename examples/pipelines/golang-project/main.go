@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	repoPath = "govwa"
+	repoPath = "damn-vulnerable-golang"
 )
 
 func main() {
@@ -24,10 +24,6 @@ func main() {
 }
 
 func Main(ctx context.Context) error {
-	if err := migrate(); err != nil {
-		log.Fatalf("failed to migrate: %v", err)
-	}
-
 	defer func() {
 		if err := os.RemoveAll("smithy.db"); err != nil {
 			log.Printf("failed to remove sqlite db: %v\n", err)
@@ -44,7 +40,7 @@ func Main(ctx context.Context) error {
 		}
 	}()
 
-	gitClone, err := NewGitCloneTarget("https://github.com/0c34/govwa.git", repoPath)
+	gitClone, err := NewGitCloneTarget("git@github.com:TheHackerDev/damn-vulnerable-golang.git", repoPath)
 	if err != nil {
 		return fmt.Errorf("failed to create git clone target: %w", err)
 	}

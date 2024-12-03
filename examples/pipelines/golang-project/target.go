@@ -34,8 +34,11 @@ func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 	logger.Debug("preparing to clone repo")
 
 	if _, err := git.PlainClone(g.clonePath, false, &git.CloneOptions{
+		Depth:             1,
+		ReferenceName:     "main",
+		ShallowSubmodules: true,
+		SingleBranch:      true,
 		URL:               g.repositoryURL,
-		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 	}); err != nil {
 		return fmt.Errorf("could not clone repository: %w", err)
 	}

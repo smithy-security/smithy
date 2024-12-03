@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-errors/errors"
+	"github.com/smithy-security/pkg/env"
 
 	"github.com/smithy-security/smithy/sdk"
 	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
@@ -191,12 +192,12 @@ func newRunnerConfig() (*RunnerConfig, error) {
 		return nil, errors.Errorf("could not construct panic handler: %w", err)
 	}
 
-	componentName, err := fromEnvOrDefault(envVarKeyComponentName, "", withFallbackToDefaultOnError(true))
+	componentName, err := env.GetOrDefault(envVarKeyComponentName, "", env.WithDefaultOnError(true))
 	if err != nil {
 		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyComponentName, err)
 	}
 
-	instanceIDStr, err := fromEnvOrDefault(envVarKeyInstanceID, "", withFallbackToDefaultOnError(true))
+	instanceIDStr, err := env.GetOrDefault(envVarKeyInstanceID, "", env.WithDefaultOnError(true))
 	if err != nil {
 		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyInstanceID, err)
 	}
@@ -208,10 +209,10 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	// --- END - BASIC ENV - END ---
 
 	// --- BEGIN - LOGGING ENV - BEGIN ---
-	logLevel, err := fromEnvOrDefault(
+	logLevel, err := env.GetOrDefault(
 		envVarKeyLoggingLogLevel,
 		RunnerConfigLoggingLevelDebug.String(),
-		withFallbackToDefaultOnError(true),
+		env.WithDefaultOnError(true),
 	)
 	if err != nil {
 		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyLoggingLogLevel, err)
@@ -224,7 +225,7 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	// --- END - LOGGING ENV - END ---
 
 	// --- BEGIN - STORER ENV - BEGIN ---
-	st, err := fromEnvOrDefault(envVarKeyBackendStoreType, "", withFallbackToDefaultOnError(true))
+	st, err := env.GetOrDefault(envVarKeyBackendStoreType, "", env.WithDefaultOnError(true))
 	if err != nil {
 		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyBackendStoreType, err)
 	}
@@ -248,10 +249,10 @@ func newRunnerConfig() (*RunnerConfig, error) {
 
 		conf.storerConfig.storeType = storageType
 
-		dbDSN, err := fromEnvOrDefault(
+		dbDSN, err := env.GetOrDefault(
 			envVarKeyBackendStoreDSN,
 			"smithy.db",
-			withFallbackToDefaultOnError(true),
+			env.WithDefaultOnError(true),
 		)
 		if err != nil {
 			return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyBackendStoreDSN, err)
