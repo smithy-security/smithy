@@ -15,7 +15,7 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 
-	uuid "github.com/smithy-security/smithy/sdk/component/internal/uuid"
+	component "github.com/smithy-security/smithy/sdk/component"
 	pb "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
@@ -82,7 +82,7 @@ func (m *MockReader) EXPECT() *MockReaderMockRecorder {
 }
 
 // Read mocks base method.
-func (m *MockReader) Read(ctx context.Context, instanceID uuid.UUID) ([]*pb.VulnerabilityFinding, error) {
+func (m *MockReader) Read(ctx context.Context, instanceID component.UUID) ([]*pb.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", ctx, instanceID)
 	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
@@ -121,7 +121,7 @@ func (m *MockUpdater) EXPECT() *MockUpdaterMockRecorder {
 }
 
 // Update mocks base method.
-func (m *MockUpdater) Update(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockUpdater) Update(ctx context.Context, instanceID component.UUID, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
@@ -159,7 +159,7 @@ func (m *MockWriter) EXPECT() *MockWriterMockRecorder {
 }
 
 // Write mocks base method.
-func (m *MockWriter) Write(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockWriter) Write(ctx context.Context, instanceID component.UUID, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
@@ -249,7 +249,7 @@ func (mr *MockStorerMockRecorder) Close(arg0 any) *gomock.Call {
 }
 
 // Read mocks base method.
-func (m *MockStorer) Read(ctx context.Context, instanceID uuid.UUID) ([]*pb.VulnerabilityFinding, error) {
+func (m *MockStorer) Read(ctx context.Context, instanceID component.UUID) ([]*pb.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", ctx, instanceID)
 	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
@@ -264,7 +264,7 @@ func (mr *MockStorerMockRecorder) Read(ctx, instanceID any) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockStorer) Update(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockStorer) Update(ctx context.Context, instanceID component.UUID, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
@@ -292,7 +292,7 @@ func (mr *MockStorerMockRecorder) Validate(finding any) *gomock.Call {
 }
 
 // Write mocks base method.
-func (m *MockStorer) Write(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockStorer) Write(ctx context.Context, instanceID component.UUID, findings []*pb.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)

@@ -1,22 +1,23 @@
-package uuid
+package component
 
 import (
 	"github.com/go-errors/errors"
 	"github.com/google/uuid"
 )
 
+// Nil is a UUID zero value.
 var Nil = UUID(uuid.Nil)
 
 // UUID is an alias for a google uuid.
 type UUID uuid.UUID
 
-// New returns a new UUID.
-func New() UUID {
+// NewUUID returns a new UUID.
+func NewUUID() UUID {
 	return UUID(uuid.New())
 }
 
-// Parse parses a string as UUID.
-func Parse(s string) (UUID, error) {
+// ParseUUID parses a string as UUID.
+func ParseUUID(s string) (UUID, error) {
 	if s == "" {
 		return Nil, nil
 	}

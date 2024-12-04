@@ -1,8 +1,7 @@
-package sqlite_test
+package component_test
 
 import (
 	"context"
-	"os"
 	"testing"
 	"time"
 
@@ -13,29 +12,15 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/smithy-security/smithy/sdk/component"
-	"github.com/smithy-security/smithy/sdk/component/internal/storer"
-	"github.com/smithy-security/smithy/sdk/component/internal/storer/local/sqlite"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
-const (
-	dbName = "smithy.db"
-)
-
 type (
-	localStorer interface {
-		component.Closer
-		component.Reader
-		component.Updater
-		component.Writer
-	}
-
 	ManagerTestSuite struct {
 		suite.Suite
 
 		t       *testing.T
-		manager localStorer
+		manager component.Storer
 	}
 )
 
@@ -46,11 +31,7 @@ func (mts *ManagerTestSuite) SetupTest() {
 		clock = clockwork.NewFakeClock()
 	)
 
-	f, err := os.Create(dbName)
-	require.NoError(mts.t, err)
-	require.NoError(mts.t, f.Close())
-
-	mts.manager, err = sqlite.NewManager("smithy.db", sqlite.ManagerWithClock(clock))
+	mts.manager, err = component.NewLocalStoreManager(component.ManagerWithClock(clock))
 	require.NoError(mts.t, err)
 }
 
@@ -58,13 +39,12 @@ func (mts *ManagerTestSuite) TearDownTest() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	require.NoError(mts.t, mts.manager.Close(ctx))
-	require.NoError(mts.t, os.Remove(dbName))
 }
 
 func (mts *ManagerTestSuite) TestManager() {
 	var (
 		ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
-		instanceID  = uuid.New()
+		instanceID  = component.NewUUID()
 		findings    = []*ocsf.VulnerabilityFinding{
 			{
 				ActivityId:      ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
@@ -146,7 +126,7 @@ func (mts *ManagerTestSuite) TestManager() {
 			ctx,
 			instanceID,
 		)
-		require.ErrorIs(t, err, storer.ErrNoFindingsFound)
+		require.ErrorIs(t, err, component.ErrNoFindingsFound)
 		require.Len(mts.t, resFindings, 0)
 	})
 
@@ -182,8 +162,8 @@ func (mts *ManagerTestSuite) TestManager() {
 	mts.t.Run("given a non existing instance id in the database, updating should fail", func(t *testing.T) {
 		require.ErrorIs(
 			mts.t,
-			mts.manager.Update(ctx, uuid.New(), findings),
-			storer.ErrNoFindingsFound,
+			mts.manager.Update(ctx, component.NewUUID(), findings),
+			component.ErrNoFindingsFound,
 		)
 	})
 
