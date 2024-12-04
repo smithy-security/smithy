@@ -1,0 +1,1314 @@
+{
+	"runs": [
+		{
+			"results": [
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 11,
+									"endLine": 106,
+									"snippet": {
+										"text": "token := rand.Int()"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 11,
+									"startLine": 106
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Use of weak random number generator (math/rand instead of crypto/rand)"
+					},
+					"ruleId": "G404"
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 13,
+									"endLine": 98,
+									"snippet": {
+										"text": "config := \u0026tls.Config{\nMinVersion: tls.VersionSSL30,\n}\n"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 13,
+									"startLine": 96
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "TLS MinVersion too low."
+					},
+					"ruleId": "G402",
+					"ruleIndex": 1
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 77,
+									"snippet": {
+										"text": "pass := \"' OR 1=1--\""
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 77
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Potential hardcoded credentials"
+					},
+					"ruleId": "G101",
+					"ruleIndex": 2
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 21,
+									"endLine": 138,
+									"snippet": {
+										"text": "var intVal int16 = int16(num)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 21,
+									"startLine": 138
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Potential Integer overflow made by strconv.Atoi result conversion to int16/32"
+					},
+					"ruleId": "G109",
+					"ruleIndex": 3
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 15,
+									"endLine": 114,
+									"snippet": {
+										"text": "cipher, _ := rc4.NewCipher([]byte(\"secret\"))"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 15,
+									"startLine": 114
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Use of weak cryptographic primitive"
+					},
+					"ruleId": "G401",
+					"ruleIndex": 4
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 14,
+									"endLine": 88,
+									"snippet": {
+										"text": "block, _ := des.NewCipher(key)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 14,
+									"startLine": 88
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Use of weak cryptographic primitive"
+					},
+					"ruleId": "G401",
+					"ruleIndex": 4
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 10,
+									"endLine": 36,
+									"snippet": {
+										"text": "hash := md5.New()"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 10,
+									"startLine": 36
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Use of weak cryptographic primitive"
+					},
+					"ruleId": "G401",
+					"ruleIndex": 4
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 12,
+									"endLine": 152,
+									"snippet": {
+										"text": "log.Fatal(http.ListenAndServe(\":8080\", nil))"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 12,
+									"startLine": 152
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Use of net/http serve function that has no support for setting timeouts"
+					},
+					"ruleId": "G114",
+					"ruleIndex": 5
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 11,
+									"endLine": 78,
+									"snippet": {
+										"text": "query := fmt.Sprintf(\"SELECT * FROM users WHERE username='%s' AND password='%s'\", username, pass)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 11,
+									"startLine": 78
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "SQL string formatting"
+					},
+					"ruleId": "G201",
+					"ruleIndex": 6
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 16,
+									"endLine": 47,
+									"snippet": {
+										"text": "data, err := os.ReadFile(filePath)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 16,
+									"startLine": 47
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Potential file inclusion via variable"
+					},
+					"ruleId": "G304",
+					"ruleIndex": 7
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 129,
+									"snippet": {
+										"text": "http.Get(url)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 129
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Potential HTTP request made with variable url"
+					},
+					"ruleId": "G107",
+					"ruleIndex": 8
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 10,
+									"endLine": 149,
+									"snippet": {
+										"text": "_, _ = io.Copy(os.Stdout, gzr)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 10,
+									"startLine": 149
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Potential DoS vulnerability via decompression bomb"
+					},
+					"ruleId": "G110",
+					"ruleIndex": 9
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 121,
+									"snippet": {
+										"text": "defer resp.Body.Close()"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 121
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Deferring unsafe method \"Close\" on type \"io.ReadCloser\""
+					},
+					"ruleId": "G307",
+					"ruleIndex": 10
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 69,
+									"snippet": {
+										"text": "defer f.Close()"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 69
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Deferring unsafe method \"Close\" on type \"*os.File\""
+					},
+					"ruleId": "G307",
+					"ruleIndex": 10
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 7,
+									"snippet": {
+										"text": "\"crypto/rc4\""
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 7
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Blocklisted import crypto/rc4: weak cryptographic primitive"
+					},
+					"ruleId": "G503",
+					"ruleIndex": 11
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 6,
+									"snippet": {
+										"text": "\"crypto/md5\""
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 6
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Blocklisted import crypto/md5: weak cryptographic primitive"
+					},
+					"ruleId": "G501",
+					"ruleIndex": 12
+				},
+				{
+					"level": "error",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 5,
+									"snippet": {
+										"text": "\"crypto/des\""
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 5
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Blocklisted import crypto/des: weak cryptographic primitive"
+					},
+					"ruleId": "G502",
+					"ruleIndex": 13
+				},
+				{
+					"level": "warning",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 129,
+									"snippet": {
+										"text": "http.Get(url)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 129
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Errors unhandled."
+					},
+					"ruleId": "G104",
+					"ruleIndex": 14
+				},
+				{
+					"level": "warning",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 80,
+									"snippet": {
+										"text": "db.Exec(query)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 80
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Errors unhandled."
+					},
+					"ruleId": "G104",
+					"ruleIndex": 14
+				},
+				{
+					"level": "warning",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 2,
+									"endLine": 62,
+									"snippet": {
+										"text": "cmd.Run()"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 2,
+									"startLine": 62
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Errors unhandled."
+					},
+					"ruleId": "G104",
+					"ruleIndex": 14
+				},
+				{
+					"level": "warning",
+					"locations": [
+						{
+							"physicalLocation": {
+								"artifactLocation": {
+									"uri": "main.go"
+								},
+								"region": {
+									"endColumn": 3,
+									"endLine": 52,
+									"snippet": {
+										"text": "w.Write(data)"
+									},
+									"sourceLanguage": "go",
+									"startColumn": 3,
+									"startLine": 52
+								}
+							}
+						}
+					],
+					"message": {
+						"text": "Errors unhandled."
+					},
+					"ruleId": "G104",
+					"ruleIndex": 14
+				}
+			],
+			"taxonomies": [
+				{
+					"downloadUri": "https://cwe.mitre.org/data/xml/cwec_v4.4.xml.zip",
+					"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+					"informationUri": "https://cwe.mitre.org/data/published/cwe_v4.4.pdf/",
+					"isComprehensive": true,
+					"language": "en",
+					"minimumRequiredLocalizedDataSemanticVersion": "4.4",
+					"name": "CWE",
+					"organization": "MITRE",
+					"releaseDateUtc": "2021-03-15",
+					"shortDescription": {
+						"text": "The MITRE Common Weakness Enumeration"
+					},
+					"taxa": [
+						{
+							"fullDescription": {
+								"text": "The software performs a calculation that can produce an integer overflow or wraparound, when the logic assumes that the resulting value will always be larger than the original value. This can introduce other weaknesses when the calculation is used for resource management or execution control."
+							},
+							"guid": "c71e4fa0-720e-3e82-8b67-b2d44d0c604b",
+							"helpUri": "https://cwe.mitre.org/data/definitions/190.html",
+							"id": "190",
+							"shortDescription": {
+								"text": "Integer Overflow or Wraparound"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The software uses external input to construct a pathname that is intended to identify a file or directory that is located underneath a restricted parent directory, but the software does not properly neutralize special elements within the pathname that can cause the pathname to resolve to a location that is outside of the restricted directory."
+							},
+							"guid": "3e718404-88bc-3f17-883e-e85e74078a76",
+							"helpUri": "https://cwe.mitre.org/data/definitions/22.html",
+							"id": "22",
+							"shortDescription": {
+								"text": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The software does not validate, or incorrectly validates, a certificate."
+							},
+							"guid": "09e885ea-951b-3143-801a-241b3aa9e6c9",
+							"helpUri": "https://cwe.mitre.org/data/definitions/295.html",
+							"id": "295",
+							"shortDescription": {
+								"text": "Improper Certificate Validation"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The software stores or transmits sensitive data using an encryption scheme that is theoretically sound, but is not strong enough for the level of protection required."
+							},
+							"guid": "fe6ccccf-c3a1-354b-b67c-6c76007360e6",
+							"helpUri": "https://cwe.mitre.org/data/definitions/326.html",
+							"id": "326",
+							"shortDescription": {
+								"text": "Inadequate Encryption Strength"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The use of a broken or risky cryptographic algorithm is an unnecessary risk that may result in the exposure of sensitive information."
+							},
+							"guid": "3d8ac75a-952a-30cd-ab4f-911c879d8d2b",
+							"helpUri": "https://cwe.mitre.org/data/definitions/327.html",
+							"id": "327",
+							"shortDescription": {
+								"text": "Use of a Broken or Risky Cryptographic Algorithm"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The product uses a Pseudo-Random Number Generator (PRNG) in a security context, but the PRNG's algorithm is not cryptographically strong."
+							},
+							"guid": "0512047f-75a2-3ac3-bb28-97df3a80efbe",
+							"helpUri": "https://cwe.mitre.org/data/definitions/338.html",
+							"id": "338",
+							"shortDescription": {
+								"text": "Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The software does not handle or incorrectly handles a compressed input with a very high compression ratio that produces a large output."
+							},
+							"guid": "8f97f42f-c62a-3d38-b26d-97951029c895",
+							"helpUri": "https://cwe.mitre.org/data/definitions/409.html",
+							"id": "409",
+							"shortDescription": {
+								"text": "Improper Handling of Highly Compressed Data (Data Amplification)"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The program invokes a potentially dangerous function that could introduce a vulnerability if it is used incorrectly, but the function can also be used safely."
+							},
+							"guid": "f97fef5f-b85b-3d63-9932-7053f298803d",
+							"helpUri": "https://cwe.mitre.org/data/definitions/676.html",
+							"id": "676",
+							"shortDescription": {
+								"text": "Use of Potentially Dangerous Function"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The software does not properly anticipate or handle exceptional conditions that rarely occur during normal operation of the software."
+							},
+							"guid": "7df38d1d-038e-3ced-8601-8d9265b90a25",
+							"helpUri": "https://cwe.mitre.org/data/definitions/703.html",
+							"id": "703",
+							"shortDescription": {
+								"text": "Improper Check or Handling of Exceptional Conditions"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The software contains hard-coded credentials, such as a password or cryptographic key, which it uses for its own inbound authentication, outbound communication to external components, or encryption of internal data."
+							},
+							"guid": "93d834a1-2cc5-38db-837f-66dfc7d711cc",
+							"helpUri": "https://cwe.mitre.org/data/definitions/798.html",
+							"id": "798",
+							"shortDescription": {
+								"text": "Use of Hard-coded Credentials"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The software constructs a string for a command to executed by a separate component\nin another control sphere, but it does not properly delimit the\nintended arguments, options, or switches within that command string."
+							},
+							"guid": "d684c7e2-3856-3079-900b-f59c57ace34b",
+							"helpUri": "https://cwe.mitre.org/data/definitions/88.html",
+							"id": "88",
+							"shortDescription": {
+								"text": "Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')"
+							}
+						},
+						{
+							"fullDescription": {
+								"text": "The software constructs all or part of an SQL command using externally-influenced input from an upstream component, but it does not neutralize or incorrectly neutralizes special elements that could modify the intended SQL command when it is sent to a downstream component."
+							},
+							"guid": "6bd55435-166c-3594-bc06-5e0dea916067",
+							"helpUri": "https://cwe.mitre.org/data/definitions/89.html",
+							"id": "89",
+							"shortDescription": {
+								"text": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+							}
+						}
+					],
+					"version": "4.4"
+				}
+			],
+			"tool": {
+				"driver": {
+					"guid": "8b518d5f-906d-39f9-894b-d327b1a421c5",
+					"informationUri": "https://github.com/securego/gosec/",
+					"name": "gosec",
+					"rules": [
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Potential hardcoded credentials"
+							},
+							"help": {
+								"text": "Potential hardcoded credentials\nSeverity: HIGH\nConfidence: LOW\n"
+							},
+							"id": "G101",
+							"name": "Use of Hard-coded Credentials",
+							"properties": {
+								"precision": "low",
+								"tags": [
+									"security",
+									"HIGH"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "93d834a1-2cc5-38db-837f-66dfc7d711cc",
+										"id": "798",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Potential hardcoded credentials"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "warning"
+							},
+							"fullDescription": {
+								"text": "Errors unhandled."
+							},
+							"help": {
+								"text": "Errors unhandled.\nSeverity: LOW\nConfidence: HIGH\n"
+							},
+							"id": "G104",
+							"name": "Improper Check or Handling of Exceptional Conditions",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"LOW"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "7df38d1d-038e-3ced-8601-8d9265b90a25",
+										"id": "703",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Errors unhandled."
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Potential HTTP request made with variable url"
+							},
+							"help": {
+								"text": "Potential HTTP request made with variable url\nSeverity: MEDIUM\nConfidence: MEDIUM\n"
+							},
+							"id": "G107",
+							"name": "Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')",
+							"properties": {
+								"precision": "medium",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "d684c7e2-3856-3079-900b-f59c57ace34b",
+										"id": "88",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Potential HTTP request made with variable url"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Potential Integer overflow made by strconv.Atoi result conversion to int16/32"
+							},
+							"help": {
+								"text": "Potential Integer overflow made by strconv.Atoi result conversion to int16/32\nSeverity: HIGH\nConfidence: MEDIUM\n"
+							},
+							"id": "G109",
+							"name": "Integer Overflow or Wraparound",
+							"properties": {
+								"precision": "medium",
+								"tags": [
+									"security",
+									"HIGH"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "c71e4fa0-720e-3e82-8b67-b2d44d0c604b",
+										"id": "190",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Potential Integer overflow made by strconv.Atoi result conversion to int16/32"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Potential DoS vulnerability via decompression bomb"
+							},
+							"help": {
+								"text": "Potential DoS vulnerability via decompression bomb\nSeverity: MEDIUM\nConfidence: MEDIUM\n"
+							},
+							"id": "G110",
+							"name": "Improper Handling of Highly Compressed Data (Data Amplification)",
+							"properties": {
+								"precision": "medium",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "8f97f42f-c62a-3d38-b26d-97951029c895",
+										"id": "409",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Potential DoS vulnerability via decompression bomb"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Use of net/http serve function that has no support for setting timeouts"
+							},
+							"help": {
+								"text": "Use of net/http serve function that has no support for setting timeouts\nSeverity: MEDIUM\nConfidence: HIGH\n"
+							},
+							"id": "G114",
+							"name": "Use of Potentially Dangerous Function",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "f97fef5f-b85b-3d63-9932-7053f298803d",
+										"id": "676",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Use of net/http serve function that has no support for setting timeouts"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "SQL string formatting"
+							},
+							"help": {
+								"text": "SQL string formatting\nSeverity: MEDIUM\nConfidence: HIGH\n"
+							},
+							"id": "G201",
+							"name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "6bd55435-166c-3594-bc06-5e0dea916067",
+										"id": "89",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "SQL string formatting"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Potential file inclusion via variable"
+							},
+							"help": {
+								"text": "Potential file inclusion via variable\nSeverity: MEDIUM\nConfidence: HIGH\n"
+							},
+							"id": "G304",
+							"name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "3e718404-88bc-3f17-883e-e85e74078a76",
+										"id": "22",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Potential file inclusion via variable"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Deferring unsafe method \"Close\" on type \"io.ReadCloser\""
+							},
+							"help": {
+								"text": "Deferring unsafe method \"Close\" on type \"io.ReadCloser\"\nSeverity: MEDIUM\nConfidence: HIGH\n"
+							},
+							"id": "G307",
+							"name": "Improper Check or Handling of Exceptional Conditions",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "7df38d1d-038e-3ced-8601-8d9265b90a25",
+										"id": "703",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Deferring unsafe method \"Close\" on type \"io.ReadCloser\""
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Use of weak cryptographic primitive"
+							},
+							"help": {
+								"text": "Use of weak cryptographic primitive\nSeverity: MEDIUM\nConfidence: HIGH\n"
+							},
+							"id": "G401",
+							"name": "Inadequate Encryption Strength",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "fe6ccccf-c3a1-354b-b67c-6c76007360e6",
+										"id": "326",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Use of weak cryptographic primitive"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "TLS MinVersion too low."
+							},
+							"help": {
+								"text": "TLS MinVersion too low.\nSeverity: HIGH\nConfidence: HIGH\n"
+							},
+							"id": "G402",
+							"name": "Improper Certificate Validation",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"HIGH"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "09e885ea-951b-3143-801a-241b3aa9e6c9",
+										"id": "295",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "TLS MinVersion too low."
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Use of weak random number generator (math/rand instead of crypto/rand)"
+							},
+							"help": {
+								"text": "Use of weak random number generator (math/rand instead of crypto/rand)\nSeverity: HIGH\nConfidence: MEDIUM\n"
+							},
+							"id": "G404",
+							"name": "Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)",
+							"properties": {
+								"precision": "medium",
+								"tags": [
+									"security",
+									"HIGH"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "0512047f-75a2-3ac3-bb28-97df3a80efbe",
+										"id": "338",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Use of weak random number generator (math/rand instead of crypto/rand)"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Blocklisted import crypto/md5: weak cryptographic primitive"
+							},
+							"help": {
+								"text": "Blocklisted import crypto/md5: weak cryptographic primitive\nSeverity: MEDIUM\nConfidence: HIGH\n"
+							},
+							"id": "G501",
+							"name": "Use of a Broken or Risky Cryptographic Algorithm",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "3d8ac75a-952a-30cd-ab4f-911c879d8d2b",
+										"id": "327",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Blocklisted import crypto/md5: weak cryptographic primitive"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Blocklisted import crypto/des: weak cryptographic primitive"
+							},
+							"help": {
+								"text": "Blocklisted import crypto/des: weak cryptographic primitive\nSeverity: MEDIUM\nConfidence: HIGH\n"
+							},
+							"id": "G502",
+							"name": "Use of a Broken or Risky Cryptographic Algorithm",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "3d8ac75a-952a-30cd-ab4f-911c879d8d2b",
+										"id": "327",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Blocklisted import crypto/des: weak cryptographic primitive"
+							}
+						},
+						{
+							"defaultConfiguration": {
+								"level": "error"
+							},
+							"fullDescription": {
+								"text": "Blocklisted import crypto/rc4: weak cryptographic primitive"
+							},
+							"help": {
+								"text": "Blocklisted import crypto/rc4: weak cryptographic primitive\nSeverity: MEDIUM\nConfidence: HIGH\n"
+							},
+							"id": "G503",
+							"name": "Use of a Broken or Risky Cryptographic Algorithm",
+							"properties": {
+								"precision": "high",
+								"tags": [
+									"security",
+									"MEDIUM"
+								]
+							},
+							"relationships": [
+								{
+									"kinds": [
+										"superset"
+									],
+									"target": {
+										"guid": "3d8ac75a-952a-30cd-ab4f-911c879d8d2b",
+										"id": "327",
+										"toolComponent": {
+											"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+											"name": "CWE"
+										}
+									}
+								}
+							],
+							"shortDescription": {
+								"text": "Blocklisted import crypto/rc4: weak cryptographic primitive"
+							}
+						}
+					],
+					"semanticVersion": "dev",
+					"supportedTaxonomies": [
+						{
+							"guid": "f2856fc0-85b7-373f-83e7-6f8582243547",
+							"name": "CWE"
+						}
+					],
+					"version": "dev"
+				}
+			}
+		}
+	],
+	"$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+	"version": "2.1.0"
+}
