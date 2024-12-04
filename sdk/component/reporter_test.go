@@ -10,14 +10,13 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 func runReporterHelper(
 	t *testing.T,
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 	reporter component.Reporter,
 	store component.Storer,
 ) error {
@@ -29,14 +28,14 @@ func runReporterHelper(
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-reporter"),
 		component.RunnerWithInstanceID(instanceID),
-		component.RunnerWithStorer("local", store),
+		component.RunnerWithStorer(store),
 	)
 }
 
 func TestRunReporter(t *testing.T) {
 	var (
 		ctrl, ctx    = gomock.WithContext(context.Background(), t)
-		instanceID   = uuid.New()
+		instanceID   = component.NewUUID()
 		mockCtx      = gomock.AssignableToTypeOf(ctx)
 		mockStore    = mocks.NewMockStorer(ctrl)
 		mockReporter = mocks.NewMockReporter(ctrl)
@@ -69,7 +68,7 @@ func TestRunReporter(t *testing.T) {
 			mockStore.
 				EXPECT().
 				Read(mockCtx, instanceID).
-				DoAndReturn(func(ctx context.Context, instanceID uuid.UUID) ([]*ocsf.VulnerabilityFinding, error) {
+				DoAndReturn(func(ctx context.Context, instanceID component.UUID) ([]*ocsf.VulnerabilityFinding, error) {
 					cancel()
 					return vulns, nil
 				}),

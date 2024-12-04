@@ -36,6 +36,14 @@ func newRunner(opts ...RunnerOption) (*runner, error) {
 		}
 	}
 
+	if r.config.Storer == nil {
+		storer, err := NewLocalStoreManager()
+		if err != nil {
+			return nil, errors.Errorf("could not create default storer: %w", err)
+		}
+		r.config.Storer = storer
+	}
+
 	if err := r.config.isValid(); err != nil {
 		return nil, errors.Errorf("invalid configuration: %w", err)
 	}

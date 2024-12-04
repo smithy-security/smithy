@@ -11,14 +11,13 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 func runEnricherHelper(
 	t *testing.T,
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 	enricher component.Enricher,
 	store component.Storer,
 ) error {
@@ -30,14 +29,14 @@ func runEnricherHelper(
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-enricher"),
 		component.RunnerWithInstanceID(instanceID),
-		component.RunnerWithStorer("local", store),
+		component.RunnerWithStorer(store),
 	)
 }
 
 func TestRunEnricher(t *testing.T) {
 	var (
 		ctrl, ctx     = gomock.WithContext(context.Background(), t)
-		instanceID    = uuid.New()
+		instanceID    = component.NewUUID()
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockEnricher  = mocks.NewMockEnricher(ctrl)
@@ -90,7 +89,7 @@ func TestRunEnricher(t *testing.T) {
 				DoAndReturn(
 					func(
 						ctx context.Context,
-						instanceID uuid.UUID,
+						instanceID component.UUID,
 						vulns []*ocsf.VulnerabilityFinding,
 					) error {
 						<-ctx.Done()

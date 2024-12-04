@@ -10,14 +10,13 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 func runFilterHelper(
 	t *testing.T,
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 	filter component.Filter,
 	store component.Storer,
 ) error {
@@ -29,14 +28,14 @@ func runFilterHelper(
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-filter"),
 		component.RunnerWithInstanceID(instanceID),
-		component.RunnerWithStorer("local", store),
+		component.RunnerWithStorer(store),
 	)
 }
 
 func TestRunFilter(t *testing.T) {
 	var (
 		ctrl, ctx     = gomock.WithContext(context.Background(), t)
-		instanceID    = uuid.New()
+		instanceID    = component.NewUUID()
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockFilter    = mocks.NewMockFilter(ctrl)
@@ -107,7 +106,7 @@ func TestRunFilter(t *testing.T) {
 				DoAndReturn(
 					func(
 						ctx context.Context,
-						instanceID uuid.UUID,
+						instanceID component.UUID,
 						vulns []*ocsf.VulnerabilityFinding,
 					) error {
 						<-ctx.Done()

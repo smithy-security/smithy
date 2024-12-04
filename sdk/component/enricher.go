@@ -14,7 +14,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 			var (
 				instanceID = cfg.InstanceID
 				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "enricher")
-				store      = cfg.storerConfig.store
+				store      = cfg.Storer
 			)
 
 			defer func() {

@@ -10,14 +10,13 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 func runScannerHelper(
 	t *testing.T,
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 	reporter component.Scanner,
 	storer component.Storer,
 ) error {
@@ -29,14 +28,14 @@ func runScannerHelper(
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-scanner"),
 		component.RunnerWithInstanceID(instanceID),
-		component.RunnerWithStorer("local", storer),
+		component.RunnerWithStorer(storer),
 	)
 }
 
 func TestRunScanner(t *testing.T) {
 	var (
 		ctrl, ctx   = gomock.WithContext(context.Background(), t)
-		instanceID  = uuid.New()
+		instanceID  = component.NewUUID()
 		mockCtx     = gomock.AssignableToTypeOf(ctx)
 		mockStore   = mocks.NewMockStorer(ctrl)
 		mockScanner = mocks.NewMockScanner(ctrl)
@@ -95,7 +94,7 @@ func TestRunScanner(t *testing.T) {
 				DoAndReturn(
 					func(
 						ctx context.Context,
-						instanceID uuid.UUID,
+						instanceID component.UUID,
 						vulns []*ocsf.VulnerabilityFinding,
 					) error {
 						<-ctx.Done()
@@ -199,7 +198,7 @@ func TestRunScanner(t *testing.T) {
 				DoAndReturn(
 					func(
 						ctx context.Context,
-						instanceID uuid.UUID,
+						instanceID component.UUID,
 						vulns []*ocsf.VulnerabilityFinding,
 					) error {
 						panic(errStore)

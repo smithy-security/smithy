@@ -11,7 +11,6 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 )
 
 func runTargetHelper(t *testing.T, ctx context.Context, target component.Target, store component.Storer) error {
@@ -22,8 +21,8 @@ func runTargetHelper(t *testing.T, ctx context.Context, target component.Target,
 		target,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-target"),
-		component.RunnerWithInstanceID(uuid.New()),
-		component.RunnerWithStorer("local", store),
+		component.RunnerWithInstanceID(component.NewUUID()),
+		component.RunnerWithStorer(store),
 	)
 }
 

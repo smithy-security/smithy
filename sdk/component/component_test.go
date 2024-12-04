@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/smithy-security/smithy/sdk/component"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
@@ -25,7 +24,7 @@ type (
 
 func (t testFilter) Read(
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 ) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
@@ -43,7 +42,7 @@ func (t testFilter) Close(ctx context.Context) error {
 
 func (t testFilter) Update(
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 	findings []*ocsf.VulnerabilityFinding,
 ) error {
 	return nil
@@ -51,7 +50,7 @@ func (t testFilter) Update(
 
 func (t testReporter) Read(
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 ) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
@@ -66,14 +65,14 @@ func (t testReporter) Close(ctx context.Context) error {
 
 func (t testEnricher) Read(
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 ) ([]*ocsf.VulnerabilityFinding, error) {
 	return nil, nil
 }
 
 func (t testEnricher) Update(
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 	findings []*ocsf.VulnerabilityFinding,
 ) error {
 	return nil
@@ -92,7 +91,7 @@ func (t testEnricher) Close(ctx context.Context) error {
 
 func (t testScanner) Write(
 	ctx context.Context,
-	instanceID uuid.UUID,
+	instanceID component.UUID,
 	findings []*ocsf.VulnerabilityFinding,
 ) error {
 	return nil
