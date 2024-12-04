@@ -52,32 +52,38 @@ func ParseRunnerConfigLoggingLevel(name string) (RunnerConfigLoggingLevel, error
 }
 
 const (
-	// StoreTypeLocal is a storeType of type local.
-	StoreTypeLocal storeType = "local"
+	// LocalStoreColumnNameFindings is a localStoreColumnName of type findings.
+	LocalStoreColumnNameFindings localStoreColumnName = "findings"
+	// LocalStoreColumnNameInstanceId is a localStoreColumnName of type instance_id.
+	LocalStoreColumnNameInstanceId localStoreColumnName = "instance_id"
+	// LocalStoreColumnNameUpdatedAt is a localStoreColumnName of type updated_at.
+	LocalStoreColumnNameUpdatedAt localStoreColumnName = "updated_at"
 )
 
-var ErrInvalidstoreType = errors.New("not a valid storeType")
+var ErrInvalidlocalStoreColumnName = errors.New("not a valid localStoreColumnName")
 
 // String implements the Stringer interface.
-func (x storeType) String() string {
+func (x localStoreColumnName) String() string {
 	return string(x)
 }
 
 // IsValid provides a quick way to determine if the typed value is
 // part of the allowed enumerated values
-func (x storeType) IsValid() bool {
-	_, err := ParsestoreType(string(x))
+func (x localStoreColumnName) IsValid() bool {
+	_, err := ParselocalStoreColumnName(string(x))
 	return err == nil
 }
 
-var _storeTypeValue = map[string]storeType{
-	"local": StoreTypeLocal,
+var _localStoreColumnNameValue = map[string]localStoreColumnName{
+	"findings":    LocalStoreColumnNameFindings,
+	"instance_id": LocalStoreColumnNameInstanceId,
+	"updated_at":  LocalStoreColumnNameUpdatedAt,
 }
 
-// ParsestoreType attempts to convert a string to a storeType.
-func ParsestoreType(name string) (storeType, error) {
-	if x, ok := _storeTypeValue[name]; ok {
+// ParselocalStoreColumnName attempts to convert a string to a localStoreColumnName.
+func ParselocalStoreColumnName(name string) (localStoreColumnName, error) {
+	if x, ok := _localStoreColumnNameValue[name]; ok {
 		return x, nil
 	}
-	return storeType(""), fmt.Errorf("%s is %w", name, ErrInvalidstoreType)
+	return localStoreColumnName(""), fmt.Errorf("%s is %w", name, ErrInvalidlocalStoreColumnName)
 }
