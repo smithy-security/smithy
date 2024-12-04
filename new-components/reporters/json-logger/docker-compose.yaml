@@ -1,0 +1,10 @@
+services:
+  reporter:
+    build:
+      context: ../..
+      args:
+        - COMPONENT_PATH=reporters/json-logger
+        - COMPONENT_BINARY_SOURCE_PATH=cmd/main.go
+    platform: linux/amd64
+    env_file:
+      - .env
