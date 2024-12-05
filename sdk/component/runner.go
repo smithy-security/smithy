@@ -7,6 +7,9 @@ import (
 
 	"github.com/go-errors/errors"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/smithy-security/smithy/sdk/component/internal/utils"
+	localstore "github.com/smithy-security/smithy/sdk/component/store/local"
 )
 
 type (
@@ -34,6 +37,14 @@ func newRunner(opts ...RunnerOption) (*runner, error) {
 		if err := opt(r); err != nil {
 			return nil, err
 		}
+	}
+
+	if utils.IsNil(r.config.Storer) {
+		storer, err := localstore.NewManager()
+		if err != nil {
+			return nil, errors.Errorf("could not create default storer: %w", err)
+		}
+		r.config.Storer = storer
 	}
 
 	if err := r.config.isValid(); err != nil {
