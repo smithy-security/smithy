@@ -50,34 +50,3 @@ func ParseRunnerConfigLoggingLevel(name string) (RunnerConfigLoggingLevel, error
 	}
 	return RunnerConfigLoggingLevel(""), fmt.Errorf("%s is %w", name, ErrInvalidRunnerConfigLoggingLevel)
 }
-
-const (
-	// StoreTypeLocal is a storeType of type local.
-	StoreTypeLocal storeType = "local"
-)
-
-var ErrInvalidstoreType = errors.New("not a valid storeType")
-
-// String implements the Stringer interface.
-func (x storeType) String() string {
-	return string(x)
-}
-
-// IsValid provides a quick way to determine if the typed value is
-// part of the allowed enumerated values
-func (x storeType) IsValid() bool {
-	_, err := ParsestoreType(string(x))
-	return err == nil
-}
-
-var _storeTypeValue = map[string]storeType{
-	"local": StoreTypeLocal,
-}
-
-// ParsestoreType attempts to convert a string to a storeType.
-func ParsestoreType(name string) (storeType, error) {
-	if x, ok := _storeTypeValue[name]; ok {
-		return x, nil
-	}
-	return storeType(""), fmt.Errorf("%s is %w", name, ErrInvalidstoreType)
-}

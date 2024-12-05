@@ -13,6 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/smithy/sdk/component/internal/utils"
 	"github.com/smithy-security/smithy/sdk/component/store"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
@@ -37,7 +38,7 @@ type (
 // ManagerWithClock allows customising manager's clock.
 func ManagerWithClock(clock clockwork.Clock) managerOption {
 	return func(m *manager) error {
-		if clock == nil {
+		if utils.IsNil(clock) {
 			return errors.New("invalid nil clock")
 		}
 		m.clock = clock

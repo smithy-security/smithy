@@ -11,7 +11,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
+	"github.com/smithy-security/smithy/sdk/component/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
@@ -30,7 +30,7 @@ func runEnricherHelper(
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-enricher"),
 		component.RunnerWithInstanceID(instanceID),
-		component.RunnerWithStorer("local", store),
+		component.RunnerWithStorer(store),
 	)
 }
 
