@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
+	"github.com/smithy-security/smithy/sdk/component/uuid"
 )
 
 func TestUUID(t *testing.T) {
