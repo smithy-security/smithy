@@ -3,7 +3,7 @@ package component
 import (
 	"context"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
+	"github.com/smithy-security/smithy/sdk/component/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
