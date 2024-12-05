@@ -1,10 +1,11 @@
-package sqlite
+package localstore
 
 import (
 	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/go-errors/errors"
@@ -12,16 +13,15 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/storer"
-	"github.com/smithy-security/smithy/sdk/component/internal/uuid"
+	"github.com/smithy-security/smithy/sdk/component/store"
+	"github.com/smithy-security/smithy/sdk/component/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
-
-const errInvalidConstructorEmptyReason = "cannot be empty"
 
 type (
 	manager struct {
 		clock clockwork.Clock
+		dsn   string
 		db    *sql.DB
 	}
 
@@ -38,7 +38,7 @@ type (
 func ManagerWithClock(clock clockwork.Clock) managerOption {
 	return func(m *manager) error {
 		if clock == nil {
-			return errors.New("cannot set clock on nil clock")
+			return errors.New("invalid nil clock")
 		}
 		m.clock = clock
 		return nil
@@ -50,28 +50,35 @@ func (e ErrInvalidConstructor) Error() string {
 }
 
 // NewManager returns a new SQLite database manager.
-func NewManager(dsn string, opts ...managerOption) (*manager, error) {
-	if dsn == "" {
-		return nil, ErrInvalidConstructor{
-			argName: "db dsn",
-			reason:  errInvalidConstructorEmptyReason,
+func NewManager(opts ...managerOption) (*manager, error) {
+	var (
+		mgr = &manager{
+			clock: clockwork.NewRealClock(),
+			dsn:   "smithy.db",
 		}
-	}
-
-	db, err := sql.Open("sqlite3", dsn)
-	if err != nil {
-		return nil, errors.Errorf("could not open sqlite db: %w", err)
-	}
-
-	mgr := &manager{
-		clock: clockwork.NewRealClock(),
-		db:    db,
-	}
+		err error
+	)
 
 	for _, opt := range opts {
 		if err := opt(mgr); err != nil {
 			return nil, errors.Errorf("could not apply option: %w", err)
 		}
+	}
+
+	// Create sqlite database file if not exists.
+	if _, err := os.Stat(mgr.dsn); err != nil {
+		if !os.IsNotExist(err) {
+			f, err := os.Create(mgr.dsn)
+			if err != nil {
+				return nil, errors.Errorf("could not create sqlite db: %w", err)
+			}
+			_ = f.Close()
+		}
+	}
+
+	mgr.db, err = sql.Open("sqlite3", mgr.dsn)
+	if err != nil {
+		return nil, errors.Errorf("could not open sqlite db: %w", err)
 	}
 
 	if err := mgr.migrate(); err != nil {
@@ -81,13 +88,14 @@ func NewManager(dsn string, opts ...managerOption) (*manager, error) {
 	return mgr, nil
 }
 
-// Validate. TODO - implement.
+// Validate validates the passed finding.
+// TODO: to be tackled with https://linear.app/smithy/issue/OCU-259/validate-component-input-and-output.
 func (m *manager) Validate(*ocsf.VulnerabilityFinding) error {
 	return nil
 }
 
 // Read finds Vulnerability Findings by instanceID.
-// It returns storer.ErrNoFindingsFound is not vulnerabilities were found.
+// It returns ErrNoFindingsFound is not vulnerabilities were found.
 func (m *manager) Read(ctx context.Context, instanceID uuid.UUID) ([]*ocsf.VulnerabilityFinding, error) {
 	stmt, err := m.db.PrepareContext(ctx, `
 		SELECT (findings) 
@@ -105,12 +113,12 @@ func (m *manager) Read(ctx context.Context, instanceID uuid.UUID) ([]*ocsf.Vulne
 	err = stmt.
 		QueryRowContext(
 			ctx,
-			sql.Named(ColumnNameInstanceId.String(), instanceID.String()),
+			sql.Named(LocalStoreColumnNameInstanceId.String(), instanceID.String()),
 		).
 		Scan(&jsonFindingsStr)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.Errorf("%s: %w", instanceID.String(), storer.ErrNoFindingsFound)
+			return nil, errors.Errorf("%s: %w", instanceID.String(), store.ErrNoFindingsFound)
 		}
 		return nil, errors.Errorf("could not select findings: %w", err)
 	}
@@ -151,8 +159,8 @@ func (m *manager) Write(ctx context.Context, instanceID uuid.UUID, findings []*o
 	defer stmt.Close()
 
 	if _, err = stmt.Exec(
-		sql.Named(ColumnNameInstanceId.String(), instanceID.String()),
-		sql.Named(ColumnNameFindings.String(), jsonFindings),
+		sql.Named(LocalStoreColumnNameInstanceId.String(), instanceID.String()),
+		sql.Named(LocalStoreColumnNameFindings.String(), jsonFindings),
 	); err != nil {
 		return errors.Errorf("could not insert findings: %w", err)
 	}
@@ -161,7 +169,7 @@ func (m *manager) Write(ctx context.Context, instanceID uuid.UUID, findings []*o
 }
 
 // Update updates existing vulnerabilities in the underlying database.
-// It returns storer.ErrNoFindingsFound if the passed instanceID is not found.
+// It returns ErrNoFindingsFound if the passed instanceID is not found.
 func (m *manager) Update(ctx context.Context, instanceID uuid.UUID, findings []*ocsf.VulnerabilityFinding) error {
 	jsonFindings, err := m.marshalFindings(findings)
 	if err != nil {
@@ -184,9 +192,9 @@ func (m *manager) Update(ctx context.Context, instanceID uuid.UUID, findings []*
 	defer stmt.Close()
 
 	res, err := stmt.Exec(
-		sql.Named(ColumnNameInstanceId.String(), instanceID.String()),
-		sql.Named(ColumnNameUpdatedAt.String(), m.clock.Now().UTC().Format(time.RFC3339)),
-		sql.Named(ColumnNameFindings.String(), jsonFindings),
+		sql.Named(LocalStoreColumnNameInstanceId.String(), instanceID.String()),
+		sql.Named(LocalStoreColumnNameUpdatedAt.String(), m.clock.Now().UTC().Format(time.RFC3339)),
+		sql.Named(LocalStoreColumnNameFindings.String(), jsonFindings),
 	)
 	if err != nil {
 		return errors.Errorf("could not update findings: %w", err)
@@ -200,7 +208,7 @@ func (m *manager) Update(ctx context.Context, instanceID uuid.UUID, findings []*
 		return errors.Errorf(
 			"could not update findings for instance '%s': %w",
 			instanceID.String(),
-			storer.ErrNoFindingsFound,
+			store.ErrNoFindingsFound,
 		)
 	}
 
@@ -211,6 +219,9 @@ func (m *manager) Update(ctx context.Context, instanceID uuid.UUID, findings []*
 func (m *manager) Close(ctx context.Context) error {
 	if err := m.db.Close(); err != nil {
 		return errors.Errorf("could not close sqlite db: %w", err)
+	}
+	if err := os.Remove(m.dsn); err != nil {
+		return errors.Errorf("could not remove sqlite db file: %w", err)
 	}
 	return nil
 }
