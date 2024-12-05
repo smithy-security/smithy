@@ -15,7 +15,7 @@ import (
 
 	gomock "go.uber.org/mock/gomock"
 
-	uuid "github.com/smithy-security/smithy/sdk/component/internal/uuid"
+	uuid "github.com/smithy-security/smithy/sdk/component/uuid"
 	pb "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
