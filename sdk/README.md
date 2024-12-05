@@ -25,11 +25,7 @@ You can customise a component using the following environment variables:
 | Environment Variable                | Type   | Required | Default                  | Possible Values          |
 |-------------------------------------|--------|-----------|--------------------------|--------------------------|
 | SMITHY\_COMPONENT\_NAME             | string | yes      | -                        | -                        |
-| SMITHY\_BACKEND\_STORE\_TYPE        | string | yes     | -                        | local, test, \*remote    |
-| SSMITHY\_BACKEND\_STORE\_DSN   | string | no    | smithy.db                | \*                        |
 | SMITHY\_LOG\_LEVEL                  | string | false     | info, debug, warn, error |
-
-For `local` development, an `SQLite` Backend Store Type will be used.
 
 `Runners` can be supplied with `RunnerConfigOption`s to customise how a component runs.
 In the following example you can see how we change the component name:
@@ -39,6 +35,16 @@ component.RunTarget(
 	ctx, 
 	sampleTarget{}, 
 	component.RunnerWithComponentName("sample-target"),
+)
+```
+
+For local development, a default `SQLite` Backend Store Type will be used. This can be customised with:
+
+```go
+component.RunTarget(
+	ctx, 
+	sampleTarget{}, 
+	component.RunnerWithStorer(//a storer),
 )
 ```
 
