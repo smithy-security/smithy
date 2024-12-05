@@ -1,6 +1,6 @@
-package sqlite
+package localstore
 
 type (
 	// ENUM(findings, instance_id, updated_at)
-	columnName string
+	localStoreColumnName string
 )
