@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// Nil is a UUID zero value.
 var Nil = UUID(uuid.Nil)
 
 // UUID is an alias for a google uuid.
