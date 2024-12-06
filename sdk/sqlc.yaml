@@ -8,3 +8,10 @@ sql:
         package: "sqlc"
         out: "component/store/remote/postgresql/sqlc"
         sql_package: "pgx/v5"
+  - engine: "sqlite"
+    queries: "component/store/local/sqlite/sqlc/query.sql"
+    schema: "component/store/local/sqlite/sqlc/migrations"
+    gen:
+      go:
+        package: "sqlc"
+        out: "component/store/local/sqlite/sqlc"

@@ -1,4 +1,4 @@
-package localstore_test
+package sqlite_test
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/store"
-	localstore "github.com/smithy-security/smithy/sdk/component/store/local"
+	localstore "github.com/smithy-security/smithy/sdk/component/store/local/sqlite"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
@@ -31,11 +31,13 @@ type (
 func (mts *ManagerTestSuite) SetupTest() {
 	mts.t = mts.T()
 	var (
-		err   error
-		clock = clockwork.NewFakeClock()
+		ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+		err         error
+		clock       = clockwork.NewFakeClock()
 	)
 
-	mts.manager, err = localstore.NewManager(localstore.ManagerWithClock(clock))
+	defer cancel()
+	mts.manager, err = localstore.NewManager(ctx, localstore.ManagerWithClock(clock))
 	require.NoError(mts.t, err)
 }
 
