@@ -329,7 +329,13 @@ This is achieved with migrations.
 
 ##### SQLite
 
-TBD.
+Postgresql migrations live in `./component/store/local/sqlc/sqlc/migrations`.
+
+In order to create a new migration, you can follow these steps:
+
+* run `$ make new-sqlite-migration migration_name=my_migration`
+* edit the migration
+* run `$ update-sqlite-migrations-sum` to update `atlas.sum`
 
 ##### Postgresql
 
@@ -337,6 +343,6 @@ Postgresql migrations live in `./component/store/remote/postgresql/sqlc/migratio
 
 In order to create a new migration, you can follow these steps:
 
-* run `$ make new-migration migration_name=my_migration`
+* run `$ make new-postgres-migration migration_name=my_migration`
 * edit the migration
-* run `$ update-migrations-sum` to update `atlas.sum`
+* run `$ update-postgres-migrations-sum` to update `atlas.sum`
