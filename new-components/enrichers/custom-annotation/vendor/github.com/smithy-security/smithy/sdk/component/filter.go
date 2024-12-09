@@ -14,7 +14,7 @@ func RunFilter(ctx context.Context, filter Filter, opts ...RunnerOption) error {
 			var (
 				instanceID = cfg.InstanceID
 				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "filter")
-				store      = cfg.storerConfig.store
+				store      = cfg.StoreConfig.Storer
 			)
 
 			defer func() {
