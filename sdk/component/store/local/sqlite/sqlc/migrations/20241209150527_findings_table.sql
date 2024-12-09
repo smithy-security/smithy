@@ -1,0 +1,8 @@
+-- create "findings" table
+CREATE TABLE IF NOT EXISTS finding (
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
+   instance_id UUID NOT NULL,
+   details TEXT NOT NULL,
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
