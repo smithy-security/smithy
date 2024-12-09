@@ -288,3 +288,33 @@ if err := component.RunReporter(
     log.Fatalf("unexpected run error: %v", err)
 }
 ```
+
+### Contributing
+
+#### Database Schemas
+
+They are generated using [sqlc](https://sqlc.dev/) from real SQL schemas and queries.
+
+##### Generation
+
+You can generate types mapping schemas and queries by leveraging the `go:generate` entries in `tools.go`.
+
+#### Migrations
+
+Components require a common database/tables setup to function properly.
+
+This is achieved with migrations.
+
+##### SQLite
+
+TBD.
+
+##### Postgresql
+
+Postgresql migrations live in `./component/store/remote/postgresql/sqlc/migrations`.
+
+In order to create a new migration, you can follow these steps:
+
+* run `$ make new-migration migration_name=my_migration`
+* edit the migration
+* run `$ update-migrations-sum` to update `atlas.sum`
