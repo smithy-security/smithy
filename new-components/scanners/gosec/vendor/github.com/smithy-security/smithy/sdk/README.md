@@ -22,14 +22,11 @@ while taking care of the boring things for you:
 
 You can customise a component using the following environment variables:
 
-| Environment Variable                | Type   | Required | Default                  | Possible Values          |
-|-------------------------------------|--------|-----------|--------------------------|--------------------------|
-| SMITHY\_COMPONENT\_NAME             | string | yes      | -                        | -                        |
-| SMITHY\_BACKEND\_STORE\_TYPE        | string | yes     | -                        | local, test, \*remote    |
-| SSMITHY\_BACKEND\_STORE\_DSN   | string | no    | smithy.db                | \*                        |
-| SMITHY\_LOG\_LEVEL                  | string | false     | info, debug, warn, error |
-
-For `local` development, an `SQLite` Backend Store Type will be used.
+| Environment Variable                | Type   | Required | Default                  | Possible Values                     |
+|-------------------------------------|--------|----------|--------------------------|-------------------------------------|
+| SMITHY\_COMPONENT\_NAME             | string | yes      | -                        | -                                   |
+| SMITHY\_LOG\_LEVEL                  | string | false    | info, debug, warn, error |
+| SMITHY\_STORE\_TYPE                  | string | no       | sqlite                   | sqlite, postgresql, findings-client |
 
 `Runners` can be supplied with `RunnerConfigOption`s to customise how a component runs.
 In the following example you can see how we change the component name:
@@ -39,6 +36,16 @@ component.RunTarget(
 	ctx, 
 	sampleTarget{}, 
 	component.RunnerWithComponentName("sample-target"),
+)
+```
+
+For local development, a default `SQLite` Backend Store Type will be used. This can be customised with:
+
+```go
+component.RunTarget(
+	ctx, 
+	sampleTarget{}, 
+	component.RunnerWithStorer(//a storer),
 )
 ```
 
@@ -282,3 +289,60 @@ if err := component.RunReporter(
     log.Fatalf("unexpected run error: %v", err)
 }
 ```
+
+### Storages
+
+Smithy SDK allows to configure different storages to boost adoption.
+
+By default, [sqlite](https://www.sqlite.org/) is used for local development.
+
+#### Postgresql
+
+You can configure a Postgresql storage by plugging in `/store/remote/postgresql` or configuring the required
+environment variables defined in its README.
+
+#### Findings Client
+
+You can configure a grpc findings client storage by plugging in `/store/remote/findings-client` or configuring the required
+environment variables defined in its README.
+
+#### Custom
+
+You can supply your own implementation of a storage by satisfying the `componenent.Storer` interface and leveraging the
+`RunnerWithStorer` option.
+
+### Contributing
+
+#### Database Schemas
+
+They are generated using [sqlc](https://sqlc.dev/) from real SQL schemas and queries.
+
+##### Generation
+
+You can generate types mapping schemas and queries by leveraging the `go:generate` entries in `tools.go`.
+
+#### Migrations
+
+Components require a common database/tables setup to function properly.
+
+This is achieved with migrations.
+
+##### SQLite
+
+Postgresql migrations live in `./component/store/local/sqlc/sqlc/migrations`.
+
+In order to create a new migration, you can follow these steps:
+
+* run `$ make new-sqlite-migration migration_name=my_migration`
+* edit the migration
+* run `$ update-sqlite-migrations-sum` to update `atlas.sum`
+
+##### Postgresql
+
+Postgresql migrations live in `./component/store/remote/postgresql/sqlc/migrations`.
+
+In order to create a new migration, you can follow these steps:
+
+* run `$ make new-postgres-migration migration_name=my_migration`
+* edit the migration
+* run `$ update-postgres-migrations-sum` to update `atlas.sum`
