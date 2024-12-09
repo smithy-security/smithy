@@ -1,0 +1,10 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "component/store/remote/postgresql/sqlc/query.sql"
+    schema: "component/store/remote/postgresql/sqlc/migrations"
+    gen:
+      go:
+        package: "sqlc"
+        out: "component/store/remote/postgresql/sqlc"
+        sql_package: "pgx/v5"
