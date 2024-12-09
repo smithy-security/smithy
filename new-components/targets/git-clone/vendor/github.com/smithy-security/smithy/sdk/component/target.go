@@ -24,6 +24,6 @@ func RunTarget(ctx context.Context, target Target, opts ...RunnerOption) error {
 
 			return nil
 		},
-		opts...,
+		append(opts, runnerWithDisabledStoreCheck())...,
 	)
 }

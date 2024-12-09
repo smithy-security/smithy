@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/go-errors/errors"
+
+	"github.com/smithy-security/smithy/sdk/component/internal/utils"
 )
 
 const (
@@ -85,7 +87,7 @@ func ContextWithLogger(ctx context.Context, logger Logger) context.Context {
 // LoggerFromContext extracts a structured logger from the context for reusability.
 func LoggerFromContext(ctx context.Context) Logger {
 	logger := ctx.Value(ctxLoggerKey)
-	if logger == nil {
+	if utils.IsNil(logger) {
 		l, _ := newDefaultLogger(RunnerConfigLoggingLevelDebug)
 		return l
 	}

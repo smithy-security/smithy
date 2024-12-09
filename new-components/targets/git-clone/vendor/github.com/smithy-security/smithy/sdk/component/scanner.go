@@ -14,7 +14,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 			var (
 				instanceID = cfg.InstanceID
 				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "scanner")
-				store      = cfg.storerConfig.store
+				store      = cfg.StoreConfig.Storer
 			)
 
 			defer func() {

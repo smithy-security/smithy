@@ -52,32 +52,38 @@ func ParseRunnerConfigLoggingLevel(name string) (RunnerConfigLoggingLevel, error
 }
 
 const (
-	// StoreTypeLocal is a storeType of type local.
-	StoreTypeLocal storeType = "local"
+	// StoreTypeSqlite is a StoreType of type sqlite.
+	StoreTypeSqlite StoreType = "sqlite"
+	// StoreTypePostgresql is a StoreType of type postgresql.
+	StoreTypePostgresql StoreType = "postgresql"
+	// StoreTypeFindingsClient is a StoreType of type findings-client.
+	StoreTypeFindingsClient StoreType = "findings-client"
 )
 
-var ErrInvalidstoreType = errors.New("not a valid storeType")
+var ErrInvalidStoreType = errors.New("not a valid StoreType")
 
 // String implements the Stringer interface.
-func (x storeType) String() string {
+func (x StoreType) String() string {
 	return string(x)
 }
 
 // IsValid provides a quick way to determine if the typed value is
 // part of the allowed enumerated values
-func (x storeType) IsValid() bool {
-	_, err := ParsestoreType(string(x))
+func (x StoreType) IsValid() bool {
+	_, err := ParseStoreType(string(x))
 	return err == nil
 }
 
-var _storeTypeValue = map[string]storeType{
-	"local": StoreTypeLocal,
+var _StoreTypeValue = map[string]StoreType{
+	"sqlite":          StoreTypeSqlite,
+	"postgresql":      StoreTypePostgresql,
+	"findings-client": StoreTypeFindingsClient,
 }
 
-// ParsestoreType attempts to convert a string to a storeType.
-func ParsestoreType(name string) (storeType, error) {
-	if x, ok := _storeTypeValue[name]; ok {
+// ParseStoreType attempts to convert a string to a StoreType.
+func ParseStoreType(name string) (StoreType, error) {
+	if x, ok := _StoreTypeValue[name]; ok {
 		return x, nil
 	}
-	return storeType(""), fmt.Errorf("%s is %w", name, ErrInvalidstoreType)
+	return StoreType(""), fmt.Errorf("%s is %w", name, ErrInvalidStoreType)
 }
