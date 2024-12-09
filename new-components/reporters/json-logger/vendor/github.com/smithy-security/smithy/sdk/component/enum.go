@@ -5,6 +5,7 @@ type (
 	// ENUM(debug, info, error, warn)
 	RunnerConfigLoggingLevel string
 
-	// ENUM(local)
-	storeType string
+	// StoreType represents a store type
+	// ENUM(sqlite, postgresql, findings-client)
+	StoreType string
 )
