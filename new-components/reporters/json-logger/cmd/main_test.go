@@ -12,8 +12,11 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 
+	"github.com/smithy-security/smithy/sdk/component/uuid"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
 type (
@@ -23,7 +26,7 @@ type (
 	}
 
 	store struct {
-		vulns []*ocsf.VulnerabilityFinding
+		vulns []*vf.VulnerabilityFinding
 	}
 )
 
@@ -35,15 +38,21 @@ func (s *store) Validate(finding *ocsf.VulnerabilityFinding) error {
 	return nil
 }
 
-func (s *store) Read(ctx context.Context, instanceID string) ([]*ocsf.VulnerabilityFinding, error) {
+func (s *store) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.VulnerabilityFinding, error) {
 	return s.vulns, nil
 }
 
-func (s *store) Update(ctx context.Context, instanceID string, findings []*ocsf.VulnerabilityFinding) error {
+func (s *store) Update(ctx context.Context, instanceID uuid.UUID, findings []*vf.VulnerabilityFinding) error {
 	return nil
 }
 
-func (s *store) Write(ctx context.Context, instanceID string, findings []*ocsf.VulnerabilityFinding) error {
+func (s *store) Write(ctx context.Context, instanceID uuid.UUID, findings []*ocsf.VulnerabilityFinding) error {
+	for _, finding := range findings {
+		s.vulns = append(s.vulns, &vf.VulnerabilityFinding{
+			ID:      uint64(len(s.vulns) + 1),
+			Finding: finding,
+		})
+	}
 	return nil
 }
 
@@ -102,8 +111,9 @@ func TestJsonLogger_Report(t *testing.T) {
 		ctx, cancel = context.WithTimeout(context.Background(), time.Second)
 		now         = time.Now().Unix()
 		logger      = &capturingLogger{}
-
-		vulns = []*ocsf.VulnerabilityFinding{
+		st          = &store{}
+		instanceID  = uuid.New()
+		vulns       = []*ocsf.VulnerabilityFinding{
 			{
 				ActivityId:   ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
 				CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
@@ -280,13 +290,16 @@ func TestJsonLogger_Report(t *testing.T) {
 
 	defer cancel()
 
+	require.NoError(t, st.Write(ctx, instanceID, vulns))
+
 	t.Run("it logs correctly 3 findings", func(t *testing.T) {
 		require.NoError(
 			t,
 			Main(
 				ctx,
 				component.RunnerWithLogger(logger),
-				//	 TODO: Andrea fix this when bumping SDK.
+				component.RunnerWithInstanceID(instanceID),
+				component.RunnerWithStorer(st),
 			),
 		)
 		require.NotEmpty(t, logger.logs)

@@ -13,8 +13,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
 	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/util/ptr"
 )

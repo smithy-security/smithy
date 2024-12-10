@@ -7,8 +7,9 @@ import (
 	"github.com/go-errors/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
 )
 
 // NewJsonLogger returns a new json logger.
@@ -21,14 +22,14 @@ type jsonLogger struct{}
 // Report logs the findings in json format.
 func (j jsonLogger) Report(
 	ctx context.Context,
-	findings []*ocsf.VulnerabilityFinding,
+	findings []*vf.VulnerabilityFinding,
 ) error {
 	logger := component.
 		LoggerFromContext(ctx).
 		With(slog.Int("num_findings", len(findings)))
 
 	for _, finding := range findings {
-		b, err := protojson.Marshal(finding)
+		b, err := protojson.Marshal(finding.Finding)
 		if err != nil {
 			return errors.Errorf("could not json marshal finding: %w", err)
 		}
