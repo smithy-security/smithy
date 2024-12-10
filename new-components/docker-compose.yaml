@@ -1,0 +1,111 @@
+services:
+  reporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        COMPONENT_PATH: reporters/json-logger
+        COMPONENT_BINARY_SOURCE_PATH: cmd/main.go
+    platform: linux/amd64
+    env_file:
+      - reporters/json-logger/.env
+    depends_on:
+      enricher:
+        condition: service_completed_successfully
+  enricher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        COMPONENT_PATH: enrichers/custom-annotation
+        COMPONENT_BINARY_SOURCE_PATH: cmd/main.go
+    platform: linux/amd64
+    env_file:
+      - enrichers/custom-annotation/.env
+    depends_on:
+      scanner:
+        condition: service_completed_successfully
+  delete-repos:
+    image: alpine:latest
+    container_name: delete-directory
+    command: sh -c "rm -rf /repos"
+    volumes:
+      - ./repos:/repos
+    restart: "no"
+    depends_on:
+      scanner:
+        condition: service_completed_successfully
+  scanner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        COMPONENT_PATH: scanners/gosec
+        COMPONENT_BINARY_SOURCE_PATH: cmd/main.go
+    working_dir: /repos
+    platform: linux/amd64
+    env_file:
+      - scanners/gosec/.env
+    volumes:
+      - ./repos:/repos
+    depends_on:
+      gosec:
+        condition: service_completed_successfully
+  gosec:
+    image: docker.io/securego/gosec:2.15.0
+    platform: linux/amd64
+    volumes:
+      - ./repos:/repos
+    working_dir: /repos
+    command: >
+      -fmt=sarif
+      -no-fail
+      -out=gosec.json
+      .
+    depends_on:
+      target:
+        condition: service_completed_successfully
+  # Main git-clone target.
+  # It starts when gitea is running and the seeder created the admin in it.
+  target:
+    build:
+      context: targets/git-clone
+      dockerfile: dockerfiles/git-clone/Dockerfile
+    platform: linux/amd64
+    env_file:
+      - targets/git-clone/env/.env.git-clone
+    volumes:
+      - ./repos:/workspace/repos
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+  migrator:
+    image: arigaio/atlas:latest-alpine
+    platform: linux/amd64
+    depends_on:
+      findings-db:
+        condition: service_healthy
+    volumes:
+      - ./targets/git-clone/vendor/github.com/smithy-security/smithy/sdk/component/store/remote/postgresql/sqlc/migrations/:/migrations
+    command: >
+      migrate
+        apply
+        --dir
+        file://migrations
+        --url
+        postgresql://smithy:smithy1234@findings-db:5432/findings-db?sslmode=disable&connect_timeout=10
+  findings-db:
+    image: postgres:15
+    container_name: findings-db
+    restart: always
+    environment:
+      POSTGRES_USER: smithy
+      POSTGRES_PASSWORD: smithy1234
+      POSTGRES_DB: findings-db
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: "pg_isready -U postgres"
+      interval: 5s
+      timeout: 5s
+      retries: 5
