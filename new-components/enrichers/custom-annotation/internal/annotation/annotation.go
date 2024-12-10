@@ -9,7 +9,8 @@ import (
 	"github.com/smithy-security/pkg/env"
 
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
 type (
@@ -78,8 +79,8 @@ func NewCustomAnnotator(conf *Conf) (*customAnnotator, error) {
 // Annotate adds annotated values to passed findings.
 func (ca *customAnnotator) Annotate(
 	ctx context.Context,
-	findings []*ocsf.VulnerabilityFinding,
-) ([]*ocsf.VulnerabilityFinding, error) {
+	findings []*vf.VulnerabilityFinding,
+) ([]*vf.VulnerabilityFinding, error) {
 	var (
 		providerName = "custom-annotation-enricher"
 		logger       = component.LoggerFromContext(ctx).
@@ -92,8 +93,8 @@ func (ca *customAnnotator) Annotate(
 	logger.Debug("preparing to annotate findings...")
 
 	for idx := range findings {
-		findings[idx].Enrichments = append(
-			findings[idx].Enrichments,
+		findings[idx].Finding.Enrichments = append(
+			findings[idx].Finding.Enrichments,
 			&ocsf.Enrichment{
 				Name:     ca.conf.AnnotationName,
 				Value:    ca.conf.AnnotationValuesJSON,
