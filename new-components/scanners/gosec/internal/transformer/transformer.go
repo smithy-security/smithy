@@ -76,7 +76,7 @@ func GosecRawOutFilePath(path string) GosecTransformerOption {
 func New(opts ...GosecTransformerOption) (*gosecTransformer, error) {
 	rawOutFilePath, err := env.GetOrDefault(
 		"GOSEC_RAW_OUT_FILE_PATH",
-		"",
+		"gosec.json",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
