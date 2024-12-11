@@ -1,8 +1,8 @@
 ---
 version: v2
 modules:
-  - path: proto
-    name: smithy-security/smithy/ocsf_ext
+  - path: proto/remote_store
+    name: smithy-security/smithy/remote_store
     lint:
       use:
         - STANDARD
@@ -11,3 +11,18 @@ modules:
         - PACKAGE_NO_IMPORT_CYCLE
       except:
         - PACKAGE_DIRECTORY_MATCH
+  - path: proto/ocsf
+    name: smithy-security/smithy/ocsf
+    lint:
+      use:
+        - STANDARD
+        - COMMENTS
+        - UNARY_RPC
+        - PACKAGE_NO_IMPORT_CYCLE
+      except:
+        - PACKAGE_DIRECTORY_MATCH
+        - COMMENT_FIELD
+        - COMMENT_MESSAGE
+        - COMMENT_ENUM
+        - COMMENT_ENUM_VALUE
+        - ENUM_ZERO_VALUE_SUFFIX
