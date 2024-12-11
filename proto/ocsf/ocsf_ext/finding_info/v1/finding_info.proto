@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package finding_info.v1;
+
+option go_package = "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1";
+
+// DataSource is used to define Data Sources described on https://schema.ocsf.io/1.3.0/objects/finding_info.
+message DataSource {
+  // TargetType specifies the target type.
+  enum TargetType {
+    TARGET_TYPE_UNSPECIFIED = 0;
+    TARGET_TYPE_REPOSITORY = 1;
+  }
+
+  // URISchema specifies the URI schema.
+  // For example:
+  // - purl: pkg:npm/%40angular/animation@12.3.1" -> "pkg"
+  // - file: file://main.go -> "file"
+  enum URISchema {
+    URI_SCHEMA_UNSPECIFIED = 0;
+    URI_SCHEMA_FILE = 1;
+    URI_SCHEMA_PURL = 2;
+  }
+
+  // URI specifies uri content.
+  message URI {
+    URISchema uri_schema = 1;
+    string path = 2;
+  }
+
+  // FileFindingLocationData specifies data associated with the physical location of a finding in a file.
+  message FileFindingLocationData {
+    uint32 start_line = 3;
+    uint32 end_line = 4;
+    uint32 start_column = 5;
+    uint32 end_column = 6;
+  }
+
+  // PurlFindingLocationData specifies data associated with the logical location of a finding in a purl.
+  message PurlFindingLocationData {}
+
+  TargetType target_type = 1;
+  URI uri = 2;
+  // location_data can be a different value based on target_type.
+  oneof location_data {
+    FileFindingLocationData file_finding_location_data = 3;
+    PurlFindingLocationData purl_finding_location_data = 4;
+  }
+}
