@@ -16,7 +16,8 @@ import (
 	gomock "go.uber.org/mock/gomock"
 
 	uuid "github.com/smithy-security/smithy/sdk/component/uuid"
-	pb "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vulnerability_finding "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	v1 "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
 // MockValidator is a mock of Validator interface.
@@ -44,7 +45,7 @@ func (m *MockValidator) EXPECT() *MockValidatorMockRecorder {
 }
 
 // Validate mocks base method.
-func (m *MockValidator) Validate(finding *pb.VulnerabilityFinding) error {
+func (m *MockValidator) Validate(finding *v1.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Validate", finding)
 	ret0, _ := ret[0].(error)
@@ -82,10 +83,10 @@ func (m *MockReader) EXPECT() *MockReaderMockRecorder {
 }
 
 // Read mocks base method.
-func (m *MockReader) Read(ctx context.Context, instanceID uuid.UUID) ([]*pb.VulnerabilityFinding, error) {
+func (m *MockReader) Read(ctx context.Context, instanceID uuid.UUID) ([]*vulnerability_finding.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", ctx, instanceID)
-	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
+	ret0, _ := ret[0].([]*vulnerability_finding.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -121,7 +122,7 @@ func (m *MockUpdater) EXPECT() *MockUpdaterMockRecorder {
 }
 
 // Update mocks base method.
-func (m *MockUpdater) Update(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockUpdater) Update(ctx context.Context, instanceID uuid.UUID, findings []*vulnerability_finding.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
@@ -159,7 +160,7 @@ func (m *MockWriter) EXPECT() *MockWriterMockRecorder {
 }
 
 // Write mocks base method.
-func (m *MockWriter) Write(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockWriter) Write(ctx context.Context, instanceID uuid.UUID, findings []*v1.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
@@ -249,10 +250,10 @@ func (mr *MockStorerMockRecorder) Close(arg0 any) *gomock.Call {
 }
 
 // Read mocks base method.
-func (m *MockStorer) Read(ctx context.Context, instanceID uuid.UUID) ([]*pb.VulnerabilityFinding, error) {
+func (m *MockStorer) Read(ctx context.Context, instanceID uuid.UUID) ([]*vulnerability_finding.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Read", ctx, instanceID)
-	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
+	ret0, _ := ret[0].([]*vulnerability_finding.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -264,7 +265,7 @@ func (mr *MockStorerMockRecorder) Read(ctx, instanceID any) *gomock.Call {
 }
 
 // Update mocks base method.
-func (m *MockStorer) Update(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockStorer) Update(ctx context.Context, instanceID uuid.UUID, findings []*vulnerability_finding.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
@@ -278,7 +279,7 @@ func (mr *MockStorerMockRecorder) Update(ctx, instanceID, findings any) *gomock.
 }
 
 // Validate mocks base method.
-func (m *MockStorer) Validate(finding *pb.VulnerabilityFinding) error {
+func (m *MockStorer) Validate(finding *v1.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Validate", finding)
 	ret0, _ := ret[0].(error)
@@ -292,7 +293,7 @@ func (mr *MockStorerMockRecorder) Validate(finding any) *gomock.Call {
 }
 
 // Write mocks base method.
-func (m *MockStorer) Write(ctx context.Context, instanceID uuid.UUID, findings []*pb.VulnerabilityFinding) error {
+func (m *MockStorer) Write(ctx context.Context, instanceID uuid.UUID, findings []*v1.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", ctx, instanceID, findings)
 	ret0, _ := ret[0].(error)
@@ -368,10 +369,10 @@ func (m *MockScanner) EXPECT() *MockScannerMockRecorder {
 }
 
 // Transform mocks base method.
-func (m *MockScanner) Transform(ctx context.Context) ([]*pb.VulnerabilityFinding, error) {
+func (m *MockScanner) Transform(ctx context.Context) ([]*v1.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Transform", ctx)
-	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
+	ret0, _ := ret[0].([]*v1.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -407,10 +408,10 @@ func (m *MockFilter) EXPECT() *MockFilterMockRecorder {
 }
 
 // Filter mocks base method.
-func (m *MockFilter) Filter(ctx context.Context, findings []*pb.VulnerabilityFinding) ([]*pb.VulnerabilityFinding, bool, error) {
+func (m *MockFilter) Filter(ctx context.Context, findings []*vulnerability_finding.VulnerabilityFinding) ([]*vulnerability_finding.VulnerabilityFinding, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Filter", ctx, findings)
-	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
+	ret0, _ := ret[0].([]*vulnerability_finding.VulnerabilityFinding)
 	ret1, _ := ret[1].(bool)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -447,10 +448,10 @@ func (m *MockEnricher) EXPECT() *MockEnricherMockRecorder {
 }
 
 // Annotate mocks base method.
-func (m *MockEnricher) Annotate(ctx context.Context, findings []*pb.VulnerabilityFinding) ([]*pb.VulnerabilityFinding, error) {
+func (m *MockEnricher) Annotate(ctx context.Context, findings []*vulnerability_finding.VulnerabilityFinding) ([]*vulnerability_finding.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Annotate", ctx, findings)
-	ret0, _ := ret[0].([]*pb.VulnerabilityFinding)
+	ret0, _ := ret[0].([]*vulnerability_finding.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -486,7 +487,7 @@ func (m *MockReporter) EXPECT() *MockReporterMockRecorder {
 }
 
 // Report mocks base method.
-func (m *MockReporter) Report(ctx context.Context, findings []*pb.VulnerabilityFinding) error {
+func (m *MockReporter) Report(ctx context.Context, findings []*vulnerability_finding.VulnerabilityFinding) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Report", ctx, findings)
 	ret0, _ := ret[0].(error)

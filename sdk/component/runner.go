@@ -9,7 +9,6 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/smithy-security/smithy/sdk/component/internal/utils"
-	localstore "github.com/smithy-security/smithy/sdk/component/store/local"
 )
 
 type (
@@ -25,7 +24,7 @@ type (
 // newRunner returns a new runner which is initialised looking at the default configuration
 // and can be customised applying options.
 // Returns an error if the configuration is invalid.
-func newRunner(opts ...RunnerOption) (*runner, error) {
+func newRunner(ctx context.Context, opts ...RunnerOption) (*runner, error) {
 	cfg, err := newRunnerConfig()
 	if err != nil {
 		return nil, errors.Errorf("could not create default runner configuration: %w", err)
@@ -39,12 +38,15 @@ func newRunner(opts ...RunnerOption) (*runner, error) {
 		}
 	}
 
-	if utils.IsNil(r.config.Storer) {
-		storer, err := localstore.NewManager()
-		if err != nil {
-			return nil, errors.Errorf("could not create default storer: %w", err)
+	if !r.config.StoreConfig.DisableStoreValidation {
+		// Set up a default store if setting is enabled, and we don't have a store yet.
+		if utils.IsNil(r.config.StoreConfig.Storer) {
+			storer, err := newStore(ctx, r.config.StoreConfig.StoreType)
+			if err != nil {
+				return nil, errors.Errorf("could not create storer: %w", err)
+			}
+			r.config.StoreConfig.Storer = storer
 		}
-		r.config.Storer = storer
 	}
 
 	if err := r.config.isValid(); err != nil {
@@ -69,7 +71,7 @@ func run(
 	componentRunner componentRunnerFunc,
 	opts ...RunnerOption,
 ) error {
-	r, err := newRunner(opts...)
+	r, err := newRunner(ctx, opts...)
 	if err != nil {
 		return errors.Errorf("could not create runner: %w", err)
 	}

@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
 type sampleReporter struct{}
 
-func (s sampleReporter) Report(ctx context.Context, findings []*ocsf.VulnerabilityFinding) error {
+func (s sampleReporter) Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error {
 	component.LoggerFromContext(ctx).Info("Report.")
 	return nil
 }

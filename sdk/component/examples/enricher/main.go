@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
 type sampleEnricher struct{}
 
-func (s sampleEnricher) Annotate(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+func (s sampleEnricher) Annotate(ctx context.Context, findings []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, error) {
 	component.LoggerFromContext(ctx).Info("Annotate.")
-	return make([]*ocsf.VulnerabilityFinding, 0, 10), nil
+	return make([]*vf.VulnerabilityFinding, 0, 10), nil
 }
 
 func main() {
