@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package findings_service.v1;
+
+import "ocsf_schema/v1/ocsf_schema.proto";
+
+option go_package = "github.com/smithy-security/smithy/sdk/gen/findings_service/v1";
+
+// FindingService is a service that can be implemented to interact with a findings backend.
+service FindingsService {
+  // GetFindings returns a list of findings associated with the passed id.
+  rpc GetFindings(GetFindingsRequest) returns (GetFindingsResponse);
+  // UpdateFindings updates the passed findings by id.
+  rpc UpdateFindings(UpdateFindingsRequest) returns (UpdateFindingsResponse);
+  // CreateFindings creates the passed findings by id.
+  rpc CreateFindings(CreateFindingsRequest) returns (CreateFindingsResponse);
+}
+
+// Finding represents a finding.
+message Finding {
+  uint64 id = 1;
+  ocsf_schema.v1.VulnerabilityFinding details = 2;
+}
+
+// GetFindingsRequest is the request used to get findings.
+message GetFindingsRequest {
+  // id is the uuid associated with a group of findings.
+  string id = 1;
+}
+
+// GetFindingsResponse is the response used to get findings.
+message GetFindingsResponse {
+  // findings is an array of vulnerability findings.
+  repeated Finding findings = 1;
+}
+
+// UpdateFindingsRequest is the request used to update findings.
+message UpdateFindingsRequest {
+  // id is the uuid associated with a group of findings.
+  string id = 1;
+  // findings is an array of vulnerability findings.
+  repeated Finding findings = 2;
+}
+
+// UpdateFindingsResponse is the response used to update findings.
+message UpdateFindingsResponse {}
+
+// CreateFindingsRequest is the request used to create findings.
+message CreateFindingsRequest {
+  // id is the uuid associated with a group of findings.
+  string id = 1;
+  // findings is an array of vulnerability findings.
+  repeated ocsf_schema.v1.VulnerabilityFinding findings = 2;
+}
+
+// CreateFindingsResponse is the response used to create findings.
+message CreateFindingsResponse {}
