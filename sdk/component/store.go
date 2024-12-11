@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-errors/errors"
 
-	localstore "github.com/smithy-security/smithy/sdk/component/store/local"
+	"github.com/smithy-security/smithy/sdk/component/store/local/sqlite"
 	findingsclient "github.com/smithy-security/smithy/sdk/component/store/remote/findings-client"
 	"github.com/smithy-security/smithy/sdk/component/store/remote/postgresql"
 )
@@ -13,7 +13,7 @@ import (
 func newStore(ctx context.Context, storeType StoreType) (Storer, error) {
 	switch storeType {
 	case StoreTypeSqlite:
-		return localstore.NewManager()
+		return sqlite.NewManager(ctx)
 	case StoreTypePostgresql:
 		return postgresql.NewManager(ctx)
 	case StoreTypeFindingsClient:
