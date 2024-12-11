@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
 type sampleFilter struct{}
 
-func (s sampleFilter) Filter(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
+func (s sampleFilter) Filter(ctx context.Context, findings []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, bool, error) {
 	component.LoggerFromContext(ctx).Info("Filter.")
-	return make([]*ocsf.VulnerabilityFinding, 0, 80), true, nil
+	return make([]*vf.VulnerabilityFinding, 0, 80), true, nil
 }
 
 func main() {

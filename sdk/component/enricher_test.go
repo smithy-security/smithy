@@ -12,7 +12,7 @@ import (
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
 func runEnricherHelper(
@@ -41,8 +41,8 @@ func TestRunEnricher(t *testing.T) {
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockEnricher  = mocks.NewMockEnricher(ctrl)
-		vulns         = make([]*ocsf.VulnerabilityFinding, 0, 2)
-		enrichedVulns = make([]*ocsf.VulnerabilityFinding, 0, 2)
+		vulns         = make([]*vf.VulnerabilityFinding, 0, 2)
+		enrichedVulns = make([]*vf.VulnerabilityFinding, 0, 2)
 	)
 
 	t.Run("it should run a enricher correctly and enrich out one finding", func(t *testing.T) {
@@ -80,7 +80,7 @@ func TestRunEnricher(t *testing.T) {
 				EXPECT().
 				Annotate(mockCtx, vulns).
 				DoAndReturn(
-					func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+					func(ctx context.Context, vulns []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, error) {
 						cancel()
 						return enrichedVulns, nil
 					}),
@@ -91,7 +91,7 @@ func TestRunEnricher(t *testing.T) {
 					func(
 						ctx context.Context,
 						instanceID uuid.UUID,
-						vulns []*ocsf.VulnerabilityFinding,
+						vulns []*vf.VulnerabilityFinding,
 					) error {
 						<-ctx.Done()
 						return nil
@@ -182,7 +182,7 @@ func TestRunEnricher(t *testing.T) {
 				EXPECT().
 				Annotate(mockCtx, vulns).
 				DoAndReturn(
-					func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+					func(ctx context.Context, vulns []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, error) {
 						panic(errAnnotation)
 						return enrichedVulns, nil
 					}),

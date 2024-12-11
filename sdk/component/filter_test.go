@@ -11,7 +11,7 @@ import (
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
 func runFilterHelper(
@@ -40,8 +40,8 @@ func TestRunFilter(t *testing.T) {
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockFilter    = mocks.NewMockFilter(ctrl)
-		vulns         = make([]*ocsf.VulnerabilityFinding, 0, 2)
-		filteredVulns = make([]*ocsf.VulnerabilityFinding, 0, 1)
+		vulns         = make([]*vf.VulnerabilityFinding, 0, 2)
+		filteredVulns = make([]*vf.VulnerabilityFinding, 0, 1)
 	)
 
 	t.Run("it should run a filter correctly and filter out one finding", func(t *testing.T) {
@@ -97,7 +97,7 @@ func TestRunFilter(t *testing.T) {
 			mockFilter.
 				EXPECT().
 				Filter(mockCtx, vulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
+				DoAndReturn(func(ctx context.Context, vulns []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, bool, error) {
 					cancel()
 					return filteredVulns, true, nil
 				}),
@@ -108,7 +108,7 @@ func TestRunFilter(t *testing.T) {
 					func(
 						ctx context.Context,
 						instanceID uuid.UUID,
-						vulns []*ocsf.VulnerabilityFinding,
+						vulns []*vf.VulnerabilityFinding,
 					) error {
 						<-ctx.Done()
 						return nil
@@ -196,7 +196,7 @@ func TestRunFilter(t *testing.T) {
 			mockFilter.
 				EXPECT().
 				Filter(mockCtx, vulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, bool, error) {
+				DoAndReturn(func(ctx context.Context, vulns []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, bool, error) {
 					panic(errFilter)
 					return filteredVulns, true, nil
 				}),

@@ -14,7 +14,7 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 			var (
 				instanceID = cfg.InstanceID
 				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "reporter")
-				store      = cfg.Storer
+				store      = cfg.StoreConfig.Storer
 			)
 
 			defer func() {

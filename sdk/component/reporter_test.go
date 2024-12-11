@@ -11,7 +11,7 @@ import (
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
 func runReporterHelper(
@@ -40,7 +40,7 @@ func TestRunReporter(t *testing.T) {
 		mockCtx      = gomock.AssignableToTypeOf(ctx)
 		mockStore    = mocks.NewMockStorer(ctrl)
 		mockReporter = mocks.NewMockReporter(ctrl)
-		vulns        = make([]*ocsf.VulnerabilityFinding, 0)
+		vulns        = make([]*vf.VulnerabilityFinding, 0)
 	)
 
 	t.Run("it should run a reporter correctly", func(t *testing.T) {
@@ -69,14 +69,14 @@ func TestRunReporter(t *testing.T) {
 			mockStore.
 				EXPECT().
 				Read(mockCtx, instanceID).
-				DoAndReturn(func(ctx context.Context, instanceID uuid.UUID) ([]*ocsf.VulnerabilityFinding, error) {
+				DoAndReturn(func(ctx context.Context, instanceID uuid.UUID) ([]*vf.VulnerabilityFinding, error) {
 					cancel()
 					return vulns, nil
 				}),
 			mockReporter.
 				EXPECT().
 				Report(mockCtx, vulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
+				DoAndReturn(func(ctx context.Context, vulns []*vf.VulnerabilityFinding) error {
 					<-ctx.Done()
 					return nil
 				}),
@@ -138,7 +138,7 @@ func TestRunReporter(t *testing.T) {
 			mockReporter.
 				EXPECT().
 				Report(mockCtx, vulns).
-				DoAndReturn(func(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) error {
+				DoAndReturn(func(ctx context.Context, vulns []*vf.VulnerabilityFinding) error {
 					panic(errReporting)
 					return nil
 				}),

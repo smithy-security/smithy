@@ -37,7 +37,14 @@ type (
 		// TODO: add MetricsHandler.
 		// TODO: add TracingHandler.
 
-		Storer Storer
+		StoreConfig StoreConfig
+	}
+
+	// StoreConfig contains store configuration.
+	StoreConfig struct {
+		DisableStoreValidation bool
+		StoreType              StoreType
+		Storer                 Storer
 	}
 
 	// RunnerConfigLogging contains the configuration related with the runner logger.
@@ -101,7 +108,7 @@ func (rc *RunnerConfig) isValid() error {
 			FieldName: "panic_handler",
 			Reason:    errReasonCannotBeNil,
 		}
-	case utils.IsNil(rc.Storer):
+	case utils.IsNil(rc.StoreConfig.Storer) && !rc.StoreConfig.DisableStoreValidation:
 		return ErrInvalidRunnerConfig{
 			FieldName: "store",
 			Reason:    errReasonCannotBeNil,
@@ -109,6 +116,15 @@ func (rc *RunnerConfig) isValid() error {
 	}
 
 	return nil
+}
+
+// runnerWithDisabledStoreCheck is an internal only option which is used to disable store checks for components
+// that don't interact with a storage, like targets.
+func runnerWithDisabledStoreCheck() RunnerOption {
+	return func(r *runner) error {
+		r.config.StoreConfig.DisableStoreValidation = true
+		return nil
+	}
 }
 
 // RunnerWithLogger allows customising the runner logger.
@@ -162,7 +178,7 @@ func RunnerWithStorer(store Storer) RunnerOption {
 				Reason:     errReasonCannotBeNil,
 			}
 		}
-		r.config.Storer = store
+		r.config.StoreConfig.Storer = store
 		return nil
 	}
 }
@@ -208,6 +224,11 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	}
 	// --- END - LOGGING ENV - END ---
 
+	storeType, err := env.GetOrDefault("SMITHY_STORE_TYPE", StoreTypeSqlite.String(), env.WithDefaultOnError(true))
+	if err != nil {
+		return nil, err
+	}
+
 	return &RunnerConfig{
 		ComponentName: componentName,
 		SDKVersion:    sdk.Version,
@@ -217,5 +238,8 @@ func newRunnerConfig() (*RunnerConfig, error) {
 			Logger: logger,
 		},
 		PanicHandler: panicHandler,
+		StoreConfig: StoreConfig{
+			StoreType: StoreType(storeType),
+		},
 	}, nil
 }

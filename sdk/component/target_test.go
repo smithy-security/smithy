@@ -23,7 +23,6 @@ func runTargetHelper(t *testing.T, ctx context.Context, target component.Target,
 		component.RunnerWithLogger(component.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-target"),
 		component.RunnerWithInstanceID(uuid.New()),
-		component.RunnerWithStorer(store),
 	)
 }
 
