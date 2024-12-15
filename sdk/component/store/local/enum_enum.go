@@ -12,8 +12,10 @@ import (
 )
 
 const (
-	// LocalStoreColumnNameFindings is a localStoreColumnName of type findings.
-	LocalStoreColumnNameFindings localStoreColumnName = "findings"
+	// LocalStoreColumnNameId is a localStoreColumnName of type id.
+	LocalStoreColumnNameId localStoreColumnName = "id"
+	// LocalStoreColumnNameDetails is a localStoreColumnName of type details.
+	LocalStoreColumnNameDetails localStoreColumnName = "details"
 	// LocalStoreColumnNameInstanceId is a localStoreColumnName of type instance_id.
 	LocalStoreColumnNameInstanceId localStoreColumnName = "instance_id"
 	// LocalStoreColumnNameUpdatedAt is a localStoreColumnName of type updated_at.
@@ -35,7 +37,8 @@ func (x localStoreColumnName) IsValid() bool {
 }
 
 var _localStoreColumnNameValue = map[string]localStoreColumnName{
-	"findings":    LocalStoreColumnNameFindings,
+	"id":          LocalStoreColumnNameId,
+	"details":     LocalStoreColumnNameDetails,
 	"instance_id": LocalStoreColumnNameInstanceId,
 	"updated_at":  LocalStoreColumnNameUpdatedAt,
 }

@@ -1,6 +1,6 @@
 package localstore
 
 type (
-	// ENUM(findings, instance_id, updated_at)
+	// ENUM(id, details, instance_id, updated_at)
 	localStoreColumnName string
 )

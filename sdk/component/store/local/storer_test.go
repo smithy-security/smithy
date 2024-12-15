@@ -15,7 +15,8 @@ import (
 	"github.com/smithy-security/smithy/sdk/component/store"
 	localstore "github.com/smithy-security/smithy/sdk/component/store/local"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/com/github/ocsf/ocsf_schema/v1"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
 type (
@@ -144,28 +145,26 @@ func (mts *ManagerTestSuite) TestManager() {
 		)
 	})
 
-	mts.t.Run("given findings for an existing instance exist, a second write will fail", func(t *testing.T) {
-		require.Error(
-			mts.t,
-			mts.manager.Write(
-				ctx,
-				instanceID,
-				findings,
-			),
-		)
-	})
-
 	mts.t.Run("given two findings are present in the database, I should be able to retrieve them", func(t *testing.T) {
 		resFindings, err := mts.manager.Read(ctx, instanceID)
 		require.NoError(mts.t, err)
 		require.Len(mts.t, resFindings, 2)
-		assert.EqualValues(mts.t, findings, resFindings)
+
+		assert.Equal(t, uint64(1), resFindings[0].ID)
+		assert.Equal(mts.t, findings[0], resFindings[0].Finding)
+		assert.Equal(t, uint64(2), resFindings[1].ID)
+		assert.Equal(mts.t, findings[1], resFindings[1].Finding)
 	})
 
 	mts.t.Run("given a non existing instance id in the database, updating should fail", func(t *testing.T) {
 		require.ErrorIs(
 			mts.t,
-			mts.manager.Update(ctx, uuid.New(), findings),
+			mts.manager.Update(ctx, uuid.New(), []*vf.VulnerabilityFinding{
+				{
+					ID:      1,
+					Finding: findings[0],
+				},
+			}),
 			store.ErrNoFindingsFound,
 		)
 	})
@@ -182,13 +181,26 @@ func (mts *ManagerTestSuite) TestManager() {
 
 			require.NoError(
 				mts.t,
-				mts.manager.Update(ctx, instanceID, copyFindings),
+				mts.manager.Update(ctx, instanceID, []*vf.VulnerabilityFinding{
+					{
+						ID:      1,
+						Finding: copyFindings[0],
+					},
+					{
+						ID:      2,
+						Finding: copyFindings[1],
+					},
+				}),
 			)
 
 			resFindings, err := mts.manager.Read(ctx, instanceID)
 			require.NoError(mts.t, err)
 			require.Len(mts.t, resFindings, 2)
-			assert.EqualValues(mts.t, copyFindings, resFindings)
+
+			assert.Equal(t, uint64(1), resFindings[0].ID)
+			assert.Equal(mts.t, copyFindings[0], resFindings[0].Finding)
+			assert.Equal(t, uint64(2), resFindings[1].ID)
+			assert.Equal(mts.t, copyFindings[1], resFindings[1].Finding)
 		})
 }
 
