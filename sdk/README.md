@@ -325,7 +325,9 @@ You can generate types mapping schemas and queries by leveraging the `go:generat
 
 Components require a common database/tables setup to function properly.
 
-This is achieved with migrations.
+This is achieved with migrations with [atlas](https://atlasgo.io/).
+
+Atlas uses a `atlas.sum` to ensure [migration files' integrity](https://atlasgo.io/concepts/migration-directory-integrity).
 
 ##### SQLite
 
