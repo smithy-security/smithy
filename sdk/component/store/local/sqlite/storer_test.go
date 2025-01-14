@@ -20,11 +20,17 @@ import (
 )
 
 type (
+	storer interface {
+		component.Storer
+
+		RemoveDatabase() error
+	}
+
 	ManagerTestSuite struct {
 		suite.Suite
 
 		t       *testing.T
-		manager component.Storer
+		manager storer
 	}
 )
 
@@ -45,6 +51,7 @@ func (mts *ManagerTestSuite) TearDownTest() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	require.NoError(mts.t, mts.manager.Close(ctx))
+	require.NoError(mts.t, mts.manager.RemoveDatabase())
 }
 
 func (mts *ManagerTestSuite) TestManager() {
