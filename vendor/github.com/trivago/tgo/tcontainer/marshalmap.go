@@ -302,7 +302,7 @@ func (mmap MarshalMap) StringSlice(key string) ([]string, error) {
 
 // StringArray returns a value at key that is expected to be a []string
 // This function supports conversion (by copy) from
-//  * []interface{}
+//   - []interface{}
 func (mmap MarshalMap) StringArray(key string) ([]string, error) {
 	val, exists := mmap.Value(key)
 	if !exists {
@@ -345,7 +345,7 @@ func (mmap MarshalMap) Int64Slice(key string) ([]int64, error) {
 
 // Int64Array returns a value at key that is expected to be a []int64
 // This function supports conversion (by copy) from
-//  * []interface{}
+//   - []interface{}
 func (mmap MarshalMap) Int64Array(key string) ([]int64, error) {
 	val, exists := mmap.Value(key)
 	if !exists {
@@ -357,8 +357,8 @@ func (mmap MarshalMap) Int64Array(key string) ([]int64, error) {
 
 // StringMap returns a value at key that is expected to be a map[string]string.
 // This function supports conversion (by copy) from
-//  * map[interface{}]interface{}
-//  * map[string]interface{}
+//   - map[interface{}]interface{}
+//   - map[string]interface{}
 func (mmap MarshalMap) StringMap(key string) (map[string]string, error) {
 	val, exists := mmap.Value(key)
 	if !exists {
@@ -402,9 +402,9 @@ func (mmap MarshalMap) StringSliceMap(key string) (map[string][]string, error) {
 
 // StringArrayMap returns a value at key that is expected to be a
 // map[string][]string. This function supports conversion (by copy) from
-//  * map[interface{}][]interface{}
-//  * map[interface{}]interface{}
-//  * map[string]interface{}
+//   - map[interface{}][]interface{}
+//   - map[interface{}]interface{}
+//   - map[string]interface{}
 func (mmap MarshalMap) StringArrayMap(key string) (map[string][]string, error) {
 	val, exists := mmap.Value(key)
 	if !exists {
@@ -443,7 +443,7 @@ func (mmap MarshalMap) StringArrayMap(key string) (map[string][]string, error) {
 
 // MarshalMap returns a value at key that is expected to be another MarshalMap
 // This function supports conversion (by copy) from
-//  * map[interface{}]interface{}
+//   - map[interface{}]interface{}
 func (mmap MarshalMap) MarshalMap(key string) (MarshalMap, error) {
 	val, exists := mmap.Value(key)
 	if !exists {

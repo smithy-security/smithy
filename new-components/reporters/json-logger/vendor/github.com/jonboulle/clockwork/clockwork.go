@@ -307,7 +307,7 @@ func (fc *fakeClock) setExpirer(e expirer, d time.Duration) {
 		return fc.waiters[i].expiry().Before(fc.waiters[j].expiry())
 	})
 
-    // Notify blockers of our new waiter.
+	// Notify blockers of our new waiter.
 	var blocked []*blocker
 	count := len(fc.waiters)
 	for _, b := range fc.blockers {

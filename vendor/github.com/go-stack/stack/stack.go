@@ -1,3 +1,4 @@
+//go:build go1.7
 // +build go1.7
 
 // Package stack implements utilities to capture, manipulate, and format call
@@ -73,22 +74,22 @@ var ErrNoFunc = errors.New("no call stack information")
 
 // Format implements fmt.Formatter with support for the following verbs.
 //
-//    %s    source file
-//    %d    line number
-//    %n    function name
-//    %k    last segment of the package path
-//    %v    equivalent to %s:%d
+//	%s    source file
+//	%d    line number
+//	%n    function name
+//	%k    last segment of the package path
+//	%v    equivalent to %s:%d
 //
 // It accepts the '+' and '#' flags for most of the verbs as follows.
 //
-//    %+s   path of source file relative to the compile time GOPATH,
-//          or the module path joined to the path of source file relative
-//          to module root
-//    %#s   full path of source file
-//    %+n   import path qualified function name
-//    %+k   full package path
-//    %+v   equivalent to %+s:%d
-//    %#v   equivalent to %#s:%d
+//	%+s   path of source file relative to the compile time GOPATH,
+//	      or the module path joined to the path of source file relative
+//	      to module root
+//	%#s   full path of source file
+//	%+n   import path qualified function name
+//	%+k   full package path
+//	%+v   equivalent to %+s:%d
+//	%#v   equivalent to %#s:%d
 func (c Call) Format(s fmt.State, verb rune) {
 	if c.frame == (runtime.Frame{}) {
 		fmt.Fprintf(s, "%%!%c(NOFUNC)", verb)
@@ -298,11 +299,11 @@ func pkgIndex(file, funcName string) int {
 // last segments of the file path to arrive at the desired package qualified
 // file path. For example, given:
 //
-//    GOPATH          /home/user
-//    import path     pkg/sub
-//    frame.File      /home/user/src/pkg/sub/file.go
-//    frame.Function  pkg/sub.Type.Method
-//    Desired return  pkg/sub/file.go
+//	GOPATH          /home/user
+//	import path     pkg/sub
+//	frame.File      /home/user/src/pkg/sub/file.go
+//	frame.Function  pkg/sub.Type.Method
+//	Desired return  pkg/sub/file.go
 //
 // It appears that we simply need to trim ".Type.Method" from frame.Function and
 // append "/" + path.Base(file).
@@ -312,19 +313,19 @@ func pkgIndex(file, funcName string) int {
 // path. In addition, the introduction of modules in Go 1.11 allows working
 // without a GOPATH. So we also must make these work right:
 //
-//    GOPATH          /home/user
-//    import path     pkg/go-sub
-//    package name    sub
-//    frame.File      /home/user/src/pkg/go-sub/file.go
-//    frame.Function  pkg/sub.Type.Method
-//    Desired return  pkg/go-sub/file.go
+//	GOPATH          /home/user
+//	import path     pkg/go-sub
+//	package name    sub
+//	frame.File      /home/user/src/pkg/go-sub/file.go
+//	frame.Function  pkg/sub.Type.Method
+//	Desired return  pkg/go-sub/file.go
 //
-//    Module path     pkg/v2
-//    import path     pkg/v2/go-sub
-//    package name    sub
-//    frame.File      /home/user/cloned-pkg/go-sub/file.go
-//    frame.Function  pkg/v2/sub.Type.Method
-//    Desired return  pkg/v2/go-sub/file.go
+//	Module path     pkg/v2
+//	import path     pkg/v2/go-sub
+//	package name    sub
+//	frame.File      /home/user/cloned-pkg/go-sub/file.go
+//	frame.Function  pkg/v2/sub.Type.Method
+//	Desired return  pkg/v2/go-sub/file.go
 //
 // We can handle all of these situations by using the package path extracted
 // from frame.Function up to, but not including, the last segment as the prefix

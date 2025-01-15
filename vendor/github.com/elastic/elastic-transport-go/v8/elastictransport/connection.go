@@ -33,13 +33,11 @@ var (
 )
 
 // Selector defines the interface for selecting connections from the pool.
-//
 type Selector interface {
 	Select([]*Connection) (*Connection, error)
 }
 
 // ConnectionPool defines the interface for the connection pool.
-//
 type ConnectionPool interface {
 	Next() (*Connection, error)  // Next returns the next available connection.
 	OnSuccess(*Connection) error // OnSuccess reports that the connection was successful.
@@ -48,7 +46,6 @@ type ConnectionPool interface {
 }
 
 // Connection represents a connection to a node.
-//
 type Connection struct {
 	sync.Mutex
 
@@ -86,7 +83,6 @@ type roundRobinSelector struct {
 }
 
 // NewConnectionPool creates and returns a default connection pool.
-//
 func NewConnectionPool(conns []*Connection, selector Selector) (ConnectionPool, error) {
 	if len(conns) == 1 {
 		return &singleConnectionPool{connection: conns[0]}, nil
@@ -98,7 +94,6 @@ func NewConnectionPool(conns []*Connection, selector Selector) (ConnectionPool, 
 }
 
 // Next returns the connection from pool.
-//
 func (cp *singleConnectionPool) Next() (*Connection, error) {
 	return cp.connection, nil
 }
@@ -115,7 +110,6 @@ func (cp *singleConnectionPool) URLs() []*url.URL { return []*url.URL{cp.connect
 func (cp *singleConnectionPool) connections() []*Connection { return []*Connection{cp.connection} }
 
 // Next returns a connection from pool, or an error.
-//
 func (cp *statusConnectionPool) Next() (*Connection, error) {
 	cp.Lock()
 	defer cp.Unlock()
@@ -136,7 +130,6 @@ func (cp *statusConnectionPool) Next() (*Connection, error) {
 }
 
 // OnSuccess marks the connection as successful.
-//
 func (cp *statusConnectionPool) OnSuccess(c *Connection) error {
 	c.Lock()
 	defer c.Unlock()
@@ -154,7 +147,6 @@ func (cp *statusConnectionPool) OnSuccess(c *Connection) error {
 }
 
 // OnFailure marks the connection as failed.
-//
 func (cp *statusConnectionPool) OnFailure(c *Connection) error {
 	cp.Lock()
 	defer cp.Unlock()
@@ -209,7 +201,6 @@ func (cp *statusConnectionPool) OnFailure(c *Connection) error {
 }
 
 // URLs returns the list of URLs of available connections.
-//
 func (cp *statusConnectionPool) URLs() []*url.URL {
 	var urls []*url.URL
 
@@ -233,7 +224,6 @@ func (cp *statusConnectionPool) connections() []*Connection {
 // resurrect adds the connection to the list of available connections.
 // When removeDead is true, it also removes it from the dead list.
 // The calling code is responsible for locking.
-//
 func (cp *statusConnectionPool) resurrect(c *Connection, removeDead bool) error {
 	if debugLogger != nil {
 		debugLogger.Logf("Resurrecting %s\n", c.URL)
@@ -260,7 +250,6 @@ func (cp *statusConnectionPool) resurrect(c *Connection, removeDead bool) error 
 }
 
 // scheduleResurrect schedules the connection to be resurrected.
-//
 func (cp *statusConnectionPool) scheduleResurrect(c *Connection) {
 	factor := math.Min(float64(c.Failures-1), float64(defaultResurrectTimeoutFactorCutoff))
 	timeout := time.Duration(defaultResurrectTimeoutInitial.Seconds() * math.Exp2(factor) * float64(time.Second))
@@ -287,7 +276,6 @@ func (cp *statusConnectionPool) scheduleResurrect(c *Connection) {
 }
 
 // Select returns the connection in a round-robin fashion.
-//
 func (s *roundRobinSelector) Select(conns []*Connection) (*Connection, error) {
 	s.Lock()
 	defer s.Unlock()
@@ -297,7 +285,6 @@ func (s *roundRobinSelector) Select(conns []*Connection) (*Connection, error) {
 }
 
 // markAsDead marks the connection as dead.
-//
 func (c *Connection) markAsDead() {
 	c.IsDead = true
 	if c.DeadSince.IsZero() {
@@ -307,13 +294,11 @@ func (c *Connection) markAsDead() {
 }
 
 // markAsLive marks the connection as alive.
-//
 func (c *Connection) markAsLive() {
 	c.IsDead = false
 }
 
 // markAsHealthy marks the connection as healthy.
-//
 func (c *Connection) markAsHealthy() {
 	c.IsDead = false
 	c.DeadSince = time.Time{}
@@ -321,7 +306,6 @@ func (c *Connection) markAsHealthy() {
 }
 
 // String returns a readable connection representation.
-//
 func (c *Connection) String() string {
 	c.Lock()
 	defer c.Unlock()

@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/bigquery v1.57.1
 	github.com/CycloneDX/cyclonedx-go v0.9.0
 	github.com/DependencyTrack/client-go v0.13.0
+	github.com/abice/go-enum v0.6.0
 	github.com/andygrunwald/go-jira v1.16.0
 	github.com/avast/retry-go/v4 v4.3.3
 	github.com/aws/aws-sdk-go v1.17.7
@@ -60,7 +61,6 @@ require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20230828082145-3c4c8a2d2371 // indirect
-	github.com/abice/go-enum v0.6.0 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 	github.com/apache/arrow/go/v12 v12.0.0 // indirect

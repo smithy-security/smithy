@@ -3,7 +3,6 @@
 package gen // CEL
 import "github.com/antlr4-go/antlr/v4"
 
-
 // A complete Visitor for a parse tree produced by CELParser.
 type CELVisitor interface {
 	antlr.ParseTreeVisitor
@@ -106,5 +105,4 @@ type CELVisitor interface {
 
 	// Visit a parse tree produced by CELParser#Null.
 	VisitNull(ctx *NullContext) interface{}
-
 }

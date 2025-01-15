@@ -23,18 +23,17 @@ import (
 // For example to get the region of a bucket which exists in "eu-central-1"
 // you could provide a region hint of "us-west-2".
 //
-//    sess := session.Must(session.NewSession())
+//	sess := session.Must(session.NewSession())
 //
-//    bucket := "my-bucket"
-//    region, err := s3manager.GetBucketRegion(ctx, sess, bucket, "us-west-2")
-//    if err != nil {
-//        if aerr, ok := err.(awserr.Error); ok && aerr.Code() == "NotFound" {
-//             fmt.Fprintf(os.Stderr, "unable to find bucket %s's region not found\n", bucket)
-//        }
-//        return err
-//    }
-//    fmt.Printf("Bucket %s is in %s region\n", bucket, region)
-//
+//	bucket := "my-bucket"
+//	region, err := s3manager.GetBucketRegion(ctx, sess, bucket, "us-west-2")
+//	if err != nil {
+//	    if aerr, ok := err.(awserr.Error); ok && aerr.Code() == "NotFound" {
+//	         fmt.Fprintf(os.Stderr, "unable to find bucket %s's region not found\n", bucket)
+//	    }
+//	    return err
+//	}
+//	fmt.Printf("Bucket %s is in %s region\n", bucket, region)
 func GetBucketRegion(ctx aws.Context, c client.ConfigProvider, bucket, regionHint string, opts ...request.Option) (string, error) {
 	var cfg aws.Config
 	if len(regionHint) != 0 {
