@@ -8,10 +8,11 @@ protos=$(shell find . -not -path './vendor/*' -name '*.proto')
 go_protos=$(protos:.proto=.pb.go)
 latest_tag=$(shell git tag --list --sort="-version:refname" | head -n 1)
 commits_since_latest_tag=$(shell git log --oneline $(latest_tag)..HEAD | wc -l)
-GO_TEST_PACKAGES=$(shell go list ./... | grep -v /vendor/)
+GO_TEST_PACKAGES=$(shell find . -name 'go.mod' -exec dirname {} \; | sort -u)
 VENDOR_DIRS=$(shell find . -type d -name "vendor")
 NOT_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "-not -path \""$$i"/*\""}' | tr '\n' ' ')
 EXCLUDE_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "--exclude-path \""$$i"\""}' | tr '\n' ' ')
+GO_TEST_OUT_DIR_PATH=$(shell pwd)/tests/output
 
 # Deployment vars
 # The following variables are used to define the deployment environment
@@ -133,7 +134,16 @@ install-go-test-tools:
 
 go-tests:
 	@mkdir -p tests/output
-	@gotestsum --junitfile tests/output/unit-tests.xml -- -race -coverprofile tests/output/cover.out $(GO_TEST_PACKAGES)
+	@for package in $(GO_TEST_PACKAGES); do \
+		if [ "$$package" = "./components/producers/golang-nancy/examples" ]; then \
+			continue; \
+		fi; \
+		LISTED_PACKAGES=./...; \
+		if [ "$$package" = "." ]; then \
+			LISTED_PACKAGES=$$(go list ./... | grep -v "^$$package$$"); \
+		fi; \
+		(cd $$package && gotestsum --junitfile $(GO_TEST_OUT_DIR_PATH)/unit-tests.xml -- -race -coverprofile $(GO_TEST_OUT_DIR_PATH)/cover.out $$LISTED_PACKAGES) || exit 1; \
+	done
 
 go-cover: go-tests
 	@go tool cover -html=tests/output/cover.out -o=tests/output/cover.html && open tests/output/cover.html
