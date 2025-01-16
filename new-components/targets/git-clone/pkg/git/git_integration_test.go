@@ -24,11 +24,11 @@ type TestGitCloneSuite struct {
 	testAbsPath       string
 	dockerTestPool    *dockertest.Pool
 	dockerTestNetwork *docker.Network
-	giteaResource     *dockertest.Resource
 	dockerResources   []*dockertest.Resource
 }
 
 func TestTestGitCloneSuite(t *testing.T) {
+	t.Skip("TODO: Re-enable when fixing https://linear.app/smithy/issue/OCU-482/make-sure-git-cloner-integration-test-works-on-ci")
 	suite.Run(t, new(TestGitCloneSuite))
 }
 
@@ -56,6 +56,7 @@ func (s *TestGitCloneSuite) SetupTest() {
 
 	absPath, err := filepath.Abs(".")
 	require.NoError(s.T(), err)
+	s.testAbsPath = absPath
 
 	gitea, err := pool.RunWithOptions(
 		&dockertest.RunOptions{
@@ -119,7 +120,6 @@ func (s *TestGitCloneSuite) SetupTest() {
 
 	ctxDirPath, err := filepath.Abs("../..")
 	require.NoError(s.T(), err)
-	s.testAbsPath = ctxDirPath
 
 	seeder, err := pool.BuildAndRunWithBuildOptions(
 		&dockertest.BuildOptions{
@@ -140,7 +140,11 @@ func (s *TestGitCloneSuite) SetupTest() {
 					Network: dockerNetwork,
 				},
 			},
-		}, func(config *docker.HostConfig) {},
+		}, func(config *docker.HostConfig) {
+			config.Binds = []string{
+				path.Join(absPath, "testdata/gitea/data:/data"),
+			}
+		},
 	)
 
 	require.NoError(s.T(), err)
@@ -167,7 +171,7 @@ func (s *TestGitCloneSuite) SetupTest() {
 			},
 		}, func(config *docker.HostConfig) {
 			config.Binds = []string{
-				path.Join(ctxDirPath, "testing/testdata/testrepo:/workspace"),
+				path.Join(absPath, "testdata/testrepo:/workspace"),
 			}
 		},
 	)
@@ -184,10 +188,10 @@ func (s *TestGitCloneSuite) SetupTest() {
 		Follow:       true,
 	}))
 
-	s.giteaResource = gitea
 	s.dockerResources = []*dockertest.Resource{
 		seeder,
 		gitCloneTarget,
+		gitea,
 	}
 }
 
@@ -195,14 +199,13 @@ func (s *TestGitCloneSuite) TearDownTest() {
 	for _, res := range s.dockerResources {
 		_ = s.dockerTestPool.Purge(res)
 	}
-	_ = s.dockerTestPool.Purge(s.giteaResource)
 	_ = s.dockerTestPool.RemoveNetwork(&dockertest.Network{Network: s.dockerTestNetwork})
-	_ = os.RemoveAll(path.Join(s.testAbsPath, "testing/testdata"))
+	_ = os.RemoveAll(path.Join(s.testAbsPath, "testdata"))
 }
 
 func (s *TestGitCloneSuite) TestGitClone() {
 	s.T().Run("git-clone target should have successfully cloned testrepo", func(t *testing.T) {
-		clonePath := path.Join(s.testAbsPath, "testing/testdata/testrepo")
+		clonePath := path.Join(s.testAbsPath, "testdata/testrepo")
 
 		testRepoDir, err := os.Stat(clonePath)
 		require.NoError(s.T(), err)
