@@ -10,13 +10,13 @@ load all configuration values from the environment, and config files each time
 the Session is created. Sharing the Session value across all of your service
 clients will ensure the configuration is loaded the fewest number of times possible.
 
-Concurrency
+# Concurrency
 
 Sessions are safe to use concurrently as long as the Session is not being
 modified. The SDK will not modify the Session once the Session has been created.
 Creating service clients concurrently from a shared Session is safe.
 
-Sessions from Shared Config
+# Sessions from Shared Config
 
 Sessions can be created using the method above that will only load the
 additional config if the AWS_SDK_LOAD_CONFIG environment variable is set.
@@ -26,7 +26,7 @@ be created. Using the NewSessionWithOptions with SharedConfigState set to
 SharedConfigEnable will create the session as if the AWS_SDK_LOAD_CONFIG
 environment variable was set.
 
-Creating Sessions
+# Creating Sessions
 
 When creating Sessions optional aws.Config values can be passed in that will
 override the default, or loaded config values the Session is being created
@@ -57,7 +57,7 @@ Requires the AWS_PROFILE to be set, or "default" is used.
 
 	svc := s3.New(sess)
 
-Create Session With Option Overrides
+# Create Session With Option Overrides
 
 In addition to NewSession, Sessions can be created using NewSessionWithOptions.
 This func allows you to control and override how the Session will be created
@@ -87,7 +87,7 @@ override the shared config state (AWS_SDK_LOAD_CONFIG).
 		SharedConfigState: session.SharedConfigEnable,
 	}))
 
-Adding Handlers
+# Adding Handlers
 
 You can add handlers to a session for processing HTTP requests. All service
 clients that use the session inherit the handlers. For example, the following
@@ -110,7 +110,7 @@ way to return errors that occur when loading the configuration files and values.
 Because of this, NewSession was created so errors can be retrieved when
 creating a session fails.
 
-Shared Config Fields
+# Shared Config Fields
 
 By default the SDK will only load the shared credentials file's (~/.aws/credentials)
 credentials values, and all other config is provided by the environment variables,
@@ -155,7 +155,7 @@ and signing requests.
 
 	region = us-east-1
 
-Assume Role with MFA token
+# Assume Role with MFA token
 
 To create a session with support for assuming an IAM role with MFA set the
 session option AssumeRoleTokenProvider to a function that will prompt for the
@@ -175,18 +175,18 @@ If mfa_serial is set in the configuration, the SDK will assume the role, and
 the AssumeRoleTokenProvider session option is not set an an error will
 be returned when creating the session.
 
-    sess := session.Must(session.NewSessionWithOptions(session.Options{
-        AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
-    }))
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+	    AssumeRoleTokenProvider: stscreds.StdinTokenProvider,
+	}))
 
-    // Create service client value configured for credentials
-    // from assumed role.
-    svc := s3.New(sess)
+	// Create service client value configured for credentials
+	// from assumed role.
+	svc := s3.New(sess)
 
 To setup assume role outside of a session see the stscreds.AssumeRoleProvider
 documentation.
 
-Environment Variables
+# Environment Variables
 
 When a Session is created several environment variables can be set to adjust
 how the SDK functions, and what configuration data it loads when creating

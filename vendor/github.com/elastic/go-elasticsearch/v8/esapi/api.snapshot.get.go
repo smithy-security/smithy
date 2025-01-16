@@ -43,11 +43,9 @@ func newSnapshotGetFunc(t Transport) SnapshotGet {
 // SnapshotGet returns information about a snapshot.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/modules-snapshots.html.
-//
 type SnapshotGet func(repository string, snapshot []string, o ...func(*SnapshotGetRequest)) (*Response, error)
 
 // SnapshotGetRequest configures the Snapshot Get API request.
-//
 type SnapshotGetRequest struct {
 	Repository string
 	Snapshot   []string
@@ -70,7 +68,6 @@ type SnapshotGetRequest struct {
 }
 
 // Do executes the request and returns response or error.
-//
 func (r SnapshotGetRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -179,7 +176,6 @@ func (r SnapshotGetRequest) Do(ctx context.Context, transport Transport) (*Respo
 }
 
 // WithContext sets the request context.
-//
 func (f SnapshotGet) WithContext(v context.Context) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.ctx = v
@@ -187,7 +183,6 @@ func (f SnapshotGet) WithContext(v context.Context) func(*SnapshotGetRequest) {
 }
 
 // WithIgnoreUnavailable - whether to ignore unavailable snapshots, defaults to false which means a snapshotmissingexception is thrown.
-//
 func (f SnapshotGet) WithIgnoreUnavailable(v bool) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.IgnoreUnavailable = &v
@@ -195,7 +190,6 @@ func (f SnapshotGet) WithIgnoreUnavailable(v bool) func(*SnapshotGetRequest) {
 }
 
 // WithIncludeRepository - whether to include the repository name in the snapshot info. defaults to true..
-//
 func (f SnapshotGet) WithIncludeRepository(v bool) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.IncludeRepository = &v
@@ -203,7 +197,6 @@ func (f SnapshotGet) WithIncludeRepository(v bool) func(*SnapshotGetRequest) {
 }
 
 // WithIndexDetails - whether to include details of each index in the snapshot, if those details are available. defaults to false..
-//
 func (f SnapshotGet) WithIndexDetails(v bool) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.IndexDetails = &v
@@ -211,7 +204,6 @@ func (f SnapshotGet) WithIndexDetails(v bool) func(*SnapshotGetRequest) {
 }
 
 // WithIndexNames - whether to include the name of each index in the snapshot. defaults to true..
-//
 func (f SnapshotGet) WithIndexNames(v bool) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.IndexNames = &v
@@ -219,7 +211,6 @@ func (f SnapshotGet) WithIndexNames(v bool) func(*SnapshotGetRequest) {
 }
 
 // WithMasterTimeout - explicit operation timeout for connection to master node.
-//
 func (f SnapshotGet) WithMasterTimeout(v time.Duration) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.MasterTimeout = v
@@ -227,7 +218,6 @@ func (f SnapshotGet) WithMasterTimeout(v time.Duration) func(*SnapshotGetRequest
 }
 
 // WithVerbose - whether to show verbose snapshot info or only show the basic info found in the repository index blob.
-//
 func (f SnapshotGet) WithVerbose(v bool) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.Verbose = &v
@@ -235,7 +225,6 @@ func (f SnapshotGet) WithVerbose(v bool) func(*SnapshotGetRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
-//
 func (f SnapshotGet) WithPretty() func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.Pretty = true
@@ -243,7 +232,6 @@ func (f SnapshotGet) WithPretty() func(*SnapshotGetRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
-//
 func (f SnapshotGet) WithHuman() func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.Human = true
@@ -251,7 +239,6 @@ func (f SnapshotGet) WithHuman() func(*SnapshotGetRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
-//
 func (f SnapshotGet) WithErrorTrace() func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.ErrorTrace = true
@@ -259,7 +246,6 @@ func (f SnapshotGet) WithErrorTrace() func(*SnapshotGetRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
-//
 func (f SnapshotGet) WithFilterPath(v ...string) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		r.FilterPath = v
@@ -267,7 +253,6 @@ func (f SnapshotGet) WithFilterPath(v ...string) func(*SnapshotGetRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
-//
 func (f SnapshotGet) WithHeader(h map[string]string) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		if r.Header == nil {
@@ -280,7 +265,6 @@ func (f SnapshotGet) WithHeader(h map[string]string) func(*SnapshotGetRequest) {
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
-//
 func (f SnapshotGet) WithOpaqueID(s string) func(*SnapshotGetRequest) {
 	return func(r *SnapshotGetRequest) {
 		if r.Header == nil {

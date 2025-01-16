@@ -38,14 +38,13 @@ const opAbortMultipartUpload = "AbortMultipartUpload"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the AbortMultipartUploadRequest method.
+//	req, resp := client.AbortMultipartUploadRequest(params)
 //
-//    // Example sending a request using the AbortMultipartUploadRequest method.
-//    req, resp := client.AbortMultipartUploadRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/AbortMultipartUpload
 func (c *S3) AbortMultipartUploadRequest(input *AbortMultipartUploadInput) (req *request.Request, output *AbortMultipartUploadOutput) {
@@ -80,8 +79,8 @@ func (c *S3) AbortMultipartUploadRequest(input *AbortMultipartUploadInput) (req 
 // API operation AbortMultipartUpload for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeNoSuchUpload "NoSuchUpload"
-//   The specified multipart upload does not exist.
+//   - ErrCodeNoSuchUpload "NoSuchUpload"
+//     The specified multipart upload does not exist.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/AbortMultipartUpload
 func (c *S3) AbortMultipartUpload(input *AbortMultipartUploadInput) (*AbortMultipartUploadOutput, error) {
@@ -121,14 +120,13 @@ const opCompleteMultipartUpload = "CompleteMultipartUpload"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the CompleteMultipartUploadRequest method.
+//	req, resp := client.CompleteMultipartUploadRequest(params)
 //
-//    // Example sending a request using the CompleteMultipartUploadRequest method.
-//    req, resp := client.CompleteMultipartUploadRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/CompleteMultipartUpload
 func (c *S3) CompleteMultipartUploadRequest(input *CompleteMultipartUploadInput) (req *request.Request, output *CompleteMultipartUploadOutput) {
@@ -195,14 +193,13 @@ const opCopyObject = "CopyObject"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the CopyObjectRequest method.
+//	req, resp := client.CopyObjectRequest(params)
 //
-//    // Example sending a request using the CopyObjectRequest method.
-//    req, resp := client.CopyObjectRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/CopyObject
 func (c *S3) CopyObjectRequest(input *CopyObjectInput) (req *request.Request, output *CopyObjectOutput) {
@@ -233,9 +230,9 @@ func (c *S3) CopyObjectRequest(input *CopyObjectInput) (req *request.Request, ou
 // API operation CopyObject for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeObjectNotInActiveTierError "ObjectNotInActiveTierError"
-//   The source object of the COPY operation is not in the active tier and is
-//   only stored in Amazon Glacier.
+//   - ErrCodeObjectNotInActiveTierError "ObjectNotInActiveTierError"
+//     The source object of the COPY operation is not in the active tier and is
+//     only stored in Amazon Glacier.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/CopyObject
 func (c *S3) CopyObject(input *CopyObjectInput) (*CopyObjectOutput, error) {
@@ -275,14 +272,13 @@ const opCreateBucket = "CreateBucket"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the CreateBucketRequest method.
+//	req, resp := client.CreateBucketRequest(params)
 //
-//    // Example sending a request using the CreateBucketRequest method.
-//    req, resp := client.CreateBucketRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/CreateBucket
 func (c *S3) CreateBucketRequest(input *CreateBucketInput) (req *request.Request, output *CreateBucketOutput) {
@@ -313,11 +309,12 @@ func (c *S3) CreateBucketRequest(input *CreateBucketInput) (req *request.Request
 // API operation CreateBucket for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeBucketAlreadyExists "BucketAlreadyExists"
-//   The requested bucket name is not available. The bucket namespace is shared
-//   by all users of the system. Please select a different name and try again.
 //
-//   * ErrCodeBucketAlreadyOwnedByYou "BucketAlreadyOwnedByYou"
+//   - ErrCodeBucketAlreadyExists "BucketAlreadyExists"
+//     The requested bucket name is not available. The bucket namespace is shared
+//     by all users of the system. Please select a different name and try again.
+//
+//   - ErrCodeBucketAlreadyOwnedByYou "BucketAlreadyOwnedByYou"
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/CreateBucket
 func (c *S3) CreateBucket(input *CreateBucketInput) (*CreateBucketOutput, error) {
@@ -357,14 +354,13 @@ const opCreateMultipartUpload = "CreateMultipartUpload"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the CreateMultipartUploadRequest method.
+//	req, resp := client.CreateMultipartUploadRequest(params)
 //
-//    // Example sending a request using the CreateMultipartUploadRequest method.
-//    req, resp := client.CreateMultipartUploadRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/CreateMultipartUpload
 func (c *S3) CreateMultipartUploadRequest(input *CreateMultipartUploadInput) (req *request.Request, output *CreateMultipartUploadOutput) {
@@ -437,14 +433,13 @@ const opDeleteBucket = "DeleteBucket"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketRequest method.
+//	req, resp := client.DeleteBucketRequest(params)
 //
-//    // Example sending a request using the DeleteBucketRequest method.
-//    req, resp := client.DeleteBucketRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucket
 func (c *S3) DeleteBucketRequest(input *DeleteBucketInput) (req *request.Request, output *DeleteBucketOutput) {
@@ -513,14 +508,13 @@ const opDeleteBucketAnalyticsConfiguration = "DeleteBucketAnalyticsConfiguration
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketAnalyticsConfigurationRequest method.
+//	req, resp := client.DeleteBucketAnalyticsConfigurationRequest(params)
 //
-//    // Example sending a request using the DeleteBucketAnalyticsConfigurationRequest method.
-//    req, resp := client.DeleteBucketAnalyticsConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketAnalyticsConfiguration
 func (c *S3) DeleteBucketAnalyticsConfigurationRequest(input *DeleteBucketAnalyticsConfigurationInput) (req *request.Request, output *DeleteBucketAnalyticsConfigurationOutput) {
@@ -589,14 +583,13 @@ const opDeleteBucketCors = "DeleteBucketCors"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketCorsRequest method.
+//	req, resp := client.DeleteBucketCorsRequest(params)
 //
-//    // Example sending a request using the DeleteBucketCorsRequest method.
-//    req, resp := client.DeleteBucketCorsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketCors
 func (c *S3) DeleteBucketCorsRequest(input *DeleteBucketCorsInput) (req *request.Request, output *DeleteBucketCorsOutput) {
@@ -664,14 +657,13 @@ const opDeleteBucketEncryption = "DeleteBucketEncryption"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketEncryptionRequest method.
+//	req, resp := client.DeleteBucketEncryptionRequest(params)
 //
-//    // Example sending a request using the DeleteBucketEncryptionRequest method.
-//    req, resp := client.DeleteBucketEncryptionRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketEncryption
 func (c *S3) DeleteBucketEncryptionRequest(input *DeleteBucketEncryptionInput) (req *request.Request, output *DeleteBucketEncryptionOutput) {
@@ -739,14 +731,13 @@ const opDeleteBucketInventoryConfiguration = "DeleteBucketInventoryConfiguration
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketInventoryConfigurationRequest method.
+//	req, resp := client.DeleteBucketInventoryConfigurationRequest(params)
 //
-//    // Example sending a request using the DeleteBucketInventoryConfigurationRequest method.
-//    req, resp := client.DeleteBucketInventoryConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketInventoryConfiguration
 func (c *S3) DeleteBucketInventoryConfigurationRequest(input *DeleteBucketInventoryConfigurationInput) (req *request.Request, output *DeleteBucketInventoryConfigurationOutput) {
@@ -815,14 +806,13 @@ const opDeleteBucketLifecycle = "DeleteBucketLifecycle"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketLifecycleRequest method.
+//	req, resp := client.DeleteBucketLifecycleRequest(params)
 //
-//    // Example sending a request using the DeleteBucketLifecycleRequest method.
-//    req, resp := client.DeleteBucketLifecycleRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketLifecycle
 func (c *S3) DeleteBucketLifecycleRequest(input *DeleteBucketLifecycleInput) (req *request.Request, output *DeleteBucketLifecycleOutput) {
@@ -890,14 +880,13 @@ const opDeleteBucketMetricsConfiguration = "DeleteBucketMetricsConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketMetricsConfigurationRequest method.
+//	req, resp := client.DeleteBucketMetricsConfigurationRequest(params)
 //
-//    // Example sending a request using the DeleteBucketMetricsConfigurationRequest method.
-//    req, resp := client.DeleteBucketMetricsConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketMetricsConfiguration
 func (c *S3) DeleteBucketMetricsConfigurationRequest(input *DeleteBucketMetricsConfigurationInput) (req *request.Request, output *DeleteBucketMetricsConfigurationOutput) {
@@ -966,14 +955,13 @@ const opDeleteBucketPolicy = "DeleteBucketPolicy"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketPolicyRequest method.
+//	req, resp := client.DeleteBucketPolicyRequest(params)
 //
-//    // Example sending a request using the DeleteBucketPolicyRequest method.
-//    req, resp := client.DeleteBucketPolicyRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketPolicy
 func (c *S3) DeleteBucketPolicyRequest(input *DeleteBucketPolicyInput) (req *request.Request, output *DeleteBucketPolicyOutput) {
@@ -1041,14 +1029,13 @@ const opDeleteBucketReplication = "DeleteBucketReplication"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketReplicationRequest method.
+//	req, resp := client.DeleteBucketReplicationRequest(params)
 //
-//    // Example sending a request using the DeleteBucketReplicationRequest method.
-//    req, resp := client.DeleteBucketReplicationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketReplication
 func (c *S3) DeleteBucketReplicationRequest(input *DeleteBucketReplicationInput) (req *request.Request, output *DeleteBucketReplicationOutput) {
@@ -1118,14 +1105,13 @@ const opDeleteBucketTagging = "DeleteBucketTagging"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketTaggingRequest method.
+//	req, resp := client.DeleteBucketTaggingRequest(params)
 //
-//    // Example sending a request using the DeleteBucketTaggingRequest method.
-//    req, resp := client.DeleteBucketTaggingRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketTagging
 func (c *S3) DeleteBucketTaggingRequest(input *DeleteBucketTaggingInput) (req *request.Request, output *DeleteBucketTaggingOutput) {
@@ -1193,14 +1179,13 @@ const opDeleteBucketWebsite = "DeleteBucketWebsite"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteBucketWebsiteRequest method.
+//	req, resp := client.DeleteBucketWebsiteRequest(params)
 //
-//    // Example sending a request using the DeleteBucketWebsiteRequest method.
-//    req, resp := client.DeleteBucketWebsiteRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteBucketWebsite
 func (c *S3) DeleteBucketWebsiteRequest(input *DeleteBucketWebsiteInput) (req *request.Request, output *DeleteBucketWebsiteOutput) {
@@ -1268,14 +1253,13 @@ const opDeleteObject = "DeleteObject"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteObjectRequest method.
+//	req, resp := client.DeleteObjectRequest(params)
 //
-//    // Example sending a request using the DeleteObjectRequest method.
-//    req, resp := client.DeleteObjectRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteObject
 func (c *S3) DeleteObjectRequest(input *DeleteObjectInput) (req *request.Request, output *DeleteObjectOutput) {
@@ -1344,14 +1328,13 @@ const opDeleteObjectTagging = "DeleteObjectTagging"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteObjectTaggingRequest method.
+//	req, resp := client.DeleteObjectTaggingRequest(params)
 //
-//    // Example sending a request using the DeleteObjectTaggingRequest method.
-//    req, resp := client.DeleteObjectTaggingRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteObjectTagging
 func (c *S3) DeleteObjectTaggingRequest(input *DeleteObjectTaggingInput) (req *request.Request, output *DeleteObjectTaggingOutput) {
@@ -1418,14 +1401,13 @@ const opDeleteObjects = "DeleteObjects"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeleteObjectsRequest method.
+//	req, resp := client.DeleteObjectsRequest(params)
 //
-//    // Example sending a request using the DeleteObjectsRequest method.
-//    req, resp := client.DeleteObjectsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeleteObjects
 func (c *S3) DeleteObjectsRequest(input *DeleteObjectsInput) (req *request.Request, output *DeleteObjectsOutput) {
@@ -1493,14 +1475,13 @@ const opDeletePublicAccessBlock = "DeletePublicAccessBlock"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the DeletePublicAccessBlockRequest method.
+//	req, resp := client.DeletePublicAccessBlockRequest(params)
 //
-//    // Example sending a request using the DeletePublicAccessBlockRequest method.
-//    req, resp := client.DeletePublicAccessBlockRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/DeletePublicAccessBlock
 func (c *S3) DeletePublicAccessBlockRequest(input *DeletePublicAccessBlockInput) (req *request.Request, output *DeletePublicAccessBlockOutput) {
@@ -1568,14 +1549,13 @@ const opGetBucketAccelerateConfiguration = "GetBucketAccelerateConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketAccelerateConfigurationRequest method.
+//	req, resp := client.GetBucketAccelerateConfigurationRequest(params)
 //
-//    // Example sending a request using the GetBucketAccelerateConfigurationRequest method.
-//    req, resp := client.GetBucketAccelerateConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketAccelerateConfiguration
 func (c *S3) GetBucketAccelerateConfigurationRequest(input *GetBucketAccelerateConfigurationInput) (req *request.Request, output *GetBucketAccelerateConfigurationOutput) {
@@ -1642,14 +1622,13 @@ const opGetBucketAcl = "GetBucketAcl"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketAclRequest method.
+//	req, resp := client.GetBucketAclRequest(params)
 //
-//    // Example sending a request using the GetBucketAclRequest method.
-//    req, resp := client.GetBucketAclRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketAcl
 func (c *S3) GetBucketAclRequest(input *GetBucketAclInput) (req *request.Request, output *GetBucketAclOutput) {
@@ -1716,14 +1695,13 @@ const opGetBucketAnalyticsConfiguration = "GetBucketAnalyticsConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketAnalyticsConfigurationRequest method.
+//	req, resp := client.GetBucketAnalyticsConfigurationRequest(params)
 //
-//    // Example sending a request using the GetBucketAnalyticsConfigurationRequest method.
-//    req, resp := client.GetBucketAnalyticsConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketAnalyticsConfiguration
 func (c *S3) GetBucketAnalyticsConfigurationRequest(input *GetBucketAnalyticsConfigurationInput) (req *request.Request, output *GetBucketAnalyticsConfigurationOutput) {
@@ -1791,14 +1769,13 @@ const opGetBucketCors = "GetBucketCors"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketCorsRequest method.
+//	req, resp := client.GetBucketCorsRequest(params)
 //
-//    // Example sending a request using the GetBucketCorsRequest method.
-//    req, resp := client.GetBucketCorsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketCors
 func (c *S3) GetBucketCorsRequest(input *GetBucketCorsInput) (req *request.Request, output *GetBucketCorsOutput) {
@@ -1865,14 +1842,13 @@ const opGetBucketEncryption = "GetBucketEncryption"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketEncryptionRequest method.
+//	req, resp := client.GetBucketEncryptionRequest(params)
 //
-//    // Example sending a request using the GetBucketEncryptionRequest method.
-//    req, resp := client.GetBucketEncryptionRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketEncryption
 func (c *S3) GetBucketEncryptionRequest(input *GetBucketEncryptionInput) (req *request.Request, output *GetBucketEncryptionOutput) {
@@ -1939,14 +1915,13 @@ const opGetBucketInventoryConfiguration = "GetBucketInventoryConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketInventoryConfigurationRequest method.
+//	req, resp := client.GetBucketInventoryConfigurationRequest(params)
 //
-//    // Example sending a request using the GetBucketInventoryConfigurationRequest method.
-//    req, resp := client.GetBucketInventoryConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketInventoryConfiguration
 func (c *S3) GetBucketInventoryConfigurationRequest(input *GetBucketInventoryConfigurationInput) (req *request.Request, output *GetBucketInventoryConfigurationOutput) {
@@ -2014,14 +1989,13 @@ const opGetBucketLifecycle = "GetBucketLifecycle"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketLifecycleRequest method.
+//	req, resp := client.GetBucketLifecycleRequest(params)
 //
-//    // Example sending a request using the GetBucketLifecycleRequest method.
-//    req, resp := client.GetBucketLifecycleRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketLifecycle
 //
@@ -2097,14 +2071,13 @@ const opGetBucketLifecycleConfiguration = "GetBucketLifecycleConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketLifecycleConfigurationRequest method.
+//	req, resp := client.GetBucketLifecycleConfigurationRequest(params)
 //
-//    // Example sending a request using the GetBucketLifecycleConfigurationRequest method.
-//    req, resp := client.GetBucketLifecycleConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketLifecycleConfiguration
 func (c *S3) GetBucketLifecycleConfigurationRequest(input *GetBucketLifecycleConfigurationInput) (req *request.Request, output *GetBucketLifecycleConfigurationOutput) {
@@ -2171,14 +2144,13 @@ const opGetBucketLocation = "GetBucketLocation"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketLocationRequest method.
+//	req, resp := client.GetBucketLocationRequest(params)
 //
-//    // Example sending a request using the GetBucketLocationRequest method.
-//    req, resp := client.GetBucketLocationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketLocation
 func (c *S3) GetBucketLocationRequest(input *GetBucketLocationInput) (req *request.Request, output *GetBucketLocationOutput) {
@@ -2245,14 +2217,13 @@ const opGetBucketLogging = "GetBucketLogging"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketLoggingRequest method.
+//	req, resp := client.GetBucketLoggingRequest(params)
 //
-//    // Example sending a request using the GetBucketLoggingRequest method.
-//    req, resp := client.GetBucketLoggingRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketLogging
 func (c *S3) GetBucketLoggingRequest(input *GetBucketLoggingInput) (req *request.Request, output *GetBucketLoggingOutput) {
@@ -2320,14 +2291,13 @@ const opGetBucketMetricsConfiguration = "GetBucketMetricsConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketMetricsConfigurationRequest method.
+//	req, resp := client.GetBucketMetricsConfigurationRequest(params)
 //
-//    // Example sending a request using the GetBucketMetricsConfigurationRequest method.
-//    req, resp := client.GetBucketMetricsConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketMetricsConfiguration
 func (c *S3) GetBucketMetricsConfigurationRequest(input *GetBucketMetricsConfigurationInput) (req *request.Request, output *GetBucketMetricsConfigurationOutput) {
@@ -2395,14 +2365,13 @@ const opGetBucketNotification = "GetBucketNotification"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketNotificationRequest method.
+//	req, resp := client.GetBucketNotificationRequest(params)
 //
-//    // Example sending a request using the GetBucketNotificationRequest method.
-//    req, resp := client.GetBucketNotificationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketNotification
 //
@@ -2478,14 +2447,13 @@ const opGetBucketNotificationConfiguration = "GetBucketNotificationConfiguration
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketNotificationConfigurationRequest method.
+//	req, resp := client.GetBucketNotificationConfigurationRequest(params)
 //
-//    // Example sending a request using the GetBucketNotificationConfigurationRequest method.
-//    req, resp := client.GetBucketNotificationConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketNotificationConfiguration
 func (c *S3) GetBucketNotificationConfigurationRequest(input *GetBucketNotificationConfigurationRequest) (req *request.Request, output *NotificationConfiguration) {
@@ -2552,14 +2520,13 @@ const opGetBucketPolicy = "GetBucketPolicy"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketPolicyRequest method.
+//	req, resp := client.GetBucketPolicyRequest(params)
 //
-//    // Example sending a request using the GetBucketPolicyRequest method.
-//    req, resp := client.GetBucketPolicyRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketPolicy
 func (c *S3) GetBucketPolicyRequest(input *GetBucketPolicyInput) (req *request.Request, output *GetBucketPolicyOutput) {
@@ -2626,14 +2593,13 @@ const opGetBucketPolicyStatus = "GetBucketPolicyStatus"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketPolicyStatusRequest method.
+//	req, resp := client.GetBucketPolicyStatusRequest(params)
 //
-//    // Example sending a request using the GetBucketPolicyStatusRequest method.
-//    req, resp := client.GetBucketPolicyStatusRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketPolicyStatus
 func (c *S3) GetBucketPolicyStatusRequest(input *GetBucketPolicyStatusInput) (req *request.Request, output *GetBucketPolicyStatusOutput) {
@@ -2701,14 +2667,13 @@ const opGetBucketReplication = "GetBucketReplication"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketReplicationRequest method.
+//	req, resp := client.GetBucketReplicationRequest(params)
 //
-//    // Example sending a request using the GetBucketReplicationRequest method.
-//    req, resp := client.GetBucketReplicationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketReplication
 func (c *S3) GetBucketReplicationRequest(input *GetBucketReplicationInput) (req *request.Request, output *GetBucketReplicationOutput) {
@@ -2779,14 +2744,13 @@ const opGetBucketRequestPayment = "GetBucketRequestPayment"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketRequestPaymentRequest method.
+//	req, resp := client.GetBucketRequestPaymentRequest(params)
 //
-//    // Example sending a request using the GetBucketRequestPaymentRequest method.
-//    req, resp := client.GetBucketRequestPaymentRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketRequestPayment
 func (c *S3) GetBucketRequestPaymentRequest(input *GetBucketRequestPaymentInput) (req *request.Request, output *GetBucketRequestPaymentOutput) {
@@ -2853,14 +2817,13 @@ const opGetBucketTagging = "GetBucketTagging"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketTaggingRequest method.
+//	req, resp := client.GetBucketTaggingRequest(params)
 //
-//    // Example sending a request using the GetBucketTaggingRequest method.
-//    req, resp := client.GetBucketTaggingRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketTagging
 func (c *S3) GetBucketTaggingRequest(input *GetBucketTaggingInput) (req *request.Request, output *GetBucketTaggingOutput) {
@@ -2927,14 +2890,13 @@ const opGetBucketVersioning = "GetBucketVersioning"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketVersioningRequest method.
+//	req, resp := client.GetBucketVersioningRequest(params)
 //
-//    // Example sending a request using the GetBucketVersioningRequest method.
-//    req, resp := client.GetBucketVersioningRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketVersioning
 func (c *S3) GetBucketVersioningRequest(input *GetBucketVersioningInput) (req *request.Request, output *GetBucketVersioningOutput) {
@@ -3001,14 +2963,13 @@ const opGetBucketWebsite = "GetBucketWebsite"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetBucketWebsiteRequest method.
+//	req, resp := client.GetBucketWebsiteRequest(params)
 //
-//    // Example sending a request using the GetBucketWebsiteRequest method.
-//    req, resp := client.GetBucketWebsiteRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetBucketWebsite
 func (c *S3) GetBucketWebsiteRequest(input *GetBucketWebsiteInput) (req *request.Request, output *GetBucketWebsiteOutput) {
@@ -3075,14 +3036,13 @@ const opGetObject = "GetObject"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetObjectRequest method.
+//	req, resp := client.GetObjectRequest(params)
 //
-//    // Example sending a request using the GetObjectRequest method.
-//    req, resp := client.GetObjectRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObject
 func (c *S3) GetObjectRequest(input *GetObjectInput) (req *request.Request, output *GetObjectOutput) {
@@ -3113,8 +3073,8 @@ func (c *S3) GetObjectRequest(input *GetObjectInput) (req *request.Request, outp
 // API operation GetObject for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeNoSuchKey "NoSuchKey"
-//   The specified key does not exist.
+//   - ErrCodeNoSuchKey "NoSuchKey"
+//     The specified key does not exist.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObject
 func (c *S3) GetObject(input *GetObjectInput) (*GetObjectOutput, error) {
@@ -3154,14 +3114,13 @@ const opGetObjectAcl = "GetObjectAcl"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetObjectAclRequest method.
+//	req, resp := client.GetObjectAclRequest(params)
 //
-//    // Example sending a request using the GetObjectAclRequest method.
-//    req, resp := client.GetObjectAclRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObjectAcl
 func (c *S3) GetObjectAclRequest(input *GetObjectAclInput) (req *request.Request, output *GetObjectAclOutput) {
@@ -3192,8 +3151,8 @@ func (c *S3) GetObjectAclRequest(input *GetObjectAclInput) (req *request.Request
 // API operation GetObjectAcl for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeNoSuchKey "NoSuchKey"
-//   The specified key does not exist.
+//   - ErrCodeNoSuchKey "NoSuchKey"
+//     The specified key does not exist.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObjectAcl
 func (c *S3) GetObjectAcl(input *GetObjectAclInput) (*GetObjectAclOutput, error) {
@@ -3233,14 +3192,13 @@ const opGetObjectLegalHold = "GetObjectLegalHold"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetObjectLegalHoldRequest method.
+//	req, resp := client.GetObjectLegalHoldRequest(params)
 //
-//    // Example sending a request using the GetObjectLegalHoldRequest method.
-//    req, resp := client.GetObjectLegalHoldRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObjectLegalHold
 func (c *S3) GetObjectLegalHoldRequest(input *GetObjectLegalHoldInput) (req *request.Request, output *GetObjectLegalHoldOutput) {
@@ -3307,14 +3265,13 @@ const opGetObjectLockConfiguration = "GetObjectLockConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetObjectLockConfigurationRequest method.
+//	req, resp := client.GetObjectLockConfigurationRequest(params)
 //
-//    // Example sending a request using the GetObjectLockConfigurationRequest method.
-//    req, resp := client.GetObjectLockConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObjectLockConfiguration
 func (c *S3) GetObjectLockConfigurationRequest(input *GetObjectLockConfigurationInput) (req *request.Request, output *GetObjectLockConfigurationOutput) {
@@ -3383,14 +3340,13 @@ const opGetObjectRetention = "GetObjectRetention"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetObjectRetentionRequest method.
+//	req, resp := client.GetObjectRetentionRequest(params)
 //
-//    // Example sending a request using the GetObjectRetentionRequest method.
-//    req, resp := client.GetObjectRetentionRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObjectRetention
 func (c *S3) GetObjectRetentionRequest(input *GetObjectRetentionInput) (req *request.Request, output *GetObjectRetentionOutput) {
@@ -3457,14 +3413,13 @@ const opGetObjectTagging = "GetObjectTagging"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetObjectTaggingRequest method.
+//	req, resp := client.GetObjectTaggingRequest(params)
 //
-//    // Example sending a request using the GetObjectTaggingRequest method.
-//    req, resp := client.GetObjectTaggingRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObjectTagging
 func (c *S3) GetObjectTaggingRequest(input *GetObjectTaggingInput) (req *request.Request, output *GetObjectTaggingOutput) {
@@ -3531,14 +3486,13 @@ const opGetObjectTorrent = "GetObjectTorrent"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetObjectTorrentRequest method.
+//	req, resp := client.GetObjectTorrentRequest(params)
 //
-//    // Example sending a request using the GetObjectTorrentRequest method.
-//    req, resp := client.GetObjectTorrentRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetObjectTorrent
 func (c *S3) GetObjectTorrentRequest(input *GetObjectTorrentInput) (req *request.Request, output *GetObjectTorrentOutput) {
@@ -3605,14 +3559,13 @@ const opGetPublicAccessBlock = "GetPublicAccessBlock"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the GetPublicAccessBlockRequest method.
+//	req, resp := client.GetPublicAccessBlockRequest(params)
 //
-//    // Example sending a request using the GetPublicAccessBlockRequest method.
-//    req, resp := client.GetPublicAccessBlockRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/GetPublicAccessBlock
 func (c *S3) GetPublicAccessBlockRequest(input *GetPublicAccessBlockInput) (req *request.Request, output *GetPublicAccessBlockOutput) {
@@ -3679,14 +3632,13 @@ const opHeadBucket = "HeadBucket"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the HeadBucketRequest method.
+//	req, resp := client.HeadBucketRequest(params)
 //
-//    // Example sending a request using the HeadBucketRequest method.
-//    req, resp := client.HeadBucketRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/HeadBucket
 func (c *S3) HeadBucketRequest(input *HeadBucketInput) (req *request.Request, output *HeadBucketOutput) {
@@ -3719,8 +3671,8 @@ func (c *S3) HeadBucketRequest(input *HeadBucketInput) (req *request.Request, ou
 // API operation HeadBucket for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeNoSuchBucket "NoSuchBucket"
-//   The specified bucket does not exist.
+//   - ErrCodeNoSuchBucket "NoSuchBucket"
+//     The specified bucket does not exist.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/HeadBucket
 func (c *S3) HeadBucket(input *HeadBucketInput) (*HeadBucketOutput, error) {
@@ -3760,14 +3712,13 @@ const opHeadObject = "HeadObject"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the HeadObjectRequest method.
+//	req, resp := client.HeadObjectRequest(params)
 //
-//    // Example sending a request using the HeadObjectRequest method.
-//    req, resp := client.HeadObjectRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/HeadObject
 func (c *S3) HeadObjectRequest(input *HeadObjectInput) (req *request.Request, output *HeadObjectOutput) {
@@ -3839,14 +3790,13 @@ const opListBucketAnalyticsConfigurations = "ListBucketAnalyticsConfigurations"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListBucketAnalyticsConfigurationsRequest method.
+//	req, resp := client.ListBucketAnalyticsConfigurationsRequest(params)
 //
-//    // Example sending a request using the ListBucketAnalyticsConfigurationsRequest method.
-//    req, resp := client.ListBucketAnalyticsConfigurationsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListBucketAnalyticsConfigurations
 func (c *S3) ListBucketAnalyticsConfigurationsRequest(input *ListBucketAnalyticsConfigurationsInput) (req *request.Request, output *ListBucketAnalyticsConfigurationsOutput) {
@@ -3913,14 +3863,13 @@ const opListBucketInventoryConfigurations = "ListBucketInventoryConfigurations"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListBucketInventoryConfigurationsRequest method.
+//	req, resp := client.ListBucketInventoryConfigurationsRequest(params)
 //
-//    // Example sending a request using the ListBucketInventoryConfigurationsRequest method.
-//    req, resp := client.ListBucketInventoryConfigurationsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListBucketInventoryConfigurations
 func (c *S3) ListBucketInventoryConfigurationsRequest(input *ListBucketInventoryConfigurationsInput) (req *request.Request, output *ListBucketInventoryConfigurationsOutput) {
@@ -3987,14 +3936,13 @@ const opListBucketMetricsConfigurations = "ListBucketMetricsConfigurations"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListBucketMetricsConfigurationsRequest method.
+//	req, resp := client.ListBucketMetricsConfigurationsRequest(params)
 //
-//    // Example sending a request using the ListBucketMetricsConfigurationsRequest method.
-//    req, resp := client.ListBucketMetricsConfigurationsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListBucketMetricsConfigurations
 func (c *S3) ListBucketMetricsConfigurationsRequest(input *ListBucketMetricsConfigurationsInput) (req *request.Request, output *ListBucketMetricsConfigurationsOutput) {
@@ -4061,14 +4009,13 @@ const opListBuckets = "ListBuckets"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListBucketsRequest method.
+//	req, resp := client.ListBucketsRequest(params)
 //
-//    // Example sending a request using the ListBucketsRequest method.
-//    req, resp := client.ListBucketsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListBuckets
 func (c *S3) ListBucketsRequest(input *ListBucketsInput) (req *request.Request, output *ListBucketsOutput) {
@@ -4135,14 +4082,13 @@ const opListMultipartUploads = "ListMultipartUploads"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListMultipartUploadsRequest method.
+//	req, resp := client.ListMultipartUploadsRequest(params)
 //
-//    // Example sending a request using the ListMultipartUploadsRequest method.
-//    req, resp := client.ListMultipartUploadsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListMultipartUploads
 func (c *S3) ListMultipartUploadsRequest(input *ListMultipartUploadsInput) (req *request.Request, output *ListMultipartUploadsOutput) {
@@ -4207,15 +4153,14 @@ func (c *S3) ListMultipartUploadsWithContext(ctx aws.Context, input *ListMultipa
 //
 // Note: This operation can generate multiple requests to a service.
 //
-//    // Example iterating over at most 3 pages of a ListMultipartUploads operation.
-//    pageNum := 0
-//    err := client.ListMultipartUploadsPages(params,
-//        func(page *ListMultipartUploadsOutput, lastPage bool) bool {
-//            pageNum++
-//            fmt.Println(page)
-//            return pageNum <= 3
-//        })
-//
+//	// Example iterating over at most 3 pages of a ListMultipartUploads operation.
+//	pageNum := 0
+//	err := client.ListMultipartUploadsPages(params,
+//	    func(page *ListMultipartUploadsOutput, lastPage bool) bool {
+//	        pageNum++
+//	        fmt.Println(page)
+//	        return pageNum <= 3
+//	    })
 func (c *S3) ListMultipartUploadsPages(input *ListMultipartUploadsInput, fn func(*ListMultipartUploadsOutput, bool) bool) error {
 	return c.ListMultipartUploadsPagesWithContext(aws.BackgroundContext(), input, fn)
 }
@@ -4265,14 +4210,13 @@ const opListObjectVersions = "ListObjectVersions"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListObjectVersionsRequest method.
+//	req, resp := client.ListObjectVersionsRequest(params)
 //
-//    // Example sending a request using the ListObjectVersionsRequest method.
-//    req, resp := client.ListObjectVersionsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListObjectVersions
 func (c *S3) ListObjectVersionsRequest(input *ListObjectVersionsInput) (req *request.Request, output *ListObjectVersionsOutput) {
@@ -4337,15 +4281,14 @@ func (c *S3) ListObjectVersionsWithContext(ctx aws.Context, input *ListObjectVer
 //
 // Note: This operation can generate multiple requests to a service.
 //
-//    // Example iterating over at most 3 pages of a ListObjectVersions operation.
-//    pageNum := 0
-//    err := client.ListObjectVersionsPages(params,
-//        func(page *ListObjectVersionsOutput, lastPage bool) bool {
-//            pageNum++
-//            fmt.Println(page)
-//            return pageNum <= 3
-//        })
-//
+//	// Example iterating over at most 3 pages of a ListObjectVersions operation.
+//	pageNum := 0
+//	err := client.ListObjectVersionsPages(params,
+//	    func(page *ListObjectVersionsOutput, lastPage bool) bool {
+//	        pageNum++
+//	        fmt.Println(page)
+//	        return pageNum <= 3
+//	    })
 func (c *S3) ListObjectVersionsPages(input *ListObjectVersionsInput, fn func(*ListObjectVersionsOutput, bool) bool) error {
 	return c.ListObjectVersionsPagesWithContext(aws.BackgroundContext(), input, fn)
 }
@@ -4395,14 +4338,13 @@ const opListObjects = "ListObjects"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListObjectsRequest method.
+//	req, resp := client.ListObjectsRequest(params)
 //
-//    // Example sending a request using the ListObjectsRequest method.
-//    req, resp := client.ListObjectsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListObjects
 func (c *S3) ListObjectsRequest(input *ListObjectsInput) (req *request.Request, output *ListObjectsOutput) {
@@ -4441,8 +4383,8 @@ func (c *S3) ListObjectsRequest(input *ListObjectsInput) (req *request.Request, 
 // API operation ListObjects for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeNoSuchBucket "NoSuchBucket"
-//   The specified bucket does not exist.
+//   - ErrCodeNoSuchBucket "NoSuchBucket"
+//     The specified bucket does not exist.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListObjects
 func (c *S3) ListObjects(input *ListObjectsInput) (*ListObjectsOutput, error) {
@@ -4474,15 +4416,14 @@ func (c *S3) ListObjectsWithContext(ctx aws.Context, input *ListObjectsInput, op
 //
 // Note: This operation can generate multiple requests to a service.
 //
-//    // Example iterating over at most 3 pages of a ListObjects operation.
-//    pageNum := 0
-//    err := client.ListObjectsPages(params,
-//        func(page *ListObjectsOutput, lastPage bool) bool {
-//            pageNum++
-//            fmt.Println(page)
-//            return pageNum <= 3
-//        })
-//
+//	// Example iterating over at most 3 pages of a ListObjects operation.
+//	pageNum := 0
+//	err := client.ListObjectsPages(params,
+//	    func(page *ListObjectsOutput, lastPage bool) bool {
+//	        pageNum++
+//	        fmt.Println(page)
+//	        return pageNum <= 3
+//	    })
 func (c *S3) ListObjectsPages(input *ListObjectsInput, fn func(*ListObjectsOutput, bool) bool) error {
 	return c.ListObjectsPagesWithContext(aws.BackgroundContext(), input, fn)
 }
@@ -4532,14 +4473,13 @@ const opListObjectsV2 = "ListObjectsV2"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListObjectsV2Request method.
+//	req, resp := client.ListObjectsV2Request(params)
 //
-//    // Example sending a request using the ListObjectsV2Request method.
-//    req, resp := client.ListObjectsV2Request(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListObjectsV2
 func (c *S3) ListObjectsV2Request(input *ListObjectsV2Input) (req *request.Request, output *ListObjectsV2Output) {
@@ -4579,8 +4519,8 @@ func (c *S3) ListObjectsV2Request(input *ListObjectsV2Input) (req *request.Reque
 // API operation ListObjectsV2 for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeNoSuchBucket "NoSuchBucket"
-//   The specified bucket does not exist.
+//   - ErrCodeNoSuchBucket "NoSuchBucket"
+//     The specified bucket does not exist.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListObjectsV2
 func (c *S3) ListObjectsV2(input *ListObjectsV2Input) (*ListObjectsV2Output, error) {
@@ -4612,15 +4552,14 @@ func (c *S3) ListObjectsV2WithContext(ctx aws.Context, input *ListObjectsV2Input
 //
 // Note: This operation can generate multiple requests to a service.
 //
-//    // Example iterating over at most 3 pages of a ListObjectsV2 operation.
-//    pageNum := 0
-//    err := client.ListObjectsV2Pages(params,
-//        func(page *ListObjectsV2Output, lastPage bool) bool {
-//            pageNum++
-//            fmt.Println(page)
-//            return pageNum <= 3
-//        })
-//
+//	// Example iterating over at most 3 pages of a ListObjectsV2 operation.
+//	pageNum := 0
+//	err := client.ListObjectsV2Pages(params,
+//	    func(page *ListObjectsV2Output, lastPage bool) bool {
+//	        pageNum++
+//	        fmt.Println(page)
+//	        return pageNum <= 3
+//	    })
 func (c *S3) ListObjectsV2Pages(input *ListObjectsV2Input, fn func(*ListObjectsV2Output, bool) bool) error {
 	return c.ListObjectsV2PagesWithContext(aws.BackgroundContext(), input, fn)
 }
@@ -4670,14 +4609,13 @@ const opListParts = "ListParts"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the ListPartsRequest method.
+//	req, resp := client.ListPartsRequest(params)
 //
-//    // Example sending a request using the ListPartsRequest method.
-//    req, resp := client.ListPartsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/ListParts
 func (c *S3) ListPartsRequest(input *ListPartsInput) (req *request.Request, output *ListPartsOutput) {
@@ -4742,15 +4680,14 @@ func (c *S3) ListPartsWithContext(ctx aws.Context, input *ListPartsInput, opts .
 //
 // Note: This operation can generate multiple requests to a service.
 //
-//    // Example iterating over at most 3 pages of a ListParts operation.
-//    pageNum := 0
-//    err := client.ListPartsPages(params,
-//        func(page *ListPartsOutput, lastPage bool) bool {
-//            pageNum++
-//            fmt.Println(page)
-//            return pageNum <= 3
-//        })
-//
+//	// Example iterating over at most 3 pages of a ListParts operation.
+//	pageNum := 0
+//	err := client.ListPartsPages(params,
+//	    func(page *ListPartsOutput, lastPage bool) bool {
+//	        pageNum++
+//	        fmt.Println(page)
+//	        return pageNum <= 3
+//	    })
 func (c *S3) ListPartsPages(input *ListPartsInput, fn func(*ListPartsOutput, bool) bool) error {
 	return c.ListPartsPagesWithContext(aws.BackgroundContext(), input, fn)
 }
@@ -4800,14 +4737,13 @@ const opPutBucketAccelerateConfiguration = "PutBucketAccelerateConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketAccelerateConfigurationRequest method.
+//	req, resp := client.PutBucketAccelerateConfigurationRequest(params)
 //
-//    // Example sending a request using the PutBucketAccelerateConfigurationRequest method.
-//    req, resp := client.PutBucketAccelerateConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketAccelerateConfiguration
 func (c *S3) PutBucketAccelerateConfigurationRequest(input *PutBucketAccelerateConfigurationInput) (req *request.Request, output *PutBucketAccelerateConfigurationOutput) {
@@ -4875,14 +4811,13 @@ const opPutBucketAcl = "PutBucketAcl"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketAclRequest method.
+//	req, resp := client.PutBucketAclRequest(params)
 //
-//    // Example sending a request using the PutBucketAclRequest method.
-//    req, resp := client.PutBucketAclRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketAcl
 func (c *S3) PutBucketAclRequest(input *PutBucketAclInput) (req *request.Request, output *PutBucketAclOutput) {
@@ -4950,14 +4885,13 @@ const opPutBucketAnalyticsConfiguration = "PutBucketAnalyticsConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketAnalyticsConfigurationRequest method.
+//	req, resp := client.PutBucketAnalyticsConfigurationRequest(params)
 //
-//    // Example sending a request using the PutBucketAnalyticsConfigurationRequest method.
-//    req, resp := client.PutBucketAnalyticsConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketAnalyticsConfiguration
 func (c *S3) PutBucketAnalyticsConfigurationRequest(input *PutBucketAnalyticsConfigurationInput) (req *request.Request, output *PutBucketAnalyticsConfigurationOutput) {
@@ -5026,14 +4960,13 @@ const opPutBucketCors = "PutBucketCors"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketCorsRequest method.
+//	req, resp := client.PutBucketCorsRequest(params)
 //
-//    // Example sending a request using the PutBucketCorsRequest method.
-//    req, resp := client.PutBucketCorsRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketCors
 func (c *S3) PutBucketCorsRequest(input *PutBucketCorsInput) (req *request.Request, output *PutBucketCorsOutput) {
@@ -5101,14 +5034,13 @@ const opPutBucketEncryption = "PutBucketEncryption"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketEncryptionRequest method.
+//	req, resp := client.PutBucketEncryptionRequest(params)
 //
-//    // Example sending a request using the PutBucketEncryptionRequest method.
-//    req, resp := client.PutBucketEncryptionRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketEncryption
 func (c *S3) PutBucketEncryptionRequest(input *PutBucketEncryptionInput) (req *request.Request, output *PutBucketEncryptionOutput) {
@@ -5177,14 +5109,13 @@ const opPutBucketInventoryConfiguration = "PutBucketInventoryConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketInventoryConfigurationRequest method.
+//	req, resp := client.PutBucketInventoryConfigurationRequest(params)
 //
-//    // Example sending a request using the PutBucketInventoryConfigurationRequest method.
-//    req, resp := client.PutBucketInventoryConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketInventoryConfiguration
 func (c *S3) PutBucketInventoryConfigurationRequest(input *PutBucketInventoryConfigurationInput) (req *request.Request, output *PutBucketInventoryConfigurationOutput) {
@@ -5253,14 +5184,13 @@ const opPutBucketLifecycle = "PutBucketLifecycle"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketLifecycleRequest method.
+//	req, resp := client.PutBucketLifecycleRequest(params)
 //
-//    // Example sending a request using the PutBucketLifecycleRequest method.
-//    req, resp := client.PutBucketLifecycleRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketLifecycle
 //
@@ -5337,14 +5267,13 @@ const opPutBucketLifecycleConfiguration = "PutBucketLifecycleConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketLifecycleConfigurationRequest method.
+//	req, resp := client.PutBucketLifecycleConfigurationRequest(params)
 //
-//    // Example sending a request using the PutBucketLifecycleConfigurationRequest method.
-//    req, resp := client.PutBucketLifecycleConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketLifecycleConfiguration
 func (c *S3) PutBucketLifecycleConfigurationRequest(input *PutBucketLifecycleConfigurationInput) (req *request.Request, output *PutBucketLifecycleConfigurationOutput) {
@@ -5413,14 +5342,13 @@ const opPutBucketLogging = "PutBucketLogging"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketLoggingRequest method.
+//	req, resp := client.PutBucketLoggingRequest(params)
 //
-//    // Example sending a request using the PutBucketLoggingRequest method.
-//    req, resp := client.PutBucketLoggingRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketLogging
 func (c *S3) PutBucketLoggingRequest(input *PutBucketLoggingInput) (req *request.Request, output *PutBucketLoggingOutput) {
@@ -5490,14 +5418,13 @@ const opPutBucketMetricsConfiguration = "PutBucketMetricsConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketMetricsConfigurationRequest method.
+//	req, resp := client.PutBucketMetricsConfigurationRequest(params)
 //
-//    // Example sending a request using the PutBucketMetricsConfigurationRequest method.
-//    req, resp := client.PutBucketMetricsConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketMetricsConfiguration
 func (c *S3) PutBucketMetricsConfigurationRequest(input *PutBucketMetricsConfigurationInput) (req *request.Request, output *PutBucketMetricsConfigurationOutput) {
@@ -5566,14 +5493,13 @@ const opPutBucketNotification = "PutBucketNotification"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketNotificationRequest method.
+//	req, resp := client.PutBucketNotificationRequest(params)
 //
-//    // Example sending a request using the PutBucketNotificationRequest method.
-//    req, resp := client.PutBucketNotificationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketNotification
 //
@@ -5650,14 +5576,13 @@ const opPutBucketNotificationConfiguration = "PutBucketNotificationConfiguration
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketNotificationConfigurationRequest method.
+//	req, resp := client.PutBucketNotificationConfigurationRequest(params)
 //
-//    // Example sending a request using the PutBucketNotificationConfigurationRequest method.
-//    req, resp := client.PutBucketNotificationConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketNotificationConfiguration
 func (c *S3) PutBucketNotificationConfigurationRequest(input *PutBucketNotificationConfigurationInput) (req *request.Request, output *PutBucketNotificationConfigurationOutput) {
@@ -5725,14 +5650,13 @@ const opPutBucketPolicy = "PutBucketPolicy"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketPolicyRequest method.
+//	req, resp := client.PutBucketPolicyRequest(params)
 //
-//    // Example sending a request using the PutBucketPolicyRequest method.
-//    req, resp := client.PutBucketPolicyRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketPolicy
 func (c *S3) PutBucketPolicyRequest(input *PutBucketPolicyInput) (req *request.Request, output *PutBucketPolicyOutput) {
@@ -5801,14 +5725,13 @@ const opPutBucketReplication = "PutBucketReplication"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketReplicationRequest method.
+//	req, resp := client.PutBucketReplicationRequest(params)
 //
-//    // Example sending a request using the PutBucketReplicationRequest method.
-//    req, resp := client.PutBucketReplicationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketReplication
 func (c *S3) PutBucketReplicationRequest(input *PutBucketReplicationInput) (req *request.Request, output *PutBucketReplicationOutput) {
@@ -5878,14 +5801,13 @@ const opPutBucketRequestPayment = "PutBucketRequestPayment"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketRequestPaymentRequest method.
+//	req, resp := client.PutBucketRequestPaymentRequest(params)
 //
-//    // Example sending a request using the PutBucketRequestPaymentRequest method.
-//    req, resp := client.PutBucketRequestPaymentRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketRequestPayment
 func (c *S3) PutBucketRequestPaymentRequest(input *PutBucketRequestPaymentInput) (req *request.Request, output *PutBucketRequestPaymentOutput) {
@@ -5957,14 +5879,13 @@ const opPutBucketTagging = "PutBucketTagging"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketTaggingRequest method.
+//	req, resp := client.PutBucketTaggingRequest(params)
 //
-//    // Example sending a request using the PutBucketTaggingRequest method.
-//    req, resp := client.PutBucketTaggingRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketTagging
 func (c *S3) PutBucketTaggingRequest(input *PutBucketTaggingInput) (req *request.Request, output *PutBucketTaggingOutput) {
@@ -6032,14 +5953,13 @@ const opPutBucketVersioning = "PutBucketVersioning"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketVersioningRequest method.
+//	req, resp := client.PutBucketVersioningRequest(params)
 //
-//    // Example sending a request using the PutBucketVersioningRequest method.
-//    req, resp := client.PutBucketVersioningRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketVersioning
 func (c *S3) PutBucketVersioningRequest(input *PutBucketVersioningInput) (req *request.Request, output *PutBucketVersioningOutput) {
@@ -6108,14 +6028,13 @@ const opPutBucketWebsite = "PutBucketWebsite"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutBucketWebsiteRequest method.
+//	req, resp := client.PutBucketWebsiteRequest(params)
 //
-//    // Example sending a request using the PutBucketWebsiteRequest method.
-//    req, resp := client.PutBucketWebsiteRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutBucketWebsite
 func (c *S3) PutBucketWebsiteRequest(input *PutBucketWebsiteInput) (req *request.Request, output *PutBucketWebsiteOutput) {
@@ -6183,14 +6102,13 @@ const opPutObject = "PutObject"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutObjectRequest method.
+//	req, resp := client.PutObjectRequest(params)
 //
-//    // Example sending a request using the PutObjectRequest method.
-//    req, resp := client.PutObjectRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutObject
 func (c *S3) PutObjectRequest(input *PutObjectInput) (req *request.Request, output *PutObjectOutput) {
@@ -6257,14 +6175,13 @@ const opPutObjectAcl = "PutObjectAcl"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutObjectAclRequest method.
+//	req, resp := client.PutObjectAclRequest(params)
 //
-//    // Example sending a request using the PutObjectAclRequest method.
-//    req, resp := client.PutObjectAclRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutObjectAcl
 func (c *S3) PutObjectAclRequest(input *PutObjectAclInput) (req *request.Request, output *PutObjectAclOutput) {
@@ -6296,8 +6213,8 @@ func (c *S3) PutObjectAclRequest(input *PutObjectAclInput) (req *request.Request
 // API operation PutObjectAcl for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeNoSuchKey "NoSuchKey"
-//   The specified key does not exist.
+//   - ErrCodeNoSuchKey "NoSuchKey"
+//     The specified key does not exist.
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutObjectAcl
 func (c *S3) PutObjectAcl(input *PutObjectAclInput) (*PutObjectAclOutput, error) {
@@ -6337,14 +6254,13 @@ const opPutObjectLegalHold = "PutObjectLegalHold"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutObjectLegalHoldRequest method.
+//	req, resp := client.PutObjectLegalHoldRequest(params)
 //
-//    // Example sending a request using the PutObjectLegalHoldRequest method.
-//    req, resp := client.PutObjectLegalHoldRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutObjectLegalHold
 func (c *S3) PutObjectLegalHoldRequest(input *PutObjectLegalHoldInput) (req *request.Request, output *PutObjectLegalHoldOutput) {
@@ -6411,14 +6327,13 @@ const opPutObjectLockConfiguration = "PutObjectLockConfiguration"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutObjectLockConfigurationRequest method.
+//	req, resp := client.PutObjectLockConfigurationRequest(params)
 //
-//    // Example sending a request using the PutObjectLockConfigurationRequest method.
-//    req, resp := client.PutObjectLockConfigurationRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutObjectLockConfiguration
 func (c *S3) PutObjectLockConfigurationRequest(input *PutObjectLockConfigurationInput) (req *request.Request, output *PutObjectLockConfigurationOutput) {
@@ -6487,14 +6402,13 @@ const opPutObjectRetention = "PutObjectRetention"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutObjectRetentionRequest method.
+//	req, resp := client.PutObjectRetentionRequest(params)
 //
-//    // Example sending a request using the PutObjectRetentionRequest method.
-//    req, resp := client.PutObjectRetentionRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutObjectRetention
 func (c *S3) PutObjectRetentionRequest(input *PutObjectRetentionInput) (req *request.Request, output *PutObjectRetentionOutput) {
@@ -6561,14 +6475,13 @@ const opPutObjectTagging = "PutObjectTagging"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutObjectTaggingRequest method.
+//	req, resp := client.PutObjectTaggingRequest(params)
 //
-//    // Example sending a request using the PutObjectTaggingRequest method.
-//    req, resp := client.PutObjectTaggingRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutObjectTagging
 func (c *S3) PutObjectTaggingRequest(input *PutObjectTaggingInput) (req *request.Request, output *PutObjectTaggingOutput) {
@@ -6589,7 +6502,7 @@ func (c *S3) PutObjectTaggingRequest(input *PutObjectTaggingInput) (req *request
 
 // PutObjectTagging API operation for Amazon Simple Storage Service.
 //
-// Sets the supplied tag-set to an object that already exists in a bucket
+// # Sets the supplied tag-set to an object that already exists in a bucket
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -6635,14 +6548,13 @@ const opPutPublicAccessBlock = "PutPublicAccessBlock"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the PutPublicAccessBlockRequest method.
+//	req, resp := client.PutPublicAccessBlockRequest(params)
 //
-//    // Example sending a request using the PutPublicAccessBlockRequest method.
-//    req, resp := client.PutPublicAccessBlockRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/PutPublicAccessBlock
 func (c *S3) PutPublicAccessBlockRequest(input *PutPublicAccessBlockInput) (req *request.Request, output *PutPublicAccessBlockOutput) {
@@ -6711,14 +6623,13 @@ const opRestoreObject = "RestoreObject"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the RestoreObjectRequest method.
+//	req, resp := client.RestoreObjectRequest(params)
 //
-//    // Example sending a request using the RestoreObjectRequest method.
-//    req, resp := client.RestoreObjectRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/RestoreObject
 func (c *S3) RestoreObjectRequest(input *RestoreObjectInput) (req *request.Request, output *RestoreObjectOutput) {
@@ -6739,7 +6650,7 @@ func (c *S3) RestoreObjectRequest(input *RestoreObjectInput) (req *request.Reque
 
 // RestoreObject API operation for Amazon Simple Storage Service.
 //
-// Restores an archived copy of an object back into Amazon S3
+// # Restores an archived copy of an object back into Amazon S3
 //
 // Returns awserr.Error for service API and SDK errors. Use runtime type assertions
 // with awserr.Error's Code and Message methods to get detailed information about
@@ -6749,8 +6660,8 @@ func (c *S3) RestoreObjectRequest(input *RestoreObjectInput) (req *request.Reque
 // API operation RestoreObject for usage and error information.
 //
 // Returned Error Codes:
-//   * ErrCodeObjectAlreadyInActiveTierError "ObjectAlreadyInActiveTierError"
-//   This operation is not allowed against this storage tier
+//   - ErrCodeObjectAlreadyInActiveTierError "ObjectAlreadyInActiveTierError"
+//     This operation is not allowed against this storage tier
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/RestoreObject
 func (c *S3) RestoreObject(input *RestoreObjectInput) (*RestoreObjectOutput, error) {
@@ -6790,14 +6701,13 @@ const opSelectObjectContent = "SelectObjectContent"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the SelectObjectContentRequest method.
+//	req, resp := client.SelectObjectContentRequest(params)
 //
-//    // Example sending a request using the SelectObjectContentRequest method.
-//    req, resp := client.SelectObjectContentRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/SelectObjectContent
 func (c *S3) SelectObjectContentRequest(input *SelectObjectContentInput) (req *request.Request, output *SelectObjectContentOutput) {
@@ -6872,14 +6782,13 @@ const opUploadPart = "UploadPart"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the UploadPartRequest method.
+//	req, resp := client.UploadPartRequest(params)
 //
-//    // Example sending a request using the UploadPartRequest method.
-//    req, resp := client.UploadPartRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/UploadPart
 func (c *S3) UploadPartRequest(input *UploadPartInput) (req *request.Request, output *UploadPartOutput) {
@@ -6952,14 +6861,13 @@ const opUploadPartCopy = "UploadPartCopy"
 // This method is useful when you want to inject custom logic or configuration
 // into the SDK's request lifecycle. Such as custom headers, or retry logic.
 //
+//	// Example sending a request using the UploadPartCopyRequest method.
+//	req, resp := client.UploadPartCopyRequest(params)
 //
-//    // Example sending a request using the UploadPartCopyRequest method.
-//    req, resp := client.UploadPartCopyRequest(params)
-//
-//    err := req.Send()
-//    if err == nil { // resp is now filled
-//        fmt.Println(resp)
-//    }
+//	err := req.Send()
+//	if err == nil { // resp is now filled
+//	    fmt.Println(resp)
+//	}
 //
 // See also, https://docs.aws.amazon.com/goto/WebAPI/s3-2006-03-01/UploadPartCopy
 func (c *S3) UploadPartCopyRequest(input *UploadPartCopyInput) (req *request.Request, output *UploadPartCopyOutput) {
@@ -22278,11 +22186,11 @@ func (s SSES3) GoString() string {
 //
 // The events that can be received are:
 //
-//     * ContinuationEvent
-//     * EndEvent
-//     * ProgressEvent
-//     * RecordsEvent
-//     * StatsEvent
+//   - ContinuationEvent
+//   - EndEvent
+//   - ProgressEvent
+//   - RecordsEvent
+//   - StatsEvent
 type SelectObjectContentEventStream struct {
 	// Reader is the EventStream reader for the SelectObjectContentEventStream
 	// events. This value is automatically set by the SDK when the API call is made
@@ -22328,11 +22236,11 @@ func (es *SelectObjectContentEventStream) Err() error {
 //
 // These events are:
 //
-//     * ContinuationEvent
-//     * EndEvent
-//     * ProgressEvent
-//     * RecordsEvent
-//     * StatsEvent
+//   - ContinuationEvent
+//   - EndEvent
+//   - ProgressEvent
+//   - RecordsEvent
+//   - StatsEvent
 func (es *SelectObjectContentEventStream) Events() <-chan SelectObjectContentEventStreamEvent {
 	return es.Reader.Events()
 }
@@ -22342,11 +22250,11 @@ func (es *SelectObjectContentEventStream) Events() <-chan SelectObjectContentEve
 //
 // These events are:
 //
-//     * ContinuationEvent
-//     * EndEvent
-//     * ProgressEvent
-//     * RecordsEvent
-//     * StatsEvent
+//   - ContinuationEvent
+//   - EndEvent
+//   - ProgressEvent
+//   - RecordsEvent
+//   - StatsEvent
 type SelectObjectContentEventStreamEvent interface {
 	eventSelectObjectContentEventStream()
 }
@@ -22359,11 +22267,11 @@ type SelectObjectContentEventStreamEvent interface {
 //
 // These events are:
 //
-//     * ContinuationEvent
-//     * EndEvent
-//     * ProgressEvent
-//     * RecordsEvent
-//     * StatsEvent
+//   - ContinuationEvent
+//   - EndEvent
+//   - ProgressEvent
+//   - RecordsEvent
+//   - StatsEvent
 type SelectObjectContentEventStreamReader interface {
 	// Returns a channel of events as they are read from the event stream.
 	Events() <-chan SelectObjectContentEventStreamEvent

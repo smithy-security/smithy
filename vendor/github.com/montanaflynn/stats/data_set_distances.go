@@ -32,9 +32,7 @@ func ChebyshevDistance(dataPointX, dataPointY []float64) (distance float64, err 
 	return distance, nil
 }
 
-//
 // Computes Euclidean distance between two data sets
-//
 func EuclideanDistance(dataPointX, dataPointY []float64) (distance float64, err error) {
 
 	err = validateData(dataPointX, dataPointY)
@@ -48,9 +46,7 @@ func EuclideanDistance(dataPointX, dataPointY []float64) (distance float64, err 
 	return math.Sqrt(distance), nil
 }
 
-//
 // Computes Manhattan distance between two data sets
-//
 func ManhattanDistance(dataPointX, dataPointY []float64) (distance float64, err error) {
 	err = validateData(dataPointX, dataPointY)
 	if err != nil {
@@ -63,21 +59,22 @@ func ManhattanDistance(dataPointX, dataPointY []float64) (distance float64, err 
 	return distance, nil
 }
 
-//
 // Computes minkowski distance between two data sets.
 //
 // Input:
-//    dataPointX: First set of data points
-//    dataPointY: Second set of data points. Length of both data
-//                sets must be equal.
-//    lambda:     aka p or city blocks; With lambda = 1
-//                returned distance is manhattan distance and
-//                lambda = 2; it is euclidean distance. Lambda
-//                reaching to infinite - distance would be chebysev
-//                distance.
-// Output:
-//     Distance or error
 //
+//	dataPointX: First set of data points
+//	dataPointY: Second set of data points. Length of both data
+//	            sets must be equal.
+//	lambda:     aka p or city blocks; With lambda = 1
+//	            returned distance is manhattan distance and
+//	            lambda = 2; it is euclidean distance. Lambda
+//	            reaching to infinite - distance would be chebysev
+//	            distance.
+//
+// Output:
+//
+//	Distance or error
 func MinkowskiDistance(dataPointX, dataPointY []float64, lambda float64) (distance float64, err error) {
 	err = validateData(dataPointX, dataPointY)
 	if err != nil {

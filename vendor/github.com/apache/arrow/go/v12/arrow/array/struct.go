@@ -108,7 +108,8 @@ func (a *Struct) String() string {
 // newStructFieldWithParentValidityMask returns the Interface at fieldIndex
 // with a nullBitmapBytes adjusted according on the parent struct nullBitmapBytes.
 // From the docs:
-//   "When reading the struct array the parent validity bitmap takes priority."
+//
+//	"When reading the struct array the parent validity bitmap takes priority."
 func (a *Struct) newStructFieldWithParentValidityMask(fieldIndex int) arrow.Array {
 	field := a.Field(fieldIndex)
 	nullBitmapBytes := field.NullBitmapBytes()

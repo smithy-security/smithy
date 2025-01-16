@@ -12,9 +12,11 @@ that directory, recursively.  (Files starting with a period are ignored.)
 By default, asmfmt prints the reformatted sources to standard output.
 
 Usage:
+
 	asmfmt [flags] [path ...]
 
 The flags are:
+
 	-d
 		Do not print reformatted sources to standard output.
 		If a file's formatting is different than asmfmt's, print diffs
@@ -31,13 +33,12 @@ The flags are:
 		with asmfmt's version.
 
 Debugging support:
+
 	-cpuprofile filename
 		Write cpu profile to the specified file.
-
 
 When asmfmt reads from standard input, it accepts either a full Assembler file
 or a program fragment.  A program fragment must be a syntactically
 valid declaration list, statement list, or expression.
-
 */
 package main

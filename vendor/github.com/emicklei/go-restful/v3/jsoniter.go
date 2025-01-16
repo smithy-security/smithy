@@ -1,8 +1,9 @@
+//go:build jsoniter
 // +build jsoniter
 
 package restful
 
-import "github.com/json-iterator/go"
+import jsoniter "github.com/json-iterator/go"
 
 var (
 	json          = jsoniter.ConfigCompatibleWithStandardLibrary
