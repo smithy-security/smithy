@@ -4,7 +4,7 @@ package gen // CEL
 import (
 	"fmt"
 	"strconv"
-  	"sync"
+	"sync"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -14,167 +14,166 @@ var _ = fmt.Printf
 var _ = strconv.Itoa
 var _ = sync.Once{}
 
-
 type CELParser struct {
 	*antlr.BaseParser
 }
 
 var CELParserStaticData struct {
-  once                   sync.Once
-  serializedATN          []int32
-  LiteralNames           []string
-  SymbolicNames          []string
-  RuleNames              []string
-  PredictionContextCache *antlr.PredictionContextCache
-  atn                    *antlr.ATN
-  decisionToDFA          []*antlr.DFA
+	once                   sync.Once
+	serializedATN          []int32
+	LiteralNames           []string
+	SymbolicNames          []string
+	RuleNames              []string
+	PredictionContextCache *antlr.PredictionContextCache
+	atn                    *antlr.ATN
+	decisionToDFA          []*antlr.DFA
 }
 
 func celParserInit() {
-  staticData := &CELParserStaticData
-  staticData.LiteralNames = []string{
-    "", "'=='", "'!='", "'in'", "'<'", "'<='", "'>='", "'>'", "'&&'", "'||'", 
-    "'['", "']'", "'{'", "'}'", "'('", "')'", "'.'", "','", "'-'", "'!'", 
-    "'?'", "':'", "'+'", "'*'", "'/'", "'%'", "'true'", "'false'", "'null'",
-  }
-  staticData.SymbolicNames = []string{
-    "", "EQUALS", "NOT_EQUALS", "IN", "LESS", "LESS_EQUALS", "GREATER_EQUALS", 
-    "GREATER", "LOGICAL_AND", "LOGICAL_OR", "LBRACKET", "RPRACKET", "LBRACE", 
-    "RBRACE", "LPAREN", "RPAREN", "DOT", "COMMA", "MINUS", "EXCLAM", "QUESTIONMARK", 
-    "COLON", "PLUS", "STAR", "SLASH", "PERCENT", "CEL_TRUE", "CEL_FALSE", 
-    "NUL", "WHITESPACE", "COMMENT", "NUM_FLOAT", "NUM_INT", "NUM_UINT", 
-    "STRING", "BYTES", "IDENTIFIER",
-  }
-  staticData.RuleNames = []string{
-    "start", "expr", "conditionalOr", "conditionalAnd", "relation", "calc", 
-    "unary", "member", "primary", "exprList", "listInit", "fieldInitializerList", 
-    "optField", "mapInitializerList", "optExpr", "literal",
-  }
-  staticData.PredictionContextCache = antlr.NewPredictionContextCache()
-  staticData.serializedATN = []int32{
-	4, 1, 36, 251, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 
-	4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7, 
-	10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 2, 14, 7, 14, 2, 15, 7, 15, 
-	1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 42, 8, 1, 1, 
-	2, 1, 2, 1, 2, 5, 2, 47, 8, 2, 10, 2, 12, 2, 50, 9, 2, 1, 3, 1, 3, 1, 3, 
-	5, 3, 55, 8, 3, 10, 3, 12, 3, 58, 9, 3, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1, 
-	4, 5, 4, 66, 8, 4, 10, 4, 12, 4, 69, 9, 4, 1, 5, 1, 5, 1, 5, 1, 5, 1, 5, 
-	1, 5, 1, 5, 1, 5, 1, 5, 5, 5, 80, 8, 5, 10, 5, 12, 5, 83, 9, 5, 1, 6, 1, 
-	6, 4, 6, 87, 8, 6, 11, 6, 12, 6, 88, 1, 6, 1, 6, 4, 6, 93, 8, 6, 11, 6, 
-	12, 6, 94, 1, 6, 3, 6, 98, 8, 6, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 3, 
-	7, 106, 8, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 3, 7, 114, 8, 7, 1, 7, 
-	1, 7, 1, 7, 1, 7, 3, 7, 120, 8, 7, 1, 7, 1, 7, 1, 7, 5, 7, 125, 8, 7, 10, 
-	7, 12, 7, 128, 9, 7, 1, 8, 3, 8, 131, 8, 8, 1, 8, 1, 8, 1, 8, 3, 8, 136, 
-	8, 8, 1, 8, 3, 8, 139, 8, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 3, 8, 
-	147, 8, 8, 1, 8, 3, 8, 150, 8, 8, 1, 8, 1, 8, 1, 8, 3, 8, 155, 8, 8, 1, 
-	8, 3, 8, 158, 8, 8, 1, 8, 1, 8, 3, 8, 162, 8, 8, 1, 8, 1, 8, 1, 8, 5, 8, 
-	167, 8, 8, 10, 8, 12, 8, 170, 9, 8, 1, 8, 1, 8, 3, 8, 174, 8, 8, 1, 8, 
-	3, 8, 177, 8, 8, 1, 8, 1, 8, 3, 8, 181, 8, 8, 1, 9, 1, 9, 1, 9, 5, 9, 186, 
-	8, 9, 10, 9, 12, 9, 189, 9, 9, 1, 10, 1, 10, 1, 10, 5, 10, 194, 8, 10, 
-	10, 10, 12, 10, 197, 9, 10, 1, 11, 1, 11, 1, 11, 1, 11, 1, 11, 1, 11, 1, 
-	11, 1, 11, 5, 11, 207, 8, 11, 10, 11, 12, 11, 210, 9, 11, 1, 12, 3, 12, 
-	213, 8, 12, 1, 12, 1, 12, 1, 13, 1, 13, 1, 13, 1, 13, 1, 13, 1, 13, 1, 
-	13, 1, 13, 5, 13, 225, 8, 13, 10, 13, 12, 13, 228, 9, 13, 1, 14, 3, 14, 
-	231, 8, 14, 1, 14, 1, 14, 1, 15, 3, 15, 236, 8, 15, 1, 15, 1, 15, 1, 15, 
-	3, 15, 241, 8, 15, 1, 15, 1, 15, 1, 15, 1, 15, 1, 15, 1, 15, 3, 15, 249, 
-	8, 15, 1, 15, 0, 3, 8, 10, 14, 16, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 
-	22, 24, 26, 28, 30, 0, 3, 1, 0, 1, 7, 1, 0, 23, 25, 2, 0, 18, 18, 22, 22, 
-	281, 0, 32, 1, 0, 0, 0, 2, 35, 1, 0, 0, 0, 4, 43, 1, 0, 0, 0, 6, 51, 1, 
-	0, 0, 0, 8, 59, 1, 0, 0, 0, 10, 70, 1, 0, 0, 0, 12, 97, 1, 0, 0, 0, 14, 
-	99, 1, 0, 0, 0, 16, 180, 1, 0, 0, 0, 18, 182, 1, 0, 0, 0, 20, 190, 1, 0, 
-	0, 0, 22, 198, 1, 0, 0, 0, 24, 212, 1, 0, 0, 0, 26, 216, 1, 0, 0, 0, 28, 
-	230, 1, 0, 0, 0, 30, 248, 1, 0, 0, 0, 32, 33, 3, 2, 1, 0, 33, 34, 5, 0, 
-	0, 1, 34, 1, 1, 0, 0, 0, 35, 41, 3, 4, 2, 0, 36, 37, 5, 20, 0, 0, 37, 38, 
-	3, 4, 2, 0, 38, 39, 5, 21, 0, 0, 39, 40, 3, 2, 1, 0, 40, 42, 1, 0, 0, 0, 
-	41, 36, 1, 0, 0, 0, 41, 42, 1, 0, 0, 0, 42, 3, 1, 0, 0, 0, 43, 48, 3, 6, 
-	3, 0, 44, 45, 5, 9, 0, 0, 45, 47, 3, 6, 3, 0, 46, 44, 1, 0, 0, 0, 47, 50, 
-	1, 0, 0, 0, 48, 46, 1, 0, 0, 0, 48, 49, 1, 0, 0, 0, 49, 5, 1, 0, 0, 0, 
-	50, 48, 1, 0, 0, 0, 51, 56, 3, 8, 4, 0, 52, 53, 5, 8, 0, 0, 53, 55, 3, 
-	8, 4, 0, 54, 52, 1, 0, 0, 0, 55, 58, 1, 0, 0, 0, 56, 54, 1, 0, 0, 0, 56, 
-	57, 1, 0, 0, 0, 57, 7, 1, 0, 0, 0, 58, 56, 1, 0, 0, 0, 59, 60, 6, 4, -1, 
-	0, 60, 61, 3, 10, 5, 0, 61, 67, 1, 0, 0, 0, 62, 63, 10, 1, 0, 0, 63, 64, 
-	7, 0, 0, 0, 64, 66, 3, 8, 4, 2, 65, 62, 1, 0, 0, 0, 66, 69, 1, 0, 0, 0, 
-	67, 65, 1, 0, 0, 0, 67, 68, 1, 0, 0, 0, 68, 9, 1, 0, 0, 0, 69, 67, 1, 0, 
-	0, 0, 70, 71, 6, 5, -1, 0, 71, 72, 3, 12, 6, 0, 72, 81, 1, 0, 0, 0, 73, 
-	74, 10, 2, 0, 0, 74, 75, 7, 1, 0, 0, 75, 80, 3, 10, 5, 3, 76, 77, 10, 1, 
-	0, 0, 77, 78, 7, 2, 0, 0, 78, 80, 3, 10, 5, 2, 79, 73, 1, 0, 0, 0, 79, 
-	76, 1, 0, 0, 0, 80, 83, 1, 0, 0, 0, 81, 79, 1, 0, 0, 0, 81, 82, 1, 0, 0, 
-	0, 82, 11, 1, 0, 0, 0, 83, 81, 1, 0, 0, 0, 84, 98, 3, 14, 7, 0, 85, 87, 
-	5, 19, 0, 0, 86, 85, 1, 0, 0, 0, 87, 88, 1, 0, 0, 0, 88, 86, 1, 0, 0, 0, 
-	88, 89, 1, 0, 0, 0, 89, 90, 1, 0, 0, 0, 90, 98, 3, 14, 7, 0, 91, 93, 5, 
-	18, 0, 0, 92, 91, 1, 0, 0, 0, 93, 94, 1, 0, 0, 0, 94, 92, 1, 0, 0, 0, 94, 
-	95, 1, 0, 0, 0, 95, 96, 1, 0, 0, 0, 96, 98, 3, 14, 7, 0, 97, 84, 1, 0, 
-	0, 0, 97, 86, 1, 0, 0, 0, 97, 92, 1, 0, 0, 0, 98, 13, 1, 0, 0, 0, 99, 100, 
-	6, 7, -1, 0, 100, 101, 3, 16, 8, 0, 101, 126, 1, 0, 0, 0, 102, 103, 10, 
-	3, 0, 0, 103, 105, 5, 16, 0, 0, 104, 106, 5, 20, 0, 0, 105, 104, 1, 0, 
-	0, 0, 105, 106, 1, 0, 0, 0, 106, 107, 1, 0, 0, 0, 107, 125, 5, 36, 0, 0, 
-	108, 109, 10, 2, 0, 0, 109, 110, 5, 16, 0, 0, 110, 111, 5, 36, 0, 0, 111, 
-	113, 5, 14, 0, 0, 112, 114, 3, 18, 9, 0, 113, 112, 1, 0, 0, 0, 113, 114, 
-	1, 0, 0, 0, 114, 115, 1, 0, 0, 0, 115, 125, 5, 15, 0, 0, 116, 117, 10, 
-	1, 0, 0, 117, 119, 5, 10, 0, 0, 118, 120, 5, 20, 0, 0, 119, 118, 1, 0, 
-	0, 0, 119, 120, 1, 0, 0, 0, 120, 121, 1, 0, 0, 0, 121, 122, 3, 2, 1, 0, 
-	122, 123, 5, 11, 0, 0, 123, 125, 1, 0, 0, 0, 124, 102, 1, 0, 0, 0, 124, 
-	108, 1, 0, 0, 0, 124, 116, 1, 0, 0, 0, 125, 128, 1, 0, 0, 0, 126, 124, 
-	1, 0, 0, 0, 126, 127, 1, 0, 0, 0, 127, 15, 1, 0, 0, 0, 128, 126, 1, 0, 
-	0, 0, 129, 131, 5, 16, 0, 0, 130, 129, 1, 0, 0, 0, 130, 131, 1, 0, 0, 0, 
-	131, 132, 1, 0, 0, 0, 132, 138, 5, 36, 0, 0, 133, 135, 5, 14, 0, 0, 134, 
-	136, 3, 18, 9, 0, 135, 134, 1, 0, 0, 0, 135, 136, 1, 0, 0, 0, 136, 137, 
-	1, 0, 0, 0, 137, 139, 5, 15, 0, 0, 138, 133, 1, 0, 0, 0, 138, 139, 1, 0, 
-	0, 0, 139, 181, 1, 0, 0, 0, 140, 141, 5, 14, 0, 0, 141, 142, 3, 2, 1, 0, 
-	142, 143, 5, 15, 0, 0, 143, 181, 1, 0, 0, 0, 144, 146, 5, 10, 0, 0, 145, 
-	147, 3, 20, 10, 0, 146, 145, 1, 0, 0, 0, 146, 147, 1, 0, 0, 0, 147, 149, 
-	1, 0, 0, 0, 148, 150, 5, 17, 0, 0, 149, 148, 1, 0, 0, 0, 149, 150, 1, 0, 
-	0, 0, 150, 151, 1, 0, 0, 0, 151, 181, 5, 11, 0, 0, 152, 154, 5, 12, 0, 
-	0, 153, 155, 3, 26, 13, 0, 154, 153, 1, 0, 0, 0, 154, 155, 1, 0, 0, 0, 
-	155, 157, 1, 0, 0, 0, 156, 158, 5, 17, 0, 0, 157, 156, 1, 0, 0, 0, 157, 
-	158, 1, 0, 0, 0, 158, 159, 1, 0, 0, 0, 159, 181, 5, 13, 0, 0, 160, 162, 
-	5, 16, 0, 0, 161, 160, 1, 0, 0, 0, 161, 162, 1, 0, 0, 0, 162, 163, 1, 0, 
-	0, 0, 163, 168, 5, 36, 0, 0, 164, 165, 5, 16, 0, 0, 165, 167, 5, 36, 0, 
-	0, 166, 164, 1, 0, 0, 0, 167, 170, 1, 0, 0, 0, 168, 166, 1, 0, 0, 0, 168, 
-	169, 1, 0, 0, 0, 169, 171, 1, 0, 0, 0, 170, 168, 1, 0, 0, 0, 171, 173, 
-	5, 12, 0, 0, 172, 174, 3, 22, 11, 0, 173, 172, 1, 0, 0, 0, 173, 174, 1, 
-	0, 0, 0, 174, 176, 1, 0, 0, 0, 175, 177, 5, 17, 0, 0, 176, 175, 1, 0, 0, 
-	0, 176, 177, 1, 0, 0, 0, 177, 178, 1, 0, 0, 0, 178, 181, 5, 13, 0, 0, 179, 
-	181, 3, 30, 15, 0, 180, 130, 1, 0, 0, 0, 180, 140, 1, 0, 0, 0, 180, 144, 
-	1, 0, 0, 0, 180, 152, 1, 0, 0, 0, 180, 161, 1, 0, 0, 0, 180, 179, 1, 0, 
-	0, 0, 181, 17, 1, 0, 0, 0, 182, 187, 3, 2, 1, 0, 183, 184, 5, 17, 0, 0, 
-	184, 186, 3, 2, 1, 0, 185, 183, 1, 0, 0, 0, 186, 189, 1, 0, 0, 0, 187, 
-	185, 1, 0, 0, 0, 187, 188, 1, 0, 0, 0, 188, 19, 1, 0, 0, 0, 189, 187, 1, 
-	0, 0, 0, 190, 195, 3, 28, 14, 0, 191, 192, 5, 17, 0, 0, 192, 194, 3, 28, 
-	14, 0, 193, 191, 1, 0, 0, 0, 194, 197, 1, 0, 0, 0, 195, 193, 1, 0, 0, 0, 
-	195, 196, 1, 0, 0, 0, 196, 21, 1, 0, 0, 0, 197, 195, 1, 0, 0, 0, 198, 199, 
-	3, 24, 12, 0, 199, 200, 5, 21, 0, 0, 200, 208, 3, 2, 1, 0, 201, 202, 5, 
-	17, 0, 0, 202, 203, 3, 24, 12, 0, 203, 204, 5, 21, 0, 0, 204, 205, 3, 2, 
-	1, 0, 205, 207, 1, 0, 0, 0, 206, 201, 1, 0, 0, 0, 207, 210, 1, 0, 0, 0, 
-	208, 206, 1, 0, 0, 0, 208, 209, 1, 0, 0, 0, 209, 23, 1, 0, 0, 0, 210, 208, 
-	1, 0, 0, 0, 211, 213, 5, 20, 0, 0, 212, 211, 1, 0, 0, 0, 212, 213, 1, 0, 
-	0, 0, 213, 214, 1, 0, 0, 0, 214, 215, 5, 36, 0, 0, 215, 25, 1, 0, 0, 0, 
-	216, 217, 3, 28, 14, 0, 217, 218, 5, 21, 0, 0, 218, 226, 3, 2, 1, 0, 219, 
-	220, 5, 17, 0, 0, 220, 221, 3, 28, 14, 0, 221, 222, 5, 21, 0, 0, 222, 223, 
-	3, 2, 1, 0, 223, 225, 1, 0, 0, 0, 224, 219, 1, 0, 0, 0, 225, 228, 1, 0, 
-	0, 0, 226, 224, 1, 0, 0, 0, 226, 227, 1, 0, 0, 0, 227, 27, 1, 0, 0, 0, 
-	228, 226, 1, 0, 0, 0, 229, 231, 5, 20, 0, 0, 230, 229, 1, 0, 0, 0, 230, 
-	231, 1, 0, 0, 0, 231, 232, 1, 0, 0, 0, 232, 233, 3, 2, 1, 0, 233, 29, 1, 
-	0, 0, 0, 234, 236, 5, 18, 0, 0, 235, 234, 1, 0, 0, 0, 235, 236, 1, 0, 0, 
-	0, 236, 237, 1, 0, 0, 0, 237, 249, 5, 32, 0, 0, 238, 249, 5, 33, 0, 0, 
-	239, 241, 5, 18, 0, 0, 240, 239, 1, 0, 0, 0, 240, 241, 1, 0, 0, 0, 241, 
-	242, 1, 0, 0, 0, 242, 249, 5, 31, 0, 0, 243, 249, 5, 34, 0, 0, 244, 249, 
-	5, 35, 0, 0, 245, 249, 5, 26, 0, 0, 246, 249, 5, 27, 0, 0, 247, 249, 5, 
-	28, 0, 0, 248, 235, 1, 0, 0, 0, 248, 238, 1, 0, 0, 0, 248, 240, 1, 0, 0, 
-	0, 248, 243, 1, 0, 0, 0, 248, 244, 1, 0, 0, 0, 248, 245, 1, 0, 0, 0, 248, 
-	246, 1, 0, 0, 0, 248, 247, 1, 0, 0, 0, 249, 31, 1, 0, 0, 0, 35, 41, 48, 
-	56, 67, 79, 81, 88, 94, 97, 105, 113, 119, 124, 126, 130, 135, 138, 146, 
-	149, 154, 157, 161, 168, 173, 176, 180, 187, 195, 208, 212, 226, 230, 235, 
-	240, 248,
-}
-  deserializer := antlr.NewATNDeserializer(nil)
-  staticData.atn = deserializer.Deserialize(staticData.serializedATN)
-  atn := staticData.atn
-  staticData.decisionToDFA = make([]*antlr.DFA, len(atn.DecisionToState))
-  decisionToDFA := staticData.decisionToDFA
-  for index, state := range atn.DecisionToState {
-    decisionToDFA[index] = antlr.NewDFA(state, index)
-  }
+	staticData := &CELParserStaticData
+	staticData.LiteralNames = []string{
+		"", "'=='", "'!='", "'in'", "'<'", "'<='", "'>='", "'>'", "'&&'", "'||'",
+		"'['", "']'", "'{'", "'}'", "'('", "')'", "'.'", "','", "'-'", "'!'",
+		"'?'", "':'", "'+'", "'*'", "'/'", "'%'", "'true'", "'false'", "'null'",
+	}
+	staticData.SymbolicNames = []string{
+		"", "EQUALS", "NOT_EQUALS", "IN", "LESS", "LESS_EQUALS", "GREATER_EQUALS",
+		"GREATER", "LOGICAL_AND", "LOGICAL_OR", "LBRACKET", "RPRACKET", "LBRACE",
+		"RBRACE", "LPAREN", "RPAREN", "DOT", "COMMA", "MINUS", "EXCLAM", "QUESTIONMARK",
+		"COLON", "PLUS", "STAR", "SLASH", "PERCENT", "CEL_TRUE", "CEL_FALSE",
+		"NUL", "WHITESPACE", "COMMENT", "NUM_FLOAT", "NUM_INT", "NUM_UINT",
+		"STRING", "BYTES", "IDENTIFIER",
+	}
+	staticData.RuleNames = []string{
+		"start", "expr", "conditionalOr", "conditionalAnd", "relation", "calc",
+		"unary", "member", "primary", "exprList", "listInit", "fieldInitializerList",
+		"optField", "mapInitializerList", "optExpr", "literal",
+	}
+	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
+	staticData.serializedATN = []int32{
+		4, 1, 36, 251, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7,
+		10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 2, 14, 7, 14, 2, 15, 7, 15,
+		1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 42, 8, 1, 1,
+		2, 1, 2, 1, 2, 5, 2, 47, 8, 2, 10, 2, 12, 2, 50, 9, 2, 1, 3, 1, 3, 1, 3,
+		5, 3, 55, 8, 3, 10, 3, 12, 3, 58, 9, 3, 1, 4, 1, 4, 1, 4, 1, 4, 1, 4, 1,
+		4, 5, 4, 66, 8, 4, 10, 4, 12, 4, 69, 9, 4, 1, 5, 1, 5, 1, 5, 1, 5, 1, 5,
+		1, 5, 1, 5, 1, 5, 1, 5, 5, 5, 80, 8, 5, 10, 5, 12, 5, 83, 9, 5, 1, 6, 1,
+		6, 4, 6, 87, 8, 6, 11, 6, 12, 6, 88, 1, 6, 1, 6, 4, 6, 93, 8, 6, 11, 6,
+		12, 6, 94, 1, 6, 3, 6, 98, 8, 6, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 3,
+		7, 106, 8, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 3, 7, 114, 8, 7, 1, 7,
+		1, 7, 1, 7, 1, 7, 3, 7, 120, 8, 7, 1, 7, 1, 7, 1, 7, 5, 7, 125, 8, 7, 10,
+		7, 12, 7, 128, 9, 7, 1, 8, 3, 8, 131, 8, 8, 1, 8, 1, 8, 1, 8, 3, 8, 136,
+		8, 8, 1, 8, 3, 8, 139, 8, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 3, 8,
+		147, 8, 8, 1, 8, 3, 8, 150, 8, 8, 1, 8, 1, 8, 1, 8, 3, 8, 155, 8, 8, 1,
+		8, 3, 8, 158, 8, 8, 1, 8, 1, 8, 3, 8, 162, 8, 8, 1, 8, 1, 8, 1, 8, 5, 8,
+		167, 8, 8, 10, 8, 12, 8, 170, 9, 8, 1, 8, 1, 8, 3, 8, 174, 8, 8, 1, 8,
+		3, 8, 177, 8, 8, 1, 8, 1, 8, 3, 8, 181, 8, 8, 1, 9, 1, 9, 1, 9, 5, 9, 186,
+		8, 9, 10, 9, 12, 9, 189, 9, 9, 1, 10, 1, 10, 1, 10, 5, 10, 194, 8, 10,
+		10, 10, 12, 10, 197, 9, 10, 1, 11, 1, 11, 1, 11, 1, 11, 1, 11, 1, 11, 1,
+		11, 1, 11, 5, 11, 207, 8, 11, 10, 11, 12, 11, 210, 9, 11, 1, 12, 3, 12,
+		213, 8, 12, 1, 12, 1, 12, 1, 13, 1, 13, 1, 13, 1, 13, 1, 13, 1, 13, 1,
+		13, 1, 13, 5, 13, 225, 8, 13, 10, 13, 12, 13, 228, 9, 13, 1, 14, 3, 14,
+		231, 8, 14, 1, 14, 1, 14, 1, 15, 3, 15, 236, 8, 15, 1, 15, 1, 15, 1, 15,
+		3, 15, 241, 8, 15, 1, 15, 1, 15, 1, 15, 1, 15, 1, 15, 1, 15, 3, 15, 249,
+		8, 15, 1, 15, 0, 3, 8, 10, 14, 16, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20,
+		22, 24, 26, 28, 30, 0, 3, 1, 0, 1, 7, 1, 0, 23, 25, 2, 0, 18, 18, 22, 22,
+		281, 0, 32, 1, 0, 0, 0, 2, 35, 1, 0, 0, 0, 4, 43, 1, 0, 0, 0, 6, 51, 1,
+		0, 0, 0, 8, 59, 1, 0, 0, 0, 10, 70, 1, 0, 0, 0, 12, 97, 1, 0, 0, 0, 14,
+		99, 1, 0, 0, 0, 16, 180, 1, 0, 0, 0, 18, 182, 1, 0, 0, 0, 20, 190, 1, 0,
+		0, 0, 22, 198, 1, 0, 0, 0, 24, 212, 1, 0, 0, 0, 26, 216, 1, 0, 0, 0, 28,
+		230, 1, 0, 0, 0, 30, 248, 1, 0, 0, 0, 32, 33, 3, 2, 1, 0, 33, 34, 5, 0,
+		0, 1, 34, 1, 1, 0, 0, 0, 35, 41, 3, 4, 2, 0, 36, 37, 5, 20, 0, 0, 37, 38,
+		3, 4, 2, 0, 38, 39, 5, 21, 0, 0, 39, 40, 3, 2, 1, 0, 40, 42, 1, 0, 0, 0,
+		41, 36, 1, 0, 0, 0, 41, 42, 1, 0, 0, 0, 42, 3, 1, 0, 0, 0, 43, 48, 3, 6,
+		3, 0, 44, 45, 5, 9, 0, 0, 45, 47, 3, 6, 3, 0, 46, 44, 1, 0, 0, 0, 47, 50,
+		1, 0, 0, 0, 48, 46, 1, 0, 0, 0, 48, 49, 1, 0, 0, 0, 49, 5, 1, 0, 0, 0,
+		50, 48, 1, 0, 0, 0, 51, 56, 3, 8, 4, 0, 52, 53, 5, 8, 0, 0, 53, 55, 3,
+		8, 4, 0, 54, 52, 1, 0, 0, 0, 55, 58, 1, 0, 0, 0, 56, 54, 1, 0, 0, 0, 56,
+		57, 1, 0, 0, 0, 57, 7, 1, 0, 0, 0, 58, 56, 1, 0, 0, 0, 59, 60, 6, 4, -1,
+		0, 60, 61, 3, 10, 5, 0, 61, 67, 1, 0, 0, 0, 62, 63, 10, 1, 0, 0, 63, 64,
+		7, 0, 0, 0, 64, 66, 3, 8, 4, 2, 65, 62, 1, 0, 0, 0, 66, 69, 1, 0, 0, 0,
+		67, 65, 1, 0, 0, 0, 67, 68, 1, 0, 0, 0, 68, 9, 1, 0, 0, 0, 69, 67, 1, 0,
+		0, 0, 70, 71, 6, 5, -1, 0, 71, 72, 3, 12, 6, 0, 72, 81, 1, 0, 0, 0, 73,
+		74, 10, 2, 0, 0, 74, 75, 7, 1, 0, 0, 75, 80, 3, 10, 5, 3, 76, 77, 10, 1,
+		0, 0, 77, 78, 7, 2, 0, 0, 78, 80, 3, 10, 5, 2, 79, 73, 1, 0, 0, 0, 79,
+		76, 1, 0, 0, 0, 80, 83, 1, 0, 0, 0, 81, 79, 1, 0, 0, 0, 81, 82, 1, 0, 0,
+		0, 82, 11, 1, 0, 0, 0, 83, 81, 1, 0, 0, 0, 84, 98, 3, 14, 7, 0, 85, 87,
+		5, 19, 0, 0, 86, 85, 1, 0, 0, 0, 87, 88, 1, 0, 0, 0, 88, 86, 1, 0, 0, 0,
+		88, 89, 1, 0, 0, 0, 89, 90, 1, 0, 0, 0, 90, 98, 3, 14, 7, 0, 91, 93, 5,
+		18, 0, 0, 92, 91, 1, 0, 0, 0, 93, 94, 1, 0, 0, 0, 94, 92, 1, 0, 0, 0, 94,
+		95, 1, 0, 0, 0, 95, 96, 1, 0, 0, 0, 96, 98, 3, 14, 7, 0, 97, 84, 1, 0,
+		0, 0, 97, 86, 1, 0, 0, 0, 97, 92, 1, 0, 0, 0, 98, 13, 1, 0, 0, 0, 99, 100,
+		6, 7, -1, 0, 100, 101, 3, 16, 8, 0, 101, 126, 1, 0, 0, 0, 102, 103, 10,
+		3, 0, 0, 103, 105, 5, 16, 0, 0, 104, 106, 5, 20, 0, 0, 105, 104, 1, 0,
+		0, 0, 105, 106, 1, 0, 0, 0, 106, 107, 1, 0, 0, 0, 107, 125, 5, 36, 0, 0,
+		108, 109, 10, 2, 0, 0, 109, 110, 5, 16, 0, 0, 110, 111, 5, 36, 0, 0, 111,
+		113, 5, 14, 0, 0, 112, 114, 3, 18, 9, 0, 113, 112, 1, 0, 0, 0, 113, 114,
+		1, 0, 0, 0, 114, 115, 1, 0, 0, 0, 115, 125, 5, 15, 0, 0, 116, 117, 10,
+		1, 0, 0, 117, 119, 5, 10, 0, 0, 118, 120, 5, 20, 0, 0, 119, 118, 1, 0,
+		0, 0, 119, 120, 1, 0, 0, 0, 120, 121, 1, 0, 0, 0, 121, 122, 3, 2, 1, 0,
+		122, 123, 5, 11, 0, 0, 123, 125, 1, 0, 0, 0, 124, 102, 1, 0, 0, 0, 124,
+		108, 1, 0, 0, 0, 124, 116, 1, 0, 0, 0, 125, 128, 1, 0, 0, 0, 126, 124,
+		1, 0, 0, 0, 126, 127, 1, 0, 0, 0, 127, 15, 1, 0, 0, 0, 128, 126, 1, 0,
+		0, 0, 129, 131, 5, 16, 0, 0, 130, 129, 1, 0, 0, 0, 130, 131, 1, 0, 0, 0,
+		131, 132, 1, 0, 0, 0, 132, 138, 5, 36, 0, 0, 133, 135, 5, 14, 0, 0, 134,
+		136, 3, 18, 9, 0, 135, 134, 1, 0, 0, 0, 135, 136, 1, 0, 0, 0, 136, 137,
+		1, 0, 0, 0, 137, 139, 5, 15, 0, 0, 138, 133, 1, 0, 0, 0, 138, 139, 1, 0,
+		0, 0, 139, 181, 1, 0, 0, 0, 140, 141, 5, 14, 0, 0, 141, 142, 3, 2, 1, 0,
+		142, 143, 5, 15, 0, 0, 143, 181, 1, 0, 0, 0, 144, 146, 5, 10, 0, 0, 145,
+		147, 3, 20, 10, 0, 146, 145, 1, 0, 0, 0, 146, 147, 1, 0, 0, 0, 147, 149,
+		1, 0, 0, 0, 148, 150, 5, 17, 0, 0, 149, 148, 1, 0, 0, 0, 149, 150, 1, 0,
+		0, 0, 150, 151, 1, 0, 0, 0, 151, 181, 5, 11, 0, 0, 152, 154, 5, 12, 0,
+		0, 153, 155, 3, 26, 13, 0, 154, 153, 1, 0, 0, 0, 154, 155, 1, 0, 0, 0,
+		155, 157, 1, 0, 0, 0, 156, 158, 5, 17, 0, 0, 157, 156, 1, 0, 0, 0, 157,
+		158, 1, 0, 0, 0, 158, 159, 1, 0, 0, 0, 159, 181, 5, 13, 0, 0, 160, 162,
+		5, 16, 0, 0, 161, 160, 1, 0, 0, 0, 161, 162, 1, 0, 0, 0, 162, 163, 1, 0,
+		0, 0, 163, 168, 5, 36, 0, 0, 164, 165, 5, 16, 0, 0, 165, 167, 5, 36, 0,
+		0, 166, 164, 1, 0, 0, 0, 167, 170, 1, 0, 0, 0, 168, 166, 1, 0, 0, 0, 168,
+		169, 1, 0, 0, 0, 169, 171, 1, 0, 0, 0, 170, 168, 1, 0, 0, 0, 171, 173,
+		5, 12, 0, 0, 172, 174, 3, 22, 11, 0, 173, 172, 1, 0, 0, 0, 173, 174, 1,
+		0, 0, 0, 174, 176, 1, 0, 0, 0, 175, 177, 5, 17, 0, 0, 176, 175, 1, 0, 0,
+		0, 176, 177, 1, 0, 0, 0, 177, 178, 1, 0, 0, 0, 178, 181, 5, 13, 0, 0, 179,
+		181, 3, 30, 15, 0, 180, 130, 1, 0, 0, 0, 180, 140, 1, 0, 0, 0, 180, 144,
+		1, 0, 0, 0, 180, 152, 1, 0, 0, 0, 180, 161, 1, 0, 0, 0, 180, 179, 1, 0,
+		0, 0, 181, 17, 1, 0, 0, 0, 182, 187, 3, 2, 1, 0, 183, 184, 5, 17, 0, 0,
+		184, 186, 3, 2, 1, 0, 185, 183, 1, 0, 0, 0, 186, 189, 1, 0, 0, 0, 187,
+		185, 1, 0, 0, 0, 187, 188, 1, 0, 0, 0, 188, 19, 1, 0, 0, 0, 189, 187, 1,
+		0, 0, 0, 190, 195, 3, 28, 14, 0, 191, 192, 5, 17, 0, 0, 192, 194, 3, 28,
+		14, 0, 193, 191, 1, 0, 0, 0, 194, 197, 1, 0, 0, 0, 195, 193, 1, 0, 0, 0,
+		195, 196, 1, 0, 0, 0, 196, 21, 1, 0, 0, 0, 197, 195, 1, 0, 0, 0, 198, 199,
+		3, 24, 12, 0, 199, 200, 5, 21, 0, 0, 200, 208, 3, 2, 1, 0, 201, 202, 5,
+		17, 0, 0, 202, 203, 3, 24, 12, 0, 203, 204, 5, 21, 0, 0, 204, 205, 3, 2,
+		1, 0, 205, 207, 1, 0, 0, 0, 206, 201, 1, 0, 0, 0, 207, 210, 1, 0, 0, 0,
+		208, 206, 1, 0, 0, 0, 208, 209, 1, 0, 0, 0, 209, 23, 1, 0, 0, 0, 210, 208,
+		1, 0, 0, 0, 211, 213, 5, 20, 0, 0, 212, 211, 1, 0, 0, 0, 212, 213, 1, 0,
+		0, 0, 213, 214, 1, 0, 0, 0, 214, 215, 5, 36, 0, 0, 215, 25, 1, 0, 0, 0,
+		216, 217, 3, 28, 14, 0, 217, 218, 5, 21, 0, 0, 218, 226, 3, 2, 1, 0, 219,
+		220, 5, 17, 0, 0, 220, 221, 3, 28, 14, 0, 221, 222, 5, 21, 0, 0, 222, 223,
+		3, 2, 1, 0, 223, 225, 1, 0, 0, 0, 224, 219, 1, 0, 0, 0, 225, 228, 1, 0,
+		0, 0, 226, 224, 1, 0, 0, 0, 226, 227, 1, 0, 0, 0, 227, 27, 1, 0, 0, 0,
+		228, 226, 1, 0, 0, 0, 229, 231, 5, 20, 0, 0, 230, 229, 1, 0, 0, 0, 230,
+		231, 1, 0, 0, 0, 231, 232, 1, 0, 0, 0, 232, 233, 3, 2, 1, 0, 233, 29, 1,
+		0, 0, 0, 234, 236, 5, 18, 0, 0, 235, 234, 1, 0, 0, 0, 235, 236, 1, 0, 0,
+		0, 236, 237, 1, 0, 0, 0, 237, 249, 5, 32, 0, 0, 238, 249, 5, 33, 0, 0,
+		239, 241, 5, 18, 0, 0, 240, 239, 1, 0, 0, 0, 240, 241, 1, 0, 0, 0, 241,
+		242, 1, 0, 0, 0, 242, 249, 5, 31, 0, 0, 243, 249, 5, 34, 0, 0, 244, 249,
+		5, 35, 0, 0, 245, 249, 5, 26, 0, 0, 246, 249, 5, 27, 0, 0, 247, 249, 5,
+		28, 0, 0, 248, 235, 1, 0, 0, 0, 248, 238, 1, 0, 0, 0, 248, 240, 1, 0, 0,
+		0, 248, 243, 1, 0, 0, 0, 248, 244, 1, 0, 0, 0, 248, 245, 1, 0, 0, 0, 248,
+		246, 1, 0, 0, 0, 248, 247, 1, 0, 0, 0, 249, 31, 1, 0, 0, 0, 35, 41, 48,
+		56, 67, 79, 81, 88, 94, 97, 105, 113, 119, 124, 126, 130, 135, 138, 146,
+		149, 154, 157, 161, 168, 173, 176, 180, 187, 195, 208, 212, 226, 230, 235,
+		240, 248,
+	}
+	deserializer := antlr.NewATNDeserializer(nil)
+	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
+	atn := staticData.atn
+	staticData.decisionToDFA = make([]*antlr.DFA, len(atn.DecisionToState))
+	decisionToDFA := staticData.decisionToDFA
+	for index, state := range atn.DecisionToState {
+		decisionToDFA[index] = antlr.NewDFA(state, index)
+	}
 }
 
 // CELParserInit initializes any static state used to implement CELParser. By default the
@@ -182,8 +181,8 @@ func celParserInit() {
 // NewCELParser(). You can call this function if you wish to initialize the static state ahead
 // of time.
 func CELParserInit() {
-  staticData := &CELParserStaticData
-  staticData.once.Do(celParserInit)
+	staticData := &CELParserStaticData
+	staticData.once.Do(celParserInit)
 }
 
 // NewCELParser produces a new parser instance for the optional input antlr.TokenStream.
@@ -191,7 +190,7 @@ func NewCELParser(input antlr.TokenStream) *CELParser {
 	CELParserInit()
 	this := new(CELParser)
 	this.BaseParser = antlr.NewBaseParser(input)
-  staticData := &CELParserStaticData
+	staticData := &CELParserStaticData
 	this.Interpreter = antlr.NewParserATNSimulator(this, staticData.atn, staticData.decisionToDFA, staticData.PredictionContextCache)
 	this.RuleNames = staticData.RuleNames
 	this.LiteralNames = staticData.LiteralNames
@@ -201,66 +200,65 @@ func NewCELParser(input antlr.TokenStream) *CELParser {
 	return this
 }
 
-
 // CELParser tokens.
 const (
-	CELParserEOF = antlr.TokenEOF
-	CELParserEQUALS = 1
-	CELParserNOT_EQUALS = 2
-	CELParserIN = 3
-	CELParserLESS = 4
-	CELParserLESS_EQUALS = 5
+	CELParserEOF            = antlr.TokenEOF
+	CELParserEQUALS         = 1
+	CELParserNOT_EQUALS     = 2
+	CELParserIN             = 3
+	CELParserLESS           = 4
+	CELParserLESS_EQUALS    = 5
 	CELParserGREATER_EQUALS = 6
-	CELParserGREATER = 7
-	CELParserLOGICAL_AND = 8
-	CELParserLOGICAL_OR = 9
-	CELParserLBRACKET = 10
-	CELParserRPRACKET = 11
-	CELParserLBRACE = 12
-	CELParserRBRACE = 13
-	CELParserLPAREN = 14
-	CELParserRPAREN = 15
-	CELParserDOT = 16
-	CELParserCOMMA = 17
-	CELParserMINUS = 18
-	CELParserEXCLAM = 19
-	CELParserQUESTIONMARK = 20
-	CELParserCOLON = 21
-	CELParserPLUS = 22
-	CELParserSTAR = 23
-	CELParserSLASH = 24
-	CELParserPERCENT = 25
-	CELParserCEL_TRUE = 26
-	CELParserCEL_FALSE = 27
-	CELParserNUL = 28
-	CELParserWHITESPACE = 29
-	CELParserCOMMENT = 30
-	CELParserNUM_FLOAT = 31
-	CELParserNUM_INT = 32
-	CELParserNUM_UINT = 33
-	CELParserSTRING = 34
-	CELParserBYTES = 35
-	CELParserIDENTIFIER = 36
+	CELParserGREATER        = 7
+	CELParserLOGICAL_AND    = 8
+	CELParserLOGICAL_OR     = 9
+	CELParserLBRACKET       = 10
+	CELParserRPRACKET       = 11
+	CELParserLBRACE         = 12
+	CELParserRBRACE         = 13
+	CELParserLPAREN         = 14
+	CELParserRPAREN         = 15
+	CELParserDOT            = 16
+	CELParserCOMMA          = 17
+	CELParserMINUS          = 18
+	CELParserEXCLAM         = 19
+	CELParserQUESTIONMARK   = 20
+	CELParserCOLON          = 21
+	CELParserPLUS           = 22
+	CELParserSTAR           = 23
+	CELParserSLASH          = 24
+	CELParserPERCENT        = 25
+	CELParserCEL_TRUE       = 26
+	CELParserCEL_FALSE      = 27
+	CELParserNUL            = 28
+	CELParserWHITESPACE     = 29
+	CELParserCOMMENT        = 30
+	CELParserNUM_FLOAT      = 31
+	CELParserNUM_INT        = 32
+	CELParserNUM_UINT       = 33
+	CELParserSTRING         = 34
+	CELParserBYTES          = 35
+	CELParserIDENTIFIER     = 36
 )
 
 // CELParser rules.
 const (
-	CELParserRULE_start = 0
-	CELParserRULE_expr = 1
-	CELParserRULE_conditionalOr = 2
-	CELParserRULE_conditionalAnd = 3
-	CELParserRULE_relation = 4
-	CELParserRULE_calc = 5
-	CELParserRULE_unary = 6
-	CELParserRULE_member = 7
-	CELParserRULE_primary = 8
-	CELParserRULE_exprList = 9
-	CELParserRULE_listInit = 10
+	CELParserRULE_start                = 0
+	CELParserRULE_expr                 = 1
+	CELParserRULE_conditionalOr        = 2
+	CELParserRULE_conditionalAnd       = 3
+	CELParserRULE_relation             = 4
+	CELParserRULE_calc                 = 5
+	CELParserRULE_unary                = 6
+	CELParserRULE_member               = 7
+	CELParserRULE_primary              = 8
+	CELParserRULE_exprList             = 9
+	CELParserRULE_listInit             = 10
 	CELParserRULE_fieldInitializerList = 11
-	CELParserRULE_optField = 12
-	CELParserRULE_mapInitializerList = 13
-	CELParserRULE_optExpr = 14
-	CELParserRULE_literal = 15
+	CELParserRULE_optField             = 12
+	CELParserRULE_mapInitializerList   = 13
+	CELParserRULE_optExpr              = 14
+	CELParserRULE_literal              = 15
 )
 
 // IStartContext is an interface to support dynamic dispatch.
@@ -273,10 +271,8 @@ type IStartContext interface {
 	// GetE returns the e rule contexts.
 	GetE() IExprContext
 
-
 	// SetE sets the e rule contexts.
 	SetE(IExprContext)
-
 
 	// Getter signatures
 	EOF() antlr.TerminalNode
@@ -289,7 +285,7 @@ type IStartContext interface {
 type StartContext struct {
 	antlr.BaseParserRuleContext
 	parser antlr.Parser
-	e IExprContext 
+	e      IExprContext
 }
 
 func NewEmptyStartContext() *StartContext {
@@ -299,7 +295,7 @@ func NewEmptyStartContext() *StartContext {
 	return p
 }
 
-func InitEmptyStartContext(p *StartContext)  {
+func InitEmptyStartContext(p *StartContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_start
 }
@@ -321,19 +317,17 @@ func (s *StartContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *StartContext) GetE() IExprContext { return s.e }
 
-
 func (s *StartContext) SetE(v IExprContext) { s.e = v }
-
 
 func (s *StartContext) EOF() antlr.TerminalNode {
 	return s.GetToken(CELParserEOF, 0)
 }
 
 func (s *StartContext) Expr() IExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -352,7 +346,6 @@ func (s *StartContext) GetRuleContext() antlr.RuleContext {
 func (s *StartContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
-
 
 func (s *StartContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -376,9 +369,6 @@ func (s *StartContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
-
-
 func (p *CELParser) Start_() (localctx IStartContext) {
 	localctx = NewStartContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 0, CELParserRULE_start)
@@ -388,19 +378,16 @@ func (p *CELParser) Start_() (localctx IStartContext) {
 
 		var _x = p.Expr()
 
-
 		localctx.(*StartContext).e = _x
 	}
 	{
 		p.SetState(33)
 		p.Match(CELParserEOF)
 		if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
+			// Recognition error - abort rule
+			goto errorExit
 		}
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -415,7 +402,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IExprContext is an interface to support dynamic dispatch.
 type IExprContext interface {
 	antlr.ParserRuleContext
@@ -424,12 +410,10 @@ type IExprContext interface {
 	GetParser() antlr.Parser
 
 	// GetOp returns the op token.
-	GetOp() antlr.Token 
-
+	GetOp() antlr.Token
 
 	// SetOp sets the op token.
-	SetOp(antlr.Token) 
-
+	SetOp(antlr.Token)
 
 	// GetE returns the e rule contexts.
 	GetE() IConditionalOrContext
@@ -440,7 +424,6 @@ type IExprContext interface {
 	// GetE2 returns the e2 rule contexts.
 	GetE2() IExprContext
 
-
 	// SetE sets the e rule contexts.
 	SetE(IConditionalOrContext)
 
@@ -449,7 +432,6 @@ type IExprContext interface {
 
 	// SetE2 sets the e2 rule contexts.
 	SetE2(IExprContext)
-
 
 	// Getter signatures
 	AllConditionalOr() []IConditionalOrContext
@@ -465,10 +447,10 @@ type IExprContext interface {
 type ExprContext struct {
 	antlr.BaseParserRuleContext
 	parser antlr.Parser
-	e IConditionalOrContext 
-	op antlr.Token
-	e1 IConditionalOrContext 
-	e2 IExprContext 
+	e      IConditionalOrContext
+	op     antlr.Token
+	e1     IConditionalOrContext
+	e2     IExprContext
 }
 
 func NewEmptyExprContext() *ExprContext {
@@ -478,7 +460,7 @@ func NewEmptyExprContext() *ExprContext {
 	return p
 }
 
-func InitEmptyExprContext(p *ExprContext)  {
+func InitEmptyExprContext(p *ExprContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_expr
 }
@@ -500,9 +482,7 @@ func (s *ExprContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *ExprContext) GetOp() antlr.Token { return s.op }
 
-
 func (s *ExprContext) SetOp(v antlr.Token) { s.op = v }
-
 
 func (s *ExprContext) GetE() IConditionalOrContext { return s.e }
 
@@ -510,13 +490,11 @@ func (s *ExprContext) GetE1() IConditionalOrContext { return s.e1 }
 
 func (s *ExprContext) GetE2() IExprContext { return s.e2 }
 
-
 func (s *ExprContext) SetE(v IConditionalOrContext) { s.e = v }
 
 func (s *ExprContext) SetE1(v IConditionalOrContext) { s.e1 = v }
 
 func (s *ExprContext) SetE2(v IExprContext) { s.e2 = v }
-
 
 func (s *ExprContext) AllConditionalOr() []IConditionalOrContext {
 	children := s.GetChildren()
@@ -540,12 +518,12 @@ func (s *ExprContext) AllConditionalOr() []IConditionalOrContext {
 }
 
 func (s *ExprContext) ConditionalOr(i int) IConditionalOrContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IConditionalOrContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -568,10 +546,10 @@ func (s *ExprContext) QUESTIONMARK() antlr.TerminalNode {
 }
 
 func (s *ExprContext) Expr() IExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -590,7 +568,6 @@ func (s *ExprContext) GetRuleContext() antlr.RuleContext {
 func (s *ExprContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
-
 
 func (s *ExprContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -614,9 +591,6 @@ func (s *ExprContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
-
-
 func (p *CELParser) Expr() (localctx IExprContext) {
 	localctx = NewExprContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 2, CELParserRULE_expr)
@@ -628,7 +602,6 @@ func (p *CELParser) Expr() (localctx IExprContext) {
 
 		var _x = p.ConditionalOr()
 
-
 		localctx.(*ExprContext).e = _x
 	}
 	p.SetState(41)
@@ -638,7 +611,6 @@ func (p *CELParser) Expr() (localctx IExprContext) {
 	}
 	_la = p.GetTokenStream().LA(1)
 
-
 	if _la == CELParserQUESTIONMARK {
 		{
 			p.SetState(36)
@@ -647,8 +619,8 @@ func (p *CELParser) Expr() (localctx IExprContext) {
 
 			localctx.(*ExprContext).op = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		{
@@ -656,15 +628,14 @@ func (p *CELParser) Expr() (localctx IExprContext) {
 
 			var _x = p.ConditionalOr()
 
-
 			localctx.(*ExprContext).e1 = _x
 		}
 		{
 			p.SetState(38)
 			p.Match(CELParserCOLON)
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		{
@@ -672,13 +643,10 @@ func (p *CELParser) Expr() (localctx IExprContext) {
 
 			var _x = p.Expr()
 
-
 			localctx.(*ExprContext).e2 = _x
 		}
 
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -693,7 +661,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IConditionalOrContext is an interface to support dynamic dispatch.
 type IConditionalOrContext interface {
 	antlr.ParserRuleContext
@@ -702,20 +669,16 @@ type IConditionalOrContext interface {
 	GetParser() antlr.Parser
 
 	// GetS9 returns the s9 token.
-	GetS9() antlr.Token 
-
+	GetS9() antlr.Token
 
 	// SetS9 sets the s9 token.
-	SetS9(antlr.Token) 
-
+	SetS9(antlr.Token)
 
 	// GetOps returns the ops token list.
 	GetOps() []antlr.Token
 
-
 	// SetOps sets the ops token list.
 	SetOps([]antlr.Token)
-
 
 	// GetE returns the e rule contexts.
 	GetE() IConditionalAndContext
@@ -723,21 +686,17 @@ type IConditionalOrContext interface {
 	// Get_conditionalAnd returns the _conditionalAnd rule contexts.
 	Get_conditionalAnd() IConditionalAndContext
 
-
 	// SetE sets the e rule contexts.
 	SetE(IConditionalAndContext)
 
 	// Set_conditionalAnd sets the _conditionalAnd rule contexts.
 	Set_conditionalAnd(IConditionalAndContext)
 
-
 	// GetE1 returns the e1 rule context list.
 	GetE1() []IConditionalAndContext
 
-
 	// SetE1 sets the e1 rule context list.
-	SetE1([]IConditionalAndContext) 
-
+	SetE1([]IConditionalAndContext)
 
 	// Getter signatures
 	AllConditionalAnd() []IConditionalAndContext
@@ -751,12 +710,12 @@ type IConditionalOrContext interface {
 
 type ConditionalOrContext struct {
 	antlr.BaseParserRuleContext
-	parser antlr.Parser
-	e IConditionalAndContext 
-	s9 antlr.Token
-	ops []antlr.Token
-	_conditionalAnd IConditionalAndContext 
-	e1 []IConditionalAndContext
+	parser          antlr.Parser
+	e               IConditionalAndContext
+	s9              antlr.Token
+	ops             []antlr.Token
+	_conditionalAnd IConditionalAndContext
+	e1              []IConditionalAndContext
 }
 
 func NewEmptyConditionalOrContext() *ConditionalOrContext {
@@ -766,7 +725,7 @@ func NewEmptyConditionalOrContext() *ConditionalOrContext {
 	return p
 }
 
-func InitEmptyConditionalOrContext(p *ConditionalOrContext)  {
+func InitEmptyConditionalOrContext(p *ConditionalOrContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_conditionalOr
 }
@@ -788,31 +747,23 @@ func (s *ConditionalOrContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *ConditionalOrContext) GetS9() antlr.Token { return s.s9 }
 
-
 func (s *ConditionalOrContext) SetS9(v antlr.Token) { s.s9 = v }
-
 
 func (s *ConditionalOrContext) GetOps() []antlr.Token { return s.ops }
 
-
 func (s *ConditionalOrContext) SetOps(v []antlr.Token) { s.ops = v }
-
 
 func (s *ConditionalOrContext) GetE() IConditionalAndContext { return s.e }
 
 func (s *ConditionalOrContext) Get_conditionalAnd() IConditionalAndContext { return s._conditionalAnd }
 
-
 func (s *ConditionalOrContext) SetE(v IConditionalAndContext) { s.e = v }
 
 func (s *ConditionalOrContext) Set_conditionalAnd(v IConditionalAndContext) { s._conditionalAnd = v }
 
-
 func (s *ConditionalOrContext) GetE1() []IConditionalAndContext { return s.e1 }
 
-
 func (s *ConditionalOrContext) SetE1(v []IConditionalAndContext) { s.e1 = v }
-
 
 func (s *ConditionalOrContext) AllConditionalAnd() []IConditionalAndContext {
 	children := s.GetChildren()
@@ -836,12 +787,12 @@ func (s *ConditionalOrContext) AllConditionalAnd() []IConditionalAndContext {
 }
 
 func (s *ConditionalOrContext) ConditionalAnd(i int) IConditionalAndContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IConditionalAndContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -871,7 +822,6 @@ func (s *ConditionalOrContext) ToStringTree(ruleNames []string, recog antlr.Reco
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *ConditionalOrContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterConditionalOr(s)
@@ -894,9 +844,6 @@ func (s *ConditionalOrContext) Accept(visitor antlr.ParseTreeVisitor) interface{
 	}
 }
 
-
-
-
 func (p *CELParser) ConditionalOr() (localctx IConditionalOrContext) {
 	localctx = NewConditionalOrContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 4, CELParserRULE_conditionalOr)
@@ -908,7 +855,6 @@ func (p *CELParser) ConditionalOr() (localctx IConditionalOrContext) {
 
 		var _x = p.ConditionalAnd()
 
-
 		localctx.(*ConditionalOrContext).e = _x
 	}
 	p.SetState(48)
@@ -918,7 +864,6 @@ func (p *CELParser) ConditionalOr() (localctx IConditionalOrContext) {
 	}
 	_la = p.GetTokenStream().LA(1)
 
-
 	for _la == CELParserLOGICAL_OR {
 		{
 			p.SetState(44)
@@ -927,8 +872,8 @@ func (p *CELParser) ConditionalOr() (localctx IConditionalOrContext) {
 
 			localctx.(*ConditionalOrContext).s9 = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		localctx.(*ConditionalOrContext).ops = append(localctx.(*ConditionalOrContext).ops, localctx.(*ConditionalOrContext).s9)
@@ -937,21 +882,17 @@ func (p *CELParser) ConditionalOr() (localctx IConditionalOrContext) {
 
 			var _x = p.ConditionalAnd()
 
-
 			localctx.(*ConditionalOrContext)._conditionalAnd = _x
 		}
 		localctx.(*ConditionalOrContext).e1 = append(localctx.(*ConditionalOrContext).e1, localctx.(*ConditionalOrContext)._conditionalAnd)
 
-
 		p.SetState(50)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -966,7 +907,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IConditionalAndContext is an interface to support dynamic dispatch.
 type IConditionalAndContext interface {
 	antlr.ParserRuleContext
@@ -975,20 +915,16 @@ type IConditionalAndContext interface {
 	GetParser() antlr.Parser
 
 	// GetS8 returns the s8 token.
-	GetS8() antlr.Token 
-
+	GetS8() antlr.Token
 
 	// SetS8 sets the s8 token.
-	SetS8(antlr.Token) 
-
+	SetS8(antlr.Token)
 
 	// GetOps returns the ops token list.
 	GetOps() []antlr.Token
 
-
 	// SetOps sets the ops token list.
 	SetOps([]antlr.Token)
-
 
 	// GetE returns the e rule contexts.
 	GetE() IRelationContext
@@ -996,21 +932,17 @@ type IConditionalAndContext interface {
 	// Get_relation returns the _relation rule contexts.
 	Get_relation() IRelationContext
 
-
 	// SetE sets the e rule contexts.
 	SetE(IRelationContext)
 
 	// Set_relation sets the _relation rule contexts.
 	Set_relation(IRelationContext)
 
-
 	// GetE1 returns the e1 rule context list.
 	GetE1() []IRelationContext
 
-
 	// SetE1 sets the e1 rule context list.
-	SetE1([]IRelationContext) 
-
+	SetE1([]IRelationContext)
 
 	// Getter signatures
 	AllRelation() []IRelationContext
@@ -1024,12 +956,12 @@ type IConditionalAndContext interface {
 
 type ConditionalAndContext struct {
 	antlr.BaseParserRuleContext
-	parser antlr.Parser
-	e IRelationContext 
-	s8 antlr.Token
-	ops []antlr.Token
-	_relation IRelationContext 
-	e1 []IRelationContext
+	parser    antlr.Parser
+	e         IRelationContext
+	s8        antlr.Token
+	ops       []antlr.Token
+	_relation IRelationContext
+	e1        []IRelationContext
 }
 
 func NewEmptyConditionalAndContext() *ConditionalAndContext {
@@ -1039,7 +971,7 @@ func NewEmptyConditionalAndContext() *ConditionalAndContext {
 	return p
 }
 
-func InitEmptyConditionalAndContext(p *ConditionalAndContext)  {
+func InitEmptyConditionalAndContext(p *ConditionalAndContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_conditionalAnd
 }
@@ -1061,31 +993,23 @@ func (s *ConditionalAndContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *ConditionalAndContext) GetS8() antlr.Token { return s.s8 }
 
-
 func (s *ConditionalAndContext) SetS8(v antlr.Token) { s.s8 = v }
-
 
 func (s *ConditionalAndContext) GetOps() []antlr.Token { return s.ops }
 
-
 func (s *ConditionalAndContext) SetOps(v []antlr.Token) { s.ops = v }
-
 
 func (s *ConditionalAndContext) GetE() IRelationContext { return s.e }
 
 func (s *ConditionalAndContext) Get_relation() IRelationContext { return s._relation }
 
-
 func (s *ConditionalAndContext) SetE(v IRelationContext) { s.e = v }
 
 func (s *ConditionalAndContext) Set_relation(v IRelationContext) { s._relation = v }
 
-
 func (s *ConditionalAndContext) GetE1() []IRelationContext { return s.e1 }
 
-
 func (s *ConditionalAndContext) SetE1(v []IRelationContext) { s.e1 = v }
-
 
 func (s *ConditionalAndContext) AllRelation() []IRelationContext {
 	children := s.GetChildren()
@@ -1109,12 +1033,12 @@ func (s *ConditionalAndContext) AllRelation() []IRelationContext {
 }
 
 func (s *ConditionalAndContext) Relation(i int) IRelationContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IRelationContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -1144,7 +1068,6 @@ func (s *ConditionalAndContext) ToStringTree(ruleNames []string, recog antlr.Rec
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *ConditionalAndContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterConditionalAnd(s)
@@ -1167,9 +1090,6 @@ func (s *ConditionalAndContext) Accept(visitor antlr.ParseTreeVisitor) interface
 	}
 }
 
-
-
-
 func (p *CELParser) ConditionalAnd() (localctx IConditionalAndContext) {
 	localctx = NewConditionalAndContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 6, CELParserRULE_conditionalAnd)
@@ -1190,7 +1110,6 @@ func (p *CELParser) ConditionalAnd() (localctx IConditionalAndContext) {
 	}
 	_la = p.GetTokenStream().LA(1)
 
-
 	for _la == CELParserLOGICAL_AND {
 		{
 			p.SetState(52)
@@ -1199,8 +1118,8 @@ func (p *CELParser) ConditionalAnd() (localctx IConditionalAndContext) {
 
 			localctx.(*ConditionalAndContext).s8 = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		localctx.(*ConditionalAndContext).ops = append(localctx.(*ConditionalAndContext).ops, localctx.(*ConditionalAndContext).s8)
@@ -1213,16 +1132,13 @@ func (p *CELParser) ConditionalAnd() (localctx IConditionalAndContext) {
 		}
 		localctx.(*ConditionalAndContext).e1 = append(localctx.(*ConditionalAndContext).e1, localctx.(*ConditionalAndContext)._relation)
 
-
 		p.SetState(58)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -1237,7 +1153,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IRelationContext is an interface to support dynamic dispatch.
 type IRelationContext interface {
 	antlr.ParserRuleContext
@@ -1246,12 +1161,10 @@ type IRelationContext interface {
 	GetParser() antlr.Parser
 
 	// GetOp returns the op token.
-	GetOp() antlr.Token 
-
+	GetOp() antlr.Token
 
 	// SetOp sets the op token.
-	SetOp(antlr.Token) 
-
+	SetOp(antlr.Token)
 
 	// Getter signatures
 	Calc() ICalcContext
@@ -1272,7 +1185,7 @@ type IRelationContext interface {
 type RelationContext struct {
 	antlr.BaseParserRuleContext
 	parser antlr.Parser
-	op antlr.Token
+	op     antlr.Token
 }
 
 func NewEmptyRelationContext() *RelationContext {
@@ -1282,7 +1195,7 @@ func NewEmptyRelationContext() *RelationContext {
 	return p
 }
 
-func InitEmptyRelationContext(p *RelationContext)  {
+func InitEmptyRelationContext(p *RelationContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_relation
 }
@@ -1304,15 +1217,13 @@ func (s *RelationContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *RelationContext) GetOp() antlr.Token { return s.op }
 
-
 func (s *RelationContext) SetOp(v antlr.Token) { s.op = v }
 
-
 func (s *RelationContext) Calc() ICalcContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(ICalcContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -1346,12 +1257,12 @@ func (s *RelationContext) AllRelation() []IRelationContext {
 }
 
 func (s *RelationContext) Relation(i int) IRelationContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IRelationContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -1401,7 +1312,6 @@ func (s *RelationContext) ToStringTree(ruleNames []string, recog antlr.Recognize
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *RelationContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterRelation(s)
@@ -1423,10 +1333,6 @@ func (s *RelationContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 		return t.VisitChildren(s)
 	}
 }
-
-
-
-
 
 func (p *CELParser) Relation() (localctx IRelationContext) {
 	return p.relation(0)
@@ -1484,7 +1390,7 @@ func (p *CELParser) relation(_p int) (localctx IRelationContext) {
 
 				_la = p.GetTokenStream().LA(1)
 
-				if !(((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 254) != 0)) {
+				if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&254) != 0) {
 					var _ri = p.GetErrorHandler().RecoverInline(p)
 
 					localctx.(*RelationContext).op = _ri
@@ -1498,22 +1404,19 @@ func (p *CELParser) relation(_p int) (localctx IRelationContext) {
 				p.relation(2)
 			}
 
-
 		}
 		p.SetState(69)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 3, p.GetParserRuleContext())
 		if p.HasError() {
 			goto errorExit
 		}
 	}
 
-
-
-	errorExit:
+errorExit:
 	if p.HasError() {
 		v := p.GetError()
 		localctx.SetException(v)
@@ -1526,7 +1429,6 @@ func (p *CELParser) relation(_p int) (localctx IRelationContext) {
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // ICalcContext is an interface to support dynamic dispatch.
 type ICalcContext interface {
 	antlr.ParserRuleContext
@@ -1535,12 +1437,10 @@ type ICalcContext interface {
 	GetParser() antlr.Parser
 
 	// GetOp returns the op token.
-	GetOp() antlr.Token 
-
+	GetOp() antlr.Token
 
 	// SetOp sets the op token.
-	SetOp(antlr.Token) 
-
+	SetOp(antlr.Token)
 
 	// Getter signatures
 	Unary() IUnaryContext
@@ -1559,7 +1459,7 @@ type ICalcContext interface {
 type CalcContext struct {
 	antlr.BaseParserRuleContext
 	parser antlr.Parser
-	op antlr.Token
+	op     antlr.Token
 }
 
 func NewEmptyCalcContext() *CalcContext {
@@ -1569,7 +1469,7 @@ func NewEmptyCalcContext() *CalcContext {
 	return p
 }
 
-func InitEmptyCalcContext(p *CalcContext)  {
+func InitEmptyCalcContext(p *CalcContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_calc
 }
@@ -1591,15 +1491,13 @@ func (s *CalcContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *CalcContext) GetOp() antlr.Token { return s.op }
 
-
 func (s *CalcContext) SetOp(v antlr.Token) { s.op = v }
 
-
 func (s *CalcContext) Unary() IUnaryContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IUnaryContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -1633,12 +1531,12 @@ func (s *CalcContext) AllCalc() []ICalcContext {
 }
 
 func (s *CalcContext) Calc(i int) ICalcContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(ICalcContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -1680,7 +1578,6 @@ func (s *CalcContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) s
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *CalcContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterCalc(s)
@@ -1702,10 +1599,6 @@ func (s *CalcContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 		return t.VisitChildren(s)
 	}
 }
-
-
-
-
 
 func (p *CELParser) Calc() (localctx ICalcContext) {
 	return p.calc(0)
@@ -1771,7 +1664,7 @@ func (p *CELParser) calc(_p int) (localctx ICalcContext) {
 
 					_la = p.GetTokenStream().LA(1)
 
-					if !(((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 58720256) != 0)) {
+					if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&58720256) != 0) {
 						var _ri = p.GetErrorHandler().RecoverInline(p)
 
 						localctx.(*CalcContext).op = _ri
@@ -1784,7 +1677,6 @@ func (p *CELParser) calc(_p int) (localctx ICalcContext) {
 					p.SetState(75)
 					p.calc(3)
 				}
-
 
 			case 2:
 				localctx = NewCalcContext(p, _parentctx, _parentState)
@@ -1826,17 +1718,15 @@ func (p *CELParser) calc(_p int) (localctx ICalcContext) {
 		p.SetState(83)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 5, p.GetParserRuleContext())
 		if p.HasError() {
 			goto errorExit
 		}
 	}
 
-
-
-	errorExit:
+errorExit:
 	if p.HasError() {
 		v := p.GetError()
 		localctx.SetException(v)
@@ -1848,7 +1738,6 @@ func (p *CELParser) calc(_p int) (localctx ICalcContext) {
 	return localctx
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
-
 
 // IUnaryContext is an interface to support dynamic dispatch.
 type IUnaryContext interface {
@@ -1872,7 +1761,7 @@ func NewEmptyUnaryContext() *UnaryContext {
 	return p
 }
 
-func InitEmptyUnaryContext(p *UnaryContext)  {
+func InitEmptyUnaryContext(p *UnaryContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_unary
 }
@@ -1904,9 +1793,6 @@ func (s *UnaryContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) 
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
-
-
 type LogicalNotContext struct {
 	UnaryContext
 	s19 antlr.Token
@@ -1923,15 +1809,11 @@ func NewLogicalNotContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *Log
 	return p
 }
 
-
 func (s *LogicalNotContext) GetS19() antlr.Token { return s.s19 }
-
 
 func (s *LogicalNotContext) SetS19(v antlr.Token) { s.s19 = v }
 
-
 func (s *LogicalNotContext) GetOps() []antlr.Token { return s.ops }
-
 
 func (s *LogicalNotContext) SetOps(v []antlr.Token) { s.ops = v }
 
@@ -1940,10 +1822,10 @@ func (s *LogicalNotContext) GetRuleContext() antlr.RuleContext {
 }
 
 func (s *LogicalNotContext) Member() IMemberContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IMemberContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -1962,7 +1844,6 @@ func (s *LogicalNotContext) AllEXCLAM() []antlr.TerminalNode {
 func (s *LogicalNotContext) EXCLAM(i int) antlr.TerminalNode {
 	return s.GetToken(CELParserEXCLAM, i)
 }
-
 
 func (s *LogicalNotContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -1986,7 +1867,6 @@ func (s *LogicalNotContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type MemberExprContext struct {
 	UnaryContext
 }
@@ -2006,10 +1886,10 @@ func (s *MemberExprContext) GetRuleContext() antlr.RuleContext {
 }
 
 func (s *MemberExprContext) Member() IMemberContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IMemberContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -2020,7 +1900,6 @@ func (s *MemberExprContext) Member() IMemberContext {
 
 	return t.(IMemberContext)
 }
-
 
 func (s *MemberExprContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -2044,7 +1923,6 @@ func (s *MemberExprContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type NegateContext struct {
 	UnaryContext
 	s18 antlr.Token
@@ -2061,15 +1939,11 @@ func NewNegateContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *NegateC
 	return p
 }
 
-
 func (s *NegateContext) GetS18() antlr.Token { return s.s18 }
-
 
 func (s *NegateContext) SetS18(v antlr.Token) { s.s18 = v }
 
-
 func (s *NegateContext) GetOps() []antlr.Token { return s.ops }
-
 
 func (s *NegateContext) SetOps(v []antlr.Token) { s.ops = v }
 
@@ -2078,10 +1952,10 @@ func (s *NegateContext) GetRuleContext() antlr.RuleContext {
 }
 
 func (s *NegateContext) Member() IMemberContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IMemberContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -2100,7 +1974,6 @@ func (s *NegateContext) AllMINUS() []antlr.TerminalNode {
 func (s *NegateContext) MINUS(i int) antlr.TerminalNode {
 	return s.GetToken(CELParserMINUS, i)
 }
-
 
 func (s *NegateContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -2124,8 +1997,6 @@ func (s *NegateContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
-
 func (p *CELParser) Unary() (localctx IUnaryContext) {
 	localctx = NewUnaryContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 12, CELParserRULE_unary)
@@ -2148,7 +2019,6 @@ func (p *CELParser) Unary() (localctx IUnaryContext) {
 			p.member(0)
 		}
 
-
 	case 2:
 		localctx = NewLogicalNotContext(p, localctx)
 		p.EnterOuterAlt(localctx, 2)
@@ -2159,7 +2029,6 @@ func (p *CELParser) Unary() (localctx IUnaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		for ok := true; ok; ok = _la == CELParserEXCLAM {
 			{
 				p.SetState(85)
@@ -2168,25 +2037,23 @@ func (p *CELParser) Unary() (localctx IUnaryContext) {
 
 				localctx.(*LogicalNotContext).s19 = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			localctx.(*LogicalNotContext).ops = append(localctx.(*LogicalNotContext).ops, localctx.(*LogicalNotContext).s19)
 
-
 			p.SetState(88)
 			p.GetErrorHandler().Sync(p)
 			if p.HasError() {
-		    	goto errorExit
-		    }
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 		}
 		{
 			p.SetState(90)
 			p.member(0)
 		}
-
 
 	case 3:
 		localctx = NewNegateContext(p, localctx)
@@ -2200,21 +2067,18 @@ func (p *CELParser) Unary() (localctx IUnaryContext) {
 		for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
 			switch _alt {
 			case 1:
-					{
-						p.SetState(91)
+				{
+					p.SetState(91)
 
-						var _m = p.Match(CELParserMINUS)
+					var _m = p.Match(CELParserMINUS)
 
-						localctx.(*NegateContext).s18 = _m
-						if p.HasError() {
-								// Recognition error - abort rule
-								goto errorExit
-						}
+					localctx.(*NegateContext).s18 = _m
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
 					}
-					localctx.(*NegateContext).ops = append(localctx.(*NegateContext).ops, localctx.(*NegateContext).s18)
-
-
-
+				}
+				localctx.(*NegateContext).ops = append(localctx.(*NegateContext).ops, localctx.(*NegateContext).s18)
 
 			default:
 				p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
@@ -2237,7 +2101,6 @@ func (p *CELParser) Unary() (localctx IUnaryContext) {
 		goto errorExit
 	}
 
-
 errorExit:
 	if p.HasError() {
 		v := p.GetError()
@@ -2250,7 +2113,6 @@ errorExit:
 	return localctx
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
-
 
 // IMemberContext is an interface to support dynamic dispatch.
 type IMemberContext interface {
@@ -2274,7 +2136,7 @@ func NewEmptyMemberContext() *MemberContext {
 	return p
 }
 
-func InitEmptyMemberContext(p *MemberContext)  {
+func InitEmptyMemberContext(p *MemberContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_member
 }
@@ -2306,16 +2168,12 @@ func (s *MemberContext) ToStringTree(ruleNames []string, recog antlr.Recognizer)
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
-
-
-
 type MemberCallContext struct {
 	MemberContext
-	op antlr.Token
-	id antlr.Token
+	op   antlr.Token
+	id   antlr.Token
 	open antlr.Token
-	args IExprListContext 
+	args IExprListContext
 }
 
 func NewMemberCallContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *MemberCallContext {
@@ -2328,13 +2186,11 @@ func NewMemberCallContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *Mem
 	return p
 }
 
-
 func (s *MemberCallContext) GetOp() antlr.Token { return s.op }
 
 func (s *MemberCallContext) GetId() antlr.Token { return s.id }
 
 func (s *MemberCallContext) GetOpen() antlr.Token { return s.open }
-
 
 func (s *MemberCallContext) SetOp(v antlr.Token) { s.op = v }
 
@@ -2342,9 +2198,7 @@ func (s *MemberCallContext) SetId(v antlr.Token) { s.id = v }
 
 func (s *MemberCallContext) SetOpen(v antlr.Token) { s.open = v }
 
-
 func (s *MemberCallContext) GetArgs() IExprListContext { return s.args }
-
 
 func (s *MemberCallContext) SetArgs(v IExprListContext) { s.args = v }
 
@@ -2353,10 +2207,10 @@ func (s *MemberCallContext) GetRuleContext() antlr.RuleContext {
 }
 
 func (s *MemberCallContext) Member() IMemberContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IMemberContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -2385,10 +2239,10 @@ func (s *MemberCallContext) LPAREN() antlr.TerminalNode {
 }
 
 func (s *MemberCallContext) ExprList() IExprListContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprListContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -2399,7 +2253,6 @@ func (s *MemberCallContext) ExprList() IExprListContext {
 
 	return t.(IExprListContext)
 }
-
 
 func (s *MemberCallContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -2423,12 +2276,11 @@ func (s *MemberCallContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type SelectContext struct {
 	MemberContext
-	op antlr.Token
+	op  antlr.Token
 	opt antlr.Token
-	id antlr.Token
+	id  antlr.Token
 }
 
 func NewSelectContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *SelectContext {
@@ -2441,13 +2293,11 @@ func NewSelectContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *SelectC
 	return p
 }
 
-
 func (s *SelectContext) GetOp() antlr.Token { return s.op }
 
 func (s *SelectContext) GetOpt() antlr.Token { return s.opt }
 
 func (s *SelectContext) GetId() antlr.Token { return s.id }
-
 
 func (s *SelectContext) SetOp(v antlr.Token) { s.op = v }
 
@@ -2460,10 +2310,10 @@ func (s *SelectContext) GetRuleContext() antlr.RuleContext {
 }
 
 func (s *SelectContext) Member() IMemberContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IMemberContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -2487,7 +2337,6 @@ func (s *SelectContext) QUESTIONMARK() antlr.TerminalNode {
 	return s.GetToken(CELParserQUESTIONMARK, 0)
 }
 
-
 func (s *SelectContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterSelect(s)
@@ -2510,7 +2359,6 @@ func (s *SelectContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type PrimaryExprContext struct {
 	MemberContext
 }
@@ -2530,10 +2378,10 @@ func (s *PrimaryExprContext) GetRuleContext() antlr.RuleContext {
 }
 
 func (s *PrimaryExprContext) Primary() IPrimaryContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IPrimaryContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -2544,7 +2392,6 @@ func (s *PrimaryExprContext) Primary() IPrimaryContext {
 
 	return t.(IPrimaryContext)
 }
-
 
 func (s *PrimaryExprContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -2568,12 +2415,11 @@ func (s *PrimaryExprContext) Accept(visitor antlr.ParseTreeVisitor) interface{} 
 	}
 }
 
-
 type IndexContext struct {
 	MemberContext
-	op antlr.Token
-	opt antlr.Token
-	index IExprContext 
+	op    antlr.Token
+	opt   antlr.Token
+	index IExprContext
 }
 
 func NewIndexContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *IndexContext {
@@ -2586,19 +2432,15 @@ func NewIndexContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *IndexCon
 	return p
 }
 
-
 func (s *IndexContext) GetOp() antlr.Token { return s.op }
 
 func (s *IndexContext) GetOpt() antlr.Token { return s.opt }
-
 
 func (s *IndexContext) SetOp(v antlr.Token) { s.op = v }
 
 func (s *IndexContext) SetOpt(v antlr.Token) { s.opt = v }
 
-
 func (s *IndexContext) GetIndex() IExprContext { return s.index }
-
 
 func (s *IndexContext) SetIndex(v IExprContext) { s.index = v }
 
@@ -2607,10 +2449,10 @@ func (s *IndexContext) GetRuleContext() antlr.RuleContext {
 }
 
 func (s *IndexContext) Member() IMemberContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IMemberContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -2631,10 +2473,10 @@ func (s *IndexContext) LBRACKET() antlr.TerminalNode {
 }
 
 func (s *IndexContext) Expr() IExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -2649,7 +2491,6 @@ func (s *IndexContext) Expr() IExprContext {
 func (s *IndexContext) QUESTIONMARK() antlr.TerminalNode {
 	return s.GetToken(CELParserQUESTIONMARK, 0)
 }
-
 
 func (s *IndexContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -2672,8 +2513,6 @@ func (s *IndexContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 		return t.VisitChildren(s)
 	}
 }
-
-
 
 func (p *CELParser) Member() (localctx IMemberContext) {
 	return p.member(0)
@@ -2741,8 +2580,8 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 					localctx.(*SelectContext).op = _m
 					if p.HasError() {
-							// Recognition error - abort rule
-							goto errorExit
+						// Recognition error - abort rule
+						goto errorExit
 					}
 				}
 				p.SetState(105)
@@ -2752,7 +2591,6 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 				}
 				_la = p.GetTokenStream().LA(1)
 
-
 				if _la == CELParserQUESTIONMARK {
 					{
 						p.SetState(104)
@@ -2761,8 +2599,8 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 						localctx.(*SelectContext).opt = _m
 						if p.HasError() {
-								// Recognition error - abort rule
-								goto errorExit
+							// Recognition error - abort rule
+							goto errorExit
 						}
 					}
 
@@ -2774,11 +2612,10 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 					localctx.(*SelectContext).id = _m
 					if p.HasError() {
-							// Recognition error - abort rule
-							goto errorExit
+						// Recognition error - abort rule
+						goto errorExit
 					}
 				}
-
 
 			case 2:
 				localctx = NewMemberCallContext(p, NewMemberContext(p, _parentctx, _parentState))
@@ -2796,8 +2633,8 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 					localctx.(*MemberCallContext).op = _m
 					if p.HasError() {
-							// Recognition error - abort rule
-							goto errorExit
+						// Recognition error - abort rule
+						goto errorExit
 					}
 				}
 				{
@@ -2807,8 +2644,8 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 					localctx.(*MemberCallContext).id = _m
 					if p.HasError() {
-							// Recognition error - abort rule
-							goto errorExit
+						// Recognition error - abort rule
+						goto errorExit
 					}
 				}
 				{
@@ -2818,8 +2655,8 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 					localctx.(*MemberCallContext).open = _m
 					if p.HasError() {
-							// Recognition error - abort rule
-							goto errorExit
+						// Recognition error - abort rule
+						goto errorExit
 					}
 				}
 				p.SetState(113)
@@ -2829,13 +2666,11 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 				}
 				_la = p.GetTokenStream().LA(1)
 
-
-				if ((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 135762105344) != 0) {
+				if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&135762105344) != 0 {
 					{
 						p.SetState(112)
 
 						var _x = p.ExprList()
-
 
 						localctx.(*MemberCallContext).args = _x
 					}
@@ -2845,11 +2680,10 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 					p.SetState(115)
 					p.Match(CELParserRPAREN)
 					if p.HasError() {
-							// Recognition error - abort rule
-							goto errorExit
+						// Recognition error - abort rule
+						goto errorExit
 					}
 				}
-
 
 			case 3:
 				localctx = NewIndexContext(p, NewMemberContext(p, _parentctx, _parentState))
@@ -2867,8 +2701,8 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 					localctx.(*IndexContext).op = _m
 					if p.HasError() {
-							// Recognition error - abort rule
-							goto errorExit
+						// Recognition error - abort rule
+						goto errorExit
 					}
 				}
 				p.SetState(119)
@@ -2878,7 +2712,6 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 				}
 				_la = p.GetTokenStream().LA(1)
 
-
 				if _la == CELParserQUESTIONMARK {
 					{
 						p.SetState(118)
@@ -2887,8 +2720,8 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 						localctx.(*IndexContext).opt = _m
 						if p.HasError() {
-								// Recognition error - abort rule
-								goto errorExit
+							// Recognition error - abort rule
+							goto errorExit
 						}
 					}
 
@@ -2898,15 +2731,14 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 
 					var _x = p.Expr()
 
-
 					localctx.(*IndexContext).index = _x
 				}
 				{
 					p.SetState(122)
 					p.Match(CELParserRPRACKET)
 					if p.HasError() {
-							// Recognition error - abort rule
-							goto errorExit
+						// Recognition error - abort rule
+						goto errorExit
 					}
 				}
 
@@ -2918,17 +2750,15 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 		p.SetState(128)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 13, p.GetParserRuleContext())
 		if p.HasError() {
 			goto errorExit
 		}
 	}
 
-
-
-	errorExit:
+errorExit:
 	if p.HasError() {
 		v := p.GetError()
 		localctx.SetException(v)
@@ -2940,7 +2770,6 @@ func (p *CELParser) member(_p int) (localctx IMemberContext) {
 	return localctx
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
-
 
 // IPrimaryContext is an interface to support dynamic dispatch.
 type IPrimaryContext interface {
@@ -2964,7 +2793,7 @@ func NewEmptyPrimaryContext() *PrimaryContext {
 	return p
 }
 
-func InitEmptyPrimaryContext(p *PrimaryContext)  {
+func InitEmptyPrimaryContext(p *PrimaryContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_primary
 }
@@ -2996,13 +2825,10 @@ func (s *PrimaryContext) ToStringTree(ruleNames []string, recog antlr.Recognizer
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
-
-
 type CreateListContext struct {
 	PrimaryContext
-	op antlr.Token
-	elems IListInitContext 
+	op    antlr.Token
+	elems IListInitContext
 }
 
 func NewCreateListContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *CreateListContext {
@@ -3015,15 +2841,11 @@ func NewCreateListContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *Cre
 	return p
 }
 
-
 func (s *CreateListContext) GetOp() antlr.Token { return s.op }
-
 
 func (s *CreateListContext) SetOp(v antlr.Token) { s.op = v }
 
-
 func (s *CreateListContext) GetElems() IListInitContext { return s.elems }
-
 
 func (s *CreateListContext) SetElems(v IListInitContext) { s.elems = v }
 
@@ -3044,10 +2866,10 @@ func (s *CreateListContext) COMMA() antlr.TerminalNode {
 }
 
 func (s *CreateListContext) ListInit() IListInitContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IListInitContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -3058,7 +2880,6 @@ func (s *CreateListContext) ListInit() IListInitContext {
 
 	return t.(IListInitContext)
 }
-
 
 func (s *CreateListContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -3082,11 +2903,10 @@ func (s *CreateListContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type CreateStructContext struct {
 	PrimaryContext
-	op antlr.Token
-	entries IMapInitializerListContext 
+	op      antlr.Token
+	entries IMapInitializerListContext
 }
 
 func NewCreateStructContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *CreateStructContext {
@@ -3099,15 +2919,11 @@ func NewCreateStructContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *C
 	return p
 }
 
-
 func (s *CreateStructContext) GetOp() antlr.Token { return s.op }
-
 
 func (s *CreateStructContext) SetOp(v antlr.Token) { s.op = v }
 
-
 func (s *CreateStructContext) GetEntries() IMapInitializerListContext { return s.entries }
-
 
 func (s *CreateStructContext) SetEntries(v IMapInitializerListContext) { s.entries = v }
 
@@ -3128,10 +2944,10 @@ func (s *CreateStructContext) COMMA() antlr.TerminalNode {
 }
 
 func (s *CreateStructContext) MapInitializerList() IMapInitializerListContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IMapInitializerListContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -3142,7 +2958,6 @@ func (s *CreateStructContext) MapInitializerList() IMapInitializerListContext {
 
 	return t.(IMapInitializerListContext)
 }
-
 
 func (s *CreateStructContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -3166,7 +2981,6 @@ func (s *CreateStructContext) Accept(visitor antlr.ParseTreeVisitor) interface{}
 	}
 }
 
-
 type ConstantLiteralContext struct {
 	PrimaryContext
 }
@@ -3186,10 +3000,10 @@ func (s *ConstantLiteralContext) GetRuleContext() antlr.RuleContext {
 }
 
 func (s *ConstantLiteralContext) Literal() ILiteralContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(ILiteralContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -3200,7 +3014,6 @@ func (s *ConstantLiteralContext) Literal() ILiteralContext {
 
 	return t.(ILiteralContext)
 }
-
 
 func (s *ConstantLiteralContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -3224,10 +3037,9 @@ func (s *ConstantLiteralContext) Accept(visitor antlr.ParseTreeVisitor) interfac
 	}
 }
 
-
 type NestedContext struct {
 	PrimaryContext
-	e IExprContext 
+	e IExprContext
 }
 
 func NewNestedContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *NestedContext {
@@ -3240,9 +3052,7 @@ func NewNestedContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *NestedC
 	return p
 }
 
-
 func (s *NestedContext) GetE() IExprContext { return s.e }
-
 
 func (s *NestedContext) SetE(v IExprContext) { s.e = v }
 
@@ -3259,10 +3069,10 @@ func (s *NestedContext) RPAREN() antlr.TerminalNode {
 }
 
 func (s *NestedContext) Expr() IExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -3273,7 +3083,6 @@ func (s *NestedContext) Expr() IExprContext {
 
 	return t.(IExprContext)
 }
-
 
 func (s *NestedContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -3297,16 +3106,15 @@ func (s *NestedContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type CreateMessageContext struct {
 	PrimaryContext
-	leadingDot antlr.Token
+	leadingDot  antlr.Token
 	_IDENTIFIER antlr.Token
-	ids []antlr.Token
-	s16 antlr.Token
-	ops []antlr.Token
-	op antlr.Token
-	entries IFieldInitializerListContext 
+	ids         []antlr.Token
+	s16         antlr.Token
+	ops         []antlr.Token
+	op          antlr.Token
+	entries     IFieldInitializerListContext
 }
 
 func NewCreateMessageContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *CreateMessageContext {
@@ -3319,7 +3127,6 @@ func NewCreateMessageContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *
 	return p
 }
 
-
 func (s *CreateMessageContext) GetLeadingDot() antlr.Token { return s.leadingDot }
 
 func (s *CreateMessageContext) Get_IDENTIFIER() antlr.Token { return s._IDENTIFIER }
@@ -3327,7 +3134,6 @@ func (s *CreateMessageContext) Get_IDENTIFIER() antlr.Token { return s._IDENTIFI
 func (s *CreateMessageContext) GetS16() antlr.Token { return s.s16 }
 
 func (s *CreateMessageContext) GetOp() antlr.Token { return s.op }
-
 
 func (s *CreateMessageContext) SetLeadingDot(v antlr.Token) { s.leadingDot = v }
 
@@ -3337,19 +3143,15 @@ func (s *CreateMessageContext) SetS16(v antlr.Token) { s.s16 = v }
 
 func (s *CreateMessageContext) SetOp(v antlr.Token) { s.op = v }
 
-
 func (s *CreateMessageContext) GetIds() []antlr.Token { return s.ids }
 
 func (s *CreateMessageContext) GetOps() []antlr.Token { return s.ops }
-
 
 func (s *CreateMessageContext) SetIds(v []antlr.Token) { s.ids = v }
 
 func (s *CreateMessageContext) SetOps(v []antlr.Token) { s.ops = v }
 
-
 func (s *CreateMessageContext) GetEntries() IFieldInitializerListContext { return s.entries }
-
 
 func (s *CreateMessageContext) SetEntries(v IFieldInitializerListContext) { s.entries = v }
 
@@ -3386,10 +3188,10 @@ func (s *CreateMessageContext) DOT(i int) antlr.TerminalNode {
 }
 
 func (s *CreateMessageContext) FieldInitializerList() IFieldInitializerListContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IFieldInitializerListContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -3400,7 +3202,6 @@ func (s *CreateMessageContext) FieldInitializerList() IFieldInitializerListConte
 
 	return t.(IFieldInitializerListContext)
 }
-
 
 func (s *CreateMessageContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -3424,13 +3225,12 @@ func (s *CreateMessageContext) Accept(visitor antlr.ParseTreeVisitor) interface{
 	}
 }
 
-
 type IdentOrGlobalCallContext struct {
 	PrimaryContext
 	leadingDot antlr.Token
-	id antlr.Token
-	op antlr.Token
-	args IExprListContext 
+	id         antlr.Token
+	op         antlr.Token
+	args       IExprListContext
 }
 
 func NewIdentOrGlobalCallContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *IdentOrGlobalCallContext {
@@ -3443,13 +3243,11 @@ func NewIdentOrGlobalCallContext(parser antlr.Parser, ctx antlr.ParserRuleContex
 	return p
 }
 
-
 func (s *IdentOrGlobalCallContext) GetLeadingDot() antlr.Token { return s.leadingDot }
 
 func (s *IdentOrGlobalCallContext) GetId() antlr.Token { return s.id }
 
 func (s *IdentOrGlobalCallContext) GetOp() antlr.Token { return s.op }
-
 
 func (s *IdentOrGlobalCallContext) SetLeadingDot(v antlr.Token) { s.leadingDot = v }
 
@@ -3457,9 +3255,7 @@ func (s *IdentOrGlobalCallContext) SetId(v antlr.Token) { s.id = v }
 
 func (s *IdentOrGlobalCallContext) SetOp(v antlr.Token) { s.op = v }
 
-
 func (s *IdentOrGlobalCallContext) GetArgs() IExprListContext { return s.args }
-
 
 func (s *IdentOrGlobalCallContext) SetArgs(v IExprListContext) { s.args = v }
 
@@ -3484,10 +3280,10 @@ func (s *IdentOrGlobalCallContext) LPAREN() antlr.TerminalNode {
 }
 
 func (s *IdentOrGlobalCallContext) ExprList() IExprListContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprListContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -3498,7 +3294,6 @@ func (s *IdentOrGlobalCallContext) ExprList() IExprListContext {
 
 	return t.(IExprListContext)
 }
-
 
 func (s *IdentOrGlobalCallContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -3522,8 +3317,6 @@ func (s *IdentOrGlobalCallContext) Accept(visitor antlr.ParseTreeVisitor) interf
 	}
 }
 
-
-
 func (p *CELParser) Primary() (localctx IPrimaryContext) {
 	localctx = NewPrimaryContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 16, CELParserRULE_primary)
@@ -3546,7 +3339,6 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		if _la == CELParserDOT {
 			{
 				p.SetState(129)
@@ -3555,8 +3347,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 				localctx.(*IdentOrGlobalCallContext).leadingDot = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 
@@ -3568,13 +3360,12 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 			localctx.(*IdentOrGlobalCallContext).id = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		p.SetState(138)
 		p.GetErrorHandler().Sync(p)
-
 
 		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 16, p.GetParserRuleContext()) == 1 {
 			{
@@ -3584,8 +3375,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 				localctx.(*IdentOrGlobalCallContext).op = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			p.SetState(135)
@@ -3595,13 +3386,11 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 			}
 			_la = p.GetTokenStream().LA(1)
 
-
-			if ((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 135762105344) != 0) {
+			if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&135762105344) != 0 {
 				{
 					p.SetState(134)
 
 					var _x = p.ExprList()
-
 
 					localctx.(*IdentOrGlobalCallContext).args = _x
 				}
@@ -3611,15 +3400,14 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 				p.SetState(137)
 				p.Match(CELParserRPAREN)
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 
-			} else if p.HasError() { // JIM
-				goto errorExit
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
-
 
 	case 2:
 		localctx = NewNestedContext(p, localctx)
@@ -3628,8 +3416,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 			p.SetState(140)
 			p.Match(CELParserLPAREN)
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		{
@@ -3637,18 +3425,16 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 			var _x = p.Expr()
 
-
 			localctx.(*NestedContext).e = _x
 		}
 		{
 			p.SetState(142)
 			p.Match(CELParserRPAREN)
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 3:
 		localctx = NewCreateListContext(p, localctx)
@@ -3660,8 +3446,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 			localctx.(*CreateListContext).op = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		p.SetState(146)
@@ -3671,13 +3457,11 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
-		if ((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 135763153920) != 0) {
+		if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&135763153920) != 0 {
 			{
 				p.SetState(145)
 
 				var _x = p.ListInit()
-
 
 				localctx.(*CreateListContext).elems = _x
 			}
@@ -3690,14 +3474,13 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		if _la == CELParserCOMMA {
 			{
 				p.SetState(148)
 				p.Match(CELParserCOMMA)
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 
@@ -3706,11 +3489,10 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 			p.SetState(151)
 			p.Match(CELParserRPRACKET)
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 4:
 		localctx = NewCreateStructContext(p, localctx)
@@ -3722,8 +3504,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 			localctx.(*CreateStructContext).op = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		p.SetState(154)
@@ -3733,13 +3515,11 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
-		if ((int64(_la) & ^0x3f) == 0 && ((int64(1) << _la) & 135763153920) != 0) {
+		if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&135763153920) != 0 {
 			{
 				p.SetState(153)
 
 				var _x = p.MapInitializerList()
-
 
 				localctx.(*CreateStructContext).entries = _x
 			}
@@ -3752,14 +3532,13 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		if _la == CELParserCOMMA {
 			{
 				p.SetState(156)
 				p.Match(CELParserCOMMA)
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 
@@ -3768,11 +3547,10 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 			p.SetState(159)
 			p.Match(CELParserRBRACE)
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 5:
 		localctx = NewCreateMessageContext(p, localctx)
@@ -3784,7 +3562,6 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		if _la == CELParserDOT {
 			{
 				p.SetState(160)
@@ -3793,8 +3570,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 				localctx.(*CreateMessageContext).leadingDot = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 
@@ -3806,8 +3583,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 			localctx.(*CreateMessageContext)._IDENTIFIER = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		localctx.(*CreateMessageContext).ids = append(localctx.(*CreateMessageContext).ids, localctx.(*CreateMessageContext)._IDENTIFIER)
@@ -3818,7 +3595,6 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		for _la == CELParserDOT {
 			{
 				p.SetState(164)
@@ -3827,8 +3603,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 				localctx.(*CreateMessageContext).s16 = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			localctx.(*CreateMessageContext).ops = append(localctx.(*CreateMessageContext).ops, localctx.(*CreateMessageContext).s16)
@@ -3839,18 +3615,17 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 				localctx.(*CreateMessageContext)._IDENTIFIER = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			localctx.(*CreateMessageContext).ids = append(localctx.(*CreateMessageContext).ids, localctx.(*CreateMessageContext)._IDENTIFIER)
 
-
 			p.SetState(170)
 			p.GetErrorHandler().Sync(p)
 			if p.HasError() {
-		    	goto errorExit
-		    }
+				goto errorExit
+			}
 			_la = p.GetTokenStream().LA(1)
 		}
 		{
@@ -3860,8 +3635,8 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 
 			localctx.(*CreateMessageContext).op = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		p.SetState(173)
@@ -3871,13 +3646,11 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		if _la == CELParserQUESTIONMARK || _la == CELParserIDENTIFIER {
 			{
 				p.SetState(172)
 
 				var _x = p.FieldInitializerList()
-
 
 				localctx.(*CreateMessageContext).entries = _x
 			}
@@ -3890,14 +3663,13 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		if _la == CELParserCOMMA {
 			{
 				p.SetState(175)
 				p.Match(CELParserCOMMA)
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 
@@ -3906,11 +3678,10 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 			p.SetState(178)
 			p.Match(CELParserRBRACE)
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 6:
 		localctx = NewConstantLiteralContext(p, localctx)
@@ -3923,7 +3694,6 @@ func (p *CELParser) Primary() (localctx IPrimaryContext) {
 	case antlr.ATNInvalidAltNumber:
 		goto errorExit
 	}
-
 
 errorExit:
 	if p.HasError() {
@@ -3938,7 +3708,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IExprListContext is an interface to support dynamic dispatch.
 type IExprListContext interface {
 	antlr.ParserRuleContext
@@ -3949,18 +3718,14 @@ type IExprListContext interface {
 	// Get_expr returns the _expr rule contexts.
 	Get_expr() IExprContext
 
-
 	// Set_expr sets the _expr rule contexts.
 	Set_expr(IExprContext)
-
 
 	// GetE returns the e rule context list.
 	GetE() []IExprContext
 
-
 	// SetE sets the e rule context list.
-	SetE([]IExprContext) 
-
+	SetE([]IExprContext)
 
 	// Getter signatures
 	AllExpr() []IExprContext
@@ -3975,8 +3740,8 @@ type IExprListContext interface {
 type ExprListContext struct {
 	antlr.BaseParserRuleContext
 	parser antlr.Parser
-	_expr IExprContext 
-	e []IExprContext
+	_expr  IExprContext
+	e      []IExprContext
 }
 
 func NewEmptyExprListContext() *ExprListContext {
@@ -3986,7 +3751,7 @@ func NewEmptyExprListContext() *ExprListContext {
 	return p
 }
 
-func InitEmptyExprListContext(p *ExprListContext)  {
+func InitEmptyExprListContext(p *ExprListContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_exprList
 }
@@ -4008,15 +3773,11 @@ func (s *ExprListContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *ExprListContext) Get_expr() IExprContext { return s._expr }
 
-
 func (s *ExprListContext) Set_expr(v IExprContext) { s._expr = v }
-
 
 func (s *ExprListContext) GetE() []IExprContext { return s.e }
 
-
 func (s *ExprListContext) SetE(v []IExprContext) { s.e = v }
-
 
 func (s *ExprListContext) AllExpr() []IExprContext {
 	children := s.GetChildren()
@@ -4040,12 +3801,12 @@ func (s *ExprListContext) AllExpr() []IExprContext {
 }
 
 func (s *ExprListContext) Expr(i int) IExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -4075,7 +3836,6 @@ func (s *ExprListContext) ToStringTree(ruleNames []string, recog antlr.Recognize
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *ExprListContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterExprList(s)
@@ -4098,9 +3858,6 @@ func (s *ExprListContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
-
-
 func (p *CELParser) ExprList() (localctx IExprListContext) {
 	localctx = NewExprListContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 18, CELParserRULE_exprList)
@@ -4112,7 +3869,6 @@ func (p *CELParser) ExprList() (localctx IExprListContext) {
 
 		var _x = p.Expr()
 
-
 		localctx.(*ExprListContext)._expr = _x
 	}
 	localctx.(*ExprListContext).e = append(localctx.(*ExprListContext).e, localctx.(*ExprListContext)._expr)
@@ -4123,14 +3879,13 @@ func (p *CELParser) ExprList() (localctx IExprListContext) {
 	}
 	_la = p.GetTokenStream().LA(1)
 
-
 	for _la == CELParserCOMMA {
 		{
 			p.SetState(183)
 			p.Match(CELParserCOMMA)
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 		{
@@ -4138,21 +3893,17 @@ func (p *CELParser) ExprList() (localctx IExprListContext) {
 
 			var _x = p.Expr()
 
-
 			localctx.(*ExprListContext)._expr = _x
 		}
 		localctx.(*ExprListContext).e = append(localctx.(*ExprListContext).e, localctx.(*ExprListContext)._expr)
 
-
 		p.SetState(189)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -4167,7 +3918,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IListInitContext is an interface to support dynamic dispatch.
 type IListInitContext interface {
 	antlr.ParserRuleContext
@@ -4178,18 +3928,14 @@ type IListInitContext interface {
 	// Get_optExpr returns the _optExpr rule contexts.
 	Get_optExpr() IOptExprContext
 
-
 	// Set_optExpr sets the _optExpr rule contexts.
 	Set_optExpr(IOptExprContext)
-
 
 	// GetElems returns the elems rule context list.
 	GetElems() []IOptExprContext
 
-
 	// SetElems sets the elems rule context list.
-	SetElems([]IOptExprContext) 
-
+	SetElems([]IOptExprContext)
 
 	// Getter signatures
 	AllOptExpr() []IOptExprContext
@@ -4203,9 +3949,9 @@ type IListInitContext interface {
 
 type ListInitContext struct {
 	antlr.BaseParserRuleContext
-	parser antlr.Parser
-	_optExpr IOptExprContext 
-	elems []IOptExprContext
+	parser   antlr.Parser
+	_optExpr IOptExprContext
+	elems    []IOptExprContext
 }
 
 func NewEmptyListInitContext() *ListInitContext {
@@ -4215,7 +3961,7 @@ func NewEmptyListInitContext() *ListInitContext {
 	return p
 }
 
-func InitEmptyListInitContext(p *ListInitContext)  {
+func InitEmptyListInitContext(p *ListInitContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_listInit
 }
@@ -4237,15 +3983,11 @@ func (s *ListInitContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *ListInitContext) Get_optExpr() IOptExprContext { return s._optExpr }
 
-
 func (s *ListInitContext) Set_optExpr(v IOptExprContext) { s._optExpr = v }
-
 
 func (s *ListInitContext) GetElems() []IOptExprContext { return s.elems }
 
-
 func (s *ListInitContext) SetElems(v []IOptExprContext) { s.elems = v }
-
 
 func (s *ListInitContext) AllOptExpr() []IOptExprContext {
 	children := s.GetChildren()
@@ -4269,12 +4011,12 @@ func (s *ListInitContext) AllOptExpr() []IOptExprContext {
 }
 
 func (s *ListInitContext) OptExpr(i int) IOptExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IOptExprContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -4304,7 +4046,6 @@ func (s *ListInitContext) ToStringTree(ruleNames []string, recog antlr.Recognize
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *ListInitContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterListInit(s)
@@ -4327,9 +4068,6 @@ func (s *ListInitContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
-
-
 func (p *CELParser) ListInit() (localctx IListInitContext) {
 	localctx = NewListInitContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 20, CELParserRULE_listInit)
@@ -4340,7 +4078,6 @@ func (p *CELParser) ListInit() (localctx IListInitContext) {
 		p.SetState(190)
 
 		var _x = p.OptExpr()
-
 
 		localctx.(*ListInitContext)._optExpr = _x
 	}
@@ -4360,8 +4097,8 @@ func (p *CELParser) ListInit() (localctx IListInitContext) {
 				p.SetState(191)
 				p.Match(CELParserCOMMA)
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			{
@@ -4369,25 +4106,21 @@ func (p *CELParser) ListInit() (localctx IListInitContext) {
 
 				var _x = p.OptExpr()
 
-
 				localctx.(*ListInitContext)._optExpr = _x
 			}
 			localctx.(*ListInitContext).elems = append(localctx.(*ListInitContext).elems, localctx.(*ListInitContext)._optExpr)
-
 
 		}
 		p.SetState(197)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 27, p.GetParserRuleContext())
 		if p.HasError() {
 			goto errorExit
 		}
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -4402,7 +4135,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IFieldInitializerListContext is an interface to support dynamic dispatch.
 type IFieldInitializerListContext interface {
 	antlr.ParserRuleContext
@@ -4411,20 +4143,16 @@ type IFieldInitializerListContext interface {
 	GetParser() antlr.Parser
 
 	// GetS21 returns the s21 token.
-	GetS21() antlr.Token 
-
+	GetS21() antlr.Token
 
 	// SetS21 sets the s21 token.
-	SetS21(antlr.Token) 
-
+	SetS21(antlr.Token)
 
 	// GetCols returns the cols token list.
 	GetCols() []antlr.Token
 
-
 	// SetCols sets the cols token list.
 	SetCols([]antlr.Token)
-
 
 	// Get_optField returns the _optField rule contexts.
 	Get_optField() IOptFieldContext
@@ -4432,13 +4160,11 @@ type IFieldInitializerListContext interface {
 	// Get_expr returns the _expr rule contexts.
 	Get_expr() IExprContext
 
-
 	// Set_optField sets the _optField rule contexts.
 	Set_optField(IOptFieldContext)
 
 	// Set_expr sets the _expr rule contexts.
 	Set_expr(IExprContext)
-
 
 	// GetFields returns the fields rule context list.
 	GetFields() []IOptFieldContext
@@ -4446,13 +4172,11 @@ type IFieldInitializerListContext interface {
 	// GetValues returns the values rule context list.
 	GetValues() []IExprContext
 
-
 	// SetFields sets the fields rule context list.
-	SetFields([]IOptFieldContext) 
+	SetFields([]IOptFieldContext)
 
 	// SetValues sets the values rule context list.
-	SetValues([]IExprContext) 
-
+	SetValues([]IExprContext)
 
 	// Getter signatures
 	AllOptField() []IOptFieldContext
@@ -4470,13 +4194,13 @@ type IFieldInitializerListContext interface {
 
 type FieldInitializerListContext struct {
 	antlr.BaseParserRuleContext
-	parser antlr.Parser
-	_optField IOptFieldContext 
-	fields []IOptFieldContext
-	s21 antlr.Token
-	cols []antlr.Token
-	_expr IExprContext 
-	values []IExprContext
+	parser    antlr.Parser
+	_optField IOptFieldContext
+	fields    []IOptFieldContext
+	s21       antlr.Token
+	cols      []antlr.Token
+	_expr     IExprContext
+	values    []IExprContext
 }
 
 func NewEmptyFieldInitializerListContext() *FieldInitializerListContext {
@@ -4486,7 +4210,7 @@ func NewEmptyFieldInitializerListContext() *FieldInitializerListContext {
 	return p
 }
 
-func InitEmptyFieldInitializerListContext(p *FieldInitializerListContext)  {
+func InitEmptyFieldInitializerListContext(p *FieldInitializerListContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_fieldInitializerList
 }
@@ -4508,35 +4232,27 @@ func (s *FieldInitializerListContext) GetParser() antlr.Parser { return s.parser
 
 func (s *FieldInitializerListContext) GetS21() antlr.Token { return s.s21 }
 
-
 func (s *FieldInitializerListContext) SetS21(v antlr.Token) { s.s21 = v }
-
 
 func (s *FieldInitializerListContext) GetCols() []antlr.Token { return s.cols }
 
-
 func (s *FieldInitializerListContext) SetCols(v []antlr.Token) { s.cols = v }
-
 
 func (s *FieldInitializerListContext) Get_optField() IOptFieldContext { return s._optField }
 
 func (s *FieldInitializerListContext) Get_expr() IExprContext { return s._expr }
 
-
 func (s *FieldInitializerListContext) Set_optField(v IOptFieldContext) { s._optField = v }
 
 func (s *FieldInitializerListContext) Set_expr(v IExprContext) { s._expr = v }
-
 
 func (s *FieldInitializerListContext) GetFields() []IOptFieldContext { return s.fields }
 
 func (s *FieldInitializerListContext) GetValues() []IExprContext { return s.values }
 
-
 func (s *FieldInitializerListContext) SetFields(v []IOptFieldContext) { s.fields = v }
 
 func (s *FieldInitializerListContext) SetValues(v []IExprContext) { s.values = v }
-
 
 func (s *FieldInitializerListContext) AllOptField() []IOptFieldContext {
 	children := s.GetChildren()
@@ -4560,12 +4276,12 @@ func (s *FieldInitializerListContext) AllOptField() []IOptFieldContext {
 }
 
 func (s *FieldInitializerListContext) OptField(i int) IOptFieldContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IOptFieldContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -4609,12 +4325,12 @@ func (s *FieldInitializerListContext) AllExpr() []IExprContext {
 }
 
 func (s *FieldInitializerListContext) Expr(i int) IExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -4644,7 +4360,6 @@ func (s *FieldInitializerListContext) ToStringTree(ruleNames []string, recog ant
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *FieldInitializerListContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterFieldInitializerList(s)
@@ -4667,9 +4382,6 @@ func (s *FieldInitializerListContext) Accept(visitor antlr.ParseTreeVisitor) int
 	}
 }
 
-
-
-
 func (p *CELParser) FieldInitializerList() (localctx IFieldInitializerListContext) {
 	localctx = NewFieldInitializerListContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 22, CELParserRULE_fieldInitializerList)
@@ -4681,7 +4393,6 @@ func (p *CELParser) FieldInitializerList() (localctx IFieldInitializerListContex
 
 		var _x = p.OptField()
 
-
 		localctx.(*FieldInitializerListContext)._optField = _x
 	}
 	localctx.(*FieldInitializerListContext).fields = append(localctx.(*FieldInitializerListContext).fields, localctx.(*FieldInitializerListContext)._optField)
@@ -4692,8 +4403,8 @@ func (p *CELParser) FieldInitializerList() (localctx IFieldInitializerListContex
 
 		localctx.(*FieldInitializerListContext).s21 = _m
 		if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
+			// Recognition error - abort rule
+			goto errorExit
 		}
 	}
 	localctx.(*FieldInitializerListContext).cols = append(localctx.(*FieldInitializerListContext).cols, localctx.(*FieldInitializerListContext).s21)
@@ -4701,7 +4412,6 @@ func (p *CELParser) FieldInitializerList() (localctx IFieldInitializerListContex
 		p.SetState(200)
 
 		var _x = p.Expr()
-
 
 		localctx.(*FieldInitializerListContext)._expr = _x
 	}
@@ -4721,15 +4431,14 @@ func (p *CELParser) FieldInitializerList() (localctx IFieldInitializerListContex
 				p.SetState(201)
 				p.Match(CELParserCOMMA)
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			{
 				p.SetState(202)
 
 				var _x = p.OptField()
-
 
 				localctx.(*FieldInitializerListContext)._optField = _x
 			}
@@ -4741,8 +4450,8 @@ func (p *CELParser) FieldInitializerList() (localctx IFieldInitializerListContex
 
 				localctx.(*FieldInitializerListContext).s21 = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			localctx.(*FieldInitializerListContext).cols = append(localctx.(*FieldInitializerListContext).cols, localctx.(*FieldInitializerListContext).s21)
@@ -4751,25 +4460,21 @@ func (p *CELParser) FieldInitializerList() (localctx IFieldInitializerListContex
 
 				var _x = p.Expr()
 
-
 				localctx.(*FieldInitializerListContext)._expr = _x
 			}
 			localctx.(*FieldInitializerListContext).values = append(localctx.(*FieldInitializerListContext).values, localctx.(*FieldInitializerListContext)._expr)
-
 
 		}
 		p.SetState(210)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 28, p.GetParserRuleContext())
 		if p.HasError() {
 			goto errorExit
 		}
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -4784,7 +4489,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IOptFieldContext is an interface to support dynamic dispatch.
 type IOptFieldContext interface {
 	antlr.ParserRuleContext
@@ -4793,12 +4497,10 @@ type IOptFieldContext interface {
 	GetParser() antlr.Parser
 
 	// GetOpt returns the opt token.
-	GetOpt() antlr.Token 
-
+	GetOpt() antlr.Token
 
 	// SetOpt sets the opt token.
-	SetOpt(antlr.Token) 
-
+	SetOpt(antlr.Token)
 
 	// Getter signatures
 	IDENTIFIER() antlr.TerminalNode
@@ -4811,7 +4513,7 @@ type IOptFieldContext interface {
 type OptFieldContext struct {
 	antlr.BaseParserRuleContext
 	parser antlr.Parser
-	opt antlr.Token
+	opt    antlr.Token
 }
 
 func NewEmptyOptFieldContext() *OptFieldContext {
@@ -4821,7 +4523,7 @@ func NewEmptyOptFieldContext() *OptFieldContext {
 	return p
 }
 
-func InitEmptyOptFieldContext(p *OptFieldContext)  {
+func InitEmptyOptFieldContext(p *OptFieldContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_optField
 }
@@ -4843,9 +4545,7 @@ func (s *OptFieldContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *OptFieldContext) GetOpt() antlr.Token { return s.opt }
 
-
 func (s *OptFieldContext) SetOpt(v antlr.Token) { s.opt = v }
-
 
 func (s *OptFieldContext) IDENTIFIER() antlr.TerminalNode {
 	return s.GetToken(CELParserIDENTIFIER, 0)
@@ -4862,7 +4562,6 @@ func (s *OptFieldContext) GetRuleContext() antlr.RuleContext {
 func (s *OptFieldContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
-
 
 func (s *OptFieldContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -4886,9 +4585,6 @@ func (s *OptFieldContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
-
-
 func (p *CELParser) OptField() (localctx IOptFieldContext) {
 	localctx = NewOptFieldContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 24, CELParserRULE_optField)
@@ -4902,7 +4598,6 @@ func (p *CELParser) OptField() (localctx IOptFieldContext) {
 	}
 	_la = p.GetTokenStream().LA(1)
 
-
 	if _la == CELParserQUESTIONMARK {
 		{
 			p.SetState(211)
@@ -4911,8 +4606,8 @@ func (p *CELParser) OptField() (localctx IOptFieldContext) {
 
 			localctx.(*OptFieldContext).opt = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 
@@ -4921,12 +4616,10 @@ func (p *CELParser) OptField() (localctx IOptFieldContext) {
 		p.SetState(214)
 		p.Match(CELParserIDENTIFIER)
 		if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
+			// Recognition error - abort rule
+			goto errorExit
 		}
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -4941,7 +4634,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IMapInitializerListContext is an interface to support dynamic dispatch.
 type IMapInitializerListContext interface {
 	antlr.ParserRuleContext
@@ -4950,20 +4642,16 @@ type IMapInitializerListContext interface {
 	GetParser() antlr.Parser
 
 	// GetS21 returns the s21 token.
-	GetS21() antlr.Token 
-
+	GetS21() antlr.Token
 
 	// SetS21 sets the s21 token.
-	SetS21(antlr.Token) 
-
+	SetS21(antlr.Token)
 
 	// GetCols returns the cols token list.
 	GetCols() []antlr.Token
 
-
 	// SetCols sets the cols token list.
 	SetCols([]antlr.Token)
-
 
 	// Get_optExpr returns the _optExpr rule contexts.
 	Get_optExpr() IOptExprContext
@@ -4971,13 +4659,11 @@ type IMapInitializerListContext interface {
 	// Get_expr returns the _expr rule contexts.
 	Get_expr() IExprContext
 
-
 	// Set_optExpr sets the _optExpr rule contexts.
 	Set_optExpr(IOptExprContext)
 
 	// Set_expr sets the _expr rule contexts.
 	Set_expr(IExprContext)
-
 
 	// GetKeys returns the keys rule context list.
 	GetKeys() []IOptExprContext
@@ -4985,13 +4671,11 @@ type IMapInitializerListContext interface {
 	// GetValues returns the values rule context list.
 	GetValues() []IExprContext
 
-
 	// SetKeys sets the keys rule context list.
-	SetKeys([]IOptExprContext) 
+	SetKeys([]IOptExprContext)
 
 	// SetValues sets the values rule context list.
-	SetValues([]IExprContext) 
-
+	SetValues([]IExprContext)
 
 	// Getter signatures
 	AllOptExpr() []IOptExprContext
@@ -5009,13 +4693,13 @@ type IMapInitializerListContext interface {
 
 type MapInitializerListContext struct {
 	antlr.BaseParserRuleContext
-	parser antlr.Parser
-	_optExpr IOptExprContext 
-	keys []IOptExprContext
-	s21 antlr.Token
-	cols []antlr.Token
-	_expr IExprContext 
-	values []IExprContext
+	parser   antlr.Parser
+	_optExpr IOptExprContext
+	keys     []IOptExprContext
+	s21      antlr.Token
+	cols     []antlr.Token
+	_expr    IExprContext
+	values   []IExprContext
 }
 
 func NewEmptyMapInitializerListContext() *MapInitializerListContext {
@@ -5025,7 +4709,7 @@ func NewEmptyMapInitializerListContext() *MapInitializerListContext {
 	return p
 }
 
-func InitEmptyMapInitializerListContext(p *MapInitializerListContext)  {
+func InitEmptyMapInitializerListContext(p *MapInitializerListContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_mapInitializerList
 }
@@ -5047,35 +4731,27 @@ func (s *MapInitializerListContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *MapInitializerListContext) GetS21() antlr.Token { return s.s21 }
 
-
 func (s *MapInitializerListContext) SetS21(v antlr.Token) { s.s21 = v }
-
 
 func (s *MapInitializerListContext) GetCols() []antlr.Token { return s.cols }
 
-
 func (s *MapInitializerListContext) SetCols(v []antlr.Token) { s.cols = v }
-
 
 func (s *MapInitializerListContext) Get_optExpr() IOptExprContext { return s._optExpr }
 
 func (s *MapInitializerListContext) Get_expr() IExprContext { return s._expr }
 
-
 func (s *MapInitializerListContext) Set_optExpr(v IOptExprContext) { s._optExpr = v }
 
 func (s *MapInitializerListContext) Set_expr(v IExprContext) { s._expr = v }
-
 
 func (s *MapInitializerListContext) GetKeys() []IOptExprContext { return s.keys }
 
 func (s *MapInitializerListContext) GetValues() []IExprContext { return s.values }
 
-
 func (s *MapInitializerListContext) SetKeys(v []IOptExprContext) { s.keys = v }
 
 func (s *MapInitializerListContext) SetValues(v []IExprContext) { s.values = v }
-
 
 func (s *MapInitializerListContext) AllOptExpr() []IOptExprContext {
 	children := s.GetChildren()
@@ -5099,12 +4775,12 @@ func (s *MapInitializerListContext) AllOptExpr() []IOptExprContext {
 }
 
 func (s *MapInitializerListContext) OptExpr(i int) IOptExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IOptExprContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -5148,12 +4824,12 @@ func (s *MapInitializerListContext) AllExpr() []IExprContext {
 }
 
 func (s *MapInitializerListContext) Expr(i int) IExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprContext); ok {
 			if j == i {
-				t = ctx.(antlr.RuleContext);
+				t = ctx.(antlr.RuleContext)
 				break
 			}
 			j++
@@ -5183,7 +4859,6 @@ func (s *MapInitializerListContext) ToStringTree(ruleNames []string, recog antlr
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *MapInitializerListContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterMapInitializerList(s)
@@ -5206,9 +4881,6 @@ func (s *MapInitializerListContext) Accept(visitor antlr.ParseTreeVisitor) inter
 	}
 }
 
-
-
-
 func (p *CELParser) MapInitializerList() (localctx IMapInitializerListContext) {
 	localctx = NewMapInitializerListContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 26, CELParserRULE_mapInitializerList)
@@ -5220,7 +4892,6 @@ func (p *CELParser) MapInitializerList() (localctx IMapInitializerListContext) {
 
 		var _x = p.OptExpr()
 
-
 		localctx.(*MapInitializerListContext)._optExpr = _x
 	}
 	localctx.(*MapInitializerListContext).keys = append(localctx.(*MapInitializerListContext).keys, localctx.(*MapInitializerListContext)._optExpr)
@@ -5231,8 +4902,8 @@ func (p *CELParser) MapInitializerList() (localctx IMapInitializerListContext) {
 
 		localctx.(*MapInitializerListContext).s21 = _m
 		if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
+			// Recognition error - abort rule
+			goto errorExit
 		}
 	}
 	localctx.(*MapInitializerListContext).cols = append(localctx.(*MapInitializerListContext).cols, localctx.(*MapInitializerListContext).s21)
@@ -5240,7 +4911,6 @@ func (p *CELParser) MapInitializerList() (localctx IMapInitializerListContext) {
 		p.SetState(218)
 
 		var _x = p.Expr()
-
 
 		localctx.(*MapInitializerListContext)._expr = _x
 	}
@@ -5260,15 +4930,14 @@ func (p *CELParser) MapInitializerList() (localctx IMapInitializerListContext) {
 				p.SetState(219)
 				p.Match(CELParserCOMMA)
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			{
 				p.SetState(220)
 
 				var _x = p.OptExpr()
-
 
 				localctx.(*MapInitializerListContext)._optExpr = _x
 			}
@@ -5280,8 +4949,8 @@ func (p *CELParser) MapInitializerList() (localctx IMapInitializerListContext) {
 
 				localctx.(*MapInitializerListContext).s21 = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 			localctx.(*MapInitializerListContext).cols = append(localctx.(*MapInitializerListContext).cols, localctx.(*MapInitializerListContext).s21)
@@ -5290,25 +4959,21 @@ func (p *CELParser) MapInitializerList() (localctx IMapInitializerListContext) {
 
 				var _x = p.Expr()
 
-
 				localctx.(*MapInitializerListContext)._expr = _x
 			}
 			localctx.(*MapInitializerListContext).values = append(localctx.(*MapInitializerListContext).values, localctx.(*MapInitializerListContext)._expr)
-
 
 		}
 		p.SetState(228)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-	    	goto errorExit
-	    }
+			goto errorExit
+		}
 		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 30, p.GetParserRuleContext())
 		if p.HasError() {
 			goto errorExit
 		}
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -5323,7 +4988,6 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 // IOptExprContext is an interface to support dynamic dispatch.
 type IOptExprContext interface {
 	antlr.ParserRuleContext
@@ -5332,20 +4996,16 @@ type IOptExprContext interface {
 	GetParser() antlr.Parser
 
 	// GetOpt returns the opt token.
-	GetOpt() antlr.Token 
-
+	GetOpt() antlr.Token
 
 	// SetOpt sets the opt token.
-	SetOpt(antlr.Token) 
-
+	SetOpt(antlr.Token)
 
 	// GetE returns the e rule contexts.
 	GetE() IExprContext
 
-
 	// SetE sets the e rule contexts.
 	SetE(IExprContext)
-
 
 	// Getter signatures
 	Expr() IExprContext
@@ -5358,8 +5018,8 @@ type IOptExprContext interface {
 type OptExprContext struct {
 	antlr.BaseParserRuleContext
 	parser antlr.Parser
-	opt antlr.Token
-	e IExprContext 
+	opt    antlr.Token
+	e      IExprContext
 }
 
 func NewEmptyOptExprContext() *OptExprContext {
@@ -5369,7 +5029,7 @@ func NewEmptyOptExprContext() *OptExprContext {
 	return p
 }
 
-func InitEmptyOptExprContext(p *OptExprContext)  {
+func InitEmptyOptExprContext(p *OptExprContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_optExpr
 }
@@ -5391,21 +5051,17 @@ func (s *OptExprContext) GetParser() antlr.Parser { return s.parser }
 
 func (s *OptExprContext) GetOpt() antlr.Token { return s.opt }
 
-
 func (s *OptExprContext) SetOpt(v antlr.Token) { s.opt = v }
-
 
 func (s *OptExprContext) GetE() IExprContext { return s.e }
 
-
 func (s *OptExprContext) SetE(v IExprContext) { s.e = v }
 
-
 func (s *OptExprContext) Expr() IExprContext {
-	var t antlr.RuleContext;
+	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExprContext); ok {
-			t = ctx.(antlr.RuleContext);
+			t = ctx.(antlr.RuleContext)
 			break
 		}
 	}
@@ -5429,7 +5085,6 @@ func (s *OptExprContext) ToStringTree(ruleNames []string, recog antlr.Recognizer
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
 func (s *OptExprContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
 		listenerT.EnterOptExpr(s)
@@ -5452,9 +5107,6 @@ func (s *OptExprContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
-
-
 func (p *CELParser) OptExpr() (localctx IOptExprContext) {
 	localctx = NewOptExprContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 28, CELParserRULE_optExpr)
@@ -5468,7 +5120,6 @@ func (p *CELParser) OptExpr() (localctx IOptExprContext) {
 	}
 	_la = p.GetTokenStream().LA(1)
 
-
 	if _la == CELParserQUESTIONMARK {
 		{
 			p.SetState(229)
@@ -5477,8 +5128,8 @@ func (p *CELParser) OptExpr() (localctx IOptExprContext) {
 
 			localctx.(*OptExprContext).opt = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 
@@ -5488,11 +5139,8 @@ func (p *CELParser) OptExpr() (localctx IOptExprContext) {
 
 		var _x = p.Expr()
 
-
 		localctx.(*OptExprContext).e = _x
 	}
-
-
 
 errorExit:
 	if p.HasError() {
@@ -5506,7 +5154,6 @@ errorExit:
 	return localctx
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
-
 
 // ILiteralContext is an interface to support dynamic dispatch.
 type ILiteralContext interface {
@@ -5530,7 +5177,7 @@ func NewEmptyLiteralContext() *LiteralContext {
 	return p
 }
 
-func InitEmptyLiteralContext(p *LiteralContext)  {
+func InitEmptyLiteralContext(p *LiteralContext) {
 	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
 	p.RuleIndex = CELParserRULE_literal
 }
@@ -5562,9 +5209,6 @@ func (s *LiteralContext) ToStringTree(ruleNames []string, recog antlr.Recognizer
 	return antlr.TreesStringTree(s, ruleNames, recog)
 }
 
-
-
-
 type BytesContext struct {
 	LiteralContext
 	tok antlr.Token
@@ -5580,9 +5224,7 @@ func NewBytesContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *BytesCon
 	return p
 }
 
-
 func (s *BytesContext) GetTok() antlr.Token { return s.tok }
-
 
 func (s *BytesContext) SetTok(v antlr.Token) { s.tok = v }
 
@@ -5593,7 +5235,6 @@ func (s *BytesContext) GetRuleContext() antlr.RuleContext {
 func (s *BytesContext) BYTES() antlr.TerminalNode {
 	return s.GetToken(CELParserBYTES, 0)
 }
-
 
 func (s *BytesContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -5617,7 +5258,6 @@ func (s *BytesContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type UintContext struct {
 	LiteralContext
 	tok antlr.Token
@@ -5633,9 +5273,7 @@ func NewUintContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *UintConte
 	return p
 }
 
-
 func (s *UintContext) GetTok() antlr.Token { return s.tok }
-
 
 func (s *UintContext) SetTok(v antlr.Token) { s.tok = v }
 
@@ -5646,7 +5284,6 @@ func (s *UintContext) GetRuleContext() antlr.RuleContext {
 func (s *UintContext) NUM_UINT() antlr.TerminalNode {
 	return s.GetToken(CELParserNUM_UINT, 0)
 }
-
 
 func (s *UintContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -5670,7 +5307,6 @@ func (s *UintContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type NullContext struct {
 	LiteralContext
 	tok antlr.Token
@@ -5686,9 +5322,7 @@ func NewNullContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *NullConte
 	return p
 }
 
-
 func (s *NullContext) GetTok() antlr.Token { return s.tok }
-
 
 func (s *NullContext) SetTok(v antlr.Token) { s.tok = v }
 
@@ -5699,7 +5333,6 @@ func (s *NullContext) GetRuleContext() antlr.RuleContext {
 func (s *NullContext) NUL() antlr.TerminalNode {
 	return s.GetToken(CELParserNUL, 0)
 }
-
 
 func (s *NullContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -5723,7 +5356,6 @@ func (s *NullContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type BoolFalseContext struct {
 	LiteralContext
 	tok antlr.Token
@@ -5739,9 +5371,7 @@ func NewBoolFalseContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *Bool
 	return p
 }
 
-
 func (s *BoolFalseContext) GetTok() antlr.Token { return s.tok }
-
 
 func (s *BoolFalseContext) SetTok(v antlr.Token) { s.tok = v }
 
@@ -5752,7 +5382,6 @@ func (s *BoolFalseContext) GetRuleContext() antlr.RuleContext {
 func (s *BoolFalseContext) CEL_FALSE() antlr.TerminalNode {
 	return s.GetToken(CELParserCEL_FALSE, 0)
 }
-
 
 func (s *BoolFalseContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -5776,7 +5405,6 @@ func (s *BoolFalseContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type StringContext struct {
 	LiteralContext
 	tok antlr.Token
@@ -5792,9 +5420,7 @@ func NewStringContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *StringC
 	return p
 }
 
-
 func (s *StringContext) GetTok() antlr.Token { return s.tok }
-
 
 func (s *StringContext) SetTok(v antlr.Token) { s.tok = v }
 
@@ -5805,7 +5431,6 @@ func (s *StringContext) GetRuleContext() antlr.RuleContext {
 func (s *StringContext) STRING() antlr.TerminalNode {
 	return s.GetToken(CELParserSTRING, 0)
 }
-
 
 func (s *StringContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -5829,11 +5454,10 @@ func (s *StringContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type DoubleContext struct {
 	LiteralContext
 	sign antlr.Token
-	tok antlr.Token
+	tok  antlr.Token
 }
 
 func NewDoubleContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *DoubleContext {
@@ -5846,11 +5470,9 @@ func NewDoubleContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *DoubleC
 	return p
 }
 
-
 func (s *DoubleContext) GetSign() antlr.Token { return s.sign }
 
 func (s *DoubleContext) GetTok() antlr.Token { return s.tok }
-
 
 func (s *DoubleContext) SetSign(v antlr.Token) { s.sign = v }
 
@@ -5867,7 +5489,6 @@ func (s *DoubleContext) NUM_FLOAT() antlr.TerminalNode {
 func (s *DoubleContext) MINUS() antlr.TerminalNode {
 	return s.GetToken(CELParserMINUS, 0)
 }
-
 
 func (s *DoubleContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -5891,7 +5512,6 @@ func (s *DoubleContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type BoolTrueContext struct {
 	LiteralContext
 	tok antlr.Token
@@ -5907,9 +5527,7 @@ func NewBoolTrueContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *BoolT
 	return p
 }
 
-
 func (s *BoolTrueContext) GetTok() antlr.Token { return s.tok }
-
 
 func (s *BoolTrueContext) SetTok(v antlr.Token) { s.tok = v }
 
@@ -5920,7 +5538,6 @@ func (s *BoolTrueContext) GetRuleContext() antlr.RuleContext {
 func (s *BoolTrueContext) CEL_TRUE() antlr.TerminalNode {
 	return s.GetToken(CELParserCEL_TRUE, 0)
 }
-
 
 func (s *BoolTrueContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -5944,11 +5561,10 @@ func (s *BoolTrueContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
 type IntContext struct {
 	LiteralContext
 	sign antlr.Token
-	tok antlr.Token
+	tok  antlr.Token
 }
 
 func NewIntContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *IntContext {
@@ -5961,11 +5577,9 @@ func NewIntContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *IntContext
 	return p
 }
 
-
 func (s *IntContext) GetSign() antlr.Token { return s.sign }
 
 func (s *IntContext) GetTok() antlr.Token { return s.tok }
-
 
 func (s *IntContext) SetSign(v antlr.Token) { s.sign = v }
 
@@ -5982,7 +5596,6 @@ func (s *IntContext) NUM_INT() antlr.TerminalNode {
 func (s *IntContext) MINUS() antlr.TerminalNode {
 	return s.GetToken(CELParserMINUS, 0)
 }
-
 
 func (s *IntContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CELListener); ok {
@@ -6006,8 +5619,6 @@ func (s *IntContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	}
 }
 
-
-
 func (p *CELParser) Literal() (localctx ILiteralContext) {
 	localctx = NewLiteralContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 30, CELParserRULE_literal)
@@ -6030,7 +5641,6 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		if _la == CELParserMINUS {
 			{
 				p.SetState(234)
@@ -6039,8 +5649,8 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 				localctx.(*IntContext).sign = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 
@@ -6052,11 +5662,10 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 			localctx.(*IntContext).tok = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 2:
 		localctx = NewUintContext(p, localctx)
@@ -6068,11 +5677,10 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 			localctx.(*UintContext).tok = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 3:
 		localctx = NewDoubleContext(p, localctx)
@@ -6084,7 +5692,6 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-
 		if _la == CELParserMINUS {
 			{
 				p.SetState(239)
@@ -6093,8 +5700,8 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 				localctx.(*DoubleContext).sign = _m
 				if p.HasError() {
-						// Recognition error - abort rule
-						goto errorExit
+					// Recognition error - abort rule
+					goto errorExit
 				}
 			}
 
@@ -6106,11 +5713,10 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 			localctx.(*DoubleContext).tok = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 4:
 		localctx = NewStringContext(p, localctx)
@@ -6122,11 +5728,10 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 			localctx.(*StringContext).tok = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 5:
 		localctx = NewBytesContext(p, localctx)
@@ -6138,11 +5743,10 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 			localctx.(*BytesContext).tok = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 6:
 		localctx = NewBoolTrueContext(p, localctx)
@@ -6154,11 +5758,10 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 			localctx.(*BoolTrueContext).tok = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 7:
 		localctx = NewBoolFalseContext(p, localctx)
@@ -6170,11 +5773,10 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 			localctx.(*BoolFalseContext).tok = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
-
 
 	case 8:
 		localctx = NewNullContext(p, localctx)
@@ -6186,15 +5788,14 @@ func (p *CELParser) Literal() (localctx ILiteralContext) {
 
 			localctx.(*NullContext).tok = _m
 			if p.HasError() {
-					// Recognition error - abort rule
-					goto errorExit
+				// Recognition error - abort rule
+				goto errorExit
 			}
 		}
 
 	case antlr.ATNInvalidAltNumber:
 		goto errorExit
 	}
-
 
 errorExit:
 	if p.HasError() {
@@ -6209,24 +5810,28 @@ errorExit:
 	goto errorExit // Trick to prevent compiler error if the label is not used
 }
 
-
 func (p *CELParser) Sempred(localctx antlr.RuleContext, ruleIndex, predIndex int) bool {
 	switch ruleIndex {
 	case 4:
-			var t *RelationContext = nil
-			if localctx != nil { t = localctx.(*RelationContext) }
-			return p.Relation_Sempred(t, predIndex)
+		var t *RelationContext = nil
+		if localctx != nil {
+			t = localctx.(*RelationContext)
+		}
+		return p.Relation_Sempred(t, predIndex)
 
 	case 5:
-			var t *CalcContext = nil
-			if localctx != nil { t = localctx.(*CalcContext) }
-			return p.Calc_Sempred(t, predIndex)
+		var t *CalcContext = nil
+		if localctx != nil {
+			t = localctx.(*CalcContext)
+		}
+		return p.Calc_Sempred(t, predIndex)
 
 	case 7:
-			var t *MemberContext = nil
-			if localctx != nil { t = localctx.(*MemberContext) }
-			return p.Member_Sempred(t, predIndex)
-
+		var t *MemberContext = nil
+		if localctx != nil {
+			t = localctx.(*MemberContext)
+		}
+		return p.Member_Sempred(t, predIndex)
 
 	default:
 		panic("No predicate with index: " + fmt.Sprint(ruleIndex))
@@ -6236,7 +5841,7 @@ func (p *CELParser) Sempred(localctx antlr.RuleContext, ruleIndex, predIndex int
 func (p *CELParser) Relation_Sempred(localctx antlr.RuleContext, predIndex int) bool {
 	switch predIndex {
 	case 0:
-			return p.Precpred(p.GetParserRuleContext(), 1)
+		return p.Precpred(p.GetParserRuleContext(), 1)
 
 	default:
 		panic("No predicate with index: " + fmt.Sprint(predIndex))
@@ -6246,10 +5851,10 @@ func (p *CELParser) Relation_Sempred(localctx antlr.RuleContext, predIndex int) 
 func (p *CELParser) Calc_Sempred(localctx antlr.RuleContext, predIndex int) bool {
 	switch predIndex {
 	case 1:
-			return p.Precpred(p.GetParserRuleContext(), 2)
+		return p.Precpred(p.GetParserRuleContext(), 2)
 
 	case 2:
-			return p.Precpred(p.GetParserRuleContext(), 1)
+		return p.Precpred(p.GetParserRuleContext(), 1)
 
 	default:
 		panic("No predicate with index: " + fmt.Sprint(predIndex))
@@ -6259,16 +5864,15 @@ func (p *CELParser) Calc_Sempred(localctx antlr.RuleContext, predIndex int) bool
 func (p *CELParser) Member_Sempred(localctx antlr.RuleContext, predIndex int) bool {
 	switch predIndex {
 	case 3:
-			return p.Precpred(p.GetParserRuleContext(), 3)
+		return p.Precpred(p.GetParserRuleContext(), 3)
 
 	case 4:
-			return p.Precpred(p.GetParserRuleContext(), 2)
+		return p.Precpred(p.GetParserRuleContext(), 2)
 
 	case 5:
-			return p.Precpred(p.GetParserRuleContext(), 1)
+		return p.Precpred(p.GetParserRuleContext(), 1)
 
 	default:
 		panic("No predicate with index: " + fmt.Sprint(predIndex))
 	}
 }
-
