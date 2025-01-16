@@ -458,7 +458,7 @@ func (pk *PrivateKey) Decrypt(passphrase []byte) error {
 }
 
 // DecryptPrivateKeys decrypts all encrypted keys with the given config and passphrase.
-// Avoids recomputation of similar s2k key derivations. 
+// Avoids recomputation of similar s2k key derivations.
 func DecryptPrivateKeys(keys []*PrivateKey, passphrase []byte) error {
 	// Create a cache to avoid recomputation of key derviations for the same passphrase.
 	s2kCache := &s2k.Cache{}
@@ -485,7 +485,7 @@ func (pk *PrivateKey) encrypt(key []byte, params *s2k.Params, cipherFunction Cip
 	if len(key) != cipherFunction.KeySize() {
 		return errors.InvalidArgumentError("supplied encryption key has the wrong size")
 	}
-	
+
 	priv := bytes.NewBuffer(nil)
 	err := pk.serializePrivateKey(priv)
 	if err != nil {
@@ -497,7 +497,7 @@ func (pk *PrivateKey) encrypt(key []byte, params *s2k.Params, cipherFunction Cip
 	pk.s2k, err = pk.s2kParams.Function()
 	if err != nil {
 		return err
-	} 
+	}
 
 	privateKeyBytes := priv.Bytes()
 	pk.sha1Checksum = true
@@ -581,7 +581,7 @@ func (pk *PrivateKey) Encrypt(passphrase []byte) error {
 			S2KMode:  s2k.IteratedSaltedS2K,
 			S2KCount: 65536,
 			Hash:     crypto.SHA256,
-		} ,
+		},
 		DefaultCipher: CipherAES256,
 	}
 	return pk.EncryptWithConfig(passphrase, config)
