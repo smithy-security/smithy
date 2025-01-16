@@ -5,7 +5,7 @@ import (
 	"slices"
 	"testing"
 
-	v1 "github.com/smithy-security/smithyctl/types/v1"
+	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 )
 
 func ptr[T any](v T) *T {
@@ -79,7 +79,7 @@ func TestParameter(t *testing.T) {
 		{
 			testCase: "it should marshal correctly a non empty const string",
 			param: v1.Parameter{
-				Name:  "non-empty-const-ptr-str",
+				Name:  "non-empty-const-str",
 				Type:  v1.ParameterTypeConststring,
 				Value: "{{.Helm.template.value}}",
 			},
@@ -87,7 +87,7 @@ func TestParameter(t *testing.T) {
 		{
 			testCase: "it should marshal correctly an empty string",
 			param: v1.Parameter{
-				Name:  "empty-const-ptr-str",
+				Name:  "empty-const-str",
 				Type:  v1.ParameterTypeConststring,
 				Value: "",
 			},
@@ -146,16 +146,18 @@ func TestParameter(t *testing.T) {
 				case tt.param.Name != param.Name:
 					t.Fatalf("expected param name %v but got %v", tt.param.Name, param.Name)
 				default:
-					// A string can be a pointer.
-					if reflect.TypeOf(param.Value).Kind() == reflect.Ptr {
-						if tt.param.Value != nil && param.Value != nil && *tt.param.Value.(*string) != *param.Value.(*string) {
-							t.Fatalf("expected param value %v but got %v", tt.param.Value, param.Value)
+					var expectedVal string
+
+					if tt.param.Value != nil {
+						if reflect.TypeOf(tt.param.Value).Kind() == reflect.Ptr {
+							expectedVal = *tt.param.Value.(*string)
+						} else {
+							expectedVal = tt.param.Value.(string)
 						}
-						// Or not.
-					} else {
-						if tt.param.Value != param.Value {
-							t.Fatalf("expected param value %v but got %v", tt.param.Value, param.Value)
-						}
+					}
+
+					if param.Value != nil && expectedVal != param.Value.(string) {
+						t.Fatalf("expected param value %v but got %v", expectedVal, param.Value)
 					}
 				}
 				// In case of lists, we need to check element by element.

@@ -57,7 +57,9 @@ func (p *Parameter) UnmarshalJSON(b []byte) error {
 	case ParameterTypeString, ParameterTypeConststring:
 		parameterValueStrPtr := &struct{ Value *string }{}
 		if err = json.Unmarshal(b, parameterValueStrPtr); err == nil {
-			p.Value = parameterValueStrPtr.Value
+			if parameterValueStrPtr.Value != nil {
+				p.Value = *parameterValueStrPtr.Value
+			}
 			break
 		}
 		parameterValueStr := &struct{ Value string }{}
