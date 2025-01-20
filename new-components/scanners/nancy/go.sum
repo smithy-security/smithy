@@ -130,6 +130,10 @@ github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
 github.com/smithy-security/pkg/env v0.0.1 h1:uwLTMLdNN/dv3x4zat75JahEBQDpdBeldjEE8El4OiM=
 github.com/smithy-security/pkg/env v0.0.1/go.mod h1:VIJfDqeAbQQcmohaXcZI6grjeJC9Y8CmqR4ITpdngZE=
+github.com/smithy-security/pkg/sarif v0.0.1 h1:iZDtYBzUKbQlDCli0x8ZSaTt3+2WYoryFVrhS6/1v3c=
+github.com/smithy-security/pkg/sarif v0.0.1/go.mod h1:+zGyJKSH8xfpcHvJEsDp47lWCtfmePuKF51cshOydZo=
+github.com/smithy-security/smithy/new-components/scanners/gosec v0.0.0-20250114182125-ae2b90b14ae1 h1:VX92D6qnwzj6xfIwPw1uLeMgrdQHq+xzJP3PiBEJOAc=
+github.com/smithy-security/smithy/new-components/scanners/gosec v0.0.0-20250114182125-ae2b90b14ae1/go.mod h1:EQo+NUKL9mBRwNLducpjKtC/7CX9d0uOakGUIn0uaCg=
 github.com/smithy-security/smithy/sdk v0.0.4-alpha h1:2SRgY1TBp68utOHSu4O4RdzBsxWqUeGI9Hx9tK55R7o=
 github.com/smithy-security/smithy/sdk v0.0.4-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
 github.com/spf13/cast v1.7.0 h1:ntdiHjuueXFgm5nzDRdOS4yfT43P5Fnud6DH50rz/7w=
