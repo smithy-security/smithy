@@ -30,11 +30,11 @@ type (
 	// bytes, since this type will constantly be subject to such transformations.
 	Parameter struct {
 		// Name is the name of the parameter.
-		Name string
+		Name string `json:"name" yaml:"name"`
 		// Type is the parameter type.
-		Type ParameterType
+		Type ParameterType `json:"type" yaml:"type"`
 		// Value is the JSON encoded/decoded value of the parameter which is decoded based its Type.
-		Value any
+		Value any `json:"value" yaml:"value"`
 	}
 )
 
@@ -113,15 +113,27 @@ func (p *Parameter) Validate() error {
 		return nil
 	}
 
+	b, err := json.Marshal(p.Value)
+	if err != nil {
+		return fmt.Errorf("could not marshal value for parameter '%s': %w", p.Name, err)
+	}
+
 	var correctType bool
+
 	switch p.Type {
 	case ParameterTypeString, ParameterTypeConststring:
-		_, correctType = p.Value.(*string)
-		if !correctType {
-			_, correctType = p.Value.(string)
+		var s string
+		if err := json.Unmarshal(b, &s); err != nil {
+			return fmt.Errorf("could not unmarshal value for parameter '%s': %w", p.Name, err)
 		}
+		correctType = true
 	case ParameterTypeListstring:
-		_, correctType = p.Value.([]string)
+		var ss []string
+		if err := json.Unmarshal(b, &ss); err != nil {
+			return fmt.Errorf("could not unmarshal value for parameter '%s': %w", p.Name, err)
+		}
+
+		correctType = true
 	default:
 		err = ErrUnknownParameterType
 	}
