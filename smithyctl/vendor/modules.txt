@@ -1,9 +1,180 @@
+# dario.cat/mergo v1.0.0
+## explicit; go 1.13
+dario.cat/mergo
+# github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161
+## explicit; go 1.16
+github.com/Azure/go-ansiterm
+github.com/Azure/go-ansiterm/winterm
+# github.com/Microsoft/go-winio v0.6.2
+## explicit; go 1.21
+github.com/Microsoft/go-winio
+github.com/Microsoft/go-winio/internal/fs
+github.com/Microsoft/go-winio/internal/socket
+github.com/Microsoft/go-winio/internal/stringbuffer
+github.com/Microsoft/go-winio/pkg/guid
+# github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5
+## explicit
+github.com/Nvveen/Gotty
+# github.com/cenkalti/backoff/v4 v4.3.0
+## explicit; go 1.18
+github.com/cenkalti/backoff/v4
+# github.com/containerd/continuity v0.4.3
+## explicit; go 1.19
+github.com/containerd/continuity/pathdriver
+# github.com/davecgh/go-spew v1.1.1
+## explicit
+github.com/davecgh/go-spew/spew
+# github.com/docker/cli v26.1.4+incompatible
+## explicit
+github.com/docker/cli/cli/compose/interpolation
+github.com/docker/cli/cli/compose/loader
+github.com/docker/cli/cli/compose/schema
+github.com/docker/cli/cli/compose/template
+github.com/docker/cli/cli/compose/types
+github.com/docker/cli/opts
+# github.com/docker/docker v27.1.1+incompatible
+## explicit
+github.com/docker/docker/api/types/blkiodev
+github.com/docker/docker/api/types/container
+github.com/docker/docker/api/types/filters
+github.com/docker/docker/api/types/mount
+github.com/docker/docker/api/types/network
+github.com/docker/docker/api/types/strslice
+github.com/docker/docker/api/types/swarm
+github.com/docker/docker/api/types/swarm/runtime
+github.com/docker/docker/api/types/versions
+github.com/docker/docker/internal/multierror
+# github.com/docker/go-connections v0.5.0
+## explicit; go 1.18
+github.com/docker/go-connections/nat
+# github.com/docker/go-units v0.5.0
+## explicit
+github.com/docker/go-units
+# github.com/go-errors/errors v1.5.1
+## explicit; go 1.14
+github.com/go-errors/errors
+# github.com/gogo/protobuf v1.3.2
+## explicit; go 1.15
+github.com/gogo/protobuf/proto
+# github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
+## explicit; go 1.13
+github.com/google/shlex
 # github.com/inconshreveable/mousetrap v1.1.0
 ## explicit; go 1.18
 github.com/inconshreveable/mousetrap
+# github.com/mitchellh/mapstructure v1.5.0
+## explicit; go 1.14
+github.com/mitchellh/mapstructure
+# github.com/moby/docker-image-spec v1.3.1
+## explicit; go 1.18
+github.com/moby/docker-image-spec/specs-go/v1
+# github.com/moby/term v0.5.0
+## explicit; go 1.18
+github.com/moby/term
+github.com/moby/term/windows
+# github.com/opencontainers/go-digest v1.0.0
+## explicit; go 1.13
+github.com/opencontainers/go-digest
+# github.com/opencontainers/image-spec v1.1.0
+## explicit; go 1.18
+github.com/opencontainers/image-spec/specs-go
+github.com/opencontainers/image-spec/specs-go/v1
+# github.com/opencontainers/runc v1.1.13
+## explicit; go 1.18
+github.com/opencontainers/runc/libcontainer/user
+# github.com/ory/dockertest/v3 v3.11.0
+## explicit; go 1.22
+github.com/ory/dockertest/v3
+github.com/ory/dockertest/v3/docker
+github.com/ory/dockertest/v3/docker/opts
+github.com/ory/dockertest/v3/docker/pkg/archive
+github.com/ory/dockertest/v3/docker/pkg/fileutils
+github.com/ory/dockertest/v3/docker/pkg/homedir
+github.com/ory/dockertest/v3/docker/pkg/idtools
+github.com/ory/dockertest/v3/docker/pkg/ioutils
+github.com/ory/dockertest/v3/docker/pkg/jsonmessage
+github.com/ory/dockertest/v3/docker/pkg/longpath
+github.com/ory/dockertest/v3/docker/pkg/mount
+github.com/ory/dockertest/v3/docker/pkg/pools
+github.com/ory/dockertest/v3/docker/pkg/stdcopy
+github.com/ory/dockertest/v3/docker/pkg/system
+github.com/ory/dockertest/v3/docker/types
+github.com/ory/dockertest/v3/docker/types/blkiodev
+github.com/ory/dockertest/v3/docker/types/container
+github.com/ory/dockertest/v3/docker/types/filters
+github.com/ory/dockertest/v3/docker/types/mount
+github.com/ory/dockertest/v3/docker/types/network
+github.com/ory/dockertest/v3/docker/types/registry
+github.com/ory/dockertest/v3/docker/types/strslice
+github.com/ory/dockertest/v3/docker/types/versions
+# github.com/pkg/errors v0.9.1
+## explicit
+github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+## explicit
+github.com/pmezard/go-difflib/difflib
+# github.com/sirupsen/logrus v1.9.3
+## explicit; go 1.13
+github.com/sirupsen/logrus
+# github.com/smithy-security/smithy v0.59.3-0.20250120121417-46ed717871b3
+## explicit; go 1.23.2
+github.com/smithy-security/smithy/pkg/types/v1
 # github.com/spf13/cobra v1.8.1
 ## explicit; go 1.15
 github.com/spf13/cobra
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
+# github.com/stretchr/testify v1.9.0
+## explicit; go 1.17
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/require
+github.com/stretchr/testify/suite
+# github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb
+## explicit
+github.com/xeipuuv/gojsonpointer
+# github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
+## explicit
+github.com/xeipuuv/gojsonreference
+# github.com/xeipuuv/gojsonschema v1.2.0
+## explicit
+github.com/xeipuuv/gojsonschema
+# golang.org/x/sync v0.10.0
+## explicit; go 1.18
+golang.org/x/sync/errgroup
+golang.org/x/sync/semaphore
+# golang.org/x/sys v0.21.0
+## explicit; go 1.18
+golang.org/x/sys/unix
+golang.org/x/sys/windows
+# gopkg.in/yaml.v2 v2.4.0
+## explicit; go 1.15
+gopkg.in/yaml.v2
+# gopkg.in/yaml.v3 v3.0.1
+## explicit
+gopkg.in/yaml.v3
+# oras.land/oras-go/v2 v2.5.0
+## explicit; go 1.21
+oras.land/oras-go/v2
+oras.land/oras-go/v2/content
+oras.land/oras-go/v2/errdef
+oras.land/oras-go/v2/internal/cas
+oras.land/oras-go/v2/internal/container/set
+oras.land/oras-go/v2/internal/copyutil
+oras.land/oras-go/v2/internal/descriptor
+oras.land/oras-go/v2/internal/docker
+oras.land/oras-go/v2/internal/httputil
+oras.land/oras-go/v2/internal/interfaces
+oras.land/oras-go/v2/internal/ioutil
+oras.land/oras-go/v2/internal/manifestutil
+oras.land/oras-go/v2/internal/platform
+oras.land/oras-go/v2/internal/registryutil
+oras.land/oras-go/v2/internal/spec
+oras.land/oras-go/v2/internal/status
+oras.land/oras-go/v2/internal/syncutil
+oras.land/oras-go/v2/registry
+oras.land/oras-go/v2/registry/remote
+oras.land/oras-go/v2/registry/remote/auth
+oras.land/oras-go/v2/registry/remote/errcode
+oras.land/oras-go/v2/registry/remote/internal/errutil
+oras.land/oras-go/v2/registry/remote/retry
