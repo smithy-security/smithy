@@ -12,15 +12,19 @@ spec:
       type: string
   steps:
   - name: run-cdxgen
-    image: ghcr.io/cyclonedx/cdxgen:v10.9.5
+    image: ghcr.io/cyclonedx/cdxgen:v11.1.0
     command:
       - node
+    env:
+      - name: NPM_INSTALL_ARGS
+        value: "--force --ignore-scripts --package-lock --legacy-peer-deps"
     args:
       - /opt/cdxgen/bin/cdxgen.js
       - -t
       - $(params.enricher-reachability-programming-language)
       - --deep
       - -r
+      - --feature-flags safe-pip-install
       - -p
       - -o
       - $(workspaces.source-code.path)/bom.json
