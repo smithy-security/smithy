@@ -37,11 +37,20 @@ func writeOutput(results map[string][]*v1.Issue) error {
 		slog.Info(
 			"appending",
 			slog.Int("issues", len(issues)),
-			slog.String("tool", "snuk"),
+			slog.String("tool", "snyk"),
 		)
 		if err := producers.WriteSmithyOut(
 			"snyk",
 			issues,
+		); err != nil {
+			slog.Error("error writing smithy out for the snyk tool", "err", err)
+		}
+	}
+	if len(results) == 0 { // in case snyk had a clean scan
+		slog.Info("writing snyk output without any findings")
+		if err := producers.WriteSmithyOut(
+			"snyk",
+			[]*v1.Issue{},
 		); err != nil {
 			slog.Error("error writing smithy out for the snyk tool", "err", err)
 		}

@@ -179,3 +179,30 @@ func TestWriteOutput(t *testing.T) {
 	}
 	require.Equal(t, len(expectedIssues), foundIssues)
 }
+
+func TestWriteOutputNoIssues(t *testing.T) {
+	producers.Append = true
+	sampleIssues := map[string][]*v1.Issue{}
+
+	workspace, err := os.MkdirTemp("", "smithy")
+	require.NoError(t, err)
+
+	defer require.NoError(t, os.RemoveAll(workspace))
+
+	producers.OutFile = filepath.Join(workspace, "out.pb")
+	err = writeOutput(sampleIssues)
+	require.NoError(t, err)
+
+	_, err = os.Stat(producers.OutFile)
+	require.NoError(t, err)
+
+	in, err := os.ReadFile(producers.OutFile)
+	require.NoError(t, err)
+	var wrote v1.LaunchToolResponse
+	err = proto.Unmarshal(in, &wrote)
+	require.NoError(t, err)
+	expectedIssues := []*v1.Issue{}
+	require.Equal(t, len(expectedIssues), len(wrote.Issues))
+	require.NotEmpty(t, wrote.ScanInfo)
+	require.Equal(t, wrote.ToolName, "snyk")
+}
