@@ -1,7 +1,7 @@
 # custom-annotation
 
 This component implements an [enricher](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
-that adds a custom json annotation to the fetched vulnerability findings 
+that adds a custom json annotation to the fetched vulnerability findings
 associated with the workflow.
 
 ## Environment variables
@@ -9,7 +9,7 @@ associated with the workflow.
 The component uses environment variables for configuration.
 
 It requires the component
-environment variables defined [here](https://github.com/smithy-security/smithy/blob/main/sdk/README.md#component) 
+environment variables defined [here](https://github.com/smithy-security/smithy/blob/main/sdk/README.md#component)
 as well as the following:
 
 | Environment Variable       | Type   | Required | Default | Description                                                             |
