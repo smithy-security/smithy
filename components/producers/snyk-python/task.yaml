@@ -37,7 +37,7 @@ spec:
       snyk auth $(params.producer-snyk-python-api-key)
       if [[ -n "$(params.producer-snyk-python-relative-path-to-requirements-txt)" ]]; then
         echo "installing dependencies"
-        pip install -r "$(workspaces.output.path)/source-code/$(params.producer-snyk-python-relative-path-to-requirements-txt)"
+        pip install --force --no-deps --no-compile --no-warn-conflicts -r "$(workspaces.output.path)/source-code/$(params.producer-snyk-python-relative-path-to-requirements-txt)"
       fi
 
       echo "running snyk test"
