@@ -1,0 +1,12 @@
+services:
+  scanner:
+    build:
+      context: ../..
+      args:
+        - COMPONENT_PATH=scanners/trufflehog
+        - COMPONENT_BINARY_SOURCE_PATH=cmd/main.go
+    platform: linux/amd64
+    volumes:
+      - ./internal/transformer/testdata:/workspace
+    env_file:
+      - .env
