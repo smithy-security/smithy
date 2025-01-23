@@ -1,0 +1,12 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+nameSuffix: -dast-orchestration-project
+components:
+  - pkg:helm/smithy-security-oss-components/base
+  - pkg:helm/smithy-security-oss-components/producer-zap-orchestration
+  - pkg:helm/smithy-security-oss-components/producer-aggregator
+  - pkg:helm/smithy-security-oss-components/enricher-deduplication
+  - pkg:helm/smithy-security-oss-components/enricher-aggregator
+  - pkg:helm/smithy-security-oss-components/consumer-elasticsearch
+  - pkg:helm/smithy-security-oss-components/consumer-stdout-json
