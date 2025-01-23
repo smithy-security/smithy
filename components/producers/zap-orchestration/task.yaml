@@ -1,0 +1,79 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: producer-zap-orchestration
+  labels:
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: dast
+spec:
+  description: DAST scanner that analyses web applications for security issues.
+  params:
+  - name: producer-zap-orchestration-file-base64
+    type: string
+    default: ""
+  - name: producer-zap-orchestration-requirements-file-base64
+    type: string
+    default: ""
+  volumes:
+    - name: scratch
+      emptyDir: {}
+  workspaces:
+    - name: output
+      description: The workspace containing the source-code to scan.
+  sidecars:
+    - name: run-zap
+      image: ghcr.io/zaproxy/zaproxy:stable
+      script: |
+        zap.sh -daemon -silent -notel -config api.key=changeme -port 8081
+      volumeMounts:
+      - mountPath: /scratch
+        name: scratch
+
+    - name: run-bodgeit
+      image: captainfoobar/bodgeit
+
+  steps:
+  - name: run-orchestration
+    image: ubuntu:latest
+    script: |
+      #! /usr/bin/env bash
+      set -ex
+
+      apt update
+      apt install -y python3-virtualenv
+
+      echo "$(params.producer-zap-orchestration-file-base64)" | base64 -d > orchestration.py
+      echo "$(params.producer-zap-orchestration-requirements-file-base64)" | base64 -d > requirements.txt
+      virtualenv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+
+      export HTTP_PROXY='http://localhost:8081'
+      export HTTPS_PROXY='http://localhost:8081'
+      python orchestration.py
+
+      cat requirements.txt
+      cat orchestration.py
+  
+      echo "$(params.producer-zap-orchestration-file-base64)"
+      echo "$(params.producer-zap-orchestration-requirements-file-base64)"
+  
+  - name: debug
+    image: alpine:latest
+    script: |
+      ls -lah /scratch
+    volumeMounts:
+    - mountPath: /scratch
+      name: scratch
+
+  - name: produce-issues
+    imagePullPolicy: IfNotPresent
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/zaproxy:{{ .Chart.AppVersion }}'
+    command: ["/app/components/producers/zaproxy/zaproxy-parser"]
+    args:
+    - "-in=/scratch/zap-report.json"
+    - "-out=$(workspaces.output.path)/.smithy/producers/zap.pb"
+    volumeMounts:
+    - mountPath: /scratch
+      name: scratch
