@@ -268,6 +268,7 @@ func (b *BanditTransformer) parseResult(r *BanditResult) (*ocsf.VulnerabilityFin
 				LastSeenTime:  &now,
 				Severity:      &severity,
 				Title:         &r.IssueText,
+				VendorName:    ptr.Ptr("bandit"),
 			},
 		},
 	}, nil

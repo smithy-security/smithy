@@ -237,6 +237,7 @@ func (g *gosecTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 							LastSeenTime:  &now,
 							Severity:      ptr.Ptr(severityID.String()),
 							Title:         ptr.Ptr(title),
+							VendorName:    ptr.Ptr("gosec"),
 						},
 					},
 				},
