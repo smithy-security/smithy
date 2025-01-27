@@ -1,0 +1,61 @@
+name: Package on Tag
+
+on:
+  push:
+    tags:
+      # Matches: new-components/scanners/gosec/v1.0.0 or new-components/scanners/gosec/v1.0.0-alpha3 for example.
+      - 'new-components/(scanners|targets|reporters|filters|enrichers)/[^/]+/v[0-9]+\.[0-9]+\.[0-9]+.*'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract tag details
+        id: tag_info
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          COMPONENT_TYPE=$(echo $TAG | cut -d/ -f1)
+          COMPONENT_NAME=$(echo $TAG | cut -d/ -f2)
+          VERSION=$(echo $TAG | cut -d/ -f3)
+          
+          echo "component_type=$COMPONENT_TYPE" >> $GITHUB_OUTPUT
+          echo "component_name=$COMPONENT_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract SDK Version
+        id: sdk_version
+        run: |
+          SDK_VERSION=$(make COMPONENT_TYPE=${{ steps.tag_info.outputs.component_type }} COMPONENT_NAME=${{ steps.tag_info.outputs.component_name }} component-sdk-version)
+          echo "sdk_version=$SDK_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: smithyctl/go.mod
+
+      - name: Build CLI
+        run: make smithyctl/cmd/bin
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Packaging
+        run: |
+          ./bin/smithyctl/cmd/linux/amd64/smithyctl \
+            --debug-enabled=true \
+            --debug-level=debug \
+            component \
+              package \
+                --registry-auth-enabled=true \
+                --registry-auth-username=${{ github.actor }} \
+                --registry-auth-password=${{ secrets.GITHUB_TOKEN }} \
+                --registry-url=ghcr.io \
+                --sdk-version=${{ steps.sdk_version.outputs.sdk_version }} \
+                --spec-path=new-components/${{ steps.tag_info.outputs.component_type }}/${{ steps.tag_info.outputs.component_name }}/component.yaml \
+                --version=${{ steps.tag_info.outputs.version }}
