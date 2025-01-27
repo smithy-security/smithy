@@ -2,8 +2,8 @@ package v1
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
+
+	"github.com/go-errors/errors"
 )
 
 var (
@@ -73,7 +73,7 @@ func (p *Parameter) UnmarshalJSON(b []byte) error {
 		err = ErrUnknownParameterType
 	}
 	if err != nil {
-		return fmt.Errorf("parameter.Name: %s, parameter.Type: %s: %w", partialParameter.Name, partialParameter.Type, err)
+		return errors.Errorf("parameter.Name: %s, parameter.Type: %s: %w", partialParameter.Name, partialParameter.Type, err)
 	}
 
 	return nil
@@ -95,7 +95,7 @@ func (p *Parameter) MarshalJSON() ([]byte, error) {
 		Value: p.Value,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("could not json marshal value: %w", err)
+		return nil, errors.Errorf("could not json marshal value: %w", err)
 	}
 
 	return b, nil
@@ -106,7 +106,7 @@ func (p *Parameter) MarshalJSON() ([]byte, error) {
 func (p *Parameter) Validate() error {
 	_, err := ParseParameterType(string(p.Type))
 	if err != nil {
-		return fmt.Errorf("could not parse parameter '%s' with type: '%s': %w", p.Name, p.Type, err)
+		return errors.Errorf("could not parse parameter '%s' with type: '%s': %w", p.Name, p.Type, err)
 	}
 
 	if p.Value == nil {
@@ -131,7 +131,7 @@ func (p *Parameter) Validate() error {
 	}
 
 	if err != nil {
-		return fmt.Errorf(
+		return errors.Errorf(
 			"invalid parameter '%s' with type '%s' and value '%v': %w",
 			p.Name,
 			p.Type,

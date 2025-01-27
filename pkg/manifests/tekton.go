@@ -2,8 +2,8 @@ package manifests
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/go-errors/errors"
 	tektonv1beta1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 )
 
@@ -16,7 +16,7 @@ func LoadTektonV1Beta1Task(ctx context.Context, configurationDir, pathOrURI stri
 
 	task, isATask := obj.(*tektonv1beta1.Task)
 	if !isATask {
-		return nil, fmt.Errorf("object loaded is not a task: %v", gKV)
+		return nil, errors.Errorf("object loaded is not a task: %v", gKV)
 	}
 	return task, nil
 }
@@ -30,7 +30,7 @@ func LoadTektonV1Beta1Pipeline(ctx context.Context, configurationDir, pathOrURI 
 
 	pipeline, isAPipeline := obj.(*tektonv1beta1.Pipeline)
 	if !isAPipeline {
-		return nil, fmt.Errorf("object loaded is not a pipeline: %v", gKV)
+		return nil, errors.Errorf("object loaded is not a pipeline: %v", gKV)
 	}
 	return pipeline, nil
 }

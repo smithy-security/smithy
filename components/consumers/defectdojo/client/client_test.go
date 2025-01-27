@@ -15,7 +15,7 @@ import (
 
 func TestDojoClient(t *testing.T) {
 	called := false
-	mockTs := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockTS := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, r.RequestURI, "/users")
 		called = true
 		_, err := w.Write([]byte(`{"count":1,"next":null,"previous":null,"results":[{"id":1,"username":"admin","first_name":"Admin","last_name":"User","email":"admin@defectdojo.local","last_login":"2022-05-31T20:26:54.928778Z","is_active":true,"is_superuser":true}]}`))
@@ -23,8 +23,8 @@ func TestDojoClient(t *testing.T) {
 	}))
 	authToken := "foo"
 	authUser := "bar"
-	client, err := DojoClient(mockTs.URL, authToken, authUser)
-	c := &Client{host: mockTs.URL, apiToken: authToken, user: authUser}
+	client, err := DojoClient(mockTS.URL, authToken, authUser)
+	c := &Client{host: mockTS.URL, apiToken: authToken, user: authUser}
 	require.NoError(t, err)
 	assert.True(t, called)
 	assert.Equal(t, client, c)

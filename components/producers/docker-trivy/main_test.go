@@ -19,7 +19,7 @@ func TestParseCombinedOut(t *testing.T) {
 	combinedOutput := fmt.Sprintf(`{"ubuntu:latest":%s,"alpine:latest":%s}`, exampleOutput, exampleOutput)
 	err := json.Unmarshal([]byte(combinedOutput), &results)
 	if err != nil {
-		t.Logf(err.Error())
+		t.Log(err.Error())
 		t.Fail()
 	}
 	issues := parseCombinedOut(results)
@@ -61,7 +61,7 @@ func TestParseSingleOut(t *testing.T) {
 	var results types.TrivyOut
 	err := json.Unmarshal([]byte(exampleOutput), &results)
 	if err != nil {
-		t.Logf(err.Error())
+		t.Log(err.Error())
 		t.Fail()
 	}
 	issues := parseSingleOut(results)

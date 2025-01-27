@@ -4,7 +4,6 @@ package producers
 
 import (
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -16,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-errors/errors"
 
 	smithyapiv1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components"
@@ -57,10 +58,10 @@ func ParseFlags() error {
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvSmithyScanID)))
 
 	if InResults == "" {
-		return fmt.Errorf("in is undefined")
+		return errors.Errorf("in is undefined")
 	}
 	if OutFile == "" {
-		return fmt.Errorf("out is undefined")
+		return errors.Errorf("out is undefined")
 	}
 	return nil
 }
@@ -199,7 +200,7 @@ func EnsureValidFileTarget(fileTarget string) (string, error) {
 func GetPartsFromFileTarget(fileTarget string) (*url.URL, int, int, error) {
 	parts := fileTargetPattern.FindStringSubmatch(fileTarget)
 	if len(parts) != 3 {
-		return nil, 0, 0, fmt.Errorf("invalid file target format: %s; MUST be file://path/to/file:start-end", fileTarget)
+		return nil, 0, 0, errors.Errorf("invalid file target format: %s; MUST be file://path/to/file:start-end", fileTarget)
 	}
 
 	// Ensure the file URI is correct
@@ -208,26 +209,26 @@ func GetPartsFromFileTarget(fileTarget string) (*url.URL, int, int, error) {
 		return nil, 0, 0, err
 	}
 	if parsedURI.Scheme != "file" {
-		return nil, 0, 0, fmt.Errorf("invalid file target scheme: %s; MUST be file://", parsedURI.Scheme)
+		return nil, 0, 0, errors.Errorf("invalid file target scheme: %s; MUST be file://", parsedURI.Scheme)
 	}
 
 	// Ensure the URI points to a file, not a directory
 	if filepath.Ext(parsedURI.Path) == "" {
-		return nil, 0, 0, fmt.Errorf("invalid file target path: %s; MUST point to a file", parsedURI.Path)
+		return nil, 0, 0, errors.Errorf("invalid file target path: %s; MUST point to a file", parsedURI.Path)
 	}
 
 	// Ensure the line range is correct
 	lineRange := strings.Split(parts[2], "-")
 	if len(lineRange) != 2 {
-		return nil, 0, 0, fmt.Errorf("invalid line range format: %s; MUST be start-end", parts[1])
+		return nil, 0, 0, errors.Errorf("invalid line range format: %s; MUST be start-end", parts[1])
 	}
 	start, err := strconv.Atoi(lineRange[0])
 	if err != nil {
-		return nil, 0, 0, fmt.Errorf("invalid start line: %s; MUST be an integer", lineRange[0])
+		return nil, 0, 0, errors.Errorf("invalid start line: %s; MUST be an integer", lineRange[0])
 	}
 	end, err := strconv.Atoi(lineRange[1])
 	if err != nil {
-		return nil, 0, 0, fmt.Errorf("invalid end line: %s; MUST be an integer", lineRange[1])
+		return nil, 0, 0, errors.Errorf("invalid end line: %s; MUST be an integer", lineRange[1])
 	}
 
 	return parsedURI, start, end, nil

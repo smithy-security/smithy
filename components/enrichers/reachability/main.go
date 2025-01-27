@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"log/slog"
 	"os/signal"
 	"syscall"
 
+	"github.com/go-errors/errors"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
@@ -41,27 +40,27 @@ func main() {
 func Main(ctx context.Context, cancel func()) error {
 	cfg, err := conf.New()
 	if err != nil {
-		return fmt.Errorf("could not load configuration: %w", err)
+		return errors.Errorf("could not load configuration: %w", err)
 	}
 
 	purlParser, err := purl.NewParser()
 	if err != nil {
-		return fmt.Errorf("could not initialize purl parser: %w", err)
+		return errors.Errorf("could not initialize purl parser: %w", err)
 	}
 
 	atomReader, err := atom.NewReader(cfg.ATOMFilePath, purlParser)
 	if err != nil {
-		return fmt.Errorf("could not initialize atom reader: %w", err)
+		return errors.Errorf("could not initialize atom reader: %w", err)
 	}
 
 	fsReadWriter, err := fs.NewReadWriter(cfg.ProducerResultsPath, cfg.EnrichedResultsPath)
 	if err != nil {
-		return fmt.Errorf("could not initialize filesystem read/writer: %w", err)
+		return errors.Errorf("could not initialize filesystem read/writer: %w", err)
 	}
 
 	enr, err := enricher.NewEnricher(cfg, atomReader, fsReadWriter)
 	if err != nil {
-		return fmt.Errorf("could not initialize enricher: %w", err)
+		return errors.Errorf("could not initialize enricher: %w", err)
 	}
 
 	g, egCtx := errgroup.WithContext(ctx)
@@ -74,14 +73,14 @@ func Main(ctx context.Context, cancel func()) error {
 
 	g.Go(func() error {
 		if err := enr.Enrich(egCtx); err != nil {
-			return fmt.Errorf("unexpected error while enriching: %w", err)
+			return errors.Errorf("unexpected error while enriching: %w", err)
 		}
 		cancel()
 		return nil
 	})
 
 	if err := g.Wait(); err != nil && !isCtxErr(err) {
-		return fmt.Errorf("unexpected error in waitgroup: %w", err)
+		return errors.Errorf("unexpected error in waitgroup: %w", err)
 	}
 
 	return nil

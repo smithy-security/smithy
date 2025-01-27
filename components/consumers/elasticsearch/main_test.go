@@ -15,12 +15,15 @@ import (
 )
 
 var (
-	want             = "OK"
-	info             = `{"Version":{"Number":"8.1.0"}}`
-	scanUUID         = "test-uuid"
-	scanStartTime, _ = time.Parse(time.RFC3339, "2020-04-13 11:51:53+01:00")
+	want     = "OK"
+	info     = `{"Version":{"Number":"8.1.0"}}`
+	scanUUID = "test-uuid"
+)
 
-	esIn, _ = json.Marshal(&esDocument{
+func generateIssue(t *testing.T) []byte {
+	scanStartTime, err := time.Parse(time.RFC3339, "2020-04-13T11:51:53+01:00")
+	require.NoError(t, err)
+	esIn, err := json.Marshal(&esDocument{
 		ScanStartTime:  scanStartTime,
 		ScanID:         scanUUID,
 		ToolName:       "es-unit-tests",
@@ -39,7 +42,9 @@ var (
 		FalsePositive:  false,
 		CVE:            "CVE-0000-99999",
 	})
-)
+	require.NoError(t, err)
+	return esIn
+}
 
 func TestEsPushBasicAuth(t *testing.T) {
 	esIndex = "smithy-es-test"
@@ -62,7 +67,7 @@ func TestEsPushBasicAuth(t *testing.T) {
 			require.NoError(t, err)
 		} else if r.Method == http.MethodPost {
 			// assert non authed operation (write results to index)
-			require.Equal(t, buf.String(), string(esIn))
+			require.Equal(t, buf.String(), string(generateIssue(t)))
 			require.Equal(t, r.RequestURI, "/"+esIndex+"/_doc")
 
 			uname, pass, ok := r.BasicAuth()
@@ -75,14 +80,14 @@ func TestEsPushBasicAuth(t *testing.T) {
 		}
 	}))
 	defer esStub.Close()
-	os.Setenv("ELASTICSEARCH_URL", esStub.URL)
+	require.NoError(t, os.Setenv("ELASTICSEARCH_URL", esStub.URL))
 
 	// basic auth ops
 	basicAuthUser = "foo"
 	basicAuthPass = "bar"
 	client, err := getESClient()
 	require.NoError(t, err)
-	_, err = client.Index(esIndex, bytes.NewBuffer(esIn))
+	_, err = client.Index(esIndex, bytes.NewBuffer(generateIssue(t)))
 	require.NoError(t, err)
 }
 
@@ -98,17 +103,17 @@ func TestEsPush(t *testing.T) {
 			_, err = w.Write([]byte(info))
 		} else if r.Method == http.MethodPost {
 			// assert non authed operation (write results to index)
-			require.Equal(t, buf.String(), string(esIn))
+			require.Equal(t, buf.String(), string(generateIssue(t)))
 			require.Equal(t, r.RequestURI, "/"+esIndex+"/_doc")
 			_, err = w.Write([]byte(want))
 		}
 		require.NoError(t, err)
 	}))
 	defer esStub.Close()
-	os.Setenv("ELASTICSEARCH_URL", esStub.URL)
+	require.NoError(t, os.Setenv("ELASTICSEARCH_URL", esStub.URL))
 	client, err := getESClient()
 	require.NoError(t, err)
-	_, err = client.Index(esIndex, bytes.NewBuffer(esIn))
+	_, err = client.Index(esIndex, bytes.NewBuffer(generateIssue(t)))
 	require.NoError(t, err)
 }
 func TestEsPushAPIKey(t *testing.T) {
@@ -129,7 +134,7 @@ func TestEsPushAPIKey(t *testing.T) {
 			require.NoError(t, err)
 		} else if r.Method == http.MethodPost {
 			// assert non authed operation (write results to index)
-			require.Equal(t, buf.String(), string(esIn))
+			require.Equal(t, buf.String(), string(generateIssue(t)))
 			require.Equal(t, r.RequestURI, "/"+esIndex+"/_doc")
 
 			_, err = w.Write([]byte(want))
@@ -137,13 +142,13 @@ func TestEsPushAPIKey(t *testing.T) {
 		}
 	}))
 	defer esStub.Close()
-	os.Setenv("ELASTICSEARCH_URL", esStub.URL)
+	require.NoError(t, os.Setenv("ELASTICSEARCH_URL", esStub.URL))
 
 	// apikey ops
 	esAPIKey = "foo"
 	esCloudID = esStub.Config.Addr
 	client, err := getESClient()
 	require.NoError(t, err)
-	_, err = client.Index(esIndex, bytes.NewBuffer(esIn))
+	_, err = client.Index(esIndex, bytes.NewBuffer(generateIssue(t)))
 	require.NoError(t, err)
 }

@@ -21,9 +21,19 @@ import (
 	"github.com/smithy-security/smithy/pkg/templating"
 )
 
-func createObjects(product int, scanType string) ([]*v1.LaunchToolResponse, []*types.TestCreateRequest, []*types.FindingCreateRequest, []*types.EngagementRequest, []*v1.EnrichedLaunchToolResponse) {
+type ddObj struct {
+	response         []*v1.LaunchToolResponse
+	testCreateReq    []*types.TestCreateRequest
+	findingCreateReq []*types.FindingCreateRequest
+	engagementReq    []*types.EngagementRequest
+	enrichedResponse []*v1.EnrichedLaunchToolResponse
+}
+
+//revive:disable:cognitive-complexity High complexity score but easy to understand
+func createObjects(t *testing.T, product int, scanType string) ddObj {
 	scanID := "7c78f6c9-b4b0-493c-a912-0bb0a4aaaaa0"
-	times, _ := time.Parse(time.RFC3339, "2023-01-19T18:09:06.370037788Z")
+	times, err := time.Parse(time.RFC3339, "2023-01-19T18:09:06.370037788Z")
+	require.NoError(t, err)
 	timestamp := timestamppb.New(times)
 	var input []*v1.LaunchToolResponse
 	var enrichedInput []*v1.EnrichedLaunchToolResponse
@@ -63,7 +73,8 @@ func createObjects(product int, scanType string) ([]*v1.LaunchToolResponse, []*t
 		var issues []*v1.Issue
 		var enrichedIssues []*v1.EnrichedIssue
 		for j := 0; j <= 3%(i+1); j++ {
-			duplicateTimes, _ := time.Parse(time.RFC3339, "2000-01-19T18:09:06.370037788Z")
+			duplicateTimes, err := time.Parse(time.RFC3339, "2000-01-19T18:09:06.370037788Z")
+			require.NoError(t, err)
 			duplicateTimestamp := timestamppb.New(duplicateTimes)
 			x := v1.Issue{
 				Target:     fmt.Sprintf("myTarget %d-%d", i, j),
@@ -131,7 +142,13 @@ func createObjects(product int, scanType string) ([]*v1.LaunchToolResponse, []*t
 
 		testRequests = append(testRequests, test)
 	}
-	return input, testRequests, findingsRequests, engagementRequests, enrichedInput
+	return ddObj{
+		response:         input,
+		testCreateReq:    testRequests,
+		findingCreateReq: findingsRequests,
+		engagementReq:    engagementRequests,
+		enrichedResponse: enrichedInput,
+	}
 }
 
 func createFindingResponse(findingRequest *types.FindingCreateRequest) *types.FindingCreateResponse {
@@ -161,7 +178,11 @@ func TestHandleRawResults(t *testing.T) {
 	apiKey := "test"
 	dojoUser := "satuser"
 	product := 64
-	input, testRequests, findingsRequests, engagementRequests, _ := createObjects(product, "Raw")
+	objects := createObjects(t, product, "Raw")
+	input := objects.response
+	testRequests := objects.testCreateReq
+	findingsRequests := objects.findingCreateReq
+	engagementRequests := objects.engagementReq
 	var foundTests []*types.TestCreateRequest
 	var foundFindings []*types.FindingCreateRequest
 	var foundEngagements []*types.EngagementRequest
@@ -234,7 +255,12 @@ func TestHandleEnrichedResults(t *testing.T) {
 	dojoUser := "satuser"
 	product := 65
 
-	_, testRequests, findingsRequests, engagementRequests, input := createObjects(product, "Enriched")
+	objects := createObjects(t, product, "Enriched")
+	testRequests := objects.testCreateReq
+	findingsRequests := objects.findingCreateReq
+	engagementRequests := objects.engagementReq
+	input := objects.enrichedResponse
+
 	var foundTests []*types.TestCreateRequest
 	var foundFindings []*types.FindingCreateRequest
 	var foundEngagements []*types.EngagementRequest

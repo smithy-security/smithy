@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/go-errors/errors"
 	cdx "github.com/CycloneDX/cyclonedx-go"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
@@ -23,7 +24,7 @@ func ToSmithy(inFile []byte, format, targetOverride string) ([]*v1.Issue, error)
 	case "xml":
 		decoder = cdx.NewBOMDecoder(bytes.NewReader(inFile), cdx.BOMFileFormatXML)
 	default:
-		return issues, fmt.Errorf("%s, is not a supported BOM format, currently we support either 'json' or 'xml'", format)
+		return issues, errors.Errorf("%s, is not a supported BOM format, currently we support either 'json' or 'xml'", format)
 	}
 
 	if err := decoder.Decode(bom); err != nil {
@@ -69,7 +70,7 @@ func ToSmithy(inFile []byte, format, targetOverride string) ([]*v1.Issue, error)
 func FromSmithy(issue *v1.Issue) (*cdx.BOM, error) {
 	bom := new(cdx.BOM)
 	if issue.CycloneDXSBOM == nil || *issue.CycloneDXSBOM == "" {
-		return bom, fmt.Errorf("issue %s does not have an sbom", issue.Uuid)
+		return bom, errors.Errorf("issue %s does not have an sbom", issue.Uuid)
 	}
 	decoder := cdx.NewBOMDecoder(bytes.NewReader([]byte(*issue.CycloneDXSBOM)), cdx.BOMFileFormatJSON)
 	if err := decoder.Decode(bom); err != nil {

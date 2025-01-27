@@ -1,11 +1,10 @@
 package migrations
 
 import (
-	"errors"
-	"fmt"
 	"log/slog"
 	"os"
 
+	"github.com/go-errors/errors"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/spf13/cobra"
 
@@ -29,19 +28,19 @@ func init() {
 
 func revertMigrations(cmd *cobra.Command, args []string) error {
 	if migrationsCmdConfig.migratiosnPath == "" {
-		return fmt.Errorf("you need to provide a path to the migrations that will be applied")
+		return errors.Errorf("you need to provide a path to the migrations that will be applied")
 	}
 	slog.Info("reverting migrations", "migrations path:", migrationsCmdConfig.migratiosnPath)
 	dirFS := os.DirFS(migrationsCmdConfig.migratiosnPath)
 
 	dbURL, err := db.ParseConnectionStr(migrationsCmdConfig.connStr)
 	if err != nil {
-		return fmt.Errorf("could not parse connection string: %w", err)
+		return errors.Errorf("could not parse connection string: %w", err)
 	}
 
 	dbConn, err := dbURL.Connect()
 	if err != nil {
-		return fmt.Errorf("could not connect to the database: %w", err)
+		return errors.Errorf("could not connect to the database: %w", err)
 	}
 
 	migrations := db.Migrations{DB: dbConn, PGUrl: dbURL, MigrationsTable: migrationsCmdConfig.migrationsTable}
@@ -50,11 +49,11 @@ func revertMigrations(cmd *cobra.Command, args []string) error {
 		cmd.Println("no migrations applied to the database")
 		return nil
 	} else if err != nil {
-		return fmt.Errorf("could not get state of database: %w", err)
+		return errors.Errorf("could not get state of database: %w", err)
 	} else if isDirty {
-		return fmt.Errorf("can't revert migrations of dirty DB. please fix first and then re-run")
+		return errors.Errorf("can't revert migrations of dirty DB. please fix first and then re-run")
 	} else if revertCmdConfig.targetMigration >= curVersion {
-		return fmt.Errorf("you need to provide a target migration version that is lower than the currently applied version (%d)", curVersion)
+		return errors.Errorf("you need to provide a target migration version that is lower than the currently applied version (%d)", curVersion)
 	}
 
 	cmd.Println("Reverting migrations...")

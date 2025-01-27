@@ -2,11 +2,11 @@ package migrations
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
 
+	"github.com/go-errors/errors"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -31,25 +31,25 @@ func init() {
 
 func inspectMigrations(cmd *cobra.Command, args []string) error {
 	if migrationsCmdConfig.migratiosnPath == "" {
-		return fmt.Errorf("you need to provide a path to the migrations that will be applied")
+		return errors.Errorf("you need to provide a path to the migrations that will be applied")
 	}
 	slog.Info("inspecting migrations", "migrations path:", migrationsCmdConfig.migratiosnPath)
 	dirFS := os.DirFS(migrationsCmdConfig.migratiosnPath)
 
 	dbURL, err := db.ParseConnectionStr(migrationsCmdConfig.connStr)
 	if err != nil {
-		return fmt.Errorf("could not parse connection string: %w", err)
+		return errors.Errorf("could not parse connection string: %w", err)
 	}
 
 	dbConn, err := dbURL.Connect()
 	if err != nil {
-		return fmt.Errorf("could not connect to the database: %w", err)
+		return errors.Errorf("could not connect to the database: %w", err)
 	}
 
 	migrations := db.Migrations{DB: dbConn, PGUrl: dbURL, MigrationsTable: migrationsCmdConfig.migrationsTable}
 	latestMigration, isDirty, err := migrations.State(dirFS)
 	if err != nil && !errors.Is(err, migrate.ErrNilVersion) {
-		return fmt.Errorf("could not get state of database: %w", err)
+		return errors.Errorf("could not get state of database: %w", err)
 	}
 
 	if migrationsInspectCmdConfig.jsonOutput {
@@ -61,7 +61,7 @@ func inspectMigrations(cmd *cobra.Command, args []string) error {
 		var marshaledBytes []byte
 		marshaledBytes, err = json.Marshal(jsonOutput)
 		if err != nil {
-			return fmt.Errorf("could not marshal JSON output: %w", err)
+			return errors.Errorf("could not marshal JSON output: %w", err)
 		}
 
 		_, err = fmt.Fprintln(cmd.OutOrStdout(), string(marshaledBytes))

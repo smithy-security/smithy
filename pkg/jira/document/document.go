@@ -63,6 +63,7 @@ func NewEnriched(scanStartTime time.Time, res *v1.EnrichedLaunchToolResponse, is
 	return doc
 }
 
+// SeverityToText maps between v1.Severity and jira severity fields
 // The Severity field is normally mapped into the jira 'Impact' field, so the assumption
 // is that Severity = Impact; which in practice is generally true with small exceptions.
 func SeverityToText(severity v1.Severity) string {

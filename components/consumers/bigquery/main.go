@@ -4,7 +4,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"time"
 
@@ -12,6 +11,7 @@ import (
 	"golang.org/x/oauth2"
 	"google.golang.org/api/option"
 
+	"github.com/go-errors/errors"
 	"github.com/smithy-security/smithy/components/consumers"
 	"github.com/smithy-security/smithy/pkg/enumtransformers"
 )
@@ -94,7 +94,7 @@ func run(ctx context.Context) error {
 		log.Println("Parsing Raw results")
 		responses, err := consumers.LoadToolResponse()
 		if err != nil {
-			return fmt.Errorf("could not load raw results, file malformed: %w", err)
+			return errors.Errorf("could not load raw results, file malformed: %w", err)
 		}
 		for _, res := range responses {
 			for _, iss := range res.GetIssues() {
@@ -120,7 +120,7 @@ func run(ctx context.Context) error {
 		log.Print("Parsing Enriched results")
 		responses, err := consumers.LoadEnrichedToolResponse()
 		if err != nil {
-			return fmt.Errorf("could not load enriched results, file malformed: %w", err)
+			return errors.Errorf("could not load enriched results, file malformed: %w", err)
 		}
 		for _, res := range responses {
 			for _, iss := range res.GetIssues() {

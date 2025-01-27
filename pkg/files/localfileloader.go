@@ -2,10 +2,12 @@ package files
 
 import (
 	"context"
-	"fmt"
+
 	"os"
 	"path"
 	"path/filepath"
+
+	"github.com/go-errors/errors"
 )
 
 var _ Loader = (*localFileLoader)(nil)
@@ -27,7 +29,7 @@ func newLocalFileLoader(configurationDir, fileOrDir, targetFile string) (*localF
 	if info.IsDir() {
 		fileOrDir = path.Join(fileOrDir, targetFile)
 	} else if path.Base(fileOrDir) != targetFile {
-		return nil, fmt.Errorf("path %s should be pointing to a %s", fileOrDir, targetFile)
+		return nil, errors.Errorf("path %s should be pointing to a %s", fileOrDir, targetFile)
 	}
 
 	return &localFileLoader{path: fileOrDir}, nil

@@ -7,8 +7,7 @@
 package v1
 
 import (
-	"errors"
-	"fmt"
+	"github.com/go-errors/errors"
 )
 
 const (
@@ -45,5 +44,5 @@ func ParseParameterType(name string) (ParameterType, error) {
 	if x, ok := _ParameterTypeValue[name]; ok {
 		return x, nil
 	}
-	return ParameterType(""), fmt.Errorf("%s is %w", name, ErrInvalidParameterType)
+	return ParameterType(""), errors.Errorf("%s is %w", name, ErrInvalidParameterType)
 }

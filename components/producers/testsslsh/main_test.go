@@ -14,7 +14,7 @@ func TestParseOut(t *testing.T) {
 	var results []types.TestSSLFinding
 	err := json.Unmarshal([]byte(exampleOutput), &results)
 	if err != nil {
-		t.Logf(err.Error())
+		t.Log(err.Error())
 		t.Fail()
 	}
 	issues := parseOut(results)

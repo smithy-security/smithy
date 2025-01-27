@@ -1,10 +1,9 @@
 package pipelines
 
 import (
-	"errors"
-	"fmt"
 	"os"
 
+	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	kustomizetypes "sigs.k8s.io/kustomize/api/types"
@@ -42,25 +41,25 @@ func init() {
 
 func deployPipeline(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
-		return fmt.Errorf("you need to provide the path of exactly one kustomization file")
+		return errors.Errorf("you need to provide the path of exactly one kustomization file")
 	}
 
 	kustomizationPath := args[0]
 	kustomizationLoader, err := files.NewLoader(".", kustomizationPath, "kustomization.yaml")
 	if err != nil {
-		return fmt.Errorf("%s: could not read contents of file: %w", kustomizationPath, err)
+		return errors.Errorf("%s: could not read contents of file: %w", kustomizationPath, err)
 	}
 
 	// Load Pipeline kustomization file
 	fileContents, err := kustomizationLoader.Load(cmd.Context())
 	if err != nil {
-		return fmt.Errorf("%s: could not read contents of file: %w", kustomizationPath, err)
+		return errors.Errorf("%s: could not read contents of file: %w", kustomizationPath, err)
 	}
 
 	// Parse Pipeline kustomization
 	kustomization := &kustomizetypes.Kustomization{}
 	if err = kustomization.Unmarshal(fileContents); err != nil {
-		return fmt.Errorf("%s: could not unmarshal YAML file: %w", kustomizationPath, err)
+		return errors.Errorf("%s: could not unmarshal YAML file: %w", kustomizationPath, err)
 	}
 
 	basePipeline, err := pipelines.ResolveBase(cmd.Context(), kustomizationPath, *kustomization)
@@ -85,7 +84,7 @@ func deployPipeline(cmd *cobra.Command, args []string) error {
 
 	restCfg, err := deploySubCmdFlags.k8sConfigFlags.ToRESTConfig()
 	if err != nil {
-		return fmt.Errorf("could not initialise K8s client config with: %w", err)
+		return errors.Errorf("could not initialise K8s client config with: %w", err)
 	}
 
 	client, err := k8s.NewTypedClientForConfig(restCfg, deploySubCmdFlags.ssa)

@@ -12,8 +12,8 @@ import (
 
 	"golang.org/x/crypto/nacl/sign"
 
+	"github.com/go-errors/errors"
 	apiv1 "github.com/smithy-security/smithy/api/proto/v1"
-	v1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components"
 	"github.com/smithy-security/smithy/components/enrichers"
 	"github.com/smithy-security/smithy/pkg/putil"
@@ -98,13 +98,13 @@ func aggregateToolResponse(response *apiv1.EnrichedLaunchToolResponse, issues ma
 func run() error {
 	results, err := putil.LoadEnrichedNonAggregatedToolResponse(readPath)
 	if err != nil {
-		return fmt.Errorf("could not load tool response from path %s , error:%v", readPath, err)
+		return errors.Errorf("could not load tool response from path %s , error:%v", readPath, err)
 	}
 
 	if len(signKey) > 0 {
 		keyBytes, err = base64.StdEncoding.DecodeString(signKey)
 		if err != nil {
-			return fmt.Errorf("could not decode private key for signing")
+			return errors.Errorf("could not decode private key for signing")
 		}
 	}
 	log.Printf("loaded %d, enriched but not aggregated tool responses\n", len(results))
@@ -120,7 +120,7 @@ func run() error {
 	}
 
 	for toolName, toolIssues := range issues {
-		var result []*v1.EnrichedIssue
+		var result []*apiv1.EnrichedIssue
 		for _, issue := range toolIssues {
 			currentIssue := issue
 			if len(signKey) > 0 {

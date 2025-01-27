@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/go-errors/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/smithy-security/smithy/components/consumers"
@@ -93,7 +94,7 @@ func run(responses any, s3FilenameSuffix string, pw playwright.Wrapper, s3Wrappe
 	slog.Info("reading pdf")
 	resultFilename, pdfBytes, err := buildPdf(responses, pw)
 	if err != nil {
-		return fmt.Errorf("could not build pdf: %w", err)
+		return errors.Errorf("could not build pdf: %w", err)
 	}
 	slog.Info("result filename", slog.String("filename", resultFilename))
 
@@ -115,22 +116,22 @@ func buildPdf(data any, pw playwright.Wrapper) (string, []byte, error) {
 		"formatTime": formatTime,
 	}).ParseFiles(templateFile)
 	if err != nil {
-		return "", nil, fmt.Errorf("could not parse files: %w", err)
+		return "", nil, errors.Errorf("could not parse files: %w", err)
 	}
 
 	currentPath, err := os.Getwd()
 	if err != nil {
-		return "", nil, fmt.Errorf("could not get current working directory: %w", err)
+		return "", nil, errors.Errorf("could not get current working directory: %w", err)
 	}
 
 	reportHTMLPath := filepath.Join(currentPath, "report.html")
 	//#nosec: G304
 	f, err := os.OpenFile(reportHTMLPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o600) //#nosec: G304
 	if err != nil {
-		return "", nil, fmt.Errorf("could not open report.html: %w", err)
+		return "", nil, errors.Errorf("could not open report.html: %w", err)
 	}
 	if err = tmpl.Execute(f, data); err != nil {
-		return "", nil, fmt.Errorf("could not apply data to template: %w", err)
+		return "", nil, errors.Errorf("could not apply data to template: %w", err)
 	}
 	// close the file after writing it
 	defer func(f *os.File) {
@@ -144,7 +145,7 @@ func buildPdf(data any, pw playwright.Wrapper) (string, []byte, error) {
 	reportPage := fmt.Sprintf("file:///%s", reportHTMLPath)
 	pdfBytes, err := pw.GetPDFOfPage(reportPage, reportPDFPath)
 	if err != nil {
-		return "", nil, fmt.Errorf("could not generate pdf from page %s, err: %w", reportPage, err)
+		return "", nil, errors.Errorf("could not generate pdf from page %s, err: %w", reportPage, err)
 
 	}
 

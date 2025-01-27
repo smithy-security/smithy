@@ -7,8 +7,7 @@
 package component
 
 import (
-	"errors"
-	"fmt"
+	"github.com/go-errors/errors"
 )
 
 const (
@@ -48,7 +47,7 @@ func ParseRunnerConfigLoggingLevel(name string) (RunnerConfigLoggingLevel, error
 	if x, ok := _RunnerConfigLoggingLevelValue[name]; ok {
 		return x, nil
 	}
-	return RunnerConfigLoggingLevel(""), fmt.Errorf("%s is %w", name, ErrInvalidRunnerConfigLoggingLevel)
+	return RunnerConfigLoggingLevel(""), errors.Errorf("%s is %w", name, ErrInvalidRunnerConfigLoggingLevel)
 }
 
 const (
@@ -85,5 +84,5 @@ func ParseStoreType(name string) (StoreType, error) {
 	if x, ok := _StoreTypeValue[name]; ok {
 		return x, nil
 	}
-	return StoreType(""), fmt.Errorf("%s is %w", name, ErrInvalidStoreType)
+	return StoreType(""), errors.Errorf("%s is %w", name, ErrInvalidStoreType)
 }

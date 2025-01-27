@@ -2,9 +2,10 @@ package enrichment
 
 import (
 	"context"
-	"fmt"
+
 	"time"
 
+	"github.com/go-errors/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
@@ -167,7 +168,7 @@ issues (
 	)
 	if err != nil {
 		if rErr := tx.Rollback(); rErr != nil {
-			return fmt.Errorf("could not rollback: %w: %w", rErr, err)
+			return errors.Errorf("could not rollback: %w: %w", rErr, err)
 		}
 		return err
 	}
@@ -197,7 +198,7 @@ WHERE "hash"=:hash;`,
 	)
 	if err != nil {
 		if rErr := tx.Rollback(); rErr != nil {
-			return fmt.Errorf("could not rollback: %w: %w", rErr, err)
+			return errors.Errorf("could not rollback: %w: %w", rErr, err)
 		}
 		return err
 	}

@@ -1,10 +1,10 @@
 package fs
 
 import (
-	"errors"
 	"fmt"
 	"path/filepath"
 
+	"github.com/go-errors/errors"
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/pkg/putil"
 )
@@ -34,7 +34,7 @@ func NewReadWriter(readPath, writePath string) (*ReadWriter, error) {
 func (rw *ReadWriter) ReadTaggedResponse() ([]*v1.LaunchToolResponse, error) {
 	res, err := putil.LoadTaggedToolResponse(rw.readPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read tagged tool response: %w", err)
+		return nil, errors.Errorf("failed to read tagged tool response: %w", err)
 	}
 	return res, nil
 }
@@ -57,7 +57,7 @@ func (rw *ReadWriter) WriteEnrichedResults(
 	)
 
 	if err := putil.WriteEnrichedResults(original, enrichedIssues, writePath); err != nil {
-		return fmt.Errorf("error writing enriched results on path %s: %w", writePath, err)
+		return errors.Errorf("error writing enriched results on path %s: %w", writePath, err)
 	}
 
 	return nil
@@ -90,7 +90,7 @@ func (rw *ReadWriter) WriteRawResults(original *v1.LaunchToolResponse) error {
 		scanInfo.GetScanStartTime().AsTime(),
 		scanInfo.GetScanTags(),
 	); err != nil {
-		return fmt.Errorf("error writing raw results on path %s: %w", writePath, err)
+		return errors.Errorf("error writing raw results on path %s: %w", writePath, err)
 	}
 
 	return nil

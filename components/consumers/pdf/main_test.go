@@ -38,7 +38,7 @@ func Test_run(t *testing.T) {
 		return nil
 	}
 
-	err = run([]v1.EnrichedLaunchToolResponse{testdata.EnrichedLaunchToolResponse}, "", mockClient, mockS3Client)
+	err = run([]*v1.EnrichedLaunchToolResponse{&testdata.EnrichedLaunchToolResponse}, "", mockClient, mockS3Client)
 	require.NoError(t, err)
 	require.True(t, pdfCalled)
 	require.True(t, s3Called)
@@ -54,7 +54,7 @@ func Test_buildPdf(t *testing.T) {
 		called = true
 		return expected, nil
 	}
-	_, result, err := buildPdf([]v1.EnrichedLaunchToolResponse{testdata.EnrichedLaunchToolResponse}, mockClient)
+	_, result, err := buildPdf([]*v1.EnrichedLaunchToolResponse{&testdata.EnrichedLaunchToolResponse}, mockClient)
 	require.NoError(t, err)
 	require.Equal(t, called, true)
 	require.Equal(t, result, expected)

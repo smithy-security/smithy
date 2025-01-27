@@ -11,7 +11,7 @@ import (
 	"github.com/smithy-security/smithy/pkg/manifests"
 )
 
-// ENUM(unknown, naive, external-helm)
+// OrchestrationType ENUM(unknown, naive, external-helm)
 type OrchestrationType string
 
 // Component represents a Smithy component. At the moment it can only be a

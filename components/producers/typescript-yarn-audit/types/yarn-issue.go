@@ -72,12 +72,6 @@ type auditAdvisoryData struct {
 
 // AsIssue returns data as a Smithy v1.Issue.
 func (audit *auditAdvisoryData) AsIssue() *v1.Issue {
-	var targetName string
-	if audit.Resolution.Path != "" {
-		targetName = audit.Resolution.Path + ": "
-	}
-	targetName += audit.Advisory.ModuleName
-
 	return &v1.Issue{
 		Target:      producers.GetPURLTarget("npm", "", audit.Advisory.ModuleName, audit.Advisory.Findings[0].Version, nil, ""),
 		Type:        strconv.Itoa(audit.Advisory.ID),
@@ -216,7 +210,7 @@ func NewReport(reportLines [][]byte) (*YarnAuditReport, []error) {
 		errs = append(errs, errors.New("no dependencies found"))
 	}
 
-	if report.AuditAdvisories != nil && len(report.AuditAdvisories) > 0 {
+	if len(report.AuditAdvisories) > 0 {
 		return &report, errs
 	}
 

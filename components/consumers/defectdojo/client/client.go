@@ -3,10 +3,11 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/components/consumers/defectdojo/types"
 )
@@ -103,7 +104,7 @@ func (client *Client) CreateFinding(
 	}
 	var result types.FindingCreateResponse
 	if err := json.Unmarshal(resp, &result); err != nil {
-		return result, fmt.Errorf("could not unmarshal finding create resp: %w", err)
+		return result, errors.Errorf("could not unmarshal finding create resp: %w", err)
 	}
 	return result, nil
 }
@@ -139,7 +140,7 @@ func (client *Client) CreateEngagement(
 	}
 	result := &types.EngagementResponse{}
 	if err := json.Unmarshal(resp, &result); err != nil {
-		return nil, fmt.Errorf("could not unmarshal result '%s': %w", resp, err)
+		return nil, errors.Errorf("could not unmarshal result '%s': %w", resp, err)
 	}
 	return result, nil
 }
@@ -176,7 +177,7 @@ func (client *Client) CreateTest(
 	}
 	var result types.TestCreateResponse
 	if err := json.Unmarshal(resp, &result); err != nil {
-		return result, fmt.Errorf("could not unmarshal result '%s': %w", resp, err)
+		return result, errors.Errorf("could not unmarshal result '%s': %w", resp, err)
 	}
 	return result, nil
 }
@@ -189,15 +190,16 @@ func (client *Client) doRequest(req *http.Request) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	var respErr error
+	defer func() { respErr = resp.Body.Close() }()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return nil, fmt.Errorf("status code: %d for url %s and method %s\n body: %s", resp.StatusCode, req.URL, req.Method, body)
+		return nil, errors.Errorf("status code: %d for url %s and method %s\n body: %s", resp.StatusCode, req.URL, req.Method, body)
 	}
-	return body, nil
+	return body, respErr
 }
 
 func redirectPostOn301(req *http.Request, via []*http.Request) error {

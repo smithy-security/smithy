@@ -43,10 +43,10 @@ func ParseFlags() error {
 	}
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvSmithyScanID)))
 	if readPath == "" {
-		return fmt.Errorf("read_path is undefined")
+		return errors.Errorf("read_path is undefined")
 	}
 	if writePath == "" {
-		return fmt.Errorf("write_path is undefined")
+		return errors.Errorf("write_path is undefined")
 	}
 	return nil
 }

@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"strings"
 
+	"github.com/go-errors/errors"
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components/producers"
 	"github.com/smithy-security/smithy/components/producers/docker-trivy/types"
@@ -48,7 +49,7 @@ func main() {
 	case "spdx-json":
 		log.Fatal("SPDX is not supported, please use cyclonedx instead")
 	default:
-		log.Fatal(fmt.Errorf("format %s is not supported, supported formats are %v", Format, supportedFormats))
+		log.Fatal(errors.Errorf("format %s is not supported, supported formats are %v", Format, supportedFormats))
 	}
 	if err != nil {
 		log.Fatal(err)

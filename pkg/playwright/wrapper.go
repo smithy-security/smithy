@@ -1,8 +1,7 @@
 package wrapper
 
 import (
-	"fmt"
-
+	"github.com/go-errors/errors"
 	"github.com/playwright-community/playwright-go"
 )
 
@@ -50,7 +49,7 @@ func (c Client) GetPDFOfPage(page, storePath string) ([]byte, error) {
 	}
 
 	if _, err = newPage.Goto(page); err != nil {
-		return nil, fmt.Errorf("could not goto page %s in the browser: %w", page, err)
+		return nil, errors.Errorf("could not goto page %s in the browser: %w", page, err)
 	}
 
 	return newPage.PDF(playwright.PagePdfOptions{

@@ -5,7 +5,7 @@ type MockClient struct {
 	GetPDFOfPageCallBack func(string, string) ([]byte, error)
 }
 
-// NewClient returns an actual github client
+// NewMockClient returns an actual github client
 func NewMockClient() (MockClient, error) {
 	return MockClient{}, nil
 }

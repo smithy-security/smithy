@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"log/slog"
 	"strings"
@@ -38,7 +37,7 @@ func parseFlags() error {
 		return err
 	}
 	if len(esIndex) == 0 {
-		return fmt.Errorf("esIndex '%s' is undefined", esIndex)
+		return errors.Errorf("esIndex '%s' is undefined", esIndex)
 	}
 	if len(esUrls) > 0 {
 		for _, u := range strings.Split(esUrls, ",") {
@@ -206,7 +205,7 @@ type esDocument struct {
 func getESClient() (*elasticsearch.Client, error) {
 	var es *elasticsearch.Client
 	var err error
-	var esConfig elasticsearch.Config = elasticsearch.Config{}
+	var esConfig = elasticsearch.Config{}
 	type esInfo struct {
 		Version struct {
 			Number string `json:"number"`

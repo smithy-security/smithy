@@ -221,7 +221,7 @@ func TestWriteData(t *testing.T) {
 
 				er, err := putil.LoadEnrichedNonAggregatedToolResponse(workdir)
 				require.NoError(t, err)
-				opt := cmp.Comparer(func(x, y timestamppb.Timestamp) bool {
+				opt := cmp.Comparer(func(x, y *timestamppb.Timestamp) bool {
 					return x.Nanos == y.Nanos
 				})
 

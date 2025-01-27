@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/andygrunwald/go-jira"
+	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/pkg/jira/config"
 	"github.com/smithy-security/smithy/pkg/jira/document"
@@ -95,11 +96,11 @@ func (c Client) CreateIssue(smithyResult document.Document) error {
 		if resp != nil {
 			body, readErr := io.ReadAll(resp.Body)
 			if readErr != nil {
-				return fmt.Errorf("error while trying to create Jira ticket and error while trying to read response body: %w\n\n%w", err, readErr)
+				return errors.Errorf("error while trying to create Jira ticket and error while trying to read response body: %w\n\n%w", err, readErr)
 			}
-			return fmt.Errorf("error while trying to create new Jira ticket %s: %w", string(body), err)
+			return errors.Errorf("error while trying to create new Jira ticket %s: %w", string(body), err)
 		} else {
-			return fmt.Errorf("error while trying to create new Jira ticket: %w", err)
+			return errors.Errorf("error while trying to create new Jira ticket: %w", err)
 		}
 	}
 	log.Printf("Created Jira Issue ID %s. jira_key=%s", ri.ID, string(ri.Key))

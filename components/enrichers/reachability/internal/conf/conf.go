@@ -1,8 +1,9 @@
 package conf
 
 import (
-	"fmt"
 	"os"
+
+	"github.com/go-errors/errors"
 )
 
 const (
@@ -52,7 +53,7 @@ func New() (*Conf, error) {
 		*ev.dest, ok = os.LookupEnv(ev.envVarName)
 		switch {
 		case (!ok && ev.required) || (ev.required && *ev.dest == ""):
-			return nil, fmt.Errorf("environment variable %s not set but it's required", ev.envVarName)
+			return nil, errors.Errorf("environment variable %s not set but it's required", ev.envVarName)
 		}
 	}
 	return conf, nil

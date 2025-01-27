@@ -4,10 +4,10 @@ package consumers
 
 import (
 	"flag"
-	"fmt"
 	"log/slog"
 	"os"
 
+	"github.com/go-errors/errors"
 	smithyapiv1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components"
 	"github.com/smithy-security/smithy/pkg/putil"
@@ -37,7 +37,7 @@ func ParseFlags() error {
 	}
 	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})).With("scanID", os.Getenv(components.EnvSmithyScanID)))
 	if len(inResults) < 1 {
-		return fmt.Errorf("in is undefined")
+		return errors.Errorf("in is undefined")
 	}
 	return nil
 }

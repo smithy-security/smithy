@@ -9,9 +9,9 @@ package components
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"strings"
+
+	"github.com/go-errors/errors"
 )
 
 const (
@@ -33,7 +33,7 @@ const (
 	Consumer ComponentType = "consumer"
 )
 
-var ErrInvalidComponentType = fmt.Errorf("not a valid ComponentType, try [%s]", strings.Join(_ComponentTypeNames, ", "))
+var ErrInvalidComponentType = errors.Errorf("not a valid ComponentType, try [%s]", strings.Join(_ComponentTypeNames, ", "))
 
 var _ComponentTypeNames = []string{
 	string(Unknown),
@@ -95,7 +95,7 @@ func ParseComponentType(name string) (ComponentType, error) {
 	if x, ok := _ComponentTypeValue[name]; ok {
 		return x, nil
 	}
-	return ComponentType(""), fmt.Errorf("%s is %w", name, ErrInvalidComponentType)
+	return ComponentType(""), errors.Errorf("%s is %w", name, ErrInvalidComponentType)
 }
 
 // MustParseComponentType converts a string to a ComponentType, and panics if is not valid.

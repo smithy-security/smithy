@@ -1,11 +1,11 @@
 package search
 
 import (
-	"errors"
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
 )
@@ -28,7 +28,7 @@ func NewSearcher(reachables atom.Reachables, reachablePurls atom.ReachablePurls)
 
 	matcherFileLine, err := regexp.Compile(`(?P<file>[^/]+):(?P<line>[\d-]+)`)
 	if err != nil {
-		return nil, fmt.Errorf("failed to compile matcher file line regex: %w", err)
+		return nil, errors.Errorf("failed to compile matcher file line regex: %w", err)
 	}
 
 	return &Searcher{
@@ -58,7 +58,7 @@ func (s *Searcher) Search(search string) (bool, error) {
 
 		lineStart, lineEnd, err := s.searchLineRange(fileContent)
 		if err != nil {
-			return false, fmt.Errorf("failed to parse line range: %w", err)
+			return false, errors.Errorf("failed to parse line range: %w", err)
 		}
 
 		return s.searchReachableFlows(file, lineStart, lineEnd), nil
@@ -72,12 +72,12 @@ func (s *Searcher) searchLineRange(search string) (int, int, error) {
 	if parts := strings.Split(search, "-"); len(parts) >= 2 {
 		start, err := strconv.Atoi(parts[0])
 		if err != nil {
-			return 0, 0, fmt.Errorf("invalid integer for first entry %v: %w", parts[0], err)
+			return 0, 0, errors.Errorf("invalid integer for first entry %v: %w", parts[0], err)
 		}
 
 		end, err := strconv.Atoi(parts[1])
 		if err != nil {
-			return 0, 0, fmt.Errorf("invalid integer for second entry %v: %w", parts[1], err)
+			return 0, 0, errors.Errorf("invalid integer for second entry %v: %w", parts[1], err)
 		}
 
 		return start, end, nil
@@ -85,7 +85,7 @@ func (s *Searcher) searchLineRange(search string) (int, int, error) {
 
 	num, err := strconv.Atoi(search)
 	if err != nil {
-		return 0, 0, fmt.Errorf("invalid integer for fallback value %v: %w", search, err)
+		return 0, 0, errors.Errorf("invalid integer for fallback value %v: %w", search, err)
 	}
 
 	return num, num, nil

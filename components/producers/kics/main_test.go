@@ -65,7 +65,7 @@ func TestParseOut(t *testing.T) {
 	var results types.KICSOut
 	err := json.Unmarshal([]byte(exampleOutput), &results)
 	if err != nil {
-		t.Logf(err.Error())
+		t.Log(err.Error())
 		t.Fail()
 	}
 	issues, err := parseOut(results)

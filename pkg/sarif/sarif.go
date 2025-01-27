@@ -143,7 +143,7 @@ func smithyIssueToSarif(issue *v1.Issue, rule *sarif.ReportingDescriptor) (*sari
 	artifactLocation := sarif.ArtifactLocation{}
 	_, err := url.ParseRequestURI(removeSmithyInternalPath(issue.Target))
 	if err != nil {
-		return &sarif.Result{}, fmt.Errorf("issue titled '%s' targets '%s' which is not a valid URI, skipping", issue.Title, issue.Target)
+		return &sarif.Result{}, errors.Errorf("issue titled '%s' targets '%s' which is not a valid URI, skipping", issue.Title, issue.Target)
 	}
 	artifactLocation.WithUri(removeSmithyInternalPath(issue.Target))
 	physicalLocation.WithArtifactLocation(&artifactLocation)

@@ -3,16 +3,17 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
+
 	"fmt"
 	"log"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/smithy-security/smithy/components/consumers/slack/types"
+	"github.com/go-errors/errors"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
+	"github.com/smithy-security/smithy/components/consumers/slack/types"
 )
 
 func push(b string, webhook string) error {
@@ -34,7 +35,7 @@ func push(b string, webhook string) error {
 	}
 	buf := new(bytes.Buffer)
 	if _, err := buf.ReadFrom(resp.Body); err != nil {
-		return fmt.Errorf("could not read from resp: %w", err)
+		return errors.Errorf("could not read from resp: %w", err)
 	}
 	if strings.ToLower(buf.String()) != "ok" {
 		return errors.New("non-ok response returned from Slack")

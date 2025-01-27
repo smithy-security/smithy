@@ -2,10 +2,10 @@ package enricher
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"log/slog"
 	"strconv"
+
+	"github.com/go-errors/errors"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
@@ -61,7 +61,7 @@ func (r *enricher) Enrich(ctx context.Context) error {
 
 	taggedRes, err := r.readWriter.ReadTaggedResponse()
 	if err != nil {
-		return fmt.Errorf("could not read tagged response: %w", err)
+		return errors.Errorf("could not read tagged response: %w", err)
 	}
 
 	logger = logger.With(slog.Int("num_tagged_resources", len(taggedRes)))
@@ -70,7 +70,7 @@ func (r *enricher) Enrich(ctx context.Context) error {
 
 	reachablesRes, err := r.atomReader.Read(ctx)
 	if err != nil {
-		return fmt.Errorf("could not read atom reachables from path %s: %w", r.cfg.ATOMFilePath, err)
+		return errors.Errorf("could not read atom reachables from path %s: %w", r.cfg.ATOMFilePath, err)
 	}
 
 	logger = logger.With(slog.Int("num_atom_reachables", len(reachablesRes.Reachables)))
@@ -79,7 +79,7 @@ func (r *enricher) Enrich(ctx context.Context) error {
 
 	reachablePurls, err := r.atomReader.ReachablePurls(ctx, reachablesRes)
 	if err != nil {
-		return fmt.Errorf("could not get reachable purls: %w", err)
+		return errors.Errorf("could not get reachable purls: %w", err)
 	}
 
 	logger = logger.With(slog.Int("num_reachable_purls", len(reachablePurls)))
@@ -88,7 +88,7 @@ func (r *enricher) Enrich(ctx context.Context) error {
 
 	searcher, err := search.NewSearcher(reachablesRes.Reachables, reachablePurls)
 	if err != nil {
-		return fmt.Errorf("could not create searcher: %w", err)
+		return errors.Errorf("could not create searcher: %w", err)
 	}
 
 	logger.Debug("successfully created a new searcher!")

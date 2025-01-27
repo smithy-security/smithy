@@ -112,16 +112,16 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 func NewManager(conf *Conf) (*manager, error) {
 	switch {
 	case conf.RepoURL == "":
-		return nil, fmt.Errorf(errInvalidConfigurationStr, "repo_url", errInvalidConfigurationReasonEmpty)
+		return nil, errors.Errorf(errInvalidConfigurationStr, "repo_url", errInvalidConfigurationReasonEmpty)
 	case conf.Reference == "":
-		return nil, fmt.Errorf(errInvalidConfigurationStr, "reference", errInvalidConfigurationReasonEmpty)
+		return nil, errors.Errorf(errInvalidConfigurationStr, "reference", errInvalidConfigurationReasonEmpty)
 	case conf.ClonePath == "":
-		return nil, fmt.Errorf(errInvalidConfigurationStr, "clone_path", errInvalidConfigurationReasonEmpty)
+		return nil, errors.Errorf(errInvalidConfigurationStr, "clone_path", errInvalidConfigurationReasonEmpty)
 	}
 
 	u, err := url.Parse(conf.RepoURL)
 	if err != nil {
-		return nil, fmt.Errorf(errInvalidConfigurationStr+": %w", "repo_url", "couldn't parse", err)
+		return nil, errors.Errorf(errInvalidConfigurationStr+": %w", "repo_url", "couldn't parse", err)
 	}
 
 	opts := &git.CloneOptions{
@@ -143,10 +143,10 @@ func NewManager(conf *Conf) (*manager, error) {
 	// This is off by default to facilitate local setup.
 	if conf.ConfAuth.AuthEnabled {
 		if conf.ConfAuth.AccessToken == "" {
-			return nil, fmt.Errorf(errInvalidConfigurationStr, "auth_access_token", errInvalidConfigurationReasonEmpty)
+			return nil, errors.Errorf(errInvalidConfigurationStr, "auth_access_token", errInvalidConfigurationReasonEmpty)
 		}
 		if conf.ConfAuth.Username == "" {
-			return nil, fmt.Errorf(errInvalidConfigurationStr, "auth_username", errInvalidConfigurationReasonEmpty)
+			return nil, errors.Errorf(errInvalidConfigurationStr, "auth_username", errInvalidConfigurationReasonEmpty)
 		}
 		opts.Auth = &http.BasicAuth{
 			Username: conf.ConfAuth.Username,

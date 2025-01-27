@@ -1,10 +1,10 @@
 package purl
 
 import (
-	"fmt"
 	"path"
 	"regexp"
 
+	"github.com/go-errors/errors"
 	"github.com/package-url/packageurl-go"
 )
 
@@ -19,12 +19,12 @@ func NewParser() (*Parser, error) {
 	// Matches SEMVER versions: v1.1.0 / v1.1.0-beta.
 	semverPattern, err := regexp.Compile(`^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[0-9A-Za-z\-\.]+)?(\+[0-9A-Za-z\-\.]+)?$`)
 	if err != nil {
-		return nil, fmt.Errorf("failed to compile purl semver regex: %w", err)
+		return nil, errors.Errorf("failed to compile purl semver regex: %w", err)
 	}
 	// Matches SHA commit hashes from 7 (short) to 40 characters.
 	shaCommitPattern, err := regexp.Compile(`^[a-fA-F0-9]{7,40}$`)
 	if err != nil {
-		return nil, fmt.Errorf("failed to compile sha commit pattern regex: %w", err)
+		return nil, errors.Errorf("failed to compile sha commit pattern regex: %w", err)
 	}
 
 	return &Parser{
@@ -37,11 +37,11 @@ func NewParser() (*Parser, error) {
 func (p *Parser) ParsePurl(purl string) ([]string, error) {
 	pp, err := packageurl.FromString(purl)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse purl: %w", err)
+		return nil, errors.Errorf("failed to parse purl: %w", err)
 	}
 
 	if pp.Version == "" {
-		return nil, fmt.Errorf("failed to parse purl: empty version")
+		return nil, errors.Errorf("failed to parse purl: empty version")
 	}
 
 	var (
@@ -66,7 +66,7 @@ func (p *Parser) ParsePurl(purl string) ([]string, error) {
 			name + ":" + shortVersion,
 		}...)
 	default:
-		return nil, fmt.Errorf("failed to parse purl, invalid version: %s", version)
+		return nil, errors.Errorf("failed to parse purl, invalid version: %s", version)
 	}
 
 	return purlParts, nil

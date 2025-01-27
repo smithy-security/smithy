@@ -9,7 +9,6 @@ package context
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -71,7 +70,7 @@ func ExtractCode(finding *v1.Issue) (string, error) {
 	lineTo = lineTo + DefaultLineRange
 	handle, err := os.Open(path)
 	if err != nil {
-		return "", fmt.Errorf("context pkg could not open file in path %s, err: %w", path, err)
+		return "", errors.Errorf("context pkg could not open file in path %s, err: %w", path, err)
 	}
 	sc := bufio.NewScanner(handle)
 	pos := 0

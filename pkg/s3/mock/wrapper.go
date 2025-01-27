@@ -5,7 +5,7 @@ type Client struct {
 	UpsertCallback func(string, string, []byte) error
 }
 
-// NewClient returns a client
+// NewMockClient returns a client
 func NewMockClient(region string) (Client, error) {
 	// create new playwright client
 	return Client{}, nil

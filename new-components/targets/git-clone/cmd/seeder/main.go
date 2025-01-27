@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-errors/errors"
+
 	"github.com/smithy-security/pkg/env"
 )
 
@@ -60,7 +62,7 @@ func Main(ctx context.Context) error {
 func createUser(ctx context.Context, giteaURL string, user, pass string) error {
 	createUserURL, err := url.Parse(fmt.Sprintf("%s/user/sign_up", giteaURL))
 	if err != nil {
-		return fmt.Errorf("failed to parse get token URL: %w", err)
+		return errors.Errorf("failed to parse get token URL: %w", err)
 	}
 
 	payload := strings.NewReader(
@@ -80,20 +82,20 @@ func createUser(ctx context.Context, giteaURL string, user, pass string) error {
 		payload,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to create new request: %w", err)
+		return errors.Errorf("failed to create new request: %w", err)
 	}
 
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to do request: %w", err)
+		return errors.Errorf("failed to do request: %w", err)
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to do create user request: status %d", resp.StatusCode)
+		return errors.Errorf("failed to do create user request: status %d", resp.StatusCode)
 	}
 
 	return nil
@@ -102,7 +104,7 @@ func createUser(ctx context.Context, giteaURL string, user, pass string) error {
 func createToken(ctx context.Context, giteaURL, user, pass string) (string, error) {
 	getTokenURL, err := url.Parse(fmt.Sprintf("%s/api/v1/users/%s/tokens", giteaURL, user))
 	if err != nil {
-		return "", fmt.Errorf("failed to parse get token URL: %w", err)
+		return "", errors.Errorf("failed to parse get token URL: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(
@@ -112,7 +114,7 @@ func createToken(ctx context.Context, giteaURL, user, pass string) (string, erro
 		bytes.NewBuffer([]byte(`{"name": "all-scopes-token", "scopes": ["all"]}`)),
 	)
 	if err != nil {
-		return "", fmt.Errorf("failed to create new request: %w", err)
+		return "", errors.Errorf("failed to create new request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -120,23 +122,23 @@ func createToken(ctx context.Context, giteaURL, user, pass string) (string, erro
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("failed to do request: %w", err)
+		return "", errors.Errorf("failed to do request: %w", err)
 	}
 
 	defer resp.Body.Close()
 
 	var tokenRes map[string]any
 	if err := json.NewDecoder(resp.Body).Decode(&tokenRes); err != nil {
-		return "", fmt.Errorf("failed to decode response body: %w", err)
+		return "", errors.Errorf("failed to decode response body: %w", err)
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return "", fmt.Errorf("failed to do create token request: status %d", resp.StatusCode)
+		return "", errors.Errorf("failed to do create token request: status %d", resp.StatusCode)
 	}
 
 	token, ok := tokenRes["sha1"]
 	if !ok {
-		return "", fmt.Errorf("failed to find token sha1 in response: %v", tokenRes)
+		return "", errors.Errorf("failed to find token sha1 in response: %v", tokenRes)
 	}
 
 	return token.(string), nil
@@ -145,7 +147,7 @@ func createToken(ctx context.Context, giteaURL, user, pass string) (string, erro
 func createRepo(ctx context.Context, giteaURL, repoName, token string) error {
 	createRepoURL, err := url.Parse(fmt.Sprintf("%s/api/v1/user/repos", giteaURL))
 	if err != nil {
-		return fmt.Errorf("failed to parse get token URL: %w", err)
+		return errors.Errorf("failed to parse get token URL: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(
@@ -155,7 +157,7 @@ func createRepo(ctx context.Context, giteaURL, repoName, token string) error {
 		bytes.NewBuffer([]byte(fmt.Sprintf(`{"name": "%s", "private": false}`, repoName))),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to create new request: %w", err)
+		return errors.Errorf("failed to create new request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -163,12 +165,12 @@ func createRepo(ctx context.Context, giteaURL, repoName, token string) error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to do create repo request: %w", err)
+		return errors.Errorf("failed to do create repo request: %w", err)
 	}
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated {
-		return fmt.Errorf("failed to do request: status %d", resp.StatusCode)
+		return errors.Errorf("failed to do request: status %d", resp.StatusCode)
 	}
 
 	return nil

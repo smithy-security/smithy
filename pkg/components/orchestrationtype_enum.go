@@ -9,9 +9,9 @@ package components
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"strings"
+
+	"github.com/go-errors/errors"
 )
 
 const (
@@ -23,7 +23,7 @@ const (
 	OrchestrationTypeExternalHelm OrchestrationType = "external-helm"
 )
 
-var ErrInvalidOrchestrationType = fmt.Errorf("not a valid OrchestrationType, try [%s]", strings.Join(_OrchestrationTypeNames, ", "))
+var ErrInvalidOrchestrationType = errors.Errorf("not a valid OrchestrationType, try [%s]", strings.Join(_OrchestrationTypeNames, ", "))
 
 var _OrchestrationTypeNames = []string{
 	string(OrchestrationTypeUnknown),
@@ -61,7 +61,7 @@ func ParseOrchestrationType(name string) (OrchestrationType, error) {
 	if x, ok := _OrchestrationTypeValue[name]; ok {
 		return x, nil
 	}
-	return OrchestrationType(""), fmt.Errorf("%s is %w", name, ErrInvalidOrchestrationType)
+	return OrchestrationType(""), errors.Errorf("%s is %w", name, ErrInvalidOrchestrationType)
 }
 
 // MustParseOrchestrationType converts a string to a OrchestrationType, and panics if is not valid.

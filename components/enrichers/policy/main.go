@@ -3,12 +3,12 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"strconv"
 
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/go-errors/errors"
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components/enrichers"
 	opaclient "github.com/smithy-security/smithy/components/enrichers/policy/opaClient"
@@ -65,7 +65,7 @@ func run() error {
 		Policy:    policy,
 	}
 	if err := client.Bootstrap(); err != nil {
-		return fmt.Errorf("could not bootstrap OPA policies, err: %v", err)
+		return errors.Errorf("could not bootstrap OPA policies, err: %w", err)
 	}
 	log.Printf("successfully bootstrapped policy %s", client.PolicyPath)
 	for _, r := range res {

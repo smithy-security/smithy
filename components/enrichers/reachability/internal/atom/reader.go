@@ -3,11 +3,11 @@ package atom
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"log/slog"
 	"os"
 	"strings"
+
+	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
 	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/logging"
@@ -77,14 +77,14 @@ func NewReader(atomFilePath string, purlParser *purl.Parser) (*Reader, error) {
 func (r *Reader) Read(ctx context.Context) (*Response, error) {
 	b, err := os.ReadFile(r.atomFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read atom file: %w", err)
+		return nil, errors.Errorf("failed to read atom file: %w", err)
 	}
 
 	logging.FromContext(ctx).Debug("sample atom file contents", slog.String("payload", string(b)))
 
 	var res Response
 	if err := json.Unmarshal(b, &res); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal atom response: %w", err)
+		return nil, errors.Errorf("failed to unmarshal atom response: %w", err)
 	}
 
 	return &res, nil

@@ -101,18 +101,18 @@ func (s *TestGitCloneSuite) SetupTest() {
 			nil,
 		)
 		if err != nil {
-			return fmt.Errorf("failed to create request: %w", err)
+			return errors.Errorf("failed to create request: %w", err)
 		}
 
 		resp, err := healthCheckerClient.Do(req)
 		if err != nil {
-			return fmt.Errorf("failed to get health check: %w", err)
+			return errors.Errorf("failed to get health check: %w", err)
 		}
 
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusOK {
-			return fmt.Errorf("expected 200 OK, got %d", resp.StatusCode)
+			return errors.Errorf("expected 200 OK, got %d", resp.StatusCode)
 		}
 
 		return nil

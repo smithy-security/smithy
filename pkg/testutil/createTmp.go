@@ -2,8 +2,9 @@
 package testutil
 
 import (
-	"fmt"
 	"os"
+
+	"github.com/go-errors/errors"
 )
 
 // CreateFile creates a temporary file with the contents passed in the relevant param
@@ -11,10 +12,10 @@ import (
 func CreateFile(filename, content string) (*os.File, error) {
 	file, err := os.CreateTemp("", filename)
 	if err != nil {
-		return nil, fmt.Errorf("could not setup tests for pkg, could not create temporary files")
+		return nil, errors.Errorf("could not setup tests for pkg, could not create temporary files")
 	}
 	if err := os.WriteFile(file.Name(), []byte(content), os.ModeAppend); err != nil {
-		return nil, fmt.Errorf("could not setup tests for pkg, could not write temporary file")
+		return nil, errors.Errorf("could not setup tests for pkg, could not write temporary file")
 	}
 	return file, nil
 }

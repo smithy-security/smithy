@@ -1,10 +1,10 @@
 package db
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 
+	"github.com/go-errors/errors"
 	"github.com/golang-migrate/migrate/v4/database"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/jmoiron/sqlx"
@@ -28,7 +28,7 @@ func ParseConnectionStr(connStr string) (*PGUrl, error) {
 		return nil, errors.New("currently Smithy only supports postgres or other databases that use the same frontend")
 	}
 
-	if search_paths, found := parsedURL.Query()["search_path"]; found && len(search_paths) > 1 {
+	if searchPaths, found := parsedURL.Query()["search_path"]; found && len(searchPaths) > 1 {
 		return nil, errors.New("multiple search paths defined in the connection string")
 	}
 
@@ -57,7 +57,7 @@ func (pgUrl *PGUrl) HasPassword() bool {
 func (pgUrl *PGUrl) Connect() (*DB, error) {
 	connectionString, err := pq.ParseURL(pgUrl.String())
 	if err != nil {
-		return nil, fmt.Errorf("could not parse URL into connection string: %w", err)
+		return nil, errors.Errorf("could not parse URL into connection string: %w", err)
 	}
 
 	sqlxDB, err := sqlx.Open("postgres", connectionString)
@@ -77,7 +77,7 @@ func (db *DB) EnsureHasSchema() error {
 	searchPath := db.SchemaSearchPath()
 	_, err := db.Exec(fmt.Sprintf(`CREATE SCHEMA IF NOT EXISTS %s`, pq.QuoteIdentifier(searchPath)))
 	if err != nil {
-		return fmt.Errorf("could not create schema: %w", err)
+		return errors.Errorf("could not create schema: %w", err)
 	}
 
 	return nil
@@ -98,7 +98,7 @@ func (db *DB) WithInstance(config *postgres.Config) (database.Driver, error) {
 // 		elems := strings.SplitN(pair, "=", 2)
 // 		if elems[0] == "search_path" {
 // 			if path != "" {
-// 				return "", errors.New("multiple search_paths defined in database connection DSN")
+// 				return "", errors.New("multiple searchPaths defined in database connection DSN")
 // 			}
 
 // 			path = elems[1]

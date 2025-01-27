@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -14,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-errors/errors"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -79,7 +79,7 @@ func NewGoSecScanner(repoPath string) (*goSecScanner, error) {
 
 	pool, err := dockertest.NewPool("")
 	if err != nil {
-		return nil, fmt.Errorf("could not connect to docker: %w", err)
+		return nil, errors.Errorf("could not connect to docker: %w", err)
 	}
 
 	return &goSecScanner{
@@ -90,12 +90,12 @@ func NewGoSecScanner(repoPath string) (*goSecScanner, error) {
 
 func (g *goSecScanner) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	if err := g.runGoSec(ctx); err != nil {
-		return nil, fmt.Errorf("could not run gosec: %w", err)
+		return nil, errors.Errorf("could not run gosec: %w", err)
 	}
 
 	vulns, err := g.parseVulns(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse vulns: %w", err)
+		return nil, errors.Errorf("could not parse vulns: %w", err)
 	}
 
 	return vulns, nil
@@ -104,7 +104,7 @@ func (g *goSecScanner) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFind
 func (g *goSecScanner) parseVulns(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	f, err := os.Open(goSecOutPath)
 	if err != nil {
-		return nil, fmt.Errorf("could not open gosec.sarif: %w", err)
+		return nil, errors.Errorf("could not open gosec.sarif: %w", err)
 	}
 
 	defer func() {
@@ -129,12 +129,12 @@ func (g *goSecScanner) parseVulns(ctx context.Context) ([]*ocsf.VulnerabilityFin
 
 	b, err := io.ReadAll(f)
 	if err != nil {
-		return nil, fmt.Errorf("could not read gosec.sarif: %w", err)
+		return nil, errors.Errorf("could not read gosec.sarif: %w", err)
 	}
 
 	var out GoSecOut
 	if err := json.Unmarshal(b, &out); err != nil {
-		return nil, fmt.Errorf("could not decode gosec.sarif: %w", err)
+		return nil, errors.Errorf("could not decode gosec.sarif: %w", err)
 	}
 
 	var (
@@ -208,7 +208,7 @@ func (g *goSecScanner) parseVulns(ctx context.Context) ([]*ocsf.VulnerabilityFin
 func (g *goSecScanner) runGoSec(ctx context.Context) error {
 	p, err := filepath.Abs(".")
 	if err != nil {
-		return fmt.Errorf("could not get absolute path: %w", err)
+		return errors.Errorf("could not get absolute path: %w", err)
 	}
 
 	component.
@@ -233,7 +233,7 @@ func (g *goSecScanner) runGoSec(ctx context.Context) error {
 		config.Binds = []string{fmt.Sprintf("%s:/workspace", p)}
 	})
 	if err != nil {
-		return fmt.Errorf("could not start gosec container: %w", err)
+		return errors.Errorf("could not start gosec container: %w", err)
 	}
 
 	if err := g.dockerTestPool.Client.Logs(docker.LogsOptions{

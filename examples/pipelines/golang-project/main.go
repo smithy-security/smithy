@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"time"
+	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/sdk/component"
 )
@@ -31,7 +31,7 @@ func Main(ctx context.Context) error {
 	}()
 
 	if err := os.Mkdir(repoPath, os.ModePerm); err != nil {
-		return fmt.Errorf("failed to create clone path %s: %v", repoPath, err)
+		return errors.Errorf("failed to create clone path %s: %v", repoPath, err)
 	}
 
 	defer func() {
@@ -42,12 +42,12 @@ func Main(ctx context.Context) error {
 
 	gitClone, err := NewGitCloneTarget("git@github.com:TheHackerDev/damn-vulnerable-golang.git", repoPath)
 	if err != nil {
-		return fmt.Errorf("failed to create git clone target: %w", err)
+		return errors.Errorf("failed to create git clone target: %w", err)
 	}
 
 	goSec, err := NewGoSecScanner(repoPath)
 	if err != nil {
-		return fmt.Errorf("failed to create gosec scanner: %w", err)
+		return errors.Errorf("failed to create gosec scanner: %w", err)
 	}
 
 	var (
@@ -60,7 +60,7 @@ func Main(ctx context.Context) error {
 		gitClone,
 		component.RunnerWithComponentName("git-clone"),
 	); err != nil {
-		return fmt.Errorf("target failed: %w", err)
+		return errors.Errorf("target failed: %w", err)
 	}
 
 	if err := component.RunScanner(
@@ -68,7 +68,7 @@ func Main(ctx context.Context) error {
 		goSec,
 		component.RunnerWithComponentName("go-sec"),
 	); err != nil {
-		return fmt.Errorf("scanner failed: %w", err)
+		return errors.Errorf("scanner failed: %w", err)
 	}
 
 	if err := component.RunEnricher(
@@ -76,7 +76,7 @@ func Main(ctx context.Context) error {
 		customAnnotation,
 		component.RunnerWithComponentName("custom-annotation"),
 	); err != nil {
-		return fmt.Errorf("enricher failed: %w", err)
+		return errors.Errorf("enricher failed: %w", err)
 	}
 
 	if err := component.RunReporter(
@@ -84,7 +84,7 @@ func Main(ctx context.Context) error {
 		jsonLogger,
 		component.RunnerWithComponentName("json-logger"),
 	); err != nil {
-		return fmt.Errorf("reporter failed: %w", err)
+		return errors.Errorf("reporter failed: %w", err)
 	}
 
 	return nil

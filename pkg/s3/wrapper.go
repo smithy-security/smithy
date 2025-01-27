@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/go-errors/errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -28,7 +29,7 @@ type Client struct {
 func NewClient(region string) (Client, error) {
 	sess, err := session.NewSession(&aws.Config{Region: aws.String(region)})
 	if err != nil {
-		return Client{}, fmt.Errorf("unable to start session with AWS API: %w", err)
+		return Client{}, errors.Errorf("unable to start session with AWS API: %w", err)
 	}
 	// create new playwright client
 	return Client{
@@ -54,7 +55,7 @@ func (c Client) UpsertFile(filename, bucket, s3FilenameSuffix string, pdfBytes [
 	//#nosec:G304
 	data, err := os.ReadFile(filename) //#nosec:G304
 	if err != nil {
-		return fmt.Errorf("could not open file: %w", err)
+		return errors.Errorf("could not open file: %w", err)
 	}
 	uploadFilename := FormatFilename(filename, s3FilenameSuffix)
 	uploader := s3manager.NewUploader(c.session)
@@ -64,7 +65,7 @@ func (c Client) UpsertFile(filename, bucket, s3FilenameSuffix string, pdfBytes [
 		Body:   bytes.NewReader(data),
 	})
 	if err != nil {
-		return fmt.Errorf("unable to upload %s to %s: %w", filename, bucket, err)
+		return errors.Errorf("unable to upload %s to %s: %w", filename, bucket, err)
 	}
 	slog.Info("uploaded", "filename", filename, "to", "bucket", bucket, "successfully")
 	return nil

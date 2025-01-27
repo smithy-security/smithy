@@ -78,7 +78,7 @@ func NewManager(ctx context.Context, opts ...managerOption) (*manager, error) {
 
 	connConfig, err := pgx.ParseConfig(mgr.connDSN)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse config: %w", err)
+		return nil, errors.Errorf("could not parse config: %w", err)
 	}
 
 	mgr.conn, err = pgx.ConnectConfig(

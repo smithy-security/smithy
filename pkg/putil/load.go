@@ -1,11 +1,12 @@
 package putil
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/go-errors/errors"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 
@@ -17,7 +18,7 @@ func LoadToolResponse(inPath string) ([]*v1.LaunchToolResponse, error) {
 	responses := []*v1.LaunchToolResponse{}
 	if err := filepath.Walk(inPath, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
-			return fmt.Errorf("path %s doesn't exist", path)
+			return errors.Errorf("path %s doesn't exist", path)
 		}
 		if !f.IsDir() && (strings.HasSuffix(f.Name(), ".pb")) {
 			pbBytes, err := os.ReadFile(path)
@@ -43,7 +44,7 @@ func LoadTaggedToolResponse(inPath string) ([]*v1.LaunchToolResponse, error) {
 	responses := []*v1.LaunchToolResponse{}
 	if err := filepath.Walk(inPath, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
-			return fmt.Errorf("path %s doesn't exist", path)
+			return errors.Errorf("path %s doesn't exist", path)
 		}
 		if !f.IsDir() && (strings.HasSuffix(f.Name(), ".tagged.pb")) {
 			pbBytes, err := os.ReadFile(path)
@@ -69,7 +70,7 @@ func LoadEnrichedToolResponse(inPath string) ([]*v1.EnrichedLaunchToolResponse, 
 	responses := []*v1.EnrichedLaunchToolResponse{}
 	if err := filepath.Walk(inPath, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
-			return fmt.Errorf("path %s doesn't exist", path)
+			return errors.Errorf("path %s doesn't exist", path)
 		}
 		if !f.IsDir() && (strings.HasSuffix(f.Name(), ".enriched.aggregated.pb")) {
 			pbBytes, err := os.ReadFile(path)
@@ -95,7 +96,7 @@ func LoadEnrichedNonAggregatedToolResponse(inPath string) ([]*v1.EnrichedLaunchT
 	responses := []*v1.EnrichedLaunchToolResponse{}
 	if err := filepath.Walk(inPath, func(path string, f os.FileInfo, err error) error {
 		if f == nil {
-			return fmt.Errorf("path %s doesn't exist", path)
+			return errors.Errorf("path %s doesn't exist", path)
 		}
 		if !f.IsDir() && (strings.HasSuffix(f.Name(), ".enriched.pb")) {
 			pbBytes, err := os.ReadFile(path)

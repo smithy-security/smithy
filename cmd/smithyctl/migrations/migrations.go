@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/go-errors/errors"
 	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 	batchv1 "k8s.io/api/batch/v1"
@@ -100,20 +101,20 @@ func entrypointWrapper(f cmdEntrypoint) cmdEntrypoint {
 		}
 
 		if migrationsAsK8sJobConfig.dryRun {
-			return fmt.Errorf("you can't use the `--%s` flag without the `%s` flag", cmd.Flag("dry-run").Name, cmd.Flag("as-k8s-job").Name)
+			return errors.Errorf("you can't use the `--%s` flag without the `%s` flag", cmd.Flag("dry-run").Name, cmd.Flag("as-k8s-job").Name)
 		} else if migrationsAsK8sJobConfig.kubeContext != "" {
-			return fmt.Errorf("you can't use the `--%s` flag without the `%s` flag", cmd.Flag("kube-context").Name, cmd.Flag("as-k8s-job").Name)
+			return errors.Errorf("you can't use the `--%s` flag without the `%s` flag", cmd.Flag("kube-context").Name, cmd.Flag("as-k8s-job").Name)
 		} else if migrationsAsK8sJobConfig.kubeConfig != "" {
-			return fmt.Errorf("you can't use the `--%s` flag without the `%s` flag", cmd.Flag("kube-config").Name, cmd.Flag("as-k8s-job").Name)
+			return errors.Errorf("you can't use the `--%s` flag without the `%s` flag", cmd.Flag("kube-config").Name, cmd.Flag("as-k8s-job").Name)
 		} else if migrationsAsK8sJobConfig.image != "" {
-			return fmt.Errorf("you can't use the `--%s` flag without the `%s` flag", cmd.Flag("image").Name, cmd.Flag("as-k8s-job").Name)
+			return errors.Errorf("you can't use the `--%s` flag without the `%s` flag", cmd.Flag("image").Name, cmd.Flag("as-k8s-job").Name)
 		}
 
 		if migrationsAsK8sJobConfig.inCluster {
 			// binary has been invoked inside a pod, we need to setup the client accordingly
 			restCfg, err := rest.InClusterConfig()
 			if err != nil {
-				return fmt.Errorf("could not initialise in-cluster K8s client config: %w", err)
+				return errors.Errorf("could not initialise in-cluster K8s client config: %w", err)
 			}
 			return grabLeaderLock(f, cmd, args, restCfg)
 		}
@@ -265,7 +266,7 @@ func deployMigrationJob(cmd *cobra.Command, ssa string) error {
 	migrationJob := generateMigrationJob(cmd.Name())
 	if migrationsAsK8sJobConfig.dryRun {
 		if err := manifests.BatchV1ObjEncoder.Encode(migrationJob, cmd.OutOrStdout()); err != nil {
-			return fmt.Errorf("could not marshal job manifest: %w", err)
+			return errors.Errorf("could not marshal job manifest: %w", err)
 		}
 		return nil
 	}
@@ -275,7 +276,7 @@ func deployMigrationJob(cmd *cobra.Command, ssa string) error {
 	}
 	restCfg, err := clientcmd.BuildConfigFromFlags("", migrationsAsK8sJobConfig.kubeConfig)
 	if err != nil {
-		return fmt.Errorf("%s: could not initialise K8s client config with: %w", migrationsAsK8sJobConfig.kubeConfig, err)
+		return errors.Errorf("%s: could not initialise K8s client config with: %w", migrationsAsK8sJobConfig.kubeConfig, err)
 	}
 
 	client, err := k8s.NewTypedClientForConfig(restCfg, ssa)
@@ -284,7 +285,7 @@ func deployMigrationJob(cmd *cobra.Command, ssa string) error {
 	}
 
 	if err = client.Apply(cmd.Context(), migrationJob, migrationsAsK8sJobConfig.namespace, false); err != nil {
-		return fmt.Errorf("could not create migration job: %w", err)
+		return errors.Errorf("could not create migration job: %w", err)
 	}
 
 	ctx, cancel := context.WithCancel(cmd.Context())
@@ -302,7 +303,7 @@ func jobPodLogWatcher(ctx context.Context, client k8s.ClientInterface, namespace
 		Jobs(namespace).
 		Get(ctx, name, metav1.GetOptions{})
 	if err != nil {
-		return fmt.Errorf("%s/%s: could not get Job: %w", namespace, name, err)
+		return errors.Errorf("%s/%s: could not get Job: %w", namespace, name, err)
 	}
 
 	// start a watcher to monitor the job status
@@ -316,7 +317,7 @@ func jobPodLogWatcher(ctx context.Context, client k8s.ClientInterface, namespace
 			Watch:          true,
 		})
 	if err != nil {
-		return fmt.Errorf("could not watch status of migration job: %w", err)
+		return errors.Errorf("could not watch status of migration job: %w", err)
 	}
 	defer watcher.Stop()
 
@@ -326,7 +327,7 @@ func jobPodLogWatcher(ctx context.Context, client k8s.ClientInterface, namespace
 		select {
 		case event := <-watcher.ResultChan():
 			if event.Type == watch.Deleted {
-				err = fmt.Errorf("%s/%s: job was deleted", namespace, name)
+				err = errors.Errorf("%s/%s: job was deleted", namespace, name)
 				close(jobDeleted)
 			}
 		case <-ctx.Done():
@@ -360,7 +361,7 @@ func jobPodLogWatcher(ctx context.Context, client k8s.ClientInterface, namespace
 					FieldSelector: fieldSelectorSB.String(),
 				})
 			if err != nil {
-				err = fmt.Errorf("could not list pods generated for job %s/%s with labels %s: %w",
+				err = errors.Errorf("could not list pods generated for job %s/%s with labels %s: %w",
 					deployedJob.Namespace, deployedJob.Name, metav1.FormatLabelSelector(deployedJob.Spec.Selector), err)
 				return
 			}
@@ -386,7 +387,7 @@ func jobPodLogWatcher(ctx context.Context, client k8s.ClientInterface, namespace
 					GetLogs(pod.Name, &corev1.PodLogOptions{Follow: true}).
 					Stream(ctx)
 				if err != nil {
-					err = fmt.Errorf("%s/%s: could not stream logs: %w", pod.Namespace, pod.Name, err)
+					err = errors.Errorf("%s/%s: could not stream logs: %w", pod.Namespace, pod.Name, err)
 					return
 				}
 
@@ -397,7 +398,7 @@ func jobPodLogWatcher(ctx context.Context, client k8s.ClientInterface, namespace
 				sErr := stream.Close()
 				if sErr != nil {
 					if err != nil {
-						err = fmt.Errorf("%w: %w", sErr, err)
+						err = errors.Errorf("%w: %w", sErr, err)
 					} else {
 						err = sErr
 					}

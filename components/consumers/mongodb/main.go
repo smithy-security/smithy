@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/avast/retry-go/v4"
+	"github.com/go-errors/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
@@ -56,7 +56,7 @@ func run(ctx context.Context) error {
 		log.Println("Parsing Raw results")
 		responses, err := consumers.LoadToolResponse()
 		if err != nil {
-			return fmt.Errorf("could not load raw results, file malformed: %w", err)
+			return errors.Errorf("could not load raw results, file malformed: %w", err)
 		}
 		for _, res := range responses {
 			// scanStartTime := res.GetScanInfo().GetScanStartTime().AsTime()
@@ -70,7 +70,7 @@ func run(ctx context.Context) error {
 		log.Print("Parsing Enriched results")
 		responses, err := consumers.LoadEnrichedToolResponse()
 		if err != nil {
-			return fmt.Errorf("could not load enriched results, file malformed: %w", err)
+			return errors.Errorf("could not load enriched results, file malformed: %w", err)
 		}
 		for _, res := range responses {
 			// scanStartTime := res.GetOriginalResults().GetScanInfo().GetScanStartTime().AsTime()
@@ -89,7 +89,7 @@ func insertRetry(ctx context.Context, coll *mongo.Collection, obj interface{}) e
 	return retry.Do(func() error {
 		res, err := coll.InsertOne(ctx, obj)
 		if err != nil {
-			return fmt.Errorf("could not create document from '%#v': %w", obj, err)
+			return errors.Errorf("could not create document from '%#v': %w", obj, err)
 		}
 		log.Printf("created document: %s", res.InsertedID)
 		return nil

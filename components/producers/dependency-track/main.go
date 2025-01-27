@@ -9,6 +9,7 @@ import (
 	"log"
 
 	dtrack "github.com/DependencyTrack/client-go"
+	"github.com/go-errors/errors"
 	"github.com/google/uuid"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
@@ -72,7 +73,7 @@ func main() {
 func readFromDependencyTrack(apiKey, url, projectID string) ([]byte, error) {
 	client, err := dtrack.NewClient(url, dtrack.WithAPIKey(apiKey))
 	if err != nil {
-		return nil, fmt.Errorf("could not instantiate client err: %#v", err)
+		return nil, errors.Errorf("could not instantiate client err: %#v", err)
 	}
 
 	findings, err := dtrack.FetchAll(func(po dtrack.PageOptions) (dtrack.Page[dtrack.Finding], error) {

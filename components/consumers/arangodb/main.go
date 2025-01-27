@@ -4,11 +4,11 @@ import (
 	"context"
 	"crypto/tls"
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/arangodb/go-driver"
 	"github.com/arangodb/go-driver/http"
+	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/components/consumers"
 )
@@ -114,13 +114,13 @@ func main() {
 func getDatabase(ctx context.Context, c driver.Client, name string) (driver.Database, error) {
 	exists, err := c.DatabaseExists(ctx, name)
 	if err != nil {
-		return nil, fmt.Errorf("could not determine if database '%s' exists: %w", name, err)
+		return nil, errors.Errorf("could not determine if database '%s' exists: %w", name, err)
 	}
 
 	if !exists {
 		db, err := c.CreateDatabase(ctx, name, &driver.CreateDatabaseOptions{})
 		if err != nil {
-			return nil, fmt.Errorf("could not create database '%s': %w", name, err)
+			return nil, errors.Errorf("could not create database '%s': %w", name, err)
 		}
 
 		return db, nil
@@ -128,7 +128,7 @@ func getDatabase(ctx context.Context, c driver.Client, name string) (driver.Data
 
 	db, err := c.Database(ctx, name)
 	if err != nil {
-		return nil, fmt.Errorf("could not get database '%s': %w", name, err)
+		return nil, errors.Errorf("could not get database '%s': %w", name, err)
 	}
 
 	return db, nil
@@ -137,7 +137,7 @@ func getDatabase(ctx context.Context, c driver.Client, name string) (driver.Data
 func getCollection(ctx context.Context, db driver.Database, name string) (driver.Collection, error) {
 	exists, err := db.CollectionExists(ctx, name)
 	if err != nil {
-		return nil, fmt.Errorf("could not determine if collection '%s' exists: %w", name, err)
+		return nil, errors.Errorf("could not determine if collection '%s' exists: %w", name, err)
 	}
 
 	if !exists {
@@ -146,7 +146,7 @@ func getCollection(ctx context.Context, db driver.Database, name string) (driver
 			IsSystem: false,
 		})
 		if err != nil {
-			return nil, fmt.Errorf("could not create collection '%s': %w", name, err)
+			return nil, errors.Errorf("could not create collection '%s': %w", name, err)
 		}
 
 		return col, nil
@@ -154,7 +154,7 @@ func getCollection(ctx context.Context, db driver.Database, name string) (driver
 
 	col, err := db.Collection(ctx, name)
 	if err != nil {
-		return nil, fmt.Errorf("could not get collection '%s': %w", name, err)
+		return nil, errors.Errorf("could not get collection '%s': %w", name, err)
 	}
 
 	return col, nil

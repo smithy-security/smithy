@@ -2,8 +2,8 @@ package manifests
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/go-errors/errors"
 	tektonv1beta1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1beta1"
 	batchv1 "k8s.io/api/batch/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -40,17 +40,17 @@ func init() {
 func LoadK8sManifest(ctx context.Context, configurationDir, pathOrURI, targetFile string) (runtime.Object, *schema.GroupVersionKind, error) {
 	loader, err := files.NewLoader(configurationDir, pathOrURI, targetFile)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s: could not resolve path or URI: %w", pathOrURI, err)
+		return nil, nil, errors.Errorf("%s: could not resolve path or URI: %w", pathOrURI, err)
 	}
 
 	manifestBytes, err := loader.Load(ctx)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s: could not load path or URI: %w", loader.Path(), err)
+		return nil, nil, errors.Errorf("%s: could not load path or URI: %w", loader.Path(), err)
 	}
 
 	obj, gKV, err := K8sObjDecoder.Decode(manifestBytes, nil, nil)
 	if err != nil {
-		return nil, nil, fmt.Errorf("%s: could not decode file into a K8s object:3 %w", loader.Path(), err)
+		return nil, nil, errors.Errorf("%s: could not decode file into a K8s object:3 %w", loader.Path(), err)
 	}
 
 	return obj, gKV, nil
