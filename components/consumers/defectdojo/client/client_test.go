@@ -33,7 +33,7 @@ func TestDojoClient(t *testing.T) {
 func TestCreateFinding(t *testing.T) {
 	called := false
 	expected := `{"id":16,"notes":[],"test":1,"thread_id":0,"found_by":[0],"url":null,"tags":[],"push_to_jira":false,"vulnerability_ids":[],"title":"Test","date":"2022-06-01","sla_start_date":null,"cwe":0,"cvssv3":null,"cvssv3_score":null,"severity":"High","description":"td","mitigation":null,"impact":null,"steps_to_reproduce":null,"severity_justification":null,"references":null,"active":true,"verified":false,"false_p":false,"duplicate":false,"out_of_scope":false,"risk_accepted":false,"under_review":false,"last_status_update":"2022-06-01T11:49:32.336953Z","under_defect_review":false,"is_mitigated":false,"mitigated":null,"numerical_severity":"S1","last_reviewed":null,"param":null,"payload":null,"hash_code":"02d7bb216799db2d65b66fa94cc1b05b7c8a89a00be2f07b87b1cf6e58125c3b","line":null,"file_path":null,"component_name":null,"component_version":null,"static_finding":false,"dynamic_finding":true,"created":"2022-06-01T11:49:32.289174Z","scanner_confidence":null}`
-	mockTs := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockTS := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		called = true
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.RequestURI, "/findings")
@@ -61,7 +61,7 @@ func TestCreateFinding(t *testing.T) {
 		_, err = w.Write([]byte(expected))
 		require.NoError(t, err)
 	}))
-	c := &Client{host: mockTs.URL, apiToken: "test", user: ""}
+	c := &Client{host: mockTS.URL, apiToken: "test", user: ""}
 	_, err := c.CreateFinding("title",
 		"description",
 		"High",
@@ -78,7 +78,7 @@ func TestCreateFinding(t *testing.T) {
 
 func TestCreateEngagement(t *testing.T) {
 	called := false
-	mockTs := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mockTS := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		called = true
 		assert.Equal(t, r.Method, "POST")
 		assert.Equal(t, r.RequestURI, "/engagements")
@@ -99,7 +99,7 @@ func TestCreateEngagement(t *testing.T) {
 		_, err = w.Write([]byte(`{"id":4,"tags":["foo.git/somesha"],"name":"smithy scan foo","description":null,"version":"string","first_contacted":null,"target_start":"2022-06-01","target_end":"2022-06-01","reason":null,"updated":"2022-06-01T16:29:18.965507Z","created":"2022-06-01T16:29:18.908694Z","active":true,"tracker":null,"test_strategy":null,"threat_model":true,"api_test":true,"pen_test":true,"check_list":true,"status":"","progress":"threat_model","tmodel_path":"none","done_testing":false,"engagement_type":"Interactive","build_id":"foo","commit_hash":null,"branch_tag":null,"source_code_management_uri":null,"deduplication_on_engagement":false,"lead":null,"requester":null,"preset":null,"report_type":null,"product":2,"build_server":null,"source_code_management_server":null,"orchestration_engine":null,"notes":[],"files":[],"risk_acceptance":[]}`))
 		require.NoError(t, err)
 	}))
-	c := &Client{host: mockTs.URL, apiToken: "test", user: ""}
+	c := &Client{host: mockTS.URL, apiToken: "test", user: ""}
 	_, err := c.CreateEngagement("smithy scan foo", "2022-06-01", []string{"foo.git/somesha"}, 2)
 	require.NoError(t, err)
 	assert.True(t, called)

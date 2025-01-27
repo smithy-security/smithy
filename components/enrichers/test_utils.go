@@ -34,7 +34,7 @@ func GetEmptyLaunchToolResponse(_ *testing.T) []*smithyv1.LaunchToolResponse {
 	}
 }
 
-// GetEmptyLaunchToolResponse returns a slice of LaunchToolResponse with no issues
+// GetLaunchToolResponse returns a slice of LaunchToolResponse with no issues
 func GetLaunchToolResponse(_ *testing.T) []*smithyv1.LaunchToolResponse {
 	code := `this
 					is

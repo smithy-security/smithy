@@ -11,7 +11,7 @@ import (
 
 func TestNewSearcher(t *testing.T) {
 	var (
-		reachables     = make(atom.Reachables, 1, 1)
+		reachables     = make(atom.Reachables, 1)
 		reachablePurls = atom.ReachablePurls{
 			"pkg:bitbucket/birkenfeld/pygments-main@244fd47e07d1014f0aed9c": {},
 		}
