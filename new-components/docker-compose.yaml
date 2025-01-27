@@ -1,5 +1,5 @@
 services:
-  reporter:
+  json-logger-reporter:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,6 +9,16 @@ services:
     platform: linux/amd64
     env_file:
       - reporters/json-logger/.env
+    depends_on:
+      enricher:
+        condition: service_completed_successfully
+  pdf-reporter:
+    build:
+      context: reporters/pdf
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    env_file:
+      - reporters/pdf/.env
     depends_on:
       enricher:
         condition: service_completed_successfully

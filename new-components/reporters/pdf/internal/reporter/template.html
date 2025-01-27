@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Scan Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #2b2722;
+            margin: 20px;
+            -webkit-print-color-adjust: exact;
+        }
+
+        @media print {
+            .finding {
+                break-inside: avoid;
+            }
+
+            .scan-title {
+                break-before: page;
+            }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .report {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+        }
+
+        .scan {
+            margin-bottom: 20px;
+        }
+
+        .scan-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #f65f1e;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .scan-title span:not(:empty) + span::before {
+            content: ' - ';
+        }
+
+        .scan-details {
+            margin-top: 10px;
+        }
+
+        .summary {
+            margin-top: 30px;
+        }
+
+        .introduction {
+            text-align: center;
+        }
+
+        .placeholder-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .placeholder-metrics > div {
+            border-radius: 4px;
+            background-color: #fbf7f1;
+            border: 1px solid #d4c9b6;
+            flex-grow: 1;
+            text-align: center;
+            width: 50%;
+        }
+
+        .placeholder-metrics .high-severity {
+            background-color: #ffe3e3;
+            color: #982714;
+            border: 1px solid #ffb8b8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            max-width: 100%;
+            border: 1px solid #d4c9b6;
+        }
+
+        table th {
+            background-color: #fbf7f1;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #d4c9b6;
+            padding: 4px 10px;
+            word-wrap: break-word;
+        }
+
+        .summary-table {
+            margin: 40px 0;
+        }
+
+        .summary-table th {
+            text-align: left;
+        }
+
+        /* Detailed finding list */
+        .scan-title,
+        .scan-details {
+            text-align: center;
+        }
+
+        .finding {
+            padding: 20px 0;
+        }
+
+        .finding-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 10px;
+        }
+
+        .finding-table th {
+            text-align: right;
+            vertical-align: top;
+            width: 110px;
+        }
+
+        /*severities*/
+        .SEVERITY_ID_CRITICAL {
+            background-color: #f88691;
+        }
+
+        .SEVERITY_ID_HIGH {
+            background-color: #ffe3e3;
+        }
+
+        .SEVERITY_ID_MEDIUM {
+            background-color: #fde8cb;
+        }
+
+        .SEVERITY_ID_LOW {
+            background-color: #fdf7bd;
+        }
+
+        .SEVERITY_ID_INFO {
+            background-color: #dafbfb;
+        }
+
+        .SEVERITY_ID_UNSPECIFIED {
+            background-color: #fbf7f1;
+        }
+
+        .summary-table .new {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="https://smithy.security"><img
+            src="https://github.com/smithy-security/smithy/raw/main/assets/smithy-logo-light.svg#gh-dark-mode-only"
+            alt="Logo"></a>
+    <h1>Smithy Report</h1>
+</header>
+
+
+<div class="report">
+    <div class="summary">
+        <p class="introduction">This report summarizes the results of running Smithy.</p>
+
+        <!-- Placeholder Metrics -->
+        <div class="placeholder-metrics">
+            <div class="high-severity"><h3><span id="total-high"></span> High Severity</h3></div>
+            <div><h3><span id="total"></span> Total</h3></div>
+        </div>
+
+        <table class="summary-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th style="width:95px">Seen before</th>
+                <th>Severity</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{range .}}
+                <tr class="issue-summary">
+                    <td><a href="#{{ .Finding.FindingInfo.Title | urlquery }}">{{ .Finding.FindingInfo.Title }}</a></td>
+                    <td class="seen">{{ .Finding.Count }} times</td>
+                    <td class="summary severity {{.Finding.Severity}}">{{ .Finding.Severity }} </td>
+                </tr>
+            {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Scan -->
+    <div class="scan">
+        {{range .}}
+            <div class="finding">
+                <h4 class="finding-title" id="{{ .Finding.FindingInfo.Title | urlquery }}">{{ .Finding.FindingInfo.Title }}</h4>
+                <table class="finding-table">
+                    <tbody>
+                    {{ if and .Finding.FindingInfo.ProductUid (ne .Finding.FindingInfo.ProductUid nil) }}
+                    <tr>
+                        <th>Tool</th>
+                        <td class="severity {{.Finding.FindingInfo.ProductUid}}">{{.Finding.FindingInfo.ProductUid}}</td>
+                    </tr>
+                    {{ end }}
+
+                    {{ if and .Finding.Severity (ne .Finding.Severity nil) }}
+                    <tr>
+                        <th>Severity</th>
+                        <td class="severity {{.Finding.Severity}}">{{.Finding.Severity}}</td>
+                    </tr>
+                    {{ end }}
+
+                    {{ if and .Finding.Confidence (ne .Finding.Confidence nil) }}
+                    <tr>
+                        <th>Confidence</th>
+                        <td class="confidence">{{.Finding.Confidence}}</td>
+                    </tr>
+                    {{ end }}
+
+                    {{ if and .Finding.TypeUid (ne .Finding.TypeUid nil) }}
+                    <tr>
+                        <th>Type</th>
+                        <td>{{.Finding.TypeUid}}</td>
+                    </tr>
+                    {{ end }}
+                    {{ if and .Finding.FindingInfo.SrcUrl (ne .Finding.FindingInfo.SrcUrl nil) }}
+                    <tr>
+                        <th>Src URL</th>
+                        <td>{{.Finding.FindingInfo.SrcUrl}}</td>
+                    </tr>
+                    {{ end }}
+                    {{ if and .Finding.FindingInfo.DataSources (ne .Finding.FindingInfo.DataSources nil) }}
+                    <tr>
+                        <th>Data sources</th>
+                        <td>{{range .Finding.FindingInfo.DataSources}}{{.}}{{ end }}</td>
+                    </tr>
+                    {{ end }}
+
+                    {{ if and .Finding.Message (ne .Finding.Message nil) }}
+                    <tr>
+                        <th>Description</th>
+                        <td>{{.Finding.Message}}</td>
+                    </tr>
+                    {{ end }}
+
+                    {{ if and .Finding.FindingInfo.FirstSeenTime (ne .Finding.FindingInfo.FirstSeenTime nil) }}
+                    <tr>
+                        <th>First Seen</th>
+                        <td>{{.Finding.FindingInfo.FirstSeenTime | formatTime}}</td>
+                    </tr>
+                    {{ end }}
+
+                    <tr>
+                        <th>Seen Before</th>
+                        <td class="seen">{{.Finding.Count}} times</td>
+                    </tr>
+
+                    {{ if and .Finding.FindingInfo.ModifiedTime (ne .Finding.FindingInfo.ModifiedTime nil) }}
+                    <tr>
+                        <th>Last Updated</th>
+                        <td>{{ .Finding.FindingInfo.ModifiedTime | formatTime }}</td>
+                    </tr>
+                    {{ end }}
+
+                    {{ range .Finding.Vulnerabilities }}
+                    </tbody>
+                    <tbody>
+                        {{ if and .AffectedCode (ne .AffectedCode nil) }}
+                        <tr>
+                            <th>Affected Code</th>
+                            <td>{{.AffectedCode}}</td>
+                        </tr>
+                        {{end}}
+                        {{ if and .Cve (ne .Cve nil) }}
+                        <tr>
+                            <th>CVE</th>
+                            <td>
+                                <a href="{{.Cve.SrcUrl}}" target="_blank">CVE-{{.Cve.Uid}}</a><br/>
+                                <p>{{.Cve.Caption}}</p>
+                            </td>
+                        </tr>
+                        {{end}}
+                        {{ if and .Cwe (ne .Cwe nil) }}
+                        <tr>
+                            <th>CWE</th>
+                            <td>
+                                <a href="{{.Cwe.SrcUrl}}" target="_blank">CWE-{{.Cwe.Uid}}</a><br/>
+                                <p>{{.Cwe.Caption}}</p>
+                            </td>
+                        </tr>
+                        {{end}}
+                        {{ if and .Remediation (ne .Remediation nil) }}
+                        <tr>
+                            <th>Remediation</th>
+                            <td>{{.Remediation}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                    {{end}}
+                </table>
+            </div>
+        {{end}}
+    </div>
+</div>
+
+</body>
+<footer>
+    <script>
+        // calculate totals
+        document.getElementById("total").innerHTML = document.querySelectorAll('.issue-summary').length;
+        document.getElementById("total-high").innerHTML =
+            document.querySelectorAll('.summary.SEVERITY_ID_CRITICAL').length +
+            document.querySelectorAll('.summary.SEVERITY_ID_HIGH').length;
+
+        // Remove the "SEVERITY_" prefix
+        document.querySelectorAll('.severity').forEach(function (element) {
+            if (element.textContent.startsWith("SEVERITY_")) {
+                element.textContent = element.textContent.replace("SEVERITY_", "");
+            }
+        });
+
+        // Remove the "CONFIDENCE_" prefix
+        document.querySelectorAll('.confidence').forEach(function (element) {
+            if (element.textContent.startsWith("CONFIDENCE_")) {
+                element.textContent = element.textContent.replace("CONFIDENCE_", "");
+            }
+        });
+
+        // Reformat ".seen" results to show which vulns are New
+        document.querySelectorAll('.seen').forEach(function (element) {
+            if (element.textContent === "0 times") {
+                element.textContent = element.textContent.replace("0 times", "Never");
+                element.classList.add("new");
+            }
+        });
+    </script>
+</footer>
+</html>

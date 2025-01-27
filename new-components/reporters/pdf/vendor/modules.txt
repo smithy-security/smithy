@@ -185,12 +185,9 @@ github.com/shopspring/decimal
 github.com/smithy-security/pkg/env
 # github.com/smithy-security/smithy v0.59.2
 ## explicit; go 1.23
-github.com/smithy-security/smithy/api/proto/v1
 github.com/smithy-security/smithy/pkg/playwright
 github.com/smithy-security/smithy/pkg/playwright/mock
 github.com/smithy-security/smithy/pkg/s3
-github.com/smithy-security/smithy/pkg/s3/mock
-github.com/smithy-security/smithy/pkg/testdata
 # github.com/smithy-security/smithy/sdk v0.0.4-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk

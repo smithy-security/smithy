@@ -9,7 +9,7 @@
       "remark-preset-lint-recommended",
       [
         "remark-lint-maximum-line-length",
-        80
+        200
       ],
       "remark-lint-no-shell-dollars"
     ]
