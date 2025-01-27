@@ -1,9 +1,9 @@
-package build
+package component
 
 import "github.com/spf13/cobra"
 
-// NewCommand returns a new build command.
-func NewCommand() *cobra.Command {
+// NewBuildCommand returns a new build command.
+func NewBuildCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "build",
 		Short: "Builds a component's container",
