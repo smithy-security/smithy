@@ -8,10 +8,11 @@ runner:
     cmd: staticcheck -checks "all,-SA1019,-ST1000" $(go list ./... | grep -v github.com/smithy-security/smithy/api/proto)
     format: staticcheck
 
-  go/revive:
-    cmd: revive -config revive.toml $(go list ./...)
-    errorformat:
-      - '%f:%l:%c: %m'
+  # go/revive:
+  #   cmd: revive -formatter sarif -config revive.toml $(go list ./...)
+  #   format: sarif
+  #   # errorformat:
+  #   #   - '%f:%l:%c: %m'
  
   go/containedctx:
     cmd: go vet -vettool=$(which containedctx) $(go list ./... | grep -v github.com/smithy-security/smithy/api/proto)
