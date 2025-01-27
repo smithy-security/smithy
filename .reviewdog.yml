@@ -29,7 +29,7 @@ runner:
       - '%f:%l:%c: %m'
 
   go/errcheck:
-    cmd: errcheck -asserts -blank $(go list ./... | grep -v github.com/smithy-security/smithy/api/proto)
+    cmd: errcheck -ignoregenerated -asserts -blank $(go list ./... | grep -v github.com/smithy-security/smithy/api/proto)
     errorformat:
       - '%f:%l:%c:%m'
 
