@@ -9,7 +9,7 @@ runner:
     format: staticcheck
 
   go/revive:
-    cmd: revive -exclude ./vendor/... -exclude ./api/proto/... -config revive.toml ./...
+    cmd: go list ./... | xargs revive -config revive.toml
     errorformat:
       - '%f:%l:%c: %m'
  
