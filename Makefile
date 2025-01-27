@@ -391,3 +391,24 @@ new-major-release-tag: check-branch check-tag-message
 		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
 		git tag "v$$(($${number[0]}+1)).0.0" -m "${TAG_MESSAGE}"; \
 	)
+
+# new targets for components and smithyctl
+.PHONY: smithyctl/cmd/bin component-sdk-version
+
+smithyctl/cmd/bin:
+	$(eval GOOS:=linux)
+	$(eval GOARCH:=amd64)
+	cd smithyctl && \
+		echo $(shell pwd) && \
+		CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl ./cmd/main.go
+
+component-sdk-version:
+	@if [ -z "$(COMPONENT_TYPE)" ]; then \
+		echo "Error: COMPONENT_TYPE is not set"; \
+		exit 1; \
+	fi
+	@if [ -z "$(COMPONENT_NAME)" ]; then \
+		echo "Error: COMPONENT_NAME is not set"; \
+		exit 1; \
+	fi
+	@grep 'github.com/smithy-security/smithy/sdk' new-components/$(COMPONENT_TYPE)/$(COMPONENT_NAME)/go.mod | awk '{print $$2}'
