@@ -11,6 +11,10 @@ spec:
   params:
   - name: producer-snyk-node-api-key
     type: string
+  - name: producer-snyk-node-directories
+    type: array
+    default:
+    - .
   description: Run Snyk For Javascript, Typescript, Node
   volumes:
     - name: scratch
@@ -24,38 +28,53 @@ spec:
     env:
       - name: SNYK_INTEGRATION_VERSION 
         value: docker
-
-    image: 'snyk/snyk:node'
+    image: snyk/snyk:node
     script: |
       #!/usr/bin/env bash
       set -x
-      set +e
+
       echo "authenticating to snyk"
       snyk auth $(params.producer-snyk-node-api-key)
-      
-      baseDir = $(pwd)
-      if [ ! -d $(workspaces.output.path)/source-code/node_modules ]; then
-        cd $(workspaces.output.path)/source-code/
-        npm install
-        exitCode=$?
-        if [[ $exitCode -eq 1 ]]; then
-          echo "npm install failed, trying yarn"
-           cd $(workspaces.output.path)/source-code/
-            yarn install
-          
-        fi
-      fi
 
-      cd $baseDir
-      echo "running snyk test"
-      snyk test --prune-repeated-subdependencies --skip-unresolved --sarif-file-output=/scratch/snyk.out $(workspaces.output.path)/source-code/
-      exitCode=$?
-      if [[ $exitCode -ne 0 && $exitCode -ne 1 ]]; then
-        echo "Snyk failed with exit code $exitCode"
-        exit $exitCode
-      else
-        echo "Snyk completed successfully! exitcode $exitCode"
-      fi
+      source_code=$(workspaces.output.path)/source-code/
+      subdirs=( $(params.producer-snyk-node-directories[*]) )
+      counter=0
+
+      for subdir in "${subdirs[@]}"
+      do
+
+        case "x${subdir}" in
+        (x/*|x*/..|x*/../*|x../*)
+          echo "you should not have upper links in your subdirectories: ${subdir}"
+          ;;
+        esac
+
+        # cleanup subdirectories from .
+        absolute_subdir=$(cd ${subdir}; pwd)
+        subdir=${absolute_dir#${source_code}}
+
+        cd $(workspaces.output.path)/source-code/${subdir}
+
+        if [ -e yarn.lock ]
+        then
+          yarn install
+        else
+          npm install
+        fi
+
+        set +e
+        echo "running snyk test on directory $(pwd)"
+        snyk test --prune-repeated-subdependencies --skip-unresolved --sarif-file-output=/scratch/snyk-${counter}.out .
+        exitCode=$?
+        if [[ $exitCode -ne 0 && $exitCode -ne 1 ]]; then
+          echo "Snyk failed with exit code $exitCode"
+          exit $exitCode
+        else
+          echo "Snyk completed successfully for $(pwd)"
+          echo "${subdir} /scratch/snyk-${counter}.out" >> /scratch/snyk-index
+        fi
+        set -e
+      done
     volumeMounts:
     - mountPath: /scratch
       name: scratch
