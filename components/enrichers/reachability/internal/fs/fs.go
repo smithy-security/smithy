@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/go-errors/errors"
+
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/pkg/putil"
 )

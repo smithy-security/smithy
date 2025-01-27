@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"time"
+
 	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/sdk/component"

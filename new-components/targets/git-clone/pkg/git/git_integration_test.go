@@ -2,7 +2,6 @@ package git_test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -10,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/go-errors/errors"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/stretchr/testify/require"

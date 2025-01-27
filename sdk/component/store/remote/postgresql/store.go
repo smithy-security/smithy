@@ -3,7 +3,6 @@ package postgresql
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 
 	"github.com/go-errors/errors"

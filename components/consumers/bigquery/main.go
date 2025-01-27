@@ -12,6 +12,7 @@ import (
 	"google.golang.org/api/option"
 
 	"github.com/go-errors/errors"
+
 	"github.com/smithy-security/smithy/components/consumers"
 	"github.com/smithy-security/smithy/pkg/enumtransformers"
 )

@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/go-errors/errors"
+
 	smithyapiv1 "github.com/smithy-security/smithy/api/proto/v1"
 	"github.com/smithy-security/smithy/components"
 	"github.com/smithy-security/smithy/pkg/putil"

@@ -2,7 +2,6 @@ package git
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 
 	"github.com/go-errors/errors"

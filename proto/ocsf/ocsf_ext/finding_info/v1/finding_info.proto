@@ -48,7 +48,6 @@ message DataSource {
   }
 }
 
-
 // annotations created by the DataEnricher
 message Enrichment {
   enum EnrichmentType {
@@ -58,8 +57,7 @@ message Enrichment {
   }
 
   // if it has this enrichment at all, the finding is a duplicate
-  message DuplicateEnrichment {
-  }
+  message DuplicateEnrichment {}
 
   // a list of finding ids, of the other findings it has been correlated to
   message CorrelationEnrichment {

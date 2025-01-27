@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/go-errors/errors"
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/go-errors/errors"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
 )
