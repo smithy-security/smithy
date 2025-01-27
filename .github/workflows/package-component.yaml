@@ -1,0 +1,58 @@
+name: Package on Tag
+
+on:
+  push:
+    tags:
+      - '*/*/*/v*.*.*'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract tag details
+        id: tag_info
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          COMPONENT_TYPE=$(echo $TAG | cut -d/ -f1)
+          COMPONENT_NAME=$(echo $TAG | cut -d/ -f2)
+          VERSION=$(echo $TAG | cut -d/ -f3)
+          
+          echo "component_type=$COMPONENT_TYPE" >> $GITHUB_OUTPUT
+          echo "component_name=$COMPONENT_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Extract SDK Version
+        id: sdk_version
+        run: |
+          SDK_VERSION=$(grep 'github.com/smithy-security/smithy/sdk' new-components/${{ steps.tag_info.outputs.component_type }}/${{ steps.tag_info.outputs.component_name }}/go.mod | awk '{print $2}')
+          echo "sdk_version=$SDK_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      # To be replaced with compiled and release binary - TODO: https://linear.app/smithy/issue/OCU-480/build-and-push-binaries
+      - name: Build CLI
+        working-directory: ./smithyctl
+        run: go build -o ../cli ./cmd/main.go
+
+      - name: Run Packaging
+        env:
+          USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          PAT: ${{ secrets.REGISTRY_PAT }}
+        run: |
+          ./cli \
+            --debug-enabled=true \
+            --debug-level=debug \
+            component \
+              package \
+                --registry-auth-enabled=true \
+                --registry-auth-username=${{ env.USERNAME }} \
+                --registry-auth-password=${{ env.PAT }} \
+                --registry-url=ghcr.io \
+                --sdk-version=${{ steps.sdk_version.outputs.sdk_version }} \
+                --spec-path=new-components/${{ steps.tag_info.outputs.component_type }}/${{ steps.tag_info.outputs.component_name }} \
+                --version=${{ steps.tag_info.outputs.version }}
