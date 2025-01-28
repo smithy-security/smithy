@@ -26,7 +26,7 @@ spec:
     script: |
       pip3 install safety
       set -x
-      cd $(workspaces.output.path)
+      cd $(workspaces.source-code.path)
       touch "uber-reqs.txt"
       for file in $(find . -iname "requirements.txt"); do
         cat $file >> "uber-reqs.txt"
@@ -34,17 +34,11 @@ spec:
 
       sort "uber-reqs.txt" | uniq -u > unique_requirements.txt
 
-      safety check -r unique_requirements.txt --save-json /scratch/out.json || true
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+      safety check -r unique_requirements.txt --save-json $(workspaces.scratch.path)/out.json || true
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/python-pip-safety:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/python-pip-safety/python-pip-safety-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/python-pip-safety.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/python-pip-safety.pb"

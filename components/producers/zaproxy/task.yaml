@@ -38,10 +38,10 @@ spec:
       if [ -z "$automation" ]; then 
         if [ -z  "$configFile" ]; then
           echo "Running ZAP with args: $(params.producer-zaproxy-flags)"
-          zap.sh -cmd -silent -notel -quickout /zap/wrk/out.json -quickurl $(params.producer-zaproxy-target) $(params.producer-zaproxy-flags)
+          zap.sh -cmd -silent -notel -quickout $(workspaces.scratch.path)/out.json -quickurl $(params.producer-zaproxy-target) $(params.producer-zaproxy-flags)
         else 
           echo "$configFile" | base64 -d > configuration.xml
-          zap.sh -cmd -silent -notel -quickout /zap/wrk/out.json -quickurl $(params.producer-zaproxy-target) -configFile configuration.xml
+          zap.sh -cmd -silent -notel -quickout $(workspaces.scratch.path)/out.json -quickurl $(params.producer-zaproxy-target) -configFile configuration.xml
           $(params.producer-zaproxy-flags)
         fi
       else 
@@ -49,17 +49,10 @@ spec:
         cat automation.yaml
         zap.sh -cmd -autorun automation.yaml
       fi
-    volumeMounts:
-    - mountPath: /zap/wrk
-      name: scratch
-
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/zaproxy:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/zaproxy/zaproxy-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/zap.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/zap.pb"

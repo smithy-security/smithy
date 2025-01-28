@@ -27,20 +27,13 @@ spec:
     args:
     - "$(params.producer-example-tool-flags[*])"
     - "-fmt=json"
-    - "-out=/scratch/out.json"
+    - "-out=$(workspaces.scratch.path)/out.json"
     - "-no-fail"
-    - "$(workspaces.output.path)/..."
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
+    - "$(workspaces.source-code.path)/..."
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: {{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/example-tool:{{ .Chart.AppVersion }}
     command: ["/app/components/producers/example-tool/example-tool-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/example-tool.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/example-tool.pb"

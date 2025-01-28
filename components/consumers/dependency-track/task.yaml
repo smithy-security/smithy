@@ -34,7 +34,7 @@ spec:
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/dependency-track:{{ .Chart.AppVersion }}'
     command: ["/app/components/consumers/dependency-track/dependency-track"]
     args: [
-      "-in", "$(workspaces.output.path)/.smithy/enrichers/",
+      "-in", "$(workspaces.scratch.path)/",
       "-url", "$(params.consumer-dependency-track-api-url)",
       "-apiKey", "$(params.consumer-dependency-track-token)",
       "-projectName", "$(params.consumer-dependency-track-project-name)",

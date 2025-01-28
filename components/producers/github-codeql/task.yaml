@@ -18,12 +18,6 @@ spec:
   - name: producer-github-codeql-github-token
     description: The GitHub token to use for scanning. Must have "Code scanning alerts" repository permissions (read).
     type: string
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: produce-issues
     imagePullPolicy: IfNotPresent
@@ -36,11 +30,8 @@ spec:
       - name: GITHUB_CLIENT_LIST_PAGE_SIZE
         value: "100"
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/github-codeql.pb"
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/github-codeql.pb"
     - "-github-token=$(params.producer-github-codeql-github-token)"
     - "-repository-owner=$(params.producer-github-codeql-repository-owner)"
     - "-repository-name=$(params.producer-github-codeql-repository-name)"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch

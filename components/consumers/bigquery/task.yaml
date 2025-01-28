@@ -29,7 +29,7 @@ spec:
       args:
         [
           "-in",
-          "$(workspaces.output.path)/.smithy/enrichers/",
+          "$(workspaces.scratch.path)/",
           "-project-id",
           "$(params.consumer-bigquery-project-id)",
           "-dataset",
@@ -38,5 +38,5 @@ spec:
           "$(params.consumer-bigquery-token)",
         ]
       volumeMounts:
-        - mountPath: /scratch
+        - mountPath: $(workspaces.scratch.path)
           name: scratch

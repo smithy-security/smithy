@@ -14,31 +14,19 @@ spec:
   - name: producer-testsslsh-flags
     type: array
     default: []
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: run-testsslsh
     image: docker.io/drwetter/testssl.sh:3.0
     command: ["/home/testssl/testssl.sh"]
     args:
       - --jsonfile
-      - /scratch/out.json
+      - $(workspaces.scratch.path)/out.json
       - "$(params.producer-testsslsh-flags[*])"
       - "$(params.producer-testsslsh-target-url)"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/testsslsh:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/testsslsh/testsslsh-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/testsslsh.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/testsslsh.pb"

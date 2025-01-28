@@ -15,13 +15,13 @@ spec:
   - name: aggregate
     image: docker.io/busybox
     command: ["ls"]
-    args: ["$(workspaces.output.path)"]
+    args: ["$(workspaces.scratch.path)"]
     env: []
   - name: tag
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/tagger:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/aggregator/tagger"]
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.smithy/producers
+      value: $(workspaces.scratch.path)
     - name: WRITE_PATH
-      value: "$(workspaces.output.path)/.smithy/producers"
+      value: $(workspaces.scratch.path)

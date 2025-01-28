@@ -17,4 +17,4 @@ spec:
     command: ["/app/components/consumers/stdout-json/stdout-json"]
     args:
       - "-in"
-      - "$(workspaces.output.path)/.smithy/enrichers/"
+      - "$(workspaces.scratch.path)/"

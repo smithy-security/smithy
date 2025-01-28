@@ -23,22 +23,15 @@ spec:
       pip3 install bandit
       bandit \
         --recursive \
-        $(workspaces.output.path) \
+        $(workspaces.source-code.path) \
         --format json \
-        --output /scratch/out.json \
+        --output $(workspaces.scratch.path)/out.json \
         || true
-      cat /scratch/out.json
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
+      cat $(workspaces.scratch.path)/out.json
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/python-bandit:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/python-bandit/python-bandit-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/python-bandit.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/python-bandit.pb"

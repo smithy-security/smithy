@@ -27,4 +27,4 @@ spec:
       - "-purl"
       - "$(params.source-dependency-purl)"
       - "-outDir"
-      - "$(workspaces.output.path)"
+      - "$(workspaces.source-code.path)"

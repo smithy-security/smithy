@@ -37,7 +37,7 @@ spec:
 
       echo "running snyk container test"
       snyk container test \
-        --sarif-file-output=/scratch/snyk.out \
+        --sarif-file-output=$(workspaces.scratch.path)/snyk.out \
         --docker \
         $(params.producer-snyk-docker-image)
 
@@ -48,17 +48,10 @@ spec:
       else
         echo "Snyk completed successfully! exitcode $exitCode"
       fi
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/snyk-docker:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/snyk-docker/snyk-docker-parser"]
     args:
-    - "-in=/scratch/snyk.out"
-    - "-out=$(workspaces.output.path)/.smithy/producers/snyk.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/snyk.out"
+    - "-out=$(workspaces.scratch.path)/snyk.pb"

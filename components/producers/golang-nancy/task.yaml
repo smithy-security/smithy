@@ -14,58 +14,42 @@ spec:
       type: string
       default: "docker.io/golang:1.21"
       description: The container image that will be used to run Go nancy
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
     - name: go-deps
       image: "$(params.producer-golang-nancy-goImage)"
       script: | # necessary because sonatypecommunity/nancy does not include go
         #!/bin/bash -xe
         # make sure that the git repo is considered secure since it's mounted with onwen None but the process itself runs as root
-        git config --global --add safe.directory $(workspaces.output.path)/source-code
-        if [[ ! -f "$(workspaces.output.path)/source-code/Gopkg.lock" ]]; then
-           go_mod_paths=$(find $(workspaces.output.path)/source-code -iname "go.mod")
-           touch /scratch/golist.json
+        git config --global --add safe.directory $(workspaces.source-code.path)
+        if [[ ! -f "$(workspaces.source-code.path)/Gopkg.lock" ]]; then
+           go_mod_paths=$(find $(workspaces.source-code.path) -iname "go.mod")
+           touch $(workspaces.scratch.path)/golist.json
            for go_mod_path in $go_mod_paths; do
-             cd $(dirname $go_mod_path) && go list -json -deps ./... >> /scratch/golist.json
+             cd $(dirname $go_mod_path) && go list -json -deps ./... >> $(workspaces.scratch.path)/golist.json
            done
-           cat /scratch/golist.json
+           cat $(workspaces.scratch.path)/golist.json
          else
-           cat $(workspaces.output.path)/source-code/Gopkg.lock
+           cat $(workspaces.source-code.path)/Gopkg.lock
          fi
-         ls -lah /scratch
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
 
+         ls -lah $(workspaces.scratch.path)
     - name: run-nancy
       imagePullPolicy: IfNotPresent
       image: docker.io/sonatypecommunity/nancy:v1.0.42-alpine
       script: |
         #!/bin/sh
-        if [[ ! -f "$(workspaces.output.path)/source-code/Gopkg.lock" ]]; then
+        if [[ ! -f "$(workspaces.source-code.path)/Gopkg.lock" ]]; then
           echo "Running nancy with golist"
-          cat /scratch/golist.json | nancy sleuth -o json > /scratch/out.json || true
+          cat $(workspaces.scratch.path)/golist.json | nancy sleuth -o json > $(workspaces.scratch.path)/out.json || true
         else
           echo "Running nancy in dep mode"
-          nancy sleuth -p "$(workspaces.output.path)/source-code/Gopkg.lock" -o json > /scratch/out.json || true
+          nancy sleuth -p "$(workspaces.source-code.path)/Gopkg.lock" -o json > $(workspaces.scratch.path)/out.json || true
         fi
-        cat /scratch/out.json
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
-
+        cat $(workspaces.scratch.path)/out.json
     - name: produce-issues
       imagePullPolicy: IfNotPresent
       image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/golang-nancy:{{ .Chart.AppVersion }}'
       command: ["/app/components/producers/golang-nancy/golang-nancy-parser"]
       args:
-        - "-in=/scratch/out.json"
-        - "-out=$(workspaces.output.path)/.smithy/producers/golang-nancy.pb"
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
+        - "-in=$(workspaces.scratch.path)/out.json"
+        - "-out=$(workspaces.scratch.path)/golang-nancy.pb"

@@ -37,8 +37,8 @@ spec:
     imagePullPolicy: IfNotPresent
     image: docker.io/busybox:1.35.0
     script: |
-      mkdir -p $(workspaces.output.path)/.smithy/consumers/jira
-      cat <<'EOF' > $(workspaces.output.path)/.smithy/consumers/jira/config.json
+      mkdir -p $(workspaces.scratch.path)
+      cat <<'EOF' > $(workspaces.scratch.path)/config.json
        {
       "defaultValues": {
           "project": "$(params.consumer-jira-project-name)",
@@ -49,7 +49,7 @@ spec:
       "mappings": null
       }
       EOF
-      cat $(workspaces.output.path)/.smithy/consumers/jira/config.json
+      cat $(workspaces.scratch.path)/config.json
   - name: run-consumer
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/jira:{{ .Chart.AppVersion }}'
@@ -62,10 +62,10 @@ spec:
     - name: SMITHY_JIRA_URL
       value: $(params.consumer-jira-url)
     - name: SMITHY_JIRA_CONFIG_PATH
-      value: $(workspaces.output.path)/.smithy/consumers/jira/config.json
+      value: $(workspaces.scratch.path)/config.json
     args: [
       "-in",
-      "$(workspaces.output.path)/.smithy/enrichers/",
+      "$(workspaces.scratch.path)/",
       "-severity-threshold",
        "0"
     ]

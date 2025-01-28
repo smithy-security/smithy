@@ -25,18 +25,12 @@ spec:
     command: ["/home/node/workspace/eslint-wrapper"]
     args:
      - -t
-     - $(workspaces.output.path)
+     - $(workspaces.source-code.path)
      - -c
      - "$(params.producer-typescript-eslint-config-js)"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
   - name: produce-issues
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/typescript-eslint:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/typescript-eslint/typescript-eslint-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/typescript-eslint.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/typescript-eslint.pb"

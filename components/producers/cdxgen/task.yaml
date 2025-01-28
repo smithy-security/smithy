@@ -50,21 +50,14 @@ spec:
         - -r
         - -p
         - -o
-        - /scratch/out.json
-        - $(workspaces.output.path)/
+        - $(workspaces.scratch.path)/out.json
+        - $(workspaces.source-code.path)/
         - --spec-version
         - "1.5"
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
-
     - name: produce-issues
       imagePullPolicy: IfNotPresent
       image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/cdxgen:{{ .Chart.AppVersion }}'
       command: ["/app/components/producers/cdxgen/cdxgen-parser"]
       args:
-        - "-in=/scratch/out.json"
-        - "-out=$(workspaces.output.path)/.smithy/producers/cdxgen.pb"
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
+        - "-in=$(workspaces.scratch.path)/out.json"
+        - "-out=$(workspaces.scratch.path)/cdxgen.pb"

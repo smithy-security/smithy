@@ -33,7 +33,7 @@ spec:
       command: ["/app/components/consumers/elasticsearch/elasticsearch"]
       args:
         - -in
-        - "$(workspaces.output.path)/.smithy/enrichers/"
+        - "$(workspaces.scratch.path)/"
         - -descriptionTemplate
         - "$(params.consumer-elasticsearch-description-template)"
         - -esIndex

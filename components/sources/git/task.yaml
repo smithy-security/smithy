@@ -13,29 +13,6 @@ metadata:
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
 spec:
   description: Clone a Git repository from a remote origin.
-  workspaces:
-    - name: output
-      description: The git repo will be cloned onto the volume backing this Workspace.
-    - name: ssh-directory
-      optional: true
-      description: |
-        A .ssh directory with private key, known_hosts, config, etc. Copied to
-        the user's home before git commands are executed. Used to authenticate
-        with the git remote when performing the clone. Binding a Secret to this
-        Workspace is strongly recommended over other volume types.
-    - name: basic-auth
-      optional: true
-      description: |
-        A Workspace containing a .gitconfig and .git-credentials file. These
-        will be copied to the user's home before any git commands are run. Any
-        other files in this Workspace are ignored. It is strongly recommended
-        to use ssh-directory over basic-auth whenever possible and to bind a
-        Secret to this Workspace over other volume types.
-    - name: ssl-ca-directory
-      optional: true
-      description: |
-        A workspace containing CA certificates, this will be used by Git to
-        verify the peer with when fetching or pushing over HTTPS.
   params:
     - name: git-clone-url
       description: Repository URL to clone from.
@@ -67,7 +44,7 @@ spec:
     - name: git-clone-subdirectory
       description: Subdirectory inside the `output` Workspace to clone the repo into.
       type: string
-      default: "source-code"
+      default: ""
     - name: git-clone-sparseCheckoutDirectories
       description: Define the directory patterns to match or exclude when performing a sparse checkout.
       type: string
@@ -147,19 +124,7 @@ spec:
       - name: PARAM_USER_HOME
         value: $(params.git-clone-userHome)
       - name: WORKSPACE_OUTPUT_PATH
-        value: $(workspaces.output.path)
-      - name: WORKSPACE_SSH_DIRECTORY_BOUND
-        value: $(workspaces.ssh-directory.bound)
-      - name: WORKSPACE_SSH_DIRECTORY_PATH
-        value: $(workspaces.ssh-directory.path)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
-        value: $(workspaces.basic-auth.bound)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
-        value: $(workspaces.basic-auth.path)
-      - name: WORKSPACE_SSL_CA_DIRECTORY_BOUND
-        value: $(workspaces.ssl-ca-directory.bound)
-      - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
-        value: $(workspaces.ssl-ca-directory.path)
+        value: $(workspaces.source-code.path)
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532
@@ -171,25 +136,6 @@ spec:
           set -x
         fi
 
-        if [ "${WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND}" = "true" ] ; then
-          cp "${WORKSPACE_BASIC_AUTH_DIRECTORY_PATH}/.git-credentials" "${PARAM_USER_HOME}/.git-credentials"
-          cp "${WORKSPACE_BASIC_AUTH_DIRECTORY_PATH}/.gitconfig" "${PARAM_USER_HOME}/.gitconfig"
-          chmod 400 "${PARAM_USER_HOME}/.git-credentials"
-          chmod 400 "${PARAM_USER_HOME}/.gitconfig"
-        fi
-
-        if [ "${WORKSPACE_SSH_DIRECTORY_BOUND}" = "true" ] ; then
-          cp -R "${WORKSPACE_SSH_DIRECTORY_PATH}" "${PARAM_USER_HOME}"/.ssh
-          chmod 700 "${PARAM_USER_HOME}"/.ssh
-          chmod -R 400 "${PARAM_USER_HOME}"/.ssh/*
-        fi
-
-        if [ "${WORKSPACE_SSL_CA_DIRECTORY_BOUND}" = "true" ] ; then
-           export GIT_SSL_CAPATH="${WORKSPACE_SSL_CA_DIRECTORY_PATH}"
-           if [ "${PARAM_CRT_FILENAME}" != "" ] ; then
-              export GIT_SSL_CAINFO="${WORKSPACE_SSL_CA_DIRECTORY_PATH}/${PARAM_CRT_FILENAME}"
-           fi
-        fi
         CHECKOUT_DIR="${WORKSPACE_OUTPUT_PATH}/${PARAM_SUBDIRECTORY}"
 
         cleandir() {

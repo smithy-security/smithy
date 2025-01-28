@@ -17,8 +17,8 @@ spec:
     command: ["/app/components/enrichers/deduplication/deduplication"]
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.smithy/producers
+      value: $(workspaces.scratch.path)
     - name: WRITE_PATH
-      value: $(workspaces.output.path)/.smithy/enrichers/deduplication
+      value: $(workspaces.scratch.path)/deduplication
     - name: DB_CONNECTION
       value: postgresql://{{.Values.database.auth.username}}:{{.Values.database.auth.password}}@{{.Values.database.host}}/{{.Values.database.auth.database}}?{{.Values.database.auth.querystringargs}}

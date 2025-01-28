@@ -12,12 +12,6 @@ spec:
     - name: producer-dependency-check-nvd-api-key
       type: string
       default: ""
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: run-dependency-check
     image: owasp/dependency-check:10.0.3
@@ -28,19 +22,13 @@ spec:
     - -f
     - JSON
     - -o
-    - /scratch
+    - $(workspaces.scratch.path)/
     - -s
-    - $(workspaces.output.path)/
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - $(workspaces.source-code.path)/
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/dependency-check:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/dependency-check/dependency-check-parser"]
     args:
-    - "-in=/scratch/dependency-check-report.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/dependency-check.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/dependency-check-report.json"
+    - "-out=$(workspaces.scratch.path)/dependency-check.pb"

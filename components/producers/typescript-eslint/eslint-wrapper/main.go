@@ -37,7 +37,7 @@ func main() {
 		"json",
 		"--no-eslintrc",
 		"-o",
-		"/scratch/out.json",
+		"$(workspaces.scratch.path)/out.json",
 		"--exit-on-fatal-error",
 		"-c", ConfigPath, target).CombinedOutput()
 
@@ -46,7 +46,7 @@ func main() {
 		"-f",
 		"json",
 		"-o",
-		"/scratch/out.json",
+		"$(workspaces.scratch.path)/out.json",
 		"--exit-on-fatal-error",
 		"-c", ConfigPath, target)
 	log.Println("eslint out was", string(out))
@@ -57,7 +57,7 @@ func main() {
 			os.Exit(exitcode.ExitCode())
 		}
 	}
-	eslintOut, err := os.ReadFile("/scratch/out.json")
+	eslintOut, err := os.ReadFile("$(workspaces.scratch.path)/out.json")
 	if err != nil {
 		log.Println("could not read eslint output, err:")
 		panic(err)

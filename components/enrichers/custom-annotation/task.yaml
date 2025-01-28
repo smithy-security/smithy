@@ -26,9 +26,9 @@ spec:
     command: ["/app/components/enrichers/custom-annotation/custom-annotation"]
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.smithy/producers
+      value: $(workspaces.scratch.path)
     - name: WRITE_PATH
-      value: "$(workspaces.output.path)/.smithy/enrichers/custom-annotation"
+      value: "$(workspaces.scratch.path)/custom-annotation"
     - name: ANNOTATIONS
       value: "$(params.enricher-custom-annotation-base-annotation)"
     - name: NAME

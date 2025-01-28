@@ -32,19 +32,12 @@ spec:
     args:
       - --format=json
       - --show-details
-      - --output=/scratch/out.json
+      - --output=$(workspaces.scratch.path)/out.json
       - --repo=$(params.producer-ossf-scorecard-input-repo)
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/ossf-scorecard:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/ossf-scorecard/ossf-scorecard-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/ossf-scorecard.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/ossf-scorecard.pb"

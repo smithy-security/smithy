@@ -39,7 +39,7 @@ spec:
       args:
         [
           "-in",
-          "$(workspaces.output.path)/.smithy/enrichers/",
+          "$(workspaces.scratch.path)/",
           "-bucket",
           "$(params.consumer-pdf-s3-bucket-name)",
           "-region",
@@ -47,6 +47,4 @@ spec:
           "-template",
           "$(params.consumer-pdf-template-location)",
         ]
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
+
