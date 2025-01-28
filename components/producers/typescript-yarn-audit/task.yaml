@@ -20,22 +20,15 @@ spec:
       imagePullPolicy: IfNotPresent
       image: docker.io/node:lts
       script: |
-        cd $(workspaces.output.path)
+        cd $(workspaces.source-code.path)
         echo "Starting yarn audit command..."
-        yarn audit --json --silent --no-progress > /scratch/out.json || true
+        yarn audit --json --silent --no-progress > $(workspaces.scratch.path)/out.json || true
         echo "Done"
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
-
     - name: produce-issues
       imagePullPolicy: IfNotPresent
       image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/typescript-yarn-audit:{{ .Chart.AppVersion }}'
       command:
         ["/app/components/producers/typescript-yarn-audit/typescript-yarn-audit-parser"]
       args:
-        - "-in=/scratch/out.json"
-        - "-out=$(workspaces.output.path)/.smithy/producers/typescript-yarn-audit.pb"
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
+        - "-in=$(workspaces.scratch.path)/out.json"
+        - "-out=$(workspaces.scratch.path)/typescript-yarn-audit.pb"

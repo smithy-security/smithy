@@ -20,12 +20,6 @@ spec:
   - name: producer-dependency-track-api-key
     type: string
     default: ""
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: source-code-ws
-      description: The workspace containing the dependency track results.
   steps:
   - name: produce-issues
     imagePullPolicy: IfNotPresent
@@ -36,8 +30,5 @@ spec:
     - "-projectID=$(params.producer-dependency-track-project-id)"
     - "-apiKey=$(params.producer-dependency-track-api-key)"
     - "-url=$(params.producer-dependency-track-url)"
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.source-code-ws.path)/.smithy/producers/dependency-track.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/dependency-track.pb"

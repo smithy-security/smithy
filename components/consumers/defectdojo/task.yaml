@@ -28,7 +28,7 @@ spec:
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/defectdojo:{{ .Chart.AppVersion }}'
     command: ["/app/components/consumers/defectdojo/defectdojo"]
     args: [
-      "-in", "$(workspaces.output.path)/.smithy/enrichers/",
+      "-in", "$(workspaces.scratch.path)/",
       "-dojoUser", "$(params.consumer-defectdojo-user)",
       "-dojoToken", "$(params.consumer-defectdojo-token)",
       "-dojoProductID", "$(params.consumer-defectdojo-product-id)",

@@ -29,36 +29,24 @@ spec:
       - name: SEMGREP_CONFIG
         value: $(params.producer-semgrep-rules-yaml)
     script: |
-      printf '%s' "${SEMGREP_CONFIG}" > "/scratch/semgrep-rules.yaml"
-      cat /scratch/semgrep-rules.yaml
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
+      printf '%s' "${SEMGREP_CONFIG}" > "$(workspaces.scratch.path)/semgrep-rules.yaml"
+      cat $(workspaces.scratch.path)/semgrep-rules.yaml
   - name: run-semgrep
     image: docker.io/returntocorp/semgrep:1.80
     command: ["semgrep"]
     args:
     - "scan"
     - "--config"
-    - "/scratch/semgrep-rules.yaml"
+    - "$(workspaces.scratch.path)/semgrep-rules.yaml"
     - "--config=$(params.producer-semgrep-config-value)"
     - "--json"
     - "--output"
-    - "/scratch/out.json"
-    - "$(workspaces.output.path)"
-
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
+    - "$(workspaces.scratch.path)/out.json"
+    - "$(workspaces.source-code.path)"
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/semgrep:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/semgrep/semgrep-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/semgrep.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/semgrep.pb"

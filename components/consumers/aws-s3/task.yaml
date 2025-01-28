@@ -33,14 +33,10 @@ spec:
           value: "$(params.consumer-aws-s3-secret-access-key)"
       command: ["/app/components/consumers/aws-s3/aws-s3"]
       args:
-        [
-          "-in",
-          "$(workspaces.output.path)/.smithy/enrichers/",
-          "-bucket",
-          "$(params.consumer-aws-s3-bucket-name)",
-          "-region",
-          "$(params.consumer-aws-s3-bucket-region)",
-        ]
-      volumeMounts:
-        - mountPath: /scratch
-          name: scratch
+        - -in
+        - $(workspaces.scratch.path)/
+        - -bucket
+        - $(params.consumer-aws-s3-bucket-name)
+        - -region
+        - $(params.consumer-aws-s3-bucket-region)
+

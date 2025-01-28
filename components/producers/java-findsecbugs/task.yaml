@@ -24,7 +24,7 @@ spec:
   - name: get-jar
     image: busybox:latest
     script: |
-      wget "$(params.producer-java-findsecbugs-jar-url)" -O "$(workspaces.output.path)/main.jar"
+      wget "$(params.producer-java-findsecbugs-jar-url)" -O "$(workspaces.source-code.path)/main.jar"
   - name: run-findsecbugs
     imagePullPolicy: IfNotPresent
     image: docker.io/captainfoobar/findsecbugs:1.12.0.3
@@ -34,28 +34,18 @@ spec:
       - -xml
       - -progress
       - -output
-      - /scratch/out.xml
+      - $(workspaces.scratch.path)/out.xml
       - "$(params.producer-java-findsecbugs-extra-flags[*])"
-      - "$(workspaces.output.path)/main.jar"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+      - "$(workspaces.source-code.path)/main.jar"
   - name: debug
     imagePullPolicy: IfNotPresent
     image: busybox:latest
     script: |
-      ls -lah /scratch
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
+      ls -lah $(workspaces.scratch.path)
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/java-findsecbugs:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/java-findsecbugs/java-findsecbugs-parser"]
     args:
-    - "-in=/scratch/out.xml"
-    - "-out=$(workspaces.output.path)/.smithy/producers/java-findsecbugs.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.xml"
+    - "-out=$(workspaces.scratch.path)/java-findsecbugs.pb"

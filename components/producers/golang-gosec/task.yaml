@@ -16,12 +16,6 @@ spec:
     - "-r"
     - "-sort"
     - "-nosec"
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: run-gosec
     image: docker.io/securego/gosec:2.15.0
@@ -29,19 +23,13 @@ spec:
     args:
     - "$(params.producer-golang-gosec-flags[*])"
     - "-fmt=json"
-    - "-out=/scratch/out.json"
+    - "-out=$(workspaces.scratch.path)/out.json"
     - "-no-fail"
-    - "$(workspaces.output.path)/source-code/..."
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "$(workspaces.source-code.path)/..."
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/golang-gosec:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/golang-gosec/golang-gosec-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/golang-gosec.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/golang-gosec.pb"

@@ -15,12 +15,6 @@ spec:
     default:
     - "--run-all-checks"
     - "--skip-libs"
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: run-brakeman
     image: presidentbeef/brakeman:v6.2.1.1
@@ -31,22 +25,16 @@ spec:
     - "json"
     - "--force-scan"
     - "--output"
-    - "/scratch/out.json"
+    - "$(workspaces.scratch.path)/out.json"
     - "-q"
     - "--path"
-    - "$(workspaces.output.path)/source-code/"
+    - "$(workspaces.source-code.path)/"
     - "--no-exit-on-error"
     - "--no-exit-on-warn"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/brakeman:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/brakeman/brakeman-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/brakeman.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/brakeman.pb"

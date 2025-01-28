@@ -21,18 +21,15 @@ spec:
       #!/bin/sh
       /app/bin/kics \
       scan \
-      -p $(workspaces.output.path) \
-      -o /scratch \
+      -p $(workspaces.source-code.path) \
+      -o $(workspaces.scratch.path) \
       --minimal-ui \
       --no-progress \
       --output-name out \
       --payload-lines \
       --report-formats json \
       --silent
-      cat /scratch/out.json
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+      cat $(workspaces.scratch.path)/out.json
     resources:
       requests:
         cpu: "500m"
@@ -43,8 +40,5 @@ spec:
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/kics:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/kics/kics-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/kics.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/kics.pb"

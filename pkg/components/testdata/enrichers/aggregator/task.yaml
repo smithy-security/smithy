@@ -18,14 +18,14 @@ spec:
   - name: aggregate
     image: docker.io/busybox:1.35.0
     command: ["ls","-lah"]
-    args: ["$(workspaces.output.path)"]
+    args: ["$(workspaces.source-code.path)"]
   - name: aggregate-tagged-issues
     image:  '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/enrichers/aggregator:{{ .Chart.AppVersion }}'
     command: ["/app/components/enrichers/aggregator/aggregator"]
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.smithy/enrichers
+      value: $(workspaces.scratch.path)
     - name: WRITE_PATH
-      value: "$(workspaces.output.path)/.smithy/enrichers"
+      value: "$(workspaces.scratch.path)"
     - name: B64_SIGNATURE_KEY
       value: "$(params.enricher-aggregator-b64-signature-key)"

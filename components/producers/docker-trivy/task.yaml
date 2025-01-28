@@ -15,7 +15,7 @@ spec:
     description: Flags to pass to trivy. Optional.
   - name: producer-docker-trivy-target
     type: string
-    default: "$(workspaces.output.path)"
+    default: "$(workspaces.source-code.path)"
     description: The target to scan.
   - name: producer-docker-trivy-format
     type: string
@@ -25,12 +25,6 @@ spec:
     type: string
     default: image
     description: The command to run trivy with. Default `image`.
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: run-trivy
     image: docker.io/aquasec/trivy:0.54.1
@@ -40,21 +34,14 @@ spec:
     - -f
     - $(params.producer-docker-trivy-format)
     - -o
-    - /scratch/out.json
+    - $(workspaces.scratch.path)/out.json
     - $(params.producer-docker-trivy-command)
     - $(params.producer-docker-trivy-target)
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/docker-trivy:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/docker-trivy/docker-trivy-parser"]
     args:
     - "-format=$(params.producer-docker-trivy-format)"
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/docker-trivy.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/docker-trivy.pb"

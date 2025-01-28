@@ -9,20 +9,17 @@ spec:
   description: Combines multiple inputs into a single one.
   params: []
   results: []
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: aggregate
     image: docker.io/busybox
     command: ["ls"]
-    args: ["$(workspaces.output.path)"]
+    args: ["$(workspaces.source-code.path)"]
     env: []
   - name: tag
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/tagger:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/aggregator/tagger"]
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.smithy/producers
+      value: $(workspaces.scratch.path)
     - name: WRITE_PATH
-      value: "$(workspaces.output.path)/.smithy/producers"
+      value: "$(workspaces.scratch.path)"

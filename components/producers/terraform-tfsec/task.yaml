@@ -22,24 +22,18 @@ spec:
     image: docker.io/aquasec/tfsec:v1.28
     command: [tfsec]
     args:
-    - $(workspaces.output.path)
+    - $(workspaces.source-code.path)
     - -f
     - json
     - --concise-output
     -  --out
-    - /scratch/out.json
+    - $(workspaces.scratch.path)/out.json
     - --soft-fail
     - "$(params.producer-terraform-tfsec-flags[*])"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/terraform-tfsec:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/terraform-tfsec/terraform-tfsec-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/terraform-tfsec.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/terraform-tfsec.pb"

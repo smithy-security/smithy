@@ -25,24 +25,18 @@ spec:
       set -xe
       mode='$(params.producer-trufflehog-git-repository)'
       if [[ -n "${mode}" ]]; then
-        trufflehog git --json "${mode}" &> /scratch/out.json
+        trufflehog git --json "${mode}" &> $(workspaces.scratch.path)/out.json
       else
         trufflehog \
           filesystem \
             --json \
-            --directory="$(workspaces.output.path)" &> /scratch/out.json
+            --directory="$(workspaces.source-code.path)" &> $(workspaces.scratch.path)/out.json
       fi
-      cat /scratch/out.json
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+      cat $(workspaces.scratch.path)/out.json
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/trufflehog:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/trufflehog/trufflehog-parser"]
     args:
-    - "-in=/scratch/out.json"
-    - "-out=$(workspaces.output.path)/.smithy/producers/trufflehog.pb"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
+    - "-in=$(workspaces.scratch.path)/out.json"
+    - "-out=$(workspaces.scratch.path)/trufflehog.pb"

@@ -156,19 +156,7 @@ spec:
       - name: PARAM_USER_HOME
         value: $(params.git-clone-userHome)
       - name: WORKSPACE_OUTPUT_PATH
-        value: $(workspaces.output.path)
-      - name: WORKSPACE_SSH_DIRECTORY_BOUND
-        value: $(workspaces.ssh-directory.bound)
-      - name: WORKSPACE_SSH_DIRECTORY_PATH
-        value: $(workspaces.ssh-directory.path)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
-        value: $(workspaces.basic-auth.bound)
-      - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
-        value: $(workspaces.basic-auth.path)
-      - name: WORKSPACE_SSL_CA_DIRECTORY_BOUND
-        value: $(workspaces.ssl-ca-directory.bound)
-      - name: WORKSPACE_SSL_CA_DIRECTORY_PATH
-        value: $(workspaces.ssl-ca-directory.path)
+        value: $(workspaces.source-code.path)
       securityContext:
         runAsNonRoot: true
         runAsUser: 65532

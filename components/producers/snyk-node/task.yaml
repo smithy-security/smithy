@@ -34,13 +34,13 @@ spec:
       snyk auth $(params.producer-snyk-node-api-key)
       
       baseDir = $(pwd)
-      if [ ! -d $(workspaces.output.path)/source-code/node_modules ]; then
-        cd $(workspaces.output.path)/source-code/
+      if [ ! -d $(workspaces.source-code.path)/node_modules ]; then
+        cd $(workspaces.source-code.path)/
         npm install
         exitCode=$?
         if [[ $exitCode -eq 1 ]]; then
           echo "npm install failed, trying yarn"
-           cd $(workspaces.output.path)/source-code/
+           cd $(workspaces.source-code.path)/
             yarn install
           
         fi
@@ -48,7 +48,7 @@ spec:
 
       cd $baseDir
       echo "running snyk test"
-      snyk test --prune-repeated-subdependencies --skip-unresolved --sarif-file-output=/scratch/snyk.out $(workspaces.output.path)/source-code/
+      snyk test --prune-repeated-subdependencies --skip-unresolved --sarif-file-output=$(workspaces.scratch.path)/snyk.out $(workspaces.source-code.path)/
       exitCode=$?
       if [[ $exitCode -ne 0 && $exitCode -ne 1 ]]; then
         echo "Snyk failed with exit code $exitCode"
@@ -56,18 +56,11 @@ spec:
       else
         echo "Snyk completed successfully! exitcode $exitCode"
       fi
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch
-
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/snyk-docker:{{ .Chart.AppVersion }}'
     command: ["/app/components/producers/snyk-docker/snyk-docker-parser"]
     args:
-    - "-in=/scratch/snyk.out"
-    - "-out=$(workspaces.output.path)/.smithy/producers/snyk.pb"
+    - "-in=$(workspaces.scratch.path)/snyk.out"
+    - "-out=$(workspaces.scratch.path)/snyk.pb"
     - "-language=javascript"
-    volumeMounts:
-    - mountPath: /scratch
-      name: scratch

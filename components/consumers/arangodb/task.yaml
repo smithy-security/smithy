@@ -16,7 +16,7 @@ spec:
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/arangodb:{{ .Chart.AppVersion }}'
     command: ["/app/components/consumers/arangodb/arangodb"]
     args: [
-      "-in", "$(workspaces.output.path)/.smithy/enrichers/",
+      "-in", "$(workspaces.scratch.path)/",
       "-db-url", "https://smithy.arangodb.svc:8529",
       "-db-name", "smithy",
       "-collection-name", "smithy",

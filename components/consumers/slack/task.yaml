@@ -24,7 +24,7 @@ spec:
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/consumers/slack:{{ .Chart.AppVersion }}'
     command: ["/app/components/consumers/slack/slack"]
     args: [
-      "-in", "$(workspaces.output.path)/.smithy/enrichers/",
+      "-in", "$(workspaces.scratch.path)/",
       "-webhook", "$(params.consumer-slack-webhook)",
       "-template", "$(params.consumer-slack-message-template)",
     ]

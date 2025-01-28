@@ -10,12 +10,6 @@ spec:
   params:
     - name: enricher-reachability-programming-language
       type: string
-  volumes:
-    - name: scratch
-      emptyDir: {}
-  workspaces:
-    - name: output
-      description: The workspace containing the source-code to scan.
   steps:
   - name: run-cdxgen
     image: ghcr.io/cyclonedx/cdxgen:v10.9.5
@@ -29,34 +23,25 @@ spec:
       - -r
       - -p
       - -o
-      - $(workspaces.output.path)/source-code/bom.json
-      - $(workspaces.output.path)/source-code
+      - $(workspaces.source-code.path)/bom.json
+      - $(workspaces.source-code.path)
       - --spec-version
       - "1.5"
-    volumeMounts:
-      - mountPath: /scratch
-        name: scratch
   - name: run-atom
     imagePullPolicy: IfNotPresent
     image: ghcr.io/appthreat/atom:v2.0.18@sha256:893ed9ede9eea19540027faf72aa618e2b488192378f590fd2a1277b77712c1a
     command:
       - /bin/sh
       - -c
-      - atom reachables -o $(workspaces.output.path)/source-code/app.atom -s /scratch/reachables.json -l $(params.enricher-reachability-programming-language) $(workspaces.output.path)/source-code
-    volumeMounts:
-      - mountPath: /scratch
-        name: scratch
+      - atom reachables -o $(workspaces.source-code.path)/app.atom -s $(workspaces.scratch.path)/reachables.json -l $(params.enricher-reachability-programming-language) $(workspaces.source-code.path)
   - name: run-enricher
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/enrichers/reachability:{{ .Chart.AppVersion }}'
     command: ["/app/components/enrichers/reachability/reachability"]
-    volumeMounts:
-      - mountPath: /scratch
-        name: scratch
     env:
     - name: READ_PATH
-      value: $(workspaces.output.path)/.smithy/producers
+      value: $(workspaces.scratch.path)
     - name: WRITE_PATH
-      value: $(workspaces.output.path)/.smithy/enrichers/reachability
+      value: $(workspaces.scratch.path)/reachability
     - name: ATOM_FILE_PATH
-      value: /scratch/reachables.json
+      value: $(workspaces.scratch.path)/reachables.json
