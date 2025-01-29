@@ -1,15 +1,16 @@
-name: gosec-parser
-description: "Parses gosec findings into OCSF format"
-type: scanner
+name: "git-clone"
+description: "Clones a repository"
+type: "target"
+parameters:
+  - name: "git_clone_repo_url"
+    type: "string"
+    value: "https://github.com/0c34/govwa.git"
+  - name: "git_clone_reference"
+    type: "string"
+    value: "master"
 steps:
-  - name: scanner
-    image: "docker.io/securego/gosec:2.15.0"
-    executable: >
-      -fmt=sarif
-      -no-fail
-      -out=/workspace/repos/gosec.json
-      /workspace/repos/govwa
-  - name: parser
-    image: "localhost:5000/components/scanners/gosec:latest"
+  - name: "clone-repo"
     env_vars:
-      GOSEC_RAW_OUT_FILE_PATH: repos/gosec.json
+      GIT_CLONE_REPO_URL: "{{ .parameters.git_clone_repo_url }}"
+      GIT_CLONE_REFERENCE: "{{ .parameters.git_clone_reference }}"
+    image: "localhost:5000/components/targets/git-clone:latest"
