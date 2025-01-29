@@ -9,7 +9,9 @@ runner:
     format: staticcheck
 
   go/revive:
-    cmd: revive -exclude ./vendor/... -exclude ./api/proto/... -config revive.toml ./...
+    cmd: |
+      revive -exclude ./vendor/... -config revive.toml $(go list ./... | grep -v new-components) &&
+      CONFIG_FILE="$(pwd)/revive.toml" find ./new-components/ -name go.mod -type f -exec bash -c 'cd $(dirname {}) && revive -exclude ./vendor/... -config ${CONFIG_FILE} ./...' \;
     errorformat:
       - '%f:%l:%c: %m'
  
