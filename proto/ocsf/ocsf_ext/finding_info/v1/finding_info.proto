@@ -61,7 +61,7 @@ message Enrichment {
 
   // a list of finding ids, of the other findings it has been correlated to
   message CorrelationEnrichment {
-    repeated string findings = 1;
+    repeated uint64 findings = 1;
   }
 
   EnrichmentType enrichment_type = 1;
