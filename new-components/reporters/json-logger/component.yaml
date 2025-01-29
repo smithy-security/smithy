@@ -1,0 +1,6 @@
+name: json-logger
+description: "Logs findings"
+type: reporter
+steps:
+  - name: custom-annotation
+    image: "localhost:5000/components/reporters/json-logger:latest"

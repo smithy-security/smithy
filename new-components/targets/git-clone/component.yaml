@@ -1,0 +1,16 @@
+name: git-clone
+description: "Clones a repository"
+type: target
+parameters:
+  - name: repo_url
+    type: string
+    value: https://github.com/andream16/tree.git
+  - name: reference
+    type: string
+    value: master
+steps:
+  - name: clone-repo
+    env_vars:
+      GIT_CLONE_REPO_URL: "{{ .parameters.repo_url }}"
+      GIT_CLONE_REFERENCE: "{{ .parameters.reference }}"
+    image: "localhost:5000/components/targets/git-clone:latest"

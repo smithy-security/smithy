@@ -1,0 +1,9 @@
+name: custom-annotation
+description: "Adds a custom annotation enrichment to the passed findings"
+type: enricher
+steps:
+  - name: custom-annotation
+    image: "localhost:5000/components/enrichers/custom-annotation:latest"
+    env_vars:
+      CUSTOM_ANNOTATION_NAME: reachability
+      CUSTOM_ANNOTATION_VALUES: '{"foo":"bar"}'
