@@ -120,7 +120,7 @@ lint:
 	@reviewdog -fail-level=any -diff="git diff origin/main" -filter-mode=added 2>&1
 
 install-lint-tools:
-	GOTOOLCHAIN=go1.23.2 go install honnef.co/go/tools/cmd/staticcheck@2024.1.1
+	GOTOOLCHAIN=$$(go env GOVERSION) go install honnef.co/go/tools/cmd/staticcheck@2024.1.1
 	@go install github.com/mgechev/revive@v1.6.0
 	@go install github.com/sivchari/containedctx/cmd/containedctx@latest
 	@go install github.com/gordonklaus/ineffassign@latest
