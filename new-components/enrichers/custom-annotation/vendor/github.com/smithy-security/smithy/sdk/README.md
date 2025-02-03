@@ -55,7 +55,8 @@ component.RunTarget(
 
 A `Target` component should be used to prepare a target for scanning.
 
-For example, cloning a repository and make it available for a `Scanner` to scan.
+For example, cloning a repository and make it available for a
+`Scanner` to scan.
 A `git-clone` component is an example of a `Target`.
 
 You can create a new `Target` component like follows:
@@ -170,10 +171,11 @@ func main() {
 
 #### Filter
 
-A `Filter` component allows to filter out some vulnerability findings based on
-arbitrary criteria.
+A `Filter` component allows to filter out some vulnerability
+findings based on arbitrary criteria.
 
-For example, you might want to filter out vulnerabilities on a specific path in a repository.
+For example, you might want to filter out vulnerabilities on a
+specific path in a repository.
 
 You can create a new `Filter` component like follows:
 
@@ -209,11 +211,12 @@ func main() {
 
 #### Reporter
 
-A `Reporter` component allows you to report vulnerabilities on your favourite
-destination.
+A `Reporter` component allows you to report vulnerabilities on
+your favourite  destination.
 
-For example, report each one of them as ticket on a ticketing system or dump
-them into a data lake. `Slack` is an example `Reporter`.
+For example, report each one of them as ticket on a ticketing
+system or dump them into a data lake. `Slack` is an
+example `Reporter`.
 
 You can create a new `Reporter` component like follows:
 
@@ -251,8 +254,8 @@ func main() {
 
 #### Logging
 
-`component` makes it easy for you to leverage the default logger in your business logic.
-
+`component` makes it easy for you to leverage the default logger
+in your business logic.
 You can access the logger anytime using `component.LoggerFromContext(ctx)`.
 
 For example:
@@ -298,24 +301,28 @@ By default, [sqlite](https://www.sqlite.org/) is used for local development.
 
 #### Postgresql
 
-You can configure a Postgresql storage by plugging in `/store/remote/postgresql` or configuring the required
+You can configure a Postgresql storage by plugging in
+`/store/remote/postgresql` or configuring the required
 environment variables defined in its README.
 
 #### Findings Client
 
-You can configure a grpc findings client storage by plugging in `/store/remote/findings-client` or configuring the required
+You can configure a grpc findings client storage by plugging in
+`/store/remote/findings-client` or configuring the required
 environment variables defined in its README.
 
 #### Custom
 
-You can supply your own implementation of a storage by satisfying the `componenent.Storer` interface and leveraging the
+You can supply your own implementation of a storage by satisfying
+the `componenent.Storer` interface and leveraging the
 `RunnerWithStorer` option.
 
 ### Contributing
 
 #### Database Schemas
 
-They are generated using [sqlc](https://sqlc.dev/) from real SQL schemas and queries.
+They are generated using [sqlc](https://sqlc.dev/) from real SQL
+schemas and queries.
 
 ##### Generation
 
@@ -325,7 +332,9 @@ You can generate types mapping schemas and queries by leveraging the `go:generat
 
 Components require a common database/tables setup to function properly.
 
-This is achieved with migrations.
+This is achieved with migrations with [atlas](https://atlasgo.io/).
+
+Atlas uses a `atlas.sum` to ensure [migration files' integrity](https://atlasgo.io/concepts/migration-directory-integrity).
 
 ##### SQLite
 
