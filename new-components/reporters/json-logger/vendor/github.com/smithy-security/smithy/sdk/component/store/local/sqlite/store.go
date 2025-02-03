@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 
 	"ariga.io/atlas/sql/migrate"
 	"ariga.io/atlas/sql/sqlclient"
@@ -76,12 +77,17 @@ func NewManager(ctx context.Context, opts ...managerOption) (*manager, error) {
 
 	// Create sqlite database file if not exists.
 	if _, err := os.Stat(mgr.dsn); err != nil {
-		if !os.IsNotExist(err) {
+		if os.IsNotExist(err) {
+			if err := os.MkdirAll(filepath.Dir(mgr.dsn), 0755); err != nil {
+				return nil, errors.Errorf("could not create directory: %w", err)
+			}
 			f, err := os.Create(mgr.dsn)
 			if err != nil {
-				return nil, errors.Errorf("could not create sqlite db: %w", err)
+				return nil, errors.Errorf("could not create sqlite db file: %w", err)
 			}
 			_ = f.Close()
+		} else {
+			return nil, errors.Errorf("unexpected stat error: %w", err)
 		}
 	}
 
@@ -233,10 +239,12 @@ func (m *manager) Close(ctx context.Context) error {
 	if err := m.db.Close(); err != nil {
 		return errors.Errorf("could not close sqlite db: %w", err)
 	}
-	if err := os.Remove(m.dsn); err != nil {
-		return errors.Errorf("could not remove sqlite db file: %w", err)
-	}
 	return nil
+}
+
+// RemoveDatabase removes the underlying sqlite database file.
+func (m *manager) RemoveDatabase() error {
+	return os.RemoveAll(m.dsn)
 }
 
 //go:embed sqlc/migrations/*
@@ -255,9 +263,18 @@ func (m *manager) migrate(ctx context.Context) error {
 		return errors.Errorf("could not open migrations directory: %w", err)
 	}
 
-	executor, err := migrate.NewExecutor(client.Driver, dir, migrate.NopRevisionReadWriter{})
+	executor, err := migrate.NewExecutor(
+		client.Driver,
+		dir,
+		migrate.NopRevisionReadWriter{},
+		migrate.WithAllowDirty(true),
+	)
 	if err != nil {
 		return errors.Errorf("could not create migration executor: %w", err)
+	}
+
+	if err := executor.ValidateDir(ctx); err != nil {
+		return errors.Errorf("could not validate migration directory: %w", err)
 	}
 
 	const allPendingMigrations = -1
@@ -294,5 +311,7 @@ func loadEmbeddedMigrations(migrationsFS embed.FS, dirPrefix string) (*migrate.M
 	if err != nil {
 		return nil, err
 	}
+
+	memDir.SetPath("sqlc/migrations")
 	return memDir, nil
 }
