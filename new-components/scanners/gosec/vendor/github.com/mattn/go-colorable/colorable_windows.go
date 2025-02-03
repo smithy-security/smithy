@@ -11,8 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"syscall"
 	"unsafe"
+
+	syscall "golang.org/x/sys/windows"
 
 	"github.com/mattn/go-isatty"
 )
@@ -73,7 +74,7 @@ type consoleCursorInfo struct {
 }
 
 var (
-	kernel32                       = syscall.NewLazyDLL("kernel32.dll")
+	kernel32                       = syscall.NewLazySystemDLL("kernel32.dll")
 	procGetConsoleScreenBufferInfo = kernel32.NewProc("GetConsoleScreenBufferInfo")
 	procSetConsoleTextAttribute    = kernel32.NewProc("SetConsoleTextAttribute")
 	procSetConsoleCursorPosition   = kernel32.NewProc("SetConsoleCursorPosition")
@@ -87,8 +88,8 @@ var (
 	procCreateConsoleScreenBuffer  = kernel32.NewProc("CreateConsoleScreenBuffer")
 )
 
-// Writer provides colorable Writer to the console
-type Writer struct {
+// writer provides colorable Writer to the console
+type writer struct {
 	out       io.Writer
 	handle    syscall.Handle
 	althandle syscall.Handle
@@ -98,7 +99,7 @@ type Writer struct {
 	mutex     sync.Mutex
 }
 
-// NewColorable returns new instance of Writer which handles escape sequence from File.
+// NewColorable returns new instance of writer which handles escape sequence from File.
 func NewColorable(file *os.File) io.Writer {
 	if file == nil {
 		panic("nil passed instead of *os.File to NewColorable()")
@@ -112,17 +113,17 @@ func NewColorable(file *os.File) io.Writer {
 		var csbi consoleScreenBufferInfo
 		handle := syscall.Handle(file.Fd())
 		procGetConsoleScreenBufferInfo.Call(uintptr(handle), uintptr(unsafe.Pointer(&csbi)))
-		return &Writer{out: file, handle: handle, oldattr: csbi.attributes, oldpos: coord{0, 0}}
+		return &writer{out: file, handle: handle, oldattr: csbi.attributes, oldpos: coord{0, 0}}
 	}
 	return file
 }
 
-// NewColorableStdout returns new instance of Writer which handles escape sequence for stdout.
+// NewColorableStdout returns new instance of writer which handles escape sequence for stdout.
 func NewColorableStdout() io.Writer {
 	return NewColorable(os.Stdout)
 }
 
-// NewColorableStderr returns new instance of Writer which handles escape sequence for stderr.
+// NewColorableStderr returns new instance of writer which handles escape sequence for stderr.
 func NewColorableStderr() io.Writer {
 	return NewColorable(os.Stderr)
 }
@@ -434,7 +435,7 @@ func atoiWithDefault(s string, def int) (int, error) {
 }
 
 // Write writes data on console
-func (w *Writer) Write(data []byte) (n int, err error) {
+func (w *writer) Write(data []byte) (n int, err error) {
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
 	var csbi consoleScreenBufferInfo
@@ -560,7 +561,7 @@ loop:
 			}
 			procSetConsoleCursorPosition.Call(uintptr(handle), *(*uintptr)(unsafe.Pointer(&csbi.cursorPosition)))
 		case 'E':
-			n, err = strconv.Atoi(buf.String())
+			n, err = atoiWithDefault(buf.String(), 1)
 			if err != nil {
 				continue
 			}
@@ -569,7 +570,7 @@ loop:
 			csbi.cursorPosition.y += short(n)
 			procSetConsoleCursorPosition.Call(uintptr(handle), *(*uintptr)(unsafe.Pointer(&csbi.cursorPosition)))
 		case 'F':
-			n, err = strconv.Atoi(buf.String())
+			n, err = atoiWithDefault(buf.String(), 1)
 			if err != nil {
 				continue
 			}

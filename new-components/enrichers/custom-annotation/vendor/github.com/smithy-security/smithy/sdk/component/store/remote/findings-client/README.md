@@ -1,7 +1,6 @@
 # Findings Client
 
-This implementation of `component.Storer` interacts with a findings 
-client via GRPC.
+This implementation of `component.Storer` interacts with a findings client via GRPC.
 
 ## Configuration
 
