@@ -398,9 +398,8 @@ new-major-release-tag: check-branch check-tag-message
 smithyctl/cmd/bin:
 	$(eval GOOS:=linux)
 	$(eval GOARCH:=amd64)
-	cd smithyctl && \
-		echo $(shell pwd) && \
-		CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl ./cmd/main.go
+	@cd smithyctl && \
+		GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl ./cmd/main.go
 
 component-sdk-version:
 	@if [ -z "$(COMPONENT_TYPE)" ]; then \
