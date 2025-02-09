@@ -5,5 +5,8 @@ dependencies:
 - name: mongodb
   repository: https://charts.bitnami.com/bitnami
   version: 15.1.5
-digest: sha256:f5b463f7862318ed8de9439769a72f14320f271c72c80ec7a2a1f1b209959d7a
-generated: "2024-08-06T10:52:12.01515499+01:00"
+- name: neo4j
+  repository: https://helm.neo4j.com/neo4j
+  version: "5.23"
+digest: sha256:7f6453b90ab68d22fd24b598590a464c4546a0188273dba521931e80402f56e0
+generated: "2024-09-27T15:07:10.978131093+02:00"
