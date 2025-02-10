@@ -1,13 +1,17 @@
-package component
+package component_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
 )
 
 func TestParseComponentSpec(t *testing.T) {
+	parser := component.NewSpecParser()
+
 	for _, tt := range []struct {
 		testCase          string
 		componentSpecPath string
@@ -40,7 +44,7 @@ func TestParseComponentSpec(t *testing.T) {
 		},
 	} {
 		t.Run(tt.testCase, func(t *testing.T) {
-			_, err := parseComponentSpec(tt.componentSpecPath)
+			_, err := parser.Parse(tt.componentSpecPath)
 			if tt.isValid {
 				require.NoError(t, err)
 				return
