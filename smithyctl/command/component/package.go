@@ -1,22 +1,16 @@
 package component
 
 import (
-	"bytes"
 	"context"
-	"fmt"
-	"os"
-	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 
-	v1 "github.com/smithy-security/smithy/pkg/types/v1"
-
-	"github.com/smithy-security/smithyctl/internal/registry"
+	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
+	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
-var flags packageFlags
+var packageCmdFlags packageFlags
 
 type (
 	packageFlags struct {
@@ -37,7 +31,7 @@ func NewPackageCommand() *cobra.Command {
 		Use:   "package",
 		Short: "Packages a component's configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := packageComponent(cmd.Context(), flags); err != nil {
+			if err := packageComponent(cmd.Context(), packageCmdFlags); err != nil {
 				return errors.Errorf("unexpected failure: %w", err)
 			}
 			return nil
@@ -47,7 +41,7 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&flags.specPath,
+			&packageCmdFlags.specPath,
 			"spec-path",
 			".",
 			"the location of the component spec file",
@@ -55,7 +49,7 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&flags.packageVersion,
+			&packageCmdFlags.packageVersion,
 			"version",
 			"",
 			"the version to be used to package the component",
@@ -64,7 +58,7 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&flags.sdkVersion,
+			&packageCmdFlags.sdkVersion,
 			"sdk-version",
 			"",
 			"the version the sdk used to build the component",
@@ -73,7 +67,7 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&flags.registryURL,
+			&packageCmdFlags.registryURL,
 			"registry-url",
 			"ghcr.io",
 			"the reference to the OCI compliant registry",
@@ -81,7 +75,7 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&flags.registryBaseRepository,
+			&packageCmdFlags.registryBaseRepository,
 			"registry-base-repository",
 			"smithy-security/manifests/components",
 			"the repository where to push manifests to",
@@ -89,7 +83,7 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		BoolVar(
-			&flags.registryAuthEnabled,
+			&packageCmdFlags.registryAuthEnabled,
 			"registry-auth-enabled",
 			false,
 			"if enabled, it requires authentication for the registry",
@@ -97,7 +91,7 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&flags.registryAuthUsername,
+			&packageCmdFlags.registryAuthUsername,
 			"registry-auth-username",
 			"",
 			"the username used for authentication for the registry",
@@ -105,7 +99,7 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&flags.registryAuthPassword,
+			&packageCmdFlags.registryAuthPassword,
 			"registry-auth-password",
 			"",
 			"the password used for authentication for the registry",
@@ -115,7 +109,7 @@ func NewPackageCommand() *cobra.Command {
 }
 
 func packageComponent(ctx context.Context, flags packageFlags) error {
-	component, err := parseComponentSpec(flags.specPath)
+	c, err := component.NewSpecParser().Parse(flags.specPath)
 	if err != nil {
 		return err
 	}
@@ -132,7 +126,7 @@ func packageComponent(ctx context.Context, flags packageFlags) error {
 	}
 
 	if err := reg.Package(ctx, registry.PackageRequest{
-		Component:        component,
+		Component:        c,
 		SDKVersion:       flags.sdkVersion,
 		ComponentVersion: flags.packageVersion,
 	}); err != nil {
@@ -140,51 +134,4 @@ func packageComponent(ctx context.Context, flags packageFlags) error {
 	}
 
 	return nil
-}
-
-func parseComponentSpec(path string) (*v1.Component, error) {
-	const (
-		defaultSmithyComponentFileNameYaml = "component.yaml"
-		defaultSmithyComponentFileNameYml  = "component.yml"
-	)
-
-	if !strings.HasSuffix(path, defaultSmithyComponentFileNameYaml) && !strings.HasSuffix(path, defaultSmithyComponentFileNameYml) {
-		return nil, errors.Errorf(
-			"invalid file path %s, has to either point to a component file",
-			path,
-		)
-	}
-
-	// If the path doesn't exist, we return.
-	info, err := os.Stat(path)
-	switch {
-	case err != nil:
-		if os.IsNotExist(err) {
-			return nil, errors.New(fmt.Sprintf("%s does not exist", path))
-		}
-		return nil, fmt.Errorf("failed check config file: %w", err)
-	case info.IsDir():
-		return nil, errors.New(fmt.Sprintf("%s is a directory", path))
-	case !strings.HasSuffix(path, defaultSmithyComponentFileNameYaml) && !strings.HasSuffix(path, defaultSmithyComponentFileNameYml):
-		return nil, errors.Errorf(
-			"invalid file path %s, has to either point to a component file",
-			path,
-		)
-	}
-
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed read config file: %w", err)
-	}
-
-	var component v1.Component
-	if err := yaml.NewDecoder(bytes.NewReader(b)).Decode(&component); err != nil {
-		return nil, fmt.Errorf("failed decode file '%s': %w", path, err)
-	}
-
-	if err := component.Validate(); err != nil {
-		return nil, errors.Errorf("invalid component spec: %w", err)
-	}
-
-	return &component, nil
 }
