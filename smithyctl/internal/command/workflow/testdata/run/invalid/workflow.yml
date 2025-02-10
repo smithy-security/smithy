@@ -1,0 +1,22 @@
+description: "GoSec sample pipeline"
+name: "gosec-pipeline"
+components:
+  - component:
+      nickname: git-clone
+      description: "Clones a repository"
+      type: target
+      steps:
+        - name: clone-repo
+          env_vars:
+            GIT_CLONE_REPO_URL: https://github.com/0c34/govwa.git
+            GIT_CLONE_REFERENCE: master
+            GIT_CLONE_PATH: repos/govwa
+          image: "localhost:5000/components/targets/git-clone:latest"
+  - component: "file://component.yaml"
+  - component:
+      name: json-logger
+      description: "Logs findings"
+      type: reporter
+      steps:
+        - name: custom-annotation
+          image: "localhost:5000/components/reporters/json-logger:latest"
