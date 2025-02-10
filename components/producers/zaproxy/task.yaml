@@ -6,6 +6,7 @@ metadata:
   labels:
     v1.smithy.smithy-security.com/component: producer
     v1.smithy.smithy-security.com/test-type: dast
+    v1.smithy.smithy.security/component/maturity: experimental
 spec:
   description: DAST scanner that analyses web applications for security issues.
   params:
