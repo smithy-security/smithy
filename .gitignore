@@ -11,3 +11,4 @@ deploy/smithy/chart/charts
 components/consumers/pdf/report.html
 new-components/targets/git-clone/pkg/git/testdata/gitea
 **/.DS_STORE
+.smithy/
