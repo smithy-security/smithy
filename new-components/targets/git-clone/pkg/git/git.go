@@ -3,7 +3,9 @@ package git
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/url"
+	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/go-git/go-git/v5"
@@ -11,6 +13,8 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/smithy-security/pkg/env"
+
+	"github.com/smithy-security/smithy/sdk/component"
 )
 
 const (
@@ -21,7 +25,6 @@ const (
 type (
 	// Conf wraps the component configuration.
 	Conf struct {
-		ClonePath string
 		RepoURL   string
 		Reference string
 
@@ -51,15 +54,6 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	var envOpts = make([]env.ParseOption, 0)
 	if envLoader != nil {
 		envOpts = append(envOpts, env.WithLoader(envLoader))
-	}
-
-	clonePath, err := env.GetOrDefault(
-		"GIT_CLONE_PATH",
-		".",
-		append(envOpts, env.WithDefaultOnError(true))...,
-	)
-	if err != nil {
-		return nil, err
 	}
 
 	repoURL, err := env.GetOrDefault("GIT_CLONE_REPO_URL", "", envOpts...)
@@ -97,7 +91,6 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	}
 
 	return &Conf{
-		ClonePath: clonePath,
 		RepoURL:   repoURL,
 		Reference: reference,
 		ConfAuth: ConfAuth{
@@ -115,13 +108,16 @@ func NewManager(conf *Conf) (*manager, error) {
 		return nil, fmt.Errorf(errInvalidConfigurationStr, "repo_url", errInvalidConfigurationReasonEmpty)
 	case conf.Reference == "":
 		return nil, fmt.Errorf(errInvalidConfigurationStr, "reference", errInvalidConfigurationReasonEmpty)
-	case conf.ClonePath == "":
-		return nil, fmt.Errorf(errInvalidConfigurationStr, "clone_path", errInvalidConfigurationReasonEmpty)
 	}
 
 	u, err := url.Parse(conf.RepoURL)
 	if err != nil {
 		return nil, fmt.Errorf(errInvalidConfigurationStr+": %w", "repo_url", "couldn't parse", err)
+	}
+
+	repoName, err := extractRepoName(u.Path)
+	if err != nil {
+		return nil, err
 	}
 
 	opts := &git.CloneOptions{
@@ -155,19 +151,48 @@ func NewManager(conf *Conf) (*manager, error) {
 	}
 
 	return &manager{
-		clonePath:    conf.ClonePath,
+		clonePath:    repoName,
 		cloneOptions: opts,
 	}, nil
 }
 
 // Clone clones the configured repository.
 func (mgr *manager) Clone(ctx context.Context) (*Repository, error) {
+	logger := component.
+		LoggerFromContext(ctx).
+		With(
+			slog.String("clone_path", mgr.clonePath),
+		)
+
+	logger.Debug("cloning repository...")
+
 	repo, err := git.PlainCloneContext(ctx, mgr.clonePath, false, mgr.cloneOptions)
 	if err != nil && !errors.Is(err, transport.ErrEmptyRemoteRepository) {
 		return nil, errors.Errorf("error cloning repository at '%s': %w", mgr.clonePath, err)
 	}
 
+	logger.Debug("successfully cloned repository")
+
 	return &Repository{
 		repo: repo,
 	}, nil
+}
+
+func extractRepoName(path string) (string, error) {
+	e, err := transport.NewEndpoint(path)
+	if err != nil {
+		return "", err
+	}
+
+	parts := strings.Split(e.Path, "/")
+	if len(parts) < 2 {
+		return "", fmt.Errorf(errInvalidConfigurationStr, "repo_url", "must have at least 2 parts")
+	}
+
+	repo := parts[len(parts)-1]
+	if strings.HasSuffix(repo, ".git") {
+		return repo[:len(repo)-4], nil
+	}
+
+	return repo, nil
 }

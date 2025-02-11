@@ -3,12 +3,10 @@ package git
 import (
 	"context"
 	"log/slog"
-	"os"
 	"time"
 
 	"github.com/go-errors/errors"
-	"github.com/go-git/go-billy/v5"
-	"github.com/go-git/go-billy/v5/osfs"
+	"github.com/go-git/go-git/v5"
 	"github.com/jonboulle/clockwork"
 
 	"github.com/smithy-security/smithy/sdk/component"
@@ -23,7 +21,6 @@ type (
 	gitCloneTarget struct {
 		conf   *Conf
 		cloner Cloner
-		fs     billy.Filesystem
 		clock  clockwork.Clock
 	}
 
@@ -52,22 +49,10 @@ func WithCloner(cloner Cloner) gitCloneTargetOption {
 	}
 }
 
-// WithFS allows customising the default filesystem manager. Mainly used for testing.
-func WithFS(fs billy.Filesystem) gitCloneTargetOption {
-	return func(gct *gitCloneTarget) error {
-		if fs == nil {
-			return errors.New("invalid nil filesystem")
-		}
-		gct.fs = fs
-		return nil
-	}
-}
-
 // NewTarget returns a new git clone target.
 func NewTarget(conf *Conf, opts ...gitCloneTargetOption) (*gitCloneTarget, error) {
 	gt := gitCloneTarget{
 		conf:  conf,
-		fs:    osfs.New(conf.ClonePath),
 		clock: clockwork.NewRealClock(),
 	}
 
@@ -96,27 +81,15 @@ func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 				LoggerFromContext(ctx).
 				With(slog.String("clone_start_time", startTime.Format(time.RFC3339))).
 				With(slog.String("repo_url", g.conf.RepoURL)).
-				With(slog.String("reference", g.conf.Reference)).
-				With(slog.String("clone_path", g.conf.ClonePath))
+				With(slog.String("reference", g.conf.Reference))
 	)
 
-	logger.Debug("checking if clone path exists...")
-
-	if _, err := g.fs.Stat(g.conf.ClonePath); err != nil {
-		if os.IsNotExist(err) {
-			logger.Debug("clone path does not exist, creating directory...")
-			if err := g.fs.MkdirAll(g.conf.ClonePath, os.ModePerm); err != nil {
-				return errors.Errorf("failed to create clone path %s: %v", g.conf.ClonePath, err)
-			}
-			logger.Debug("successfully created directory")
-		} else {
-			return errors.Errorf("could not check if clone path exists: %w", err)
-		}
-	}
-
 	logger.Debug("preparing to clone repository...")
-
 	if _, err := g.cloner.Clone(ctx); err != nil {
+		if errors.Is(err, git.ErrRepositoryAlreadyExists) {
+			logger.Debug("clone path already exists, skipping clone")
+			return nil
+		}
 		return errors.Errorf("could not clone repository: %w", err)
 	}
 
