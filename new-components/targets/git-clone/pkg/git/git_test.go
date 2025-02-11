@@ -63,7 +63,6 @@ func TestNewConf(t *testing.T) {
 			"GIT_CLONE_ACCESS_USERNAME": accessUsername,
 		}))
 		require.NoError(t, err)
-		assert.Equal(t, clonePath, conf.ClonePath)
 		assert.Equal(t, repoURL, conf.RepoURL)
 		assert.Equal(t, reference, conf.Reference)
 		assert.True(t, conf.ConfAuth.AuthEnabled)
@@ -74,7 +73,6 @@ func TestNewConf(t *testing.T) {
 
 func TestNewManager(t *testing.T) {
 	const (
-		clonePath      = "/workspace"
 		repoURL        = "https://github.com/andream16/go-opentracing-example"
 		reference      = "main"
 		accessToken    = "superSecureToken"
@@ -89,7 +87,6 @@ func TestNewManager(t *testing.T) {
 		{
 			testCase: "it should return an error because the repo url is empty",
 			conf: &git.Conf{
-				ClonePath: clonePath,
 				Reference: reference,
 				ConfAuth: git.ConfAuth{
 					AuthEnabled: true,
@@ -102,8 +99,7 @@ func TestNewManager(t *testing.T) {
 		{
 			testCase: "it should return an error because the branch is empty",
 			conf: &git.Conf{
-				ClonePath: clonePath,
-				RepoURL:   repoURL,
+				RepoURL: repoURL,
 				ConfAuth: git.ConfAuth{
 					AuthEnabled: true,
 					AccessToken: accessToken,
@@ -115,7 +111,6 @@ func TestNewManager(t *testing.T) {
 		{
 			testCase: "it should return an error because auth is on but the access token is empty",
 			conf: &git.Conf{
-				ClonePath: clonePath,
 				Reference: reference,
 				RepoURL:   repoURL,
 				ConfAuth: git.ConfAuth{
@@ -128,7 +123,6 @@ func TestNewManager(t *testing.T) {
 		{
 			testCase: "it should return an error because auth is on but the access username is empty",
 			conf: &git.Conf{
-				ClonePath: clonePath,
 				Reference: reference,
 				RepoURL:   repoURL,
 				ConfAuth: git.ConfAuth{
@@ -141,7 +135,6 @@ func TestNewManager(t *testing.T) {
 		{
 			testCase: "it should return a valid manager with no auth configured",
 			conf: &git.Conf{
-				ClonePath: clonePath,
 				RepoURL:   repoURL,
 				Reference: reference,
 			},
@@ -149,7 +142,6 @@ func TestNewManager(t *testing.T) {
 		{
 			testCase: "it should return a valid manager with all options configured",
 			conf: &git.Conf{
-				ClonePath: clonePath,
 				RepoURL:   repoURL,
 				Reference: reference,
 				ConfAuth: git.ConfAuth{
