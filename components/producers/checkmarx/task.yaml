@@ -1,0 +1,24 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: producer-checkmarx
+  labels:
+    v1.smithy.smithy-security.com/component: producer
+spec:
+  description: Produces findings using Checkmarx.
+  params:
+  - name: producer-checkmarx-output-loc
+    type: string
+    default: "$(workspaces.scratch.path)/checkmarx.xml"
+  steps:
+  - name: produce-issues
+    imagePullPolicy: IfNotPresent
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/checkmarx/image:{{ .Chart.AppVersion }}'
+    command: ["app/components/producers/checkmarx/checkmarx-parser"]
+    args:
+    - "-in=$(workspaces.source-code.path)/checkmarx.xml"
+    - "-out=$(workspaces.scratch.path)/checkmarx.pb"
+    volumeMounts:
+    - mountPath: $(workspaces.scratch.path)
+      name: scratch
