@@ -2,14 +2,18 @@ package registry
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"path"
 
+	"github.com/distribution/reference"
 	"github.com/go-errors/errors"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"gopkg.in/yaml.v3"
 	"oras.land/oras-go/v2"
+	"oras.land/oras-go/v2/content"
 	"oras.land/oras-go/v2/registry"
 	"oras.land/oras-go/v2/registry/remote"
 	"oras.land/oras-go/v2/registry/remote/auth"
@@ -17,8 +21,10 @@ import (
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
-	"github.com/smithy-security/smithyctl/internal/logging"
+	"github.com/smithy-security/smithy/smithyctl/internal/logging"
 )
+
+const componentMediaType = "application/vnd.custom.smithy-component+yaml"
 
 type (
 	orasRegistry struct {
@@ -31,6 +37,11 @@ type (
 		Component        *v1.Component
 		SDKVersion       string
 		ComponentVersion string
+	}
+
+	// FetchPackageResponse wraps the FetchPackage response.
+	FetchPackageResponse struct {
+		Component v1.Component
 	}
 )
 
@@ -99,6 +110,7 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 		componentVersion = "latest"
 		sdkVersion       = req.SDKVersion
 		logger           = logging.FromContext(ctx)
+		dest             = path.Join(r.baseRepository, component.Type.String(), component.Name)
 	)
 
 	if req.ComponentVersion != "" {
@@ -110,6 +122,7 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 		slog.String(logging.ComponentTypeKey, component.Type.String()),
 		slog.String(logging.ComponentSDKVersionKey, sdkVersion),
 		slog.String(logging.ComponentVersionKey, componentVersion),
+		slog.String("destination", dest),
 	)
 
 	logger.Debug("preparing to marshal component as a blob...")
@@ -124,7 +137,6 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 		slog.String("component_yaml", string(blob)),
 	)
 
-	dest := path.Join(r.baseRepository, component.Type.String(), component.Name)
 	repo, err := r.registry.Repository(ctx, dest)
 	if err != nil {
 		return errors.Errorf("could not create repository for registry destination '%s': %w", dest, err)
@@ -188,4 +200,96 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 	logger.Debug("successfully tagged manifest")
 
 	return nil
+}
+
+// FetchPackage resolves a package given a reference.
+// The reference should be in the form:
+// ghcr.io/smithy-security/manifests/components/target/example-component:v0.0.1
+// localhost:5000/smithy-security/manifests/components/scanner/gosec-parser:v1.1.1
+func (r *orasRegistry) FetchPackage(ctx context.Context, ref reference.Reference) (*FetchPackageResponse, error) {
+	domainName, err := reference.ParseNamed(ref.String())
+	if err != nil {
+		return nil, errors.Errorf("could not parse reference name: %w", err)
+	}
+
+	tagName, ok := ref.(reference.Tagged)
+	if !ok {
+		return nil, errors.Errorf("could not parse reference: expected tag, got %T", ref)
+	}
+
+	var (
+		domain  = domainName.Name()
+		ociPath = reference.Path(domainName)
+		tag     = tagName.Tag()
+		logger  = logging.
+			FromContext(ctx).
+			With(slog.String("reference", ref.String())).
+			With(slog.String("domain", domain)).
+			With(slog.String("tag", tag)).
+			With(slog.String("oci_path", ociPath))
+	)
+
+	logger.Debug("preparing to initialise repository...")
+	repo, err := r.registry.Repository(ctx, ociPath)
+	if err != nil {
+		return nil, errors.Errorf("could not create repository for '%s': %w", ociPath, err)
+	}
+
+	logger.Debug("successfully initialised repository!")
+	logger.Debug("preparing to fetch package reference...")
+
+	manifestData, _, err := repo.FetchReference(ctx, tag)
+	if err != nil {
+		return nil, errors.Errorf("could not fetch manifest reference for '%s:%s': %w", ociPath, tag, err)
+	}
+
+	logger.Debug("successfully fetched package reference")
+	logger.Debug("preparing to fetch blob...")
+
+	blobData, err := content.FetchAll(ctx, repo, manifestData)
+	if err != nil {
+		return nil, errors.Errorf("could not fetch manifest blob data for '%s:%s': %w", ociPath, tag, err)
+	}
+
+	logger.Debug("successfully fetched blob")
+
+	var descr ocispec.Manifest
+	if err := json.Unmarshal(blobData, &descr); err != nil {
+		return nil, errors.Errorf("could not unmarshal manifest blob data for '%s:%s': %w", ociPath, tag, err)
+	}
+
+	var component v1.Component
+	for _, layer := range descr.Layers {
+		if layer.MediaType != componentMediaType {
+			return nil,
+				errors.Errorf(
+					"layer '%s' has an unsupported media type '%s'",
+					layer.Digest,
+					layer.MediaType,
+				)
+		}
+
+		rc, err := repo.Blobs().Fetch(ctx, layer)
+		if err != nil {
+			return nil, errors.Errorf("could not fetch layer '%s': %w", layer.Digest, err)
+		}
+
+		b, err := io.ReadAll(rc)
+		if err != nil {
+			return nil, errors.Errorf("could not read layer '%s': %w", layer.Digest, err)
+		}
+
+		if err := yaml.Unmarshal(b, &component); err != nil {
+			return nil, errors.Errorf(
+				"could not unmarshal manifest blob data for '%s:%s': %w",
+				ociPath,
+				tag,
+				err,
+			)
+		}
+	}
+
+	return &FetchPackageResponse{
+		Component: component,
+	}, nil
 }
