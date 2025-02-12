@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithyctl
+module github.com/smithy-security/smithy/smithyctl
 
 go 1.23.2
 
