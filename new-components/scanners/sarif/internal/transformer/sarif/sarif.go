@@ -1,52 +1,51 @@
 package sarif
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
-	"strings"
+	"log/slog"
+	"time"
 
 	"github.com/go-errors/errors"
+	"github.com/jonboulle/clockwork"
 	"github.com/package-url/packageurl-go"
-	sarif "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/smithy-security/smithy/components/producers"
+	sarif "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 	"github.com/smithy-security/smithy/new-components/scanners/sarif/internal/util/ptr"
+	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
+const (
+	TargetTypeRepository TargetType = "repository"
+	TargetTypeDependency TargetType = "dependency"
+	TargetTypeWeb        TargetType = "web"
+	TargetTypeImage      TargetType = "image"
+)
+
 type (
-
-	// TargetType defines what the scan was targetting (container, dependency, code, infra, etc)
-	TargetType int
-
 	// SmithyIssueCollection represents all the findings in a single Sarif file converted to smithy format.
 	SmithyIssueCollection struct {
 		ToolName string
 		Findings []*ocsf.VulnerabilityFinding
 	}
 
+	// TargetType represents the target type.
+	TargetType string
+
 	ExtraContextLanguage string
-)
 
-const (
-	ExtraContextLanguageUnspecified ExtraContextLanguage = "unspecified"
-	ExtraContextLanguagePython      ExtraContextLanguage = "python"
-	ExtraContextLanguageJS          ExtraContextLanguage = "javascript"
-
-	TargeTypeContainer TargetType = iota
-	TargetTypeRepository
-	TargetTypeDependency
-)
-
-var (
-	extraCtxLangToPURLNS = map[ExtraContextLanguage]string{
-		ExtraContextLanguagePython: "pypi",
-		ExtraContextLanguageJS:     "npm",
+	SarifTransformer struct {
+		targetType   TargetType
+		clock        clockwork.Clock
+		sarifResult  sarif.SchemaJson
+		ruleToTools  map[string]sarif.ReportingDescriptor
+		taxasByCWEID map[string]sarif.ReportingDescriptor
 	}
 )
-
-func removeSmithyInternalPath(target string) string {
-	return strings.Replace(target, producers.SourceDir, "", 1)
-}
 
 // ToSmithy accepts a sarif file and transforms each run to SmithyIssueCollection ready to be written to a results file.
 func ToSmithy(inFile string, language ExtraContextLanguage) ([]*SmithyIssueCollection, error) {
@@ -79,80 +78,108 @@ func ToSmithy(inFile string, language ExtraContextLanguage) ([]*SmithyIssueColle
 	return issueCollection, err
 }
 
-// parseOut parses a sarif report by extracting physical and logical targets from it
-// and generating issues.
-func parseOut(
-	run sarif.Run,
-	rules map[string]*sarif.ReportingDescriptor,
-	toolName string,
-	lang ExtraContextLanguage,
-) ([]*ocsf.VulnerabilityFinding, error) {
+func NewSarifTransformer(scanResult *sarif.SchemaJson) (*SarifTransformer, error) {
+	if scanResult == nil {
+		return nil, errors.Errorf("method 'NewSarifTransformer called with nil scanResult")
+	}
+	return &SarifTransformer{
+		sarifResult:  *scanResult,
+		ruleToTools:  make(map[string]sarif.ReportingDescriptor),
+		taxasByCWEID: make(map[string]sarif.ReportingDescriptor),
+	}, nil
+}
+
+func (s *SarifTransformer) ToOCSF(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+	slog.Debug(
+		"working with",
+		slog.Int("num_sarif_runs", len(s.sarifResult.Runs)),
+		slog.Int("num_sarif_results", func(runs []sarif.Run) int {
+			var countRes = 0
+			for _, run := range runs {
+				countRes += len(run.Results)
+			}
+			return countRes
+		}(s.sarifResult.Runs)),
+	)
+
+	// preparation
+	var (
+		vulns = make([]*ocsf.VulnerabilityFinding, 0)
+	)
+
+	// Preparing helper data sets to reconstruct linked data.
+	for _, run := range s.sarifResult.Runs {
+		for _, res := range run.Results {
+			s.ruleToTools[*res.RuleId] = sarif.ReportingDescriptor{}
+		}
+		for _, res := range run.Tool.Driver.Rules {
+			if _, ok := s.ruleToTools[res.Id]; ok {
+				s.ruleToTools[res.Id] = res
+			}
+		}
+		for _, taxonomy := range run.Taxonomies {
+			for _, taxa := range taxonomy.Taxa {
+				s.taxasByCWEID[taxa.Id] = taxa
+			}
+		}
+	}
 	var (
 		findings = make([]*ocsf.VulnerabilityFinding, 0)
 		parseErr error
 	)
-
-	for _, res := range run.Results {
-		for _, loc := range res.Locations {
-
-			targets, err := parseTargets(loc, lang)
+	for _, run := range s.sarifResult.Runs {
+		for _, res := range run.Results {
+			finding, err := s.transformFinding("", &res)
 			if err != nil {
-				parseErr = errors.Join(parseErr, err)
+				errors.Join(parseErr, err)
 			}
-
-			for _, target := range targets {
-				findings = addFinding(rules, findings, target, toolName, res)
-			}
+			vulns = append(vulns, finding)
 
 		}
 	}
-
 	return findings, parseErr
 }
 
-func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.VulnerabilityFinding, target, toolName string, res *sarif.Result) []*ocsf.VulnerabilityFinding {
-	// TODO: copy and adapt the gosec one
-	affectedCode := []*ocsf.AffectedCode{}
-	affectedPackages := []*ocsf.AffectedPackage{}
+// func (s *SarifTransformer) FromOCSF(ctx context.Context) (*sarif.SchemaJson, error){
+// 	// TODO
+// }
 
-	// Locations // target
+func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (*ocsf.VulnerabilityFinding, error) {
+	// TODO:
+	// * AnalysisTarget?
+	// * Attachments
+	// * Result.BaselineState actually says if the finding is new, we should take it into account
+	// * CodeFlows contains reachability tracing sometimes
+	// * Fixes is useful when we can understand and generate fix results
+	// * GraphTraversals <<-- how different from codeflows?
+	// * Graphs???
+	// * PartialFingerprints??
+	// * RelatedLocations
+	// * Stacks
+	// * Suppressions
+	// * WebRequest
+	// * WebResponse
+	// * WorkItemUris
+	affectedCode, affectedPackages := s.mapAffected(res)
+
+	// Location
 	fixAvailable := false
-	for _, loc := range res.Locations {
-		for _, logicalLocation := range loc.LogicalLocations {
-			if logicalLocation.FullyQualifiedName != nil {
-				affectedPackages = append(affectedPackages, &ocsf.AffectedPackage{
-					Name: *logicalLocation.FullyQualifiedName, // TODO: purl from fqn
-					// Remediation: &ocsf.Remediation{
-
-					// },
-				})
-			}
-		}
-		affectedCode = append(affectedCode, &ocsf.AffectedCode{
-			StartLine: ptr.Ptr(int32(*loc.PhysicalLocation.Region.StartLine)),
-			EndLine:   ptr.Ptr(int32(*loc.PhysicalLocation.Region.EndLine)),
-			File: &ocsf.File{
-				Path: loc.PhysicalLocation.ArtifactLocation.URI,
-			},
-			// Remediation: &ocsf.Remediation{
-
-			// },
-		})
-	}
 	if len(res.Fixes) > 0 {
 		fixAvailable = true
 	}
-	var ruleID *string
-	var ruleGuid *string
 	var (
-		severityID             = mapSeverity(res.Level)
-		title, desc            = mapTitleDesc(res, ruleToTools)
+		ruleID, ruleGuid *string
+		severityID             = s.mapSeverity(res.Level)
+		title, desc            = s.mapTitleDesc(res, s.ruleToTools)
 		occurrencesCount int32 = 0
 	)
-
-	confidence := mapConfidence(*ruleID, rulteToTools)
-	if res.RuleID != nil {
-		ruleID = res.RuleID
+	dataSource, err := s.mapDataSource(res.Locations)
+	if err != nil {
+		return nil, errors.Errorf("failed to map data source: %w", err)
+	}
+	confidence := s.mapConfidence(*ruleID, s.ruleToTools)
+	if res.RuleId != nil {
+		ruleID = res.RuleId
 	} else if res.Rule != nil {
 		if res.Rule.ToolComponent != nil && res.Rule.ToolComponent.Name != nil {
 			ruleID = res.Rule.ToolComponent.Name
@@ -164,77 +191,96 @@ func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.Vuln
 	if res.OccurrenceCount != nil {
 		occurrencesCount = int32(*res.OccurrenceCount)
 	}
-	issues = append(issues, &ocsf.VulnerabilityFinding{
+	labels, err := s.mapProperties(res.Properties)
+	if err != nil {
+		return nil, err
+	}
+	var firstSeenTime, lastSeenTime time.Time
+	if res.Provenance != nil {
+		firstSeenTime = *res.Provenance.FirstDetectionTimeUtc
+		lastSeenTime = *res.Provenance.LastDetectionTimeUtc
+	}
+	return &ocsf.VulnerabilityFinding{
+		// Actor
+		// Api
 		ActivityId:   ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
 		ActivityName: ptr.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
+		CategoryName: ptr.Ptr(ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS.String()),
 		CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
 		ClassUid:     ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING,
 		ClassName:    ptr.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
 		Confidence:   ptr.Ptr(confidence.String()),
 		ConfidenceId: ptr.Ptr(confidence),
 		Count:        ptr.Ptr(occurrencesCount),
-		// ActivityName: ruleName,
-		// Actor
-		// Api
-		// CategoryName
-		// CategoryUid
-		// ClassName
-		// ClassUid
 		// Cloud
 		// Comment
-		// Confidence:
-		// ConfidenceId
 		// ConfidenceScore
-		// Count
 		// Device
 		// Duration
 		// EndTime
 		// EndTimeDt
-		// Enrichments
 		FindingInfo: &ocsf.FindingInfo{
-			CreatedTime: &now,
 			//	Analytic
-			//
 			// Attacks
-			// CreatedTime
-			// CreatedTimeDt
-			// DataSources:
-			// Desc: res.Message,
-			// FirstSeenTime
-			// FirstSeenTimeDt
+			CreatedTime:   ptr.Ptr(s.clock.Now().Unix()),
+			CreatedTimeDt: timestamppb.New(s.clock.Now()),
+			DataSources: []string{
+				dataSource,
+			},
+			Desc:            &desc,
+			FirstSeenTime:   ptr.Ptr(firstSeenTime.Unix()),
+			FirstSeenTimeDt: timestamppb.New(firstSeenTime),
 			// KillChain
-			// LastSeenTime
-			// LastSeenTimeDt
+			LastSeenTime:   ptr.Ptr(lastSeenTime.Unix()),
+			LastSeenTimeDt: timestamppb.New(lastSeenTime),
 			// ModifiedTime
 			// ModifiedTimeDt
 			// ProductUid
 			// RelatedAnalytics
 			// RelatedEvents
-			// SrcUrl
-			// Title
-			// Types
-			// Uid
+			SrcUrl: res.HostedViewerUri,
+			Title:  title,
+			// Types:
+			Uid: *res.Guid,
 		},
 		Message: res.Message.Text,
 		Metadata: &ocsf.Metadata{
-			EventCode: ruleID,
 
+			CorrelationUid: res.CorrelationGuid,
+			// DataClassification
+			EventCode: ruleID,
+			// Extension
+			// Extensions
+			Labels: labels,
+			// LogLevel
+			// LogName
+			// LogProvider
+			// LogVersion
+			// LoggedTime
+			// LoggedTimeDt
+			// Loggers
+			// ModifiedTime
+			// ModifiedTimeDt
+			// OriginalTime
+			// ProcessedTime
+			// ProcessedTimeDt
 			Product: &ocsf.Product{
 				Name: &toolName,
 			},
+			// Profiles
+			// Sequence
+			// TenantUid
 			Uid: ruleGuid,
+			// Version
 		},
-		// Observables
-		// RawData
-		// Resource
-		// Severity
-		// SeverityId
+
+		Severity:   ptr.Ptr(severityID.String()),
+		SeverityId: severityID,
 		// StartTime
 		// StartTimeDt
-		// Status
-		// StatusCode
+		Status:   ptr.Ptr(s.mapResultKind(res.Kind).String()),
+		StatusId: ptr.Ptr(s.mapResultKind(res.Kind)),
 		// StatusDetail
-		// StatusId
 		// Time
 		// TimeDt
 		// TimezoneOffset
@@ -243,21 +289,24 @@ func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.Vuln
 		// Unmapped
 		Vulnerabilities: []*ocsf.Vulnerability{
 			{
+
 				AffectedCode:     affectedCode,
 				AffectedPackages: affectedPackages,
-				// Cve: ,
-				// Cwe: ,
-				Desc: res.Message.Text,
-				// FirstSeenTime: ,
-				// FirstSeenTimeDt: ,
-				FixAvailable: ptr.Ptr(fixAvailable),
+				// TODO: regexp CVE extraction?
+
+				// Cve:              ,
+				Cwe:             s.mapCWE(*ruleID),
+				Desc:            &desc,
+				FirstSeenTime:   ptr.Ptr(firstSeenTime.Unix()),
+				FirstSeenTimeDt: timestamppb.New(firstSeenTime),
+				FixAvailable:    ptr.Ptr(fixAvailable),
 				// IsExploitAvailable: ,
 				IsFixAvailable: ptr.Ptr(fixAvailable),
 
 				// KbArticleList
 				// KbArticles
-				// LastSeenTime
-				// LastSeenTimeDt
+				LastSeenTime:   ptr.Ptr(lastSeenTime.Unix()),
+				LastSeenTimeDt: timestamppb.New(lastSeenTime),
 				// Packages
 				// References
 				// RelatedVulnerabilities
@@ -267,12 +316,99 @@ func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.Vuln
 				VendorName: &toolName,
 			},
 		},
-	})
-
-	return issues
+	}, nil
 }
 
-func mapSeverity(sarifResLevel sarif.ResultLevel) ocsf.VulnerabilityFinding_SeverityId {
+func (s *SarifTransformer) mapProperties(props *sarif.PropertyBag) ([]string, error) {
+	if props == nil {
+		return nil, nil
+	}
+	res := props.Tags
+	if props.AdditionalProperties != nil {
+		extra, err := json.Marshal(props.AdditionalProperties)
+		if err != nil {
+			return nil, err
+		}
+
+		res = append(res, string(extra))
+	}
+	return res, nil
+}
+
+func (s *SarifTransformer) mapResultKind(kind sarif.ResultKind) ocsf.VulnerabilityFinding_StatusId {
+	switch kind {
+	case sarif.ResultKindNotApplicable:
+		return ocsf.VulnerabilityFinding_STATUS_ID_SUPPRESSED // false positive or duplicate or user does not want to see for some reason
+	case sarif.ResultKindFail: // open finding, we need to work with it
+	case sarif.ResultKindOpen:
+		return ocsf.VulnerabilityFinding_STATUS_ID_NEW
+	case sarif.ResultKindPass: // scan has passed, this finding need not exist
+		return ocsf.VulnerabilityFinding_STATUS_ID_RESOLVED
+	case sarif.ResultKindInformational: // finding is info or under review already, someone is taking care of it or it doesn't need attention
+	case sarif.ResultKindReview:
+		return ocsf.VulnerabilityFinding_STATUS_ID_IN_PROGRESS
+	}
+	return ocsf.VulnerabilityFinding_STATUS_ID_UNKNOWN
+}
+
+func (s *SarifTransformer) mapAffectedPacakge(fixes []sarif.Fix, location *sarif.Location, purl packageurl.PackageURL) *ocsf.AffectedPackage {
+
+	affectedPackage := &ocsf.AffectedPackage{
+		Purl:           ptr.Ptr(purl.String()),
+		Name:           purl.Name,
+		PackageManager: &purl.Type,
+	}
+	for _, fix := range fixes {
+		for _, change := range fix.ArtifactChanges {
+			if change.ArtifactLocation.Uri != nil && *change.ArtifactLocation.Uri == purl.String() {
+				affectedPackage.Remediation = &ocsf.Remediation{
+					Desc: *fix.Description.Text,
+				}
+			}
+		}
+	}
+	return affectedPackage
+}
+
+// TODO: still need to find a way to detect snyk that doesn't speak purl and trivy that speaks docker
+//
+//	or maybe snyk and trivy get their own sarif flavor?
+func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode, []*ocsf.AffectedPackage) {
+	var affectedCode = make([]*ocsf.AffectedCode, 0)
+	var affectedPackages = make([]*ocsf.AffectedPackage, 0)
+	for _, location := range res.Locations {
+		if location.PhysicalLocation == nil {
+			continue
+		}
+		var (
+			ac = &ocsf.AffectedCode{
+				File: &ocsf.File{},
+			}
+			physicalLocation = location.PhysicalLocation
+		)
+		if physicalLocation.ArtifactLocation != nil && physicalLocation.ArtifactLocation.Uri != nil {
+			if p, e := packageurl.FromString(*physicalLocation.ArtifactLocation.Uri); e == nil {
+				affectedPackages = append(affectedPackages, s.mapAffectedPacakge(res.Fixes, &location, p))
+			} else {
+				ac.File.Name = *location.PhysicalLocation.ArtifactLocation.Uri
+				ac.File.Path = ptr.Ptr(fmt.Sprintf("file://%s", *location.PhysicalLocation.ArtifactLocation.Uri))
+			}
+		}
+
+		if physicalLocation.Region != nil {
+			ac.StartLine = ptr.Ptr(int32(*location.PhysicalLocation.Region.StartLine))
+			ac.EndLine = ptr.Ptr(int32(*location.PhysicalLocation.Region.EndLine))
+		}
+
+		if ac != (&ocsf.AffectedCode{}) {
+			affectedCode = append(affectedCode, ac)
+		}
+	}
+
+	return affectedCode, affectedPackages
+}
+
+func (s *SarifTransformer) mapSeverity(sarifResLevel sarif.ResultLevel) ocsf.VulnerabilityFinding_SeverityId {
 	severity, ok := map[string]ocsf.VulnerabilityFinding_SeverityId{
 		"warning": ocsf.VulnerabilityFinding_SEVERITY_ID_MEDIUM,
 		"error":   ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH,
@@ -285,7 +421,7 @@ func mapSeverity(sarifResLevel sarif.ResultLevel) ocsf.VulnerabilityFinding_Seve
 	return severity
 }
 
-func mapConfidence(ruleID string, ruleToTools map[string]sarifschemav210.ReportingDescriptor) (confidence ocsf.VulnerabilityFinding_ConfidenceId) {
+func (s *SarifTransformer) mapConfidence(ruleID string, ruleToTools map[string]sarif.ReportingDescriptor) (confidence ocsf.VulnerabilityFinding_ConfidenceId) {
 	confidence = ocsf.VulnerabilityFinding_CONFIDENCE_ID_UNKNOWN
 
 	toolRule, ok := ruleToTools[ruleID]
@@ -320,302 +456,90 @@ func mapConfidence(ruleID string, ruleToTools map[string]sarifschemav210.Reporti
 	return
 }
 
-// parseTargets parses the passes sarif location and returns all the valid physical and logical targets in it.
-func parseTargets(loc *sarif.Location, lang ExtraContextLanguage) ([]string, error) {
-	var (
-		targets   = make([]string, 0)
-		parseErrs error
-	)
+func (s *SarifTransformer) mapTitleDesc(res *sarif.Result, ruleToTools map[string]sarif.ReportingDescriptor) (title string, descr string) {
+	title, descr = *res.Message.Text, *res.Message.Text
 
-	// We can have cases were both locations are defined but, in these cases,
-	// the physical location doesn't make much sense, so we just should leverage the logical one.
-	if isLogicalLocation(loc) {
-		tts, err := parseLogicalTargets(loc, lang)
-		if err != nil {
-			parseErrs = errors.Join(parseErrs, err)
-		}
-		targets = append(targets, tts...)
-	} else if isPhysicalLocation(loc) {
-		tt, err := parsePhysicalTarget(loc)
-		if err != nil {
-			parseErrs = errors.Join(parseErrs, err)
-		}
-		targets = append(targets, tt)
+	rule, ok := ruleToTools[*res.RuleId]
+	if !ok {
+		return
 	}
 
-	return targets, parseErrs
+	if rule.Name != nil && *rule.Name != "" {
+		title = *rule.Name
+	}
+
+	if rule.FullDescription != nil && rule.FullDescription.Text != "" {
+		descr = rule.FullDescription.Text
+	}
+
+	return
 }
 
-func isPhysicalLocation(loc *sarif.Location) bool {
-	return loc.PhysicalLocation != nil
-}
+func (s *SarifTransformer) mapCWE(ruleID string) *ocsf.Cwe {
+	cwe := &ocsf.Cwe{}
 
-// parsePhysicalTarget parses a sarif physical location target.
-// We prefix the target with 'file://' so that we know that it's a physical target.
-// We add start and end lines information if provided.
-// In the case of missing start or end line, we default the undefined one to the same value of the defined one
-// because it usually means that the finding affects one line only.
-// It can be possible for a target URI to contain a pURL. In that case we simply return that.
-func parsePhysicalTarget(loc *sarif.Location) (string, error) {
-	if loc.PhysicalLocation == nil {
-		return "", nil
+	rule, ok := s.ruleToTools[ruleID]
+	if !ok {
+		return nil
 	}
 
-	var (
-		target    string
-		phyLoc    = loc.PhysicalLocation
-		targetURI = phyLoc.ArtifactLocation.URI
-	)
-
-	if targetURI == nil || *targetURI == "" {
-		return "", errors.New("target URI is empty")
-	}
-
-	// This means that it's a purl in a physical path.
-	if _, err := packageurl.FromString(*targetURI); err == nil {
-		return *targetURI, nil
-	}
-
-	// Safety check to make sure that we don't end up with malformed targets if
-	// the upstream tool is already doing this.
-	if !strings.Contains(*targetURI, "file://") {
-		target = fmt.Sprintf("file://%s", *targetURI)
-	}
-
-	if phyLoc.Region != nil {
-		var (
-			isStartLineDefined = phyLoc.Region.StartLine != nil
-			isEndLineDefined   = phyLoc.Region.EndLine != nil
-		)
-
-		switch {
-		case isStartLineDefined && isEndLineDefined:
-			target = fmt.Sprintf(
-				"%s:%d-%d",
-				target,
-				*phyLoc.Region.StartLine,
-				*phyLoc.Region.EndLine,
-			)
-		case isStartLineDefined && !isEndLineDefined:
-			target = fmt.Sprintf(
-				"%s:%d-%d",
-				target,
-				*phyLoc.Region.StartLine,
-				*phyLoc.Region.StartLine,
-			)
-		case !isStartLineDefined && isEndLineDefined:
-			target = fmt.Sprintf(
-				"%s:%d-%d",
-				target,
-				*phyLoc.Region.EndLine,
-				*phyLoc.Region.EndLine,
-			)
+	for _, rel := range rule.Relationships {
+		cwe.Uid = *rel.Target.Id
+		taxa, ok := s.taxasByCWEID[cwe.Uid]
+		if !ok {
+			continue
+		}
+		cwe.SrcUrl = taxa.HelpUri
+		if taxa.FullDescription != nil && taxa.FullDescription.Text != "" {
+			cwe.Caption = ptr.Ptr(taxa.FullDescription.Text)
 		}
 	}
 
-	return target, nil
+	return cwe
 }
 
-func isLogicalLocation(loc *sarif.Location) bool {
-	return len(loc.LogicalLocations) > 0
-}
-
-// parseLogicalTargets parses all the targets found in the logical locations.
-// A logical target must be a valid pURL.
-func parseLogicalTargets(loc *sarif.Location, lang ExtraContextLanguage) ([]string, error) {
-	var (
-		targets  = make([]string, 0)
-		parseErr error
-	)
-
-	if len(loc.LogicalLocations) == 0 {
-		return targets, nil
-	}
-
-	for idx, logicLoc := range loc.LogicalLocations {
-		if logicLoc == nil {
-			parseErr = errors.Join(parseErr, errors.Errorf("logic location is nil at index %d", idx))
+func (s *SarifTransformer) mapDataSource(locations []sarif.Location) (string, error) {
+	for _, location := range locations {
+		if location.PhysicalLocation == nil ||
+			location.PhysicalLocation.ArtifactLocation == nil ||
+			location.PhysicalLocation.ArtifactLocation.Uri == nil {
 			continue
 		}
 
-		qualifiedName := *logicLoc.FullyQualifiedName
-		// If we have a valid pURL, we are done.
-		// Otherwise, we can see if we can leverage the supplied extra context language to see if we can get a valid one.
-		if _, err := packageurl.FromString(qualifiedName); err != nil {
-			// If we don't have the language, just report an error.
-			if lang == "" || lang == ExtraContextLanguageUnspecified {
-				parseErr = errors.Join(
-					parseErr,
-					errors.Errorf(
-						"invalid pURL '%s' at index %d: %w",
-						qualifiedName,
-						idx,
-						err,
-					),
-				)
-				continue
-			}
+		// TODO sort out targettypes -- add repo, deps, website, oci_image
+		targetType, ok := map[TargetType]ocsffindinginfo.DataSource_TargetType{
+			TargetTypeRepository: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+		}[s.targetType]
+		if !ok {
+			targetType = ocsffindinginfo.DataSource_TARGET_TYPE_UNSPECIFIED
+		}
 
-			// Otherwise, let's check if we support the language.
-			purlNS, ok := extraCtxLangToPURLNS[lang]
-			if !ok {
-				parseErr = errors.Join(
-					parseErr,
-					errors.Errorf(
-						"invalid pURL '%s' at index %d. The supplied language '%s' is not supported.",
-						qualifiedName,
-						idx,
-						lang,
-					),
-				)
-				continue
-			}
+		dataSource := ocsffindinginfo.DataSource{
+			TargetType: targetType,
+			Uri: &ocsffindinginfo.DataSource_URI{
+				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
+				Path:      *location.PhysicalLocation.ArtifactLocation.Uri,
+			},
+		}
 
-			// Now let's put together a potentially valid pURL.
-			qualifiedName = fmt.Sprintf("pkg:%s/%s", purlNS, qualifiedName)
-			// And check again for its validity.
-			if _, err := packageurl.FromString(qualifiedName); err != nil {
-				// If invalid, report as an error.
-				parseErr = errors.Join(
-					parseErr,
-					errors.Errorf(
-						"invalid pURL '%s' at index %d. Enhanced qualified name '%s' is still not a valid pURL.",
-						qualifiedName,
-						idx,
-						qualifiedName,
-					),
-				)
-				continue
+		if location.PhysicalLocation.Region != nil {
+			dataSource.LocationData = &ocsffindinginfo.DataSource_FileFindingLocationData_{
+				FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
+					StartLine:   uint32(*location.PhysicalLocation.Region.StartLine),
+					EndLine:     uint32(*location.PhysicalLocation.Region.EndLine),
+					StartColumn: uint32(*location.PhysicalLocation.Region.StartColumn),
+					EndColumn:   uint32(*location.PhysicalLocation.Region.EndColumn),
+				},
 			}
 		}
 
-		targets = append(targets, qualifiedName)
+		b, err := protojson.Marshal(&dataSource)
+		if err != nil {
+			return "", errors.Errorf("failed to marshal data source to JSON, %v", err)
+		}
+
+		return string(b), nil
 	}
 
-	return targets, parseErr
+	return "", errors.New("missing location information in finding")
 }
-
-// FromSmithyEnrichedIssuesRun transforms a set of LaunchToolResponse to ONE sarif document with
-// one run per launch tool response, by default it skips duplicates unless reportDuplicates is set
-// to true.
-// func FromSmithyEnrichedIssuesRun(responses []*v1.EnrichedLaunchToolResponse, reportDuplicates bool) (*sarif.Report, error) {
-// 	// if you are not ignoring duplicates use resultProvenance in each message to mark duplicates
-// 	// annotations become attachments in each findings with the description the json of the label
-// 	sarifReport, err := sarif.New(sarif.Version210)
-// 	if err != nil {
-// 		return &sarif.Report{}, err
-// 	}
-
-// 	for _, enrichedResponse := range responses {
-// 		tool := sarif.NewSimpleTool(enrichedResponse.GetOriginalResults().GetToolName())
-// 		run := sarif.NewRun(*tool)
-// 		ad := sarif.NewRunAutomationDetails()
-// 		ad = ad.WithGUID(enrichedResponse.GetOriginalResults().GetScanInfo().GetScanUuid())
-// 		ad = ad.WithID(enrichedResponse.GetOriginalResults().GetScanInfo().GetScanUuid())
-// 		ad = ad.WithDescriptionText(enrichedResponse.GetOriginalResults().GetScanInfo().GetScanStartTime().AsTime().Format(time.RFC3339))
-
-// 		run.AutomationDetails = ad
-// 		var sarifResults []*sarif.Result
-
-// 		for _, issue := range enrichedResponse.Issues {
-// 			// TODO(#119): improve this to avoid O(n^2)
-// 			rule, err := run.GetRuleById(issue.RawIssue.Type)
-// 			if err != nil {
-// 				rule = run.AddRule(issue.RawIssue.Type)
-// 			}
-// 			res, err := smithyIssueToSarif(issue.RawIssue, rule)
-// 			if err != nil {
-// 				log.Println(err.Error())
-// 				continue
-// 			}
-// 			attachments := res.Attachments
-// 			if issue.Count > 1 {
-// 				if reportDuplicates {
-// 					res.Provenance = sarif.NewResultProvenance()
-// 					firstSeen := issue.FirstSeen.AsTime()
-// 					res.Provenance.WithFirstDetectionTimeUTC(&firstSeen)
-// 					attachments = append(attachments, sarif.NewAttachment().WithDescription(sarif.NewMessage().WithText(fmt.Sprintf("Duplicate.Count:%d", issue.Count))))
-// 				} else {
-// 					log.Printf("Issue %s is duplicate and we have been instructed to ignore it", issue.Hash)
-// 					continue
-// 				}
-// 			}
-// 			attachments = append(attachments, sarif.NewAttachment().WithDescription(sarif.NewMessage().WithText(fmt.Sprintf("False Positive:%t", issue.FalsePositive))))
-// 			attachments = append(attachments, sarif.NewAttachment().WithDescription(sarif.NewMessage().WithText(fmt.Sprintf("Hash:%s", issue.Hash))))
-// 			for key, value := range issue.Annotations {
-// 				attachments = append(attachments, sarif.NewAttachment().WithDescription(sarif.NewMessage().WithText(fmt.Sprintf("%s:%s", key, value))))
-// 			}
-// 			res = res.WithAttachments(attachments)
-// 			sarifResults = append(sarifResults, res)
-// 		}
-// 		run.WithResults(sarifResults)
-// 		sarifReport.AddRun(run)
-// 	}
-// 	return sarifReport, nil
-// }
-
-// func smithyIssueToSarif(issue *v1.Issue, rule *sarif.ReportingDescriptor) (*sarif.Result, error) {
-// 	sarifResults := sarif.NewRuleResult(rule.ID)
-// 	loc := sarif.Location{}
-// 	physicalLocation := sarif.PhysicalLocation{}
-// 	artifactLocation := sarif.ArtifactLocation{}
-// 	_, err := url.ParseRequestURI(removeSmithyInternalPath(issue.Target))
-// 	if err != nil {
-// 		return &sarif.Result{}, fmt.Errorf("issue titled '%s' targets '%s' which is not a valid URI, skipping", issue.Title, issue.Target)
-// 	}
-// 	artifactLocation.WithUri(removeSmithyInternalPath(issue.Target))
-// 	physicalLocation.WithArtifactLocation(&artifactLocation)
-// 	loc.WithPhysicalLocation(&physicalLocation)
-// 	sarifResults.WithLocations([]*sarif.Location{&loc})
-// 	sarifResults.WithLevel(severityToLevel(issue.Severity))
-
-// 	message := sarif.NewMessage()
-// 	message.WithText(issue.Description)
-// 	sarifResults.WithMessage(message.WithText(issue.Description))
-// 	var attachments []*sarif.Attachment
-
-// 	confidence := fmt.Sprintf("Confidence:%s", issue.Confidence)
-// 	attachments = append(attachments, &sarif.Attachment{Description: &sarif.Message{Text: &confidence}})
-
-// 	if issue.GetSource() != "" {
-// 		src := fmt.Sprintf("Source:%s", issue.GetSource())
-// 		attachments = append(attachments, &sarif.Attachment{Description: &sarif.Message{Text: &src}})
-// 	}
-// 	if issue.GetCvss() != 0 {
-// 		cvss := fmt.Sprintf("CVSS:%f", issue.GetCvss())
-// 		attachments = append(attachments, &sarif.Attachment{Description: &sarif.Message{Text: &cvss}})
-// 	}
-// 	if issue.GetCve() != "" {
-// 		cve := issue.GetCve()
-// 		attachments = append(attachments, &sarif.Attachment{Description: &sarif.Message{Text: &cve}})
-// 	}
-// 	sarifResults.WithAttachments(attachments)
-// 	return sarifResults, nil
-// }
-
-// // levelToSeverity transforms error, warning and note levels to high, medium and low respectively.
-// func levelToSeverity(level string) v1.Severity {
-// 	if level == LevelError {
-// 		return v1.Severity_SEVERITY_HIGH
-// 	} else if level == LevelWarning {
-// 		return v1.Severity_SEVERITY_MEDIUM
-// 	}
-// 	return v1.Severity_SEVERITY_INFO
-// }
-
-// func severityToLevel(severity v1.Severity) string {
-// 	switch severity {
-// 	case v1.Severity_SEVERITY_CRITICAL:
-// 		return LevelError
-// 	case v1.Severity_SEVERITY_HIGH:
-// 		return LevelError
-// 	case v1.Severity_SEVERITY_MEDIUM:
-// 		return LevelWarning
-// 	case v1.Severity_SEVERITY_LOW:
-// 		return LevelWarning
-// 	case v1.Severity_SEVERITY_INFO:
-// 		return LevelNote
-// 	default:
-// 		return LevelNone
-// 	}
-// }
