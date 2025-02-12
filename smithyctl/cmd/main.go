@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/smithy-security/smithyctl/command/component"
-	"github.com/smithy-security/smithyctl/command/version"
-	"github.com/smithy-security/smithyctl/command/workflow"
-	"github.com/smithy-security/smithyctl/internal/command"
+	"github.com/smithy-security/smithy/smithyctl/command/component"
+	"github.com/smithy-security/smithy/smithyctl/command/version"
+	"github.com/smithy-security/smithy/smithyctl/command/workflow"
+	"github.com/smithy-security/smithy/smithyctl/internal/command"
 )
 
 func main() {

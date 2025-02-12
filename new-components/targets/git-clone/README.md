@@ -13,7 +13,6 @@ as the following:
 
 | Environment Variable      | Type   | Required | Default           | Description                                        |
 |---------------------------|--------|----------|-------------------|----------------------------------------------------|
-| GIT\_CLONE\_PATH            | string | no       | Current directory | The path where to clone repositories to            |
 | GIT\_CLONE\_REPO\_URL        | string | yes      | -                 | Valid URL of the repository to clone               |
 | GIT\_CLONE\_BRANCH\_NAME     | string | yes      | -                 | Valid branch name of the repository to clone       |
 | GIT\_CLONE\_AUTH\_ENABLED    | bool   | no       | false             | Whether authentication should be used for VCS      |

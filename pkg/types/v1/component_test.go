@@ -30,9 +30,20 @@ func TestComponent_Validate(t *testing.T) {
 					EnvVars:    make(map[string]string),
 				},
 			},
-			Parameters: make([]v1.Parameter, 0),
-			Type:       v1.ComponentTypeEnricher,
-			Name:       "my-enricher",
+			Parameters: []v1.Parameter{
+				{
+					Name:  "cool_parameter",
+					Type:  "string",
+					Value: "parameter1",
+				},
+				{
+					Name:  "someparameter",
+					Type:  "string",
+					Value: "parameter2",
+				},
+			},
+			Type: v1.ComponentTypeEnricher,
+			Name: "my-enricher",
 		}
 
 		require.NoError(t, component.Validate())

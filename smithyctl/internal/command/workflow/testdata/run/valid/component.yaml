@@ -1,0 +1,16 @@
+name: "git-clone"
+description: "Clones a repository"
+type: "target"
+parameters:
+  - name: "git_clone_repo_url"
+    type: "string"
+    value: "https://github.com/0c34/govwa.git"
+  - name: "git_clone_reference"
+    type: "string"
+    value: "master"
+steps:
+  - name: "clone-repo"
+    env_vars:
+      GIT_CLONE_REPO_URL: "{{ .parameters.git_clone_repo_url }}"
+      GIT_CLONE_REFERENCE: "{{ .parameters.git_clone_reference }}"
+    image: "localhost:5000/components/targets/git-clone:latest"
