@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/go-errors/errors"
-	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/package-url/packageurl-go"
+	sarif "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 
 	"github.com/smithy-security/smithy/components/producers"
 	"github.com/smithy-security/smithy/new-components/scanners/sarif/internal/util/ptr"
@@ -111,6 +111,7 @@ func parseOut(
 }
 
 func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.VulnerabilityFinding, target, toolName string, res *sarif.Result) []*ocsf.VulnerabilityFinding {
+	// TODO: copy and adapt the gosec one
 	affectedCode := []*ocsf.AffectedCode{}
 	affectedPackages := []*ocsf.AffectedPackage{}
 
@@ -141,13 +142,37 @@ func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.Vuln
 	if len(res.Fixes) > 0 {
 		fixAvailable = true
 	}
-	ruleName := nil
-	if res.Rule != nil && res.Rule.ToolComponent != nil && res.Rule.ToolComponent.Name != nil {
-		ruleName = res.Rule.ToolComponent.Name
+	var ruleID *string
+	var ruleGuid *string
+	var (
+		severityID             = mapSeverity(res.Level)
+		title, desc            = mapTitleDesc(res, ruleToTools)
+		occurrencesCount int32 = 0
+	)
+
+	confidence := mapConfidence(*ruleID, rulteToTools)
+	if res.RuleID != nil {
+		ruleID = res.RuleID
+	} else if res.Rule != nil {
+		if res.Rule.ToolComponent != nil && res.Rule.ToolComponent.Name != nil {
+			ruleID = res.Rule.ToolComponent.Name
+		}
+		if res.Rule.Guid != nil {
+			ruleGuid = res.Rule.Guid
+		}
+	}
+	if res.OccurrenceCount != nil {
+		occurrencesCount = int32(*res.OccurrenceCount)
 	}
 	issues = append(issues, &ocsf.VulnerabilityFinding{
-		// TODO: how the hell do i add RULE IDs?
-		// ActivityId: res.RuleID,
+		ActivityId:   ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
+		ActivityName: ptr.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
+		CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
+		ClassUid:     ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING,
+		ClassName:    ptr.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
+		Confidence:   ptr.Ptr(confidence.String()),
+		ConfidenceId: ptr.Ptr(confidence),
+		Count:        ptr.Ptr(occurrencesCount),
 		// ActivityName: ruleName,
 		// Actor
 		// Api
@@ -167,6 +192,7 @@ func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.Vuln
 		// EndTimeDt
 		// Enrichments
 		FindingInfo: &ocsf.FindingInfo{
+			CreatedTime: &now,
 			//	Analytic
 			//
 			// Attacks
@@ -190,7 +216,14 @@ func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.Vuln
 			// Uid
 		},
 		Message: res.Message.Text,
-		// Metadata
+		Metadata: &ocsf.Metadata{
+			EventCode: ruleID,
+
+			Product: &ocsf.Product{
+				Name: &toolName,
+			},
+			Uid: ruleGuid,
+		},
 		// Observables
 		// RawData
 		// Resource
@@ -229,8 +262,8 @@ func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.Vuln
 				// References
 				// RelatedVulnerabilities
 				// Remediation
-				Severity: sarifLevelToOCSFSmithySeverity(res.Level),
-				// Title
+				Severity:   ptr.Ptr(severityID.String()),
+				Title:      ptr.Ptr(title),
 				VendorName: &toolName,
 			},
 		},
@@ -239,11 +272,52 @@ func addFinding(rules map[string]*sarif.ReportingDescriptor, issues []*ocsf.Vuln
 	return issues
 }
 
-func sarifLevelToOCSFSmithySeverity(level *string) *string {
-	return ptr.Ptr("")
+func mapSeverity(sarifResLevel sarif.ResultLevel) ocsf.VulnerabilityFinding_SeverityId {
+	severity, ok := map[string]ocsf.VulnerabilityFinding_SeverityId{
+		"warning": ocsf.VulnerabilityFinding_SEVERITY_ID_MEDIUM,
+		"error":   ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH,
+		"note":    ocsf.VulnerabilityFinding_SEVERITY_ID_INFORMATIONAL,
+		"none":    ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN,
+	}[string(sarifResLevel)]
+	if !ok {
+		return ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN
+	}
+	return severity
 }
-func sarifLevelToOCSFSmithySeverityID(level *string) ocsf.VulnerabilityFinding_SeverityId {
-	return 0
+
+func mapConfidence(ruleID string, ruleToTools map[string]sarifschemav210.ReportingDescriptor) (confidence ocsf.VulnerabilityFinding_ConfidenceId) {
+	confidence = ocsf.VulnerabilityFinding_CONFIDENCE_ID_UNKNOWN
+
+	toolRule, ok := ruleToTools[ruleID]
+	if !ok || toolRule.Properties == nil {
+		return
+	}
+
+	props, ok := toolRule.Properties.AdditionalProperties.(map[string]any)
+	if !ok {
+		return
+	}
+
+	rawConfidence, ok := props["precision"]
+	if !ok {
+		return
+	}
+
+	rawConfidenceStr, ok := rawConfidence.(string)
+	if !ok {
+		return
+	}
+
+	switch rawConfidenceStr {
+	case "high":
+		return ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH
+	case "medium":
+		return ocsf.VulnerabilityFinding_CONFIDENCE_ID_MEDIUM
+	case "low":
+		return ocsf.VulnerabilityFinding_CONFIDENCE_ID_LOW
+	}
+
+	return
 }
 
 // parseTargets parses the passes sarif location and returns all the valid physical and logical targets in it.
