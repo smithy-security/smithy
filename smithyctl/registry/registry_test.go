@@ -4,17 +4,20 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"path"
 	"testing"
 	"time"
 
+	"github.com/distribution/reference"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
-	"github.com/smithy-security/smithyctl/internal/registry"
+	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
 type (
@@ -79,7 +82,7 @@ func (suite *RegistryTestSuite) TearDownSuite() {
 	_ = suite.pool.Purge(suite.registryResource)
 }
 
-func (suite *RegistryTestSuite) TestPackage() {
+func (suite *RegistryTestSuite) TestPackageAndFetch() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
@@ -90,16 +93,19 @@ func (suite *RegistryTestSuite) TestPackage() {
 		componentVersion    = "v3.2.1"
 	)
 
-	var component = &v1.Component{
-		Description: "Looks for truffles",
-		Name:        "trufflehog",
-		Parameters:  make([]v1.Parameter, 0),
-		Steps:       make([]v1.Step, 0),
-		Type:        v1.ComponentTypeScanner,
-	}
+	var (
+		component = &v1.Component{
+			Description: "Looks for truffles",
+			Name:        "trufflehog",
+			Parameters:  make([]v1.Parameter, 0),
+			Steps:       make([]v1.Step, 0),
+			Type:        v1.ComponentTypeScanner,
+		}
+		registryHost = suite.registryResource.GetHostPort("5000/tcp")
+	)
 
 	r, err := registry.New(
-		suite.registryResource.GetHostPort("5000/tcp"),
+		registryHost,
 		registryDestination,
 		registryAuthEnabled,
 		"",
@@ -119,6 +125,21 @@ func (suite *RegistryTestSuite) TestPackage() {
 			},
 		),
 	)
+
+	ref, err := reference.Parse(
+		path.Join(
+			registryHost,
+			registryDestination,
+			component.Type.String(),
+			component.Name+":"+componentVersion,
+		),
+	)
+	require.NoError(suite.T(), err)
+
+	resp, err := r.FetchPackage(ctx, ref)
+	require.NoError(suite.T(), err)
+	require.NotNil(suite.T(), resp)
+	assert.Equal(suite.T(), component, &resp.Component)
 }
 
 func TestNew(t *testing.T) {
