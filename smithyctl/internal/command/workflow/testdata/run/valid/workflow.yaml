@@ -1,0 +1,12 @@
+description: "GoSec sample pipeline"
+name: "gosec-pipeline"
+components:
+  - component: "file://testdata/run/valid/component.yaml"
+  - component: "localhost:5000/components/enrichers/enricher:latest"
+  - component:
+      name: json-logger
+      description: "Logs findings"
+      type: reporter
+      steps:
+        - name: custom-annotation
+          image: "localhost:5000/components/reporters/json-logger:latest"

@@ -1,0 +1,11 @@
+git-clone:
+  - name: "repo_url"
+    type: "string"
+    value: "https://github.com/0c34/govwa.git"
+  - name: "repo_name"
+    type: "string"
+    value: "govwa"
+gosec-parser:
+  - name: "repo_name"
+    type: "string"
+    value: "govwa"

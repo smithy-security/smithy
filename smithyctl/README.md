@@ -5,7 +5,7 @@ Smithyctl is the CLI used to develop new components, run them in workflows and d
 ## Installation
 
 ```shell
-go install github.com/smithy-security/smithyctl@latest
+go install github.com/smithy-security/smithy/smithyctl@latest
 ```
 
 Verify installation by running:
@@ -14,6 +14,13 @@ Verify installation by running:
 smithyctl version
 ```
 
+## Flags
+
+| Flag          | Description                                                                 | Default   |
+|---------------|-----------------------------------------------------------------------------|-----------|
+| `debug-enabled` | enabled debug logs.                                                         | `false`     |
+| `debug-level`   | sets the log level. Possible values `debug`, `info`, `warning` and `error`. | `debug`   |
+
 ## Commands
 
 | Command     | Description                                                 | Status                |
@@ -21,57 +28,19 @@ smithyctl version
 | `help`      | will output how to use `smithyctl`                          | Implemented           |
 | `version`   | will output the version of the installed `smithyctl` binary | Not implemented yet   |
 | `component` | allows to develop, run and distribute components            | Not fully implemented |
-| `workflow`  | allows to develop and run workflows                         | Not implemented yet   |
-
-Flags:
-
-| Flag          | Description                                                                 | Default   |
-|---------------|-----------------------------------------------------------------------------|-----------|
-| `debug-enabled` | enabled debug logs.                                                         | `false`     |
-| `debug-level`   | sets the log level. Possible values `debug`, `info`, `warning` and `error`. | `debug`   |
+| `workflow`  | allows to develop and run workflows                         | Implemented           |
 
 ### Component
 
-#### Packaging
+* [packaging](./docs/component/PACKAGING.md): distributes a component specified in a [component.yaml](./docs/component/SPEC.md)
+* `build`: allows to build component images. Not yet implemented.
 
-Packaging allows to distribute a component and make it available for execution.
+### Workflow
 
-Packaging will:
+* [run](./docs/workflow/RUN.md): runs components specified in a [workflow.yaml](./docs/workflow/SPEC.md)
 
-* look for your `component.yaml` spec and validate it
-* package its configuration in an OCI blob and manifest
-* upload the manifest into the specified OCI registry
+## Development
 
-```shell
-smithyctl component package
-```
+Compile `smithyctl` locally by running `make smithyctl/cmd/bin` in the root of this project.
 
-##### Flags
-
-| Flag                   | Description                                                  | Default                                |
-|------------------------|--------------------------------------------------------------|----------------------------------------|
-| `spec-path`              | is the path to the component's `component.yaml` file. | -                                      |
-| `registry-url`           | the base URL of the OCI registry                             | `localhost:5000`                       |
-| `registry-auth-enabled`  | enables authentication to push artifact to an OCI registry.  | `false`                                |
-| `registry-auth-username` | the username for authenticating to the OCI registry.         | `""`                                   |
-| `registry-auth-password` | the password for authenticating to the OCI registry.         | `""`                                   |
-| `registry-base-repository` | where to upload packaged manifests to                        | `smithy-security/manifests/components` |
-| `sdk-version`            | specifies the sdk version used to package the component.     | `latest`                               |
-| `version`                | is the version used to package the component.                | `latest`                               |
-
-##### Example
-
-```shell
-smithyctl \
-  --debug-enabled=true \
-  --debug-level=debug \
-  component \
-    package \
-        --registry-auth-enabled=true \
-        --registry-auth-username=smithy \
-        --registry-auth-password=XXX \
-        --registry-url=ghcr.io \
-        --sdk-version=v1.0.0
-        --spec-path=new-components/scanners/bandit
-        --version=v3.2.1
-```
+You can then find the binary in `/bin/smithyctl/cmd/{GOOS}/{GOARCH}/smithyctl`.

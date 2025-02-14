@@ -18,21 +18,13 @@ RUN apt-get update && \
 
 RUN make build-target
 
-# Create a workspace to clone repos to.
-RUN mkdir -p /workspace
-
 # Used to actually run the binary in minimal image.
-FROM gcr.io/distroless/base-debian12:nonroot
+FROM gcr.io/distroless/base-debian12
 
-COPY --from=builder --chown=65534:65534 /wrk/target /bin/target
-COPY --from=builder --chown=65534:65534 /workspace /workspace
-
-# Run as UID for 'nobody' since k8s pod securityContext runAsNonRoot can't resolve the user ID:
-# https://github.com/kubernetes/kubernetes/issues/40958
-USER 65534
+COPY --from=builder /wrk/target /bin/target
 
 # Setting the workdir where we'll clone repositories.
-WORKDIR /workspace
+WORKDIR /workspace/repos
 
 # Set the binary as the entry point
 ENTRYPOINT ["/bin/target"]

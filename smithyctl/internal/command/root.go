@@ -3,7 +3,7 @@ package command
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/smithy-security/smithyctl/internal/logging"
+	"github.com/smithy-security/smithy/smithyctl/internal/logging"
 )
 
 var flags rootFlags

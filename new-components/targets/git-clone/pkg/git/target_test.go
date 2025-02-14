@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/jonboulle/clockwork"
 	"github.com/stretchr/testify/require"
 
@@ -32,7 +31,6 @@ func (tc *testCloner) Clone(context.Context) (*git.Repository, error) {
 
 func TestGitCloneTarget_Prepare(t *testing.T) {
 	const (
-		clonePath = "/workspace"
 		repoURL   = "https://github.com/andream16/go-opentracing-example"
 		reference = "main"
 	)
@@ -40,10 +38,8 @@ func TestGitCloneTarget_Prepare(t *testing.T) {
 	var (
 		ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
-		fs          = memfs.New()
 		conf        = &git.Conf{
 			RepoURL:   repoURL,
-			ClonePath: clonePath,
 			Reference: reference,
 		}
 	)
@@ -57,7 +53,6 @@ func TestGitCloneTarget_Prepare(t *testing.T) {
 		target, err := git.NewTarget(
 			conf,
 			git.WithClock(clock),
-			git.WithFS(fs),
 			git.WithCloner(cloner),
 		)
 		require.NoError(t, err)
@@ -71,7 +66,6 @@ func TestGitCloneTarget_Prepare(t *testing.T) {
 		target, err := git.NewTarget(
 			conf,
 			git.WithClock(clock),
-			git.WithFS(fs),
 			git.WithCloner(cloner),
 		)
 		require.NoError(t, err)
