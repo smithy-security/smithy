@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/v65/github"
+	"github.com/google/go-github/v69/github"
 	"github.com/package-url/packageurl-go"
 
 	v1proto "github.com/smithy-security/smithy/api/proto/v1"
