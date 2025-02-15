@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"time"
+	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
@@ -14,6 +16,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	sarif "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
+
 	"github.com/smithy-security/smithy/new-components/scanners/sarif/internal/util/ptr"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
@@ -39,53 +42,26 @@ type (
 	ExtraContextLanguage string
 
 	SarifTransformer struct {
-		targetType   TargetType
-		clock        clockwork.Clock
-		sarifResult  sarif.SchemaJson
-		ruleToTools  map[string]sarif.ReportingDescriptor
-		taxasByCWEID map[string]sarif.ReportingDescriptor
+		targetType        TargetType
+		findingsEcosystem string
+		clock             clockwork.Clock
+		sarifResult       sarif.SchemaJson
+		ruleToTools       map[string]sarif.ReportingDescriptor
+		taxasByCWEID      map[string]sarif.ReportingDescriptor
 	}
 )
 
-// ToSmithy accepts a sarif file and transforms each run to SmithyIssueCollection ready to be written to a results file.
-func ToSmithy(inFile string, language ExtraContextLanguage) ([]*SmithyIssueCollection, error) {
-	issueCollection := []*SmithyIssueCollection{}
-	inSarif, err := sarif.FromString(inFile)
-	if err != nil {
-		return issueCollection, err
-	}
-	for _, run := range inSarif.Runs {
-		tool := run.Tool.Driver.Name
-		rules := map[string]*sarif.ReportingDescriptor{}
-		for _, rule := range run.Tool.Driver.Rules {
-			rules[rule.ID] = rule
-		}
-
-		findings, err := parseOut(*run, rules, tool, language)
-		if err != nil {
-			return nil, errors.Errorf("unexpected parse errors: %w", err)
-		}
-
-		if len(findings) == 0 {
-			continue
-		}
-
-		issueCollection = append(issueCollection, &SmithyIssueCollection{
-			ToolName: tool,
-			Findings: findings,
-		})
-	}
-	return issueCollection, err
-}
-
-func NewSarifTransformer(scanResult *sarif.SchemaJson) (*SarifTransformer, error) {
+func NewSarifTransformer(scanResult *sarif.SchemaJson, findingsEcosystem string, targetType TargetType, clock clockwork.Clock) (*SarifTransformer, error) {
 	if scanResult == nil {
 		return nil, errors.Errorf("method 'NewSarifTransformer called with nil scanResult")
 	}
 	return &SarifTransformer{
-		sarifResult:  *scanResult,
-		ruleToTools:  make(map[string]sarif.ReportingDescriptor),
-		taxasByCWEID: make(map[string]sarif.ReportingDescriptor),
+		clock:             clock,
+		sarifResult:       *scanResult,
+		targetType:        targetType,
+		findingsEcosystem: findingsEcosystem,
+		ruleToTools:       make(map[string]sarif.ReportingDescriptor),
+		taxasByCWEID:      make(map[string]sarif.ReportingDescriptor),
 	}, nil
 }
 
@@ -103,9 +79,8 @@ func (s *SarifTransformer) ToOCSF(ctx context.Context) ([]*ocsf.VulnerabilityFin
 	)
 
 	// preparation
-	var (
-		vulns = make([]*ocsf.VulnerabilityFinding, 0)
-	)
+	vulns := make([]*ocsf.VulnerabilityFinding, 0)
+	var parseErr error
 
 	// Preparing helper data sets to reconstruct linked data.
 	for _, run := range s.sarifResult.Runs {
@@ -123,21 +98,18 @@ func (s *SarifTransformer) ToOCSF(ctx context.Context) ([]*ocsf.VulnerabilityFin
 			}
 		}
 	}
-	var (
-		findings = make([]*ocsf.VulnerabilityFinding, 0)
-		parseErr error
-	)
+
 	for _, run := range s.sarifResult.Runs {
+		toolName := run.Tool.Driver.Name
 		for _, res := range run.Results {
-			finding, err := s.transformFinding("", &res)
+			finding, err := s.transformToOCSF(toolName, &res)
 			if err != nil {
 				errors.Join(parseErr, err)
 			}
 			vulns = append(vulns, finding)
-
 		}
 	}
-	return findings, parseErr
+	return vulns, parseErr
 }
 
 // func (s *SarifTransformer) FromOCSF(ctx context.Context) (*sarif.SchemaJson, error){
@@ -160,24 +132,20 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 	// * WebRequest
 	// * WebResponse
 	// * WorkItemUris
+
+	slog.Debug("parsing run from", slog.String("toolname", toolName))
 	affectedCode, affectedPackages := s.mapAffected(res)
 
-	// Location
-	fixAvailable := false
-	if len(res.Fixes) > 0 {
-		fixAvailable = true
-	}
 	var (
 		ruleID, ruleGuid *string
-		severityID             = s.mapSeverity(res.Level)
-		title, desc            = s.mapTitleDesc(res, s.ruleToTools)
-		occurrencesCount int32 = 0
+		severityID       = s.mapSeverity(res.Level)
+		title, desc      = s.mapTitleDesc(res, s.ruleToTools)
+		occurrencesCount *int32
 	)
 	dataSource, err := s.mapDataSource(res.Locations)
 	if err != nil {
 		return nil, errors.Errorf("failed to map data source: %w", err)
 	}
-	confidence := s.mapConfidence(*ruleID, s.ruleToTools)
 	if res.RuleId != nil {
 		ruleID = res.RuleId
 	} else if res.Rule != nil {
@@ -188,17 +156,47 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 			ruleGuid = res.Rule.Guid
 		}
 	}
+	confidence := s.mapConfidence(*ruleID, s.ruleToTools)
+
 	if res.OccurrenceCount != nil {
-		occurrencesCount = int32(*res.OccurrenceCount)
+		occurrencesCount = ptr.Ptr(int32(*res.OccurrenceCount))
 	}
 	labels, err := s.mapProperties(res.Properties)
 	if err != nil {
 		return nil, err
 	}
-	var firstSeenTime, lastSeenTime time.Time
+	var firstSeenTimeDT, lastSeenTimeDT *timestamppb.Timestamp
+	var firstSeenTime, lastSeenTime *int64
 	if res.Provenance != nil {
-		firstSeenTime = *res.Provenance.FirstDetectionTimeUtc
-		lastSeenTime = *res.Provenance.LastDetectionTimeUtc
+		if res.Provenance.FirstDetectionTimeUtc != nil {
+			firstSeenTimeDT = timestamppb.New(*res.Provenance.FirstDetectionTimeUtc)
+			firstSeenTime = ptr.Ptr(res.Provenance.FirstDetectionTimeUtc.Unix())
+		}
+		if res.Provenance.LastDetectionTimeUtc != nil {
+			lastSeenTimeDT = timestamppb.New(*res.Provenance.LastDetectionTimeUtc)
+			lastSeenTime = ptr.Ptr(res.Provenance.LastDetectionTimeUtc.Unix())
+		}
+	}
+	rule := s.ruleToTools[*ruleID]
+	var cve *ocsf.Cve
+	if rule.FullDescription != nil {
+		uid := s.extractCVE(rule.FullDescription.Text)
+		if uid != "" {
+			cve = &ocsf.Cve{}
+			cve.Uid = uid
+			cve.Desc = &rule.FullDescription.Text
+		}
+		// TODO: cwe, cvss
+	}
+	findingUid := ""
+	if res.Guid != nil {
+		findingUid = *res.Guid
+	}
+
+	// Location
+	var fixAvailable *bool
+	if len(res.Fixes) > 0 {
+		fixAvailable = ptr.Ptr(true)
 	}
 	return &ocsf.VulnerabilityFinding{
 		// Actor
@@ -211,7 +209,7 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 		ClassName:    ptr.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
 		Confidence:   ptr.Ptr(confidence.String()),
 		ConfidenceId: ptr.Ptr(confidence),
-		Count:        ptr.Ptr(occurrencesCount),
+		Count:        occurrencesCount,
 		// Cloud
 		// Comment
 		// ConfidenceScore
@@ -228,11 +226,11 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 				dataSource,
 			},
 			Desc:            &desc,
-			FirstSeenTime:   ptr.Ptr(firstSeenTime.Unix()),
-			FirstSeenTimeDt: timestamppb.New(firstSeenTime),
+			FirstSeenTime:   firstSeenTime,
+			FirstSeenTimeDt: firstSeenTimeDT,
 			// KillChain
-			LastSeenTime:   ptr.Ptr(lastSeenTime.Unix()),
-			LastSeenTimeDt: timestamppb.New(lastSeenTime),
+			LastSeenTime:   lastSeenTime,
+			LastSeenTimeDt: lastSeenTimeDT,
 			// ModifiedTime
 			// ModifiedTimeDt
 			// ProductUid
@@ -241,7 +239,7 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 			SrcUrl: res.HostedViewerUri,
 			Title:  title,
 			// Types:
-			Uid: *res.Guid,
+			Uid: findingUid,
 		},
 		Message: res.Message.Text,
 		Metadata: &ocsf.Metadata{
@@ -292,21 +290,19 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 
 				AffectedCode:     affectedCode,
 				AffectedPackages: affectedPackages,
-				// TODO: regexp CVE extraction?
-
-				// Cve:              ,
-				Cwe:             s.mapCWE(*ruleID),
-				Desc:            &desc,
-				FirstSeenTime:   ptr.Ptr(firstSeenTime.Unix()),
-				FirstSeenTimeDt: timestamppb.New(firstSeenTime),
-				FixAvailable:    ptr.Ptr(fixAvailable),
+				Cve:              cve,
+				Cwe:              s.mapCWE(*ruleID),
+				Desc:             &desc,
+				FirstSeenTime:    firstSeenTime,
+				FirstSeenTimeDt:  firstSeenTimeDT,
+				FixAvailable:     fixAvailable,
 				// IsExploitAvailable: ,
-				IsFixAvailable: ptr.Ptr(fixAvailable),
+				IsFixAvailable: fixAvailable,
 
 				// KbArticleList
 				// KbArticles
-				LastSeenTime:   ptr.Ptr(lastSeenTime.Unix()),
-				LastSeenTimeDt: timestamppb.New(lastSeenTime),
+				LastSeenTime:   lastSeenTime,
+				LastSeenTimeDt: lastSeenTimeDT,
 				// Packages
 				// References
 				// RelatedVulnerabilities
@@ -351,7 +347,20 @@ func (s *SarifTransformer) mapResultKind(kind sarif.ResultKind) ocsf.Vulnerabili
 	return ocsf.VulnerabilityFinding_STATUS_ID_UNKNOWN
 }
 
-func (s *SarifTransformer) mapAffectedPacakge(fixes []sarif.Fix, location *sarif.Location, purl packageurl.PackageURL) *ocsf.AffectedPackage {
+func (s *SarifTransformer) extractCVE(text string) string {
+	re := regexp.MustCompile(`(?i)(?:^|[^A-Za-z0-9-])(CVE-\d{4}-\d{4,7})(?:[^A-Za-z0-9-]|$)`)
+	match := re.FindStringSubmatch(text)
+	if len(match) > 1 {
+		return match[1]
+	}
+	return ""
+}
+
+func (s *SarifTransformer) isSnykURI(uri string) bool {
+	return strings.HasPrefix(uri, "https_//")
+}
+
+func (s *SarifTransformer) mapAffectedPackage(fixes []sarif.Fix, purl packageurl.PackageURL) *ocsf.AffectedPackage {
 
 	affectedPackage := &ocsf.AffectedPackage{
 		Purl:           ptr.Ptr(purl.String()),
@@ -370,12 +379,50 @@ func (s *SarifTransformer) mapAffectedPacakge(fixes []sarif.Fix, location *sarif
 	return affectedPackage
 }
 
-// TODO: still need to find a way to detect snyk that doesn't speak purl and trivy that speaks docker
-//
-//	or maybe snyk and trivy get their own sarif flavor?
+func (s *SarifTransformer) detectPackageFromPhysicalLocation(physicalLocation sarif.PhysicalLocation) *packageurl.PackageURL {
+	if s.isSnykURI(*physicalLocation.ArtifactLocation.Uri) {
+		return nil
+	}
+	if p, e := packageurl.FromString(*physicalLocation.ArtifactLocation.Uri); e == nil {
+		return &p
+	}
+	// if we get hinted that this scan is for dependencies and the deps have a specific ecosystem we can assume more things
+	if s.findingsEcosystem != "" {
+		switch s.targetType {
+		case TargetTypeDependency:
+			purl := fmt.Sprintf("pkg:%s/%s", s.findingsEcosystem, *physicalLocation.ArtifactLocation.Uri)
+			if p, e := packageurl.FromString(purl); e == nil {
+				return &p
+			}
+		case TargetTypeImage:
+			purl := fmt.Sprintf("pkg:%s/%s", s.findingsEcosystem, strings.Replace(*physicalLocation.ArtifactLocation.Uri, "library/", "/", -1))
+			if p, e := packageurl.FromString(purl); e == nil {
+				return &p
+			}
+		}
+	}
+	return nil
+}
+
+// this method is to get around Snyk's weird Sarif parsing
+func (s *SarifTransformer) detectPackageFromLogicalLocation(logicalLocation sarif.LogicalLocation) *packageurl.PackageURL {
+	if p, e := packageurl.FromString(*logicalLocation.FullyQualifiedName); e == nil {
+		return &p
+	}
+	// if we get hinted that this scan is for dependencies and the deps have a specific ecosystem we can assume more things
+	if s.targetType == TargetTypeDependency && s.findingsEcosystem != "" {
+		// snyk puts parts of the purl in logical locations
+		purl := fmt.Sprintf("pkg:%s/%s", s.findingsEcosystem, *logicalLocation.FullyQualifiedName)
+		if p, e := packageurl.FromString(purl); e == nil {
+			return &p
+		}
+	}
+	return nil
+}
+
 func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode, []*ocsf.AffectedPackage) {
-	var affectedCode = make([]*ocsf.AffectedCode, 0)
-	var affectedPackages = make([]*ocsf.AffectedPackage, 0)
+	var affectedCode []*ocsf.AffectedCode
+	var affectedPackages []*ocsf.AffectedPackage
 	for _, location := range res.Locations {
 		if location.PhysicalLocation == nil {
 			continue
@@ -387,21 +434,31 @@ func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode,
 			physicalLocation = location.PhysicalLocation
 		)
 		if physicalLocation.ArtifactLocation != nil && physicalLocation.ArtifactLocation.Uri != nil {
-			if p, e := packageurl.FromString(*physicalLocation.ArtifactLocation.Uri); e == nil {
-				affectedPackages = append(affectedPackages, s.mapAffectedPacakge(res.Fixes, &location, p))
-			} else {
+
+			if p := s.detectPackageFromPhysicalLocation(*physicalLocation); p != nil {
+				affectedPackages = append(affectedPackages, s.mapAffectedPackage(res.Fixes, *p))
+			} else if !s.isSnykURI(*location.PhysicalLocation.ArtifactLocation.Uri) {
+				// Snyk special case, they use the repo url with some weird replacement as the artifact location
 				ac.File.Name = *location.PhysicalLocation.ArtifactLocation.Uri
 				ac.File.Path = ptr.Ptr(fmt.Sprintf("file://%s", *location.PhysicalLocation.ArtifactLocation.Uri))
 			}
 		}
-
 		if physicalLocation.Region != nil {
-			ac.StartLine = ptr.Ptr(int32(*location.PhysicalLocation.Region.StartLine))
-			ac.EndLine = ptr.Ptr(int32(*location.PhysicalLocation.Region.EndLine))
+			if location.PhysicalLocation.Region.StartLine != nil {
+				ac.StartLine = ptr.Ptr(int32(*location.PhysicalLocation.Region.StartLine))
+			}
+			if location.PhysicalLocation.Region.EndLine != nil {
+				ac.EndLine = ptr.Ptr(int32(*location.PhysicalLocation.Region.EndLine))
+			}
 		}
 
 		if ac != (&ocsf.AffectedCode{}) {
 			affectedCode = append(affectedCode, ac)
+		}
+		for _, logicalLocation := range location.LogicalLocations {
+			if p := s.detectPackageFromLogicalLocation(logicalLocation); p != nil {
+				affectedPackages = append(affectedPackages, s.mapAffectedPackage(res.Fixes, *p))
+			}
 		}
 	}
 
@@ -494,8 +551,24 @@ func (s *SarifTransformer) mapCWE(ruleID string) *ocsf.Cwe {
 			cwe.Caption = ptr.Ptr(taxa.FullDescription.Text)
 		}
 	}
+	if cwe.Uid != "" {
+		return cwe
+	}
+	// if all else fails try to match regexp with tags (semgrep, snyk and codeql do that)
+	if rule.Properties != nil {
+		for _, tag := range rule.Properties.Tags {
+			re := regexp.MustCompile(`(?i)CWE-\d{3,}`)
+			matches := re.FindAllString(tag, -1)
+			for _, match := range matches {
+				if match != "" {
+					cwe.Uid = strings.ReplaceAll(strings.ToLower(match), "cwe-", "")
+					return cwe // we only care about 1
+				}
+			}
 
-	return cwe
+		}
+	}
+	return nil // all failed, no cwe
 }
 
 func (s *SarifTransformer) mapDataSource(locations []sarif.Location) (string, error) {
@@ -506,29 +579,62 @@ func (s *SarifTransformer) mapDataSource(locations []sarif.Location) (string, er
 			continue
 		}
 
-		// TODO sort out targettypes -- add repo, deps, website, oci_image
 		targetType, ok := map[TargetType]ocsffindinginfo.DataSource_TargetType{
-			TargetTypeRepository: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+			TargetTypeRepository: s.mapTargetType(s.targetType),
 		}[s.targetType]
 		if !ok {
 			targetType = ocsffindinginfo.DataSource_TARGET_TYPE_UNSPECIFIED
 		}
 
+		var dataSourceURI string
+		if _, err := filepath.Abs(*location.PhysicalLocation.ArtifactLocation.Uri); err == nil {
+			dataSourceURI = "file://" + *location.PhysicalLocation.ArtifactLocation.Uri
+		}
+		uriSchema := ocsffindinginfo.DataSource_URI_SCHEMA_UNSPECIFIED
+		switch s.targetType {
+		case TargetTypeDependency:
+		case TargetTypeImage:
+			uriSchema = ocsffindinginfo.DataSource_URI_SCHEMA_PURL
+			dataSourceURI = "pkg:" + s.findingsEcosystem + "/" + *location.PhysicalLocation.ArtifactLocation.Uri
+		case TargetTypeRepository:
+			uriSchema = ocsffindinginfo.DataSource_URI_SCHEMA_FILE
+		}
 		dataSource := ocsffindinginfo.DataSource{
 			TargetType: targetType,
 			Uri: &ocsffindinginfo.DataSource_URI{
-				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
-				Path:      *location.PhysicalLocation.ArtifactLocation.Uri,
+				UriSchema: uriSchema,
+				Path:      dataSourceURI,
 			},
+		}
+		// snyk special handling, snyk sets the repo as artifact location instead of the dependencies file
+		//  this is invalid in our case
+		if s.isSnykURI(*location.PhysicalLocation.ArtifactLocation.Uri) {
+			dataSource.Uri = nil
 		}
 
 		if location.PhysicalLocation.Region != nil {
+			startLine := 0
+			endLine := 0
+			startColumn := 0
+			endColumn := 0
+			if location.PhysicalLocation.Region.StartLine != nil {
+				startLine = *location.PhysicalLocation.Region.StartLine
+			}
+			if location.PhysicalLocation.Region.EndLine != nil {
+				endLine = *location.PhysicalLocation.Region.EndLine
+			}
+			if location.PhysicalLocation.Region.StartColumn != nil {
+				startColumn = *location.PhysicalLocation.Region.StartColumn
+			}
+			if location.PhysicalLocation.Region.EndColumn != nil {
+				endColumn = *location.PhysicalLocation.Region.EndColumn
+			}
 			dataSource.LocationData = &ocsffindinginfo.DataSource_FileFindingLocationData_{
 				FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
-					StartLine:   uint32(*location.PhysicalLocation.Region.StartLine),
-					EndLine:     uint32(*location.PhysicalLocation.Region.EndLine),
-					StartColumn: uint32(*location.PhysicalLocation.Region.StartColumn),
-					EndColumn:   uint32(*location.PhysicalLocation.Region.EndColumn),
+					StartLine:   uint32(startLine),
+					EndLine:     uint32(endLine),
+					StartColumn: uint32(startColumn),
+					EndColumn:   uint32(endColumn),
 				},
 			}
 		}
@@ -542,4 +648,20 @@ func (s *SarifTransformer) mapDataSource(locations []sarif.Location) (string, er
 	}
 
 	return "", errors.New("missing location information in finding")
+}
+
+func (s *SarifTransformer) mapTargetType(targetType TargetType) ocsffindinginfo.DataSource_TargetType {
+	switch targetType {
+	case TargetTypeRepository:
+		return ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY
+	// case TargetTypeDependency:
+	// 	return ocsffindinginfo.DataSource_TARGET_TYPE_DEPENCENCY
+	// case TargetTypeImage:
+	// 	return ocsffindinginfo.DataSource_TARGET_TYPE_IMAGE
+	// case TargetTypeWeb:
+	// 	return ocsffindinginfo.DataSource_TARGET_TYPE_WEB
+	default:
+		return ocsffindinginfo.DataSource_TARGET_TYPE_UNSPECIFIED
+
+	}
 }

@@ -67,67 +67,6 @@
           "text": "Use of weak random number generator (math/rand instead of crypto/rand) - nil endline"
         },
         "ruleId": "G404"
-      },
-      {
-        "level": "error",
-        "locations": [{
-          "physicalLocation": {
-            "artifactLocation": {
-              "uri": "main.go"
-            },
-            "region": {
-              "snippet": {
-                "text": "r := rand.New(rand.NewSource(time.Now().UnixNano()))"
-              },
-              "sourceLanguage": "go",
-              "endLine": 83
-            }
-          }
-        }],
-        "message": {
-          "text": "Use of weak random number generator (math/rand instead of crypto/rand) - nil startline"
-        },
-        "ruleId": "G404"
-      },
-      {
-        "level": "warning",
-        "locations": [{
-          "physicalLocation": {
-            "artifactLocation": {
-              "uri": "main.go"
-            },
-            "region": {
-              "endColumn": 2,
-              "endLine": 347,
-              "snippet": {
-                "text": "zipWriter.Close()"
-              },
-              "sourceLanguage": "go",
-              "startColumn": 2,
-              "startLine": 347
-            }
-          }
-        }],
-        "message": {
-          "text": "Errors unhandled."
-        },
-        "ruleId": "G104",
-        "ruleIndex": 3
-      },
-      {
-        "level": "error",
-        "locations": [{
-          "physicalLocation": {
-            "artifactLocation": {
-              "uri": "pkg:npm/%40angular/animation@12.3.1"
-            }
-          }
-        }],
-        "message": {
-          "text": "Vulnerable SQL injection code."
-        },
-        "ruleId": "G104",
-        "ruleIndex": 3
       }
     ],
     "tool": {
