@@ -3,7 +3,7 @@ package clientmock
 import (
 	"context"
 
-	"github.com/google/go-github/v65/github"
+	"github.com/google/go-github/v69/github"
 )
 
 // MockClient mocks the two methods of google's github client we use
