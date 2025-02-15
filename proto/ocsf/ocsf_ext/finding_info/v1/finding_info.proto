@@ -10,6 +10,9 @@ message DataSource {
   enum TargetType {
     TARGET_TYPE_UNSPECIFIED = 0;
     TARGET_TYPE_REPOSITORY = 1;
+    TARGET_TYPE_DEPENDENCY = 2;
+    TARGET_TYPE_IMAGE = 3;
+    TARGET_TYPE_WEB = 4;
   }
 
   // URISchema specifies the URI schema.
