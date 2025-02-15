@@ -42,9 +42,11 @@ func newRankEvalFunc(t Transport) RankEval {
 // RankEval allows to evaluate the quality of ranked search results over a set of typical search queries
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/search-rank-eval.html.
+//
 type RankEval func(body io.Reader, o ...func(*RankEvalRequest)) (*Response, error)
 
 // RankEvalRequest configures the Rank Eval API request.
+//
 type RankEvalRequest struct {
 	Index []string
 
@@ -66,6 +68,7 @@ type RankEvalRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r RankEvalRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -166,6 +169,7 @@ func (r RankEvalRequest) Do(ctx context.Context, transport Transport) (*Response
 }
 
 // WithContext sets the request context.
+//
 func (f RankEval) WithContext(v context.Context) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.ctx = v
@@ -173,6 +177,7 @@ func (f RankEval) WithContext(v context.Context) func(*RankEvalRequest) {
 }
 
 // WithIndex - a list of index names to search; use _all to perform the operation on all indices.
+//
 func (f RankEval) WithIndex(v ...string) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.Index = v
@@ -180,6 +185,7 @@ func (f RankEval) WithIndex(v ...string) func(*RankEvalRequest) {
 }
 
 // WithAllowNoIndices - whether to ignore if a wildcard indices expression resolves into no concrete indices. (this includes `_all` string or when no indices have been specified).
+//
 func (f RankEval) WithAllowNoIndices(v bool) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.AllowNoIndices = &v
@@ -187,6 +193,7 @@ func (f RankEval) WithAllowNoIndices(v bool) func(*RankEvalRequest) {
 }
 
 // WithExpandWildcards - whether to expand wildcard expression to concrete indices that are open, closed or both..
+//
 func (f RankEval) WithExpandWildcards(v string) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.ExpandWildcards = v
@@ -194,6 +201,7 @@ func (f RankEval) WithExpandWildcards(v string) func(*RankEvalRequest) {
 }
 
 // WithIgnoreUnavailable - whether specified concrete indices should be ignored when unavailable (missing or closed).
+//
 func (f RankEval) WithIgnoreUnavailable(v bool) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.IgnoreUnavailable = &v
@@ -201,6 +209,7 @@ func (f RankEval) WithIgnoreUnavailable(v bool) func(*RankEvalRequest) {
 }
 
 // WithSearchType - search operation type.
+//
 func (f RankEval) WithSearchType(v string) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.SearchType = v
@@ -208,6 +217,7 @@ func (f RankEval) WithSearchType(v string) func(*RankEvalRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f RankEval) WithPretty() func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.Pretty = true
@@ -215,6 +225,7 @@ func (f RankEval) WithPretty() func(*RankEvalRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f RankEval) WithHuman() func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.Human = true
@@ -222,6 +233,7 @@ func (f RankEval) WithHuman() func(*RankEvalRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f RankEval) WithErrorTrace() func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.ErrorTrace = true
@@ -229,6 +241,7 @@ func (f RankEval) WithErrorTrace() func(*RankEvalRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f RankEval) WithFilterPath(v ...string) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		r.FilterPath = v
@@ -236,6 +249,7 @@ func (f RankEval) WithFilterPath(v ...string) func(*RankEvalRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f RankEval) WithHeader(h map[string]string) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		if r.Header == nil {
@@ -248,6 +262,7 @@ func (f RankEval) WithHeader(h map[string]string) func(*RankEvalRequest) {
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f RankEval) WithOpaqueID(s string) func(*RankEvalRequest) {
 	return func(r *RankEvalRequest) {
 		if r.Header == nil {

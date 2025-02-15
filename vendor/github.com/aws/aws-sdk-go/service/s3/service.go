@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/client/metadata"
 	"github.com/aws/aws-sdk-go/aws/request"
-	v4 "github.com/aws/aws-sdk-go/aws/signer/v4"
+	"github.com/aws/aws-sdk-go/aws/signer/v4"
 	"github.com/aws/aws-sdk-go/private/protocol/restxml"
 )
 
@@ -39,12 +39,11 @@ const (
 // aws.Config parameter to add your extra config.
 //
 // Example:
+//     // Create a S3 client from just a session.
+//     svc := s3.New(mySession)
 //
-//	// Create a S3 client from just a session.
-//	svc := s3.New(mySession)
-//
-//	// Create a S3 client with additional configuration
-//	svc := s3.New(mySession, aws.NewConfig().WithRegion("us-west-2"))
+//     // Create a S3 client with additional configuration
+//     svc := s3.New(mySession, aws.NewConfig().WithRegion("us-west-2"))
 func New(p client.ConfigProvider, cfgs ...*aws.Config) *S3 {
 	c := p.ClientConfig(EndpointsID, cfgs...)
 	return newClient(*c.Config, c.Handlers, c.Endpoint, c.SigningRegion, c.SigningName)

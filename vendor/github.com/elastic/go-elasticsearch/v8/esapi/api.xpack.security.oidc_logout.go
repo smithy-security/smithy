@@ -41,9 +41,11 @@ func newSecurityOidcLogoutFunc(t Transport) SecurityOidcLogout {
 // SecurityOidcLogout - Invalidates a refresh token and access token that was generated from the OpenID Connect Authenticate API
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-oidc-logout.html.
+//
 type SecurityOidcLogout func(body io.Reader, o ...func(*SecurityOidcLogoutRequest)) (*Response, error)
 
 // SecurityOidcLogoutRequest configures the Security Oidc Logout API request.
+//
 type SecurityOidcLogoutRequest struct {
 	Body io.Reader
 
@@ -58,6 +60,7 @@ type SecurityOidcLogoutRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityOidcLogoutRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -137,6 +140,7 @@ func (r SecurityOidcLogoutRequest) Do(ctx context.Context, transport Transport) 
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityOidcLogout) WithContext(v context.Context) func(*SecurityOidcLogoutRequest) {
 	return func(r *SecurityOidcLogoutRequest) {
 		r.ctx = v
@@ -144,6 +148,7 @@ func (f SecurityOidcLogout) WithContext(v context.Context) func(*SecurityOidcLog
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityOidcLogout) WithPretty() func(*SecurityOidcLogoutRequest) {
 	return func(r *SecurityOidcLogoutRequest) {
 		r.Pretty = true
@@ -151,6 +156,7 @@ func (f SecurityOidcLogout) WithPretty() func(*SecurityOidcLogoutRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityOidcLogout) WithHuman() func(*SecurityOidcLogoutRequest) {
 	return func(r *SecurityOidcLogoutRequest) {
 		r.Human = true
@@ -158,6 +164,7 @@ func (f SecurityOidcLogout) WithHuman() func(*SecurityOidcLogoutRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityOidcLogout) WithErrorTrace() func(*SecurityOidcLogoutRequest) {
 	return func(r *SecurityOidcLogoutRequest) {
 		r.ErrorTrace = true
@@ -165,6 +172,7 @@ func (f SecurityOidcLogout) WithErrorTrace() func(*SecurityOidcLogoutRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityOidcLogout) WithFilterPath(v ...string) func(*SecurityOidcLogoutRequest) {
 	return func(r *SecurityOidcLogoutRequest) {
 		r.FilterPath = v
@@ -172,6 +180,7 @@ func (f SecurityOidcLogout) WithFilterPath(v ...string) func(*SecurityOidcLogout
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityOidcLogout) WithHeader(h map[string]string) func(*SecurityOidcLogoutRequest) {
 	return func(r *SecurityOidcLogoutRequest) {
 		if r.Header == nil {
@@ -184,6 +193,7 @@ func (f SecurityOidcLogout) WithHeader(h map[string]string) func(*SecurityOidcLo
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityOidcLogout) WithOpaqueID(s string) func(*SecurityOidcLogoutRequest) {
 	return func(r *SecurityOidcLogoutRequest) {
 		if r.Header == nil {

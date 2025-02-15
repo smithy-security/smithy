@@ -42,9 +42,11 @@ func newDanglingIndicesImportDanglingIndexFunc(t Transport) DanglingIndicesImpor
 // DanglingIndicesImportDanglingIndex imports the specified dangling index
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/modules-gateway-dangling-indices.html.
+//
 type DanglingIndicesImportDanglingIndex func(index_uuid string, o ...func(*DanglingIndicesImportDanglingIndexRequest)) (*Response, error)
 
 // DanglingIndicesImportDanglingIndexRequest configures the Dangling Indices Import Dangling Index API request.
+//
 type DanglingIndicesImportDanglingIndexRequest struct {
 	IndexUUID string
 
@@ -63,6 +65,7 @@ type DanglingIndicesImportDanglingIndexRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r DanglingIndicesImportDanglingIndexRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -153,6 +156,7 @@ func (r DanglingIndicesImportDanglingIndexRequest) Do(ctx context.Context, trans
 }
 
 // WithContext sets the request context.
+//
 func (f DanglingIndicesImportDanglingIndex) WithContext(v context.Context) func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		r.ctx = v
@@ -160,6 +164,7 @@ func (f DanglingIndicesImportDanglingIndex) WithContext(v context.Context) func(
 }
 
 // WithAcceptDataLoss - must be set to true in order to import the dangling index.
+//
 func (f DanglingIndicesImportDanglingIndex) WithAcceptDataLoss(v bool) func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		r.AcceptDataLoss = &v
@@ -167,6 +172,7 @@ func (f DanglingIndicesImportDanglingIndex) WithAcceptDataLoss(v bool) func(*Dan
 }
 
 // WithMasterTimeout - specify timeout for connection to master.
+//
 func (f DanglingIndicesImportDanglingIndex) WithMasterTimeout(v time.Duration) func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		r.MasterTimeout = v
@@ -174,6 +180,7 @@ func (f DanglingIndicesImportDanglingIndex) WithMasterTimeout(v time.Duration) f
 }
 
 // WithTimeout - explicit operation timeout.
+//
 func (f DanglingIndicesImportDanglingIndex) WithTimeout(v time.Duration) func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		r.Timeout = v
@@ -181,6 +188,7 @@ func (f DanglingIndicesImportDanglingIndex) WithTimeout(v time.Duration) func(*D
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f DanglingIndicesImportDanglingIndex) WithPretty() func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		r.Pretty = true
@@ -188,6 +196,7 @@ func (f DanglingIndicesImportDanglingIndex) WithPretty() func(*DanglingIndicesIm
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f DanglingIndicesImportDanglingIndex) WithHuman() func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		r.Human = true
@@ -195,6 +204,7 @@ func (f DanglingIndicesImportDanglingIndex) WithHuman() func(*DanglingIndicesImp
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f DanglingIndicesImportDanglingIndex) WithErrorTrace() func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		r.ErrorTrace = true
@@ -202,6 +212,7 @@ func (f DanglingIndicesImportDanglingIndex) WithErrorTrace() func(*DanglingIndic
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f DanglingIndicesImportDanglingIndex) WithFilterPath(v ...string) func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		r.FilterPath = v
@@ -209,6 +220,7 @@ func (f DanglingIndicesImportDanglingIndex) WithFilterPath(v ...string) func(*Da
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f DanglingIndicesImportDanglingIndex) WithHeader(h map[string]string) func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		if r.Header == nil {
@@ -221,6 +233,7 @@ func (f DanglingIndicesImportDanglingIndex) WithHeader(h map[string]string) func
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f DanglingIndicesImportDanglingIndex) WithOpaqueID(s string) func(*DanglingIndicesImportDanglingIndexRequest) {
 	return func(r *DanglingIndicesImportDanglingIndexRequest) {
 		if r.Header == nil {

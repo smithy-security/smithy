@@ -41,9 +41,11 @@ func newMLPreviewDatafeedFunc(t Transport) MLPreviewDatafeed {
 // MLPreviewDatafeed - Previews a datafeed.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-preview-datafeed.html.
+//
 type MLPreviewDatafeed func(o ...func(*MLPreviewDatafeedRequest)) (*Response, error)
 
 // MLPreviewDatafeedRequest configures the ML Preview Datafeed API request.
+//
 type MLPreviewDatafeedRequest struct {
 	Body io.Reader
 
@@ -63,6 +65,7 @@ type MLPreviewDatafeedRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLPreviewDatafeedRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -159,6 +162,7 @@ func (r MLPreviewDatafeedRequest) Do(ctx context.Context, transport Transport) (
 }
 
 // WithContext sets the request context.
+//
 func (f MLPreviewDatafeed) WithContext(v context.Context) func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.ctx = v
@@ -166,6 +170,7 @@ func (f MLPreviewDatafeed) WithContext(v context.Context) func(*MLPreviewDatafee
 }
 
 // WithBody - The datafeed config and job config with which to execute the preview.
+//
 func (f MLPreviewDatafeed) WithBody(v io.Reader) func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.Body = v
@@ -173,6 +178,7 @@ func (f MLPreviewDatafeed) WithBody(v io.Reader) func(*MLPreviewDatafeedRequest)
 }
 
 // WithDatafeedID - the ID of the datafeed to preview.
+//
 func (f MLPreviewDatafeed) WithDatafeedID(v string) func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.DatafeedID = v
@@ -180,6 +186,7 @@ func (f MLPreviewDatafeed) WithDatafeedID(v string) func(*MLPreviewDatafeedReque
 }
 
 // WithEnd - the end time when the datafeed preview should stop.
+//
 func (f MLPreviewDatafeed) WithEnd(v string) func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.End = v
@@ -187,6 +194,7 @@ func (f MLPreviewDatafeed) WithEnd(v string) func(*MLPreviewDatafeedRequest) {
 }
 
 // WithStart - the start time from where the datafeed preview should begin.
+//
 func (f MLPreviewDatafeed) WithStart(v string) func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.Start = v
@@ -194,6 +202,7 @@ func (f MLPreviewDatafeed) WithStart(v string) func(*MLPreviewDatafeedRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLPreviewDatafeed) WithPretty() func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.Pretty = true
@@ -201,6 +210,7 @@ func (f MLPreviewDatafeed) WithPretty() func(*MLPreviewDatafeedRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLPreviewDatafeed) WithHuman() func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.Human = true
@@ -208,6 +218,7 @@ func (f MLPreviewDatafeed) WithHuman() func(*MLPreviewDatafeedRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLPreviewDatafeed) WithErrorTrace() func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.ErrorTrace = true
@@ -215,6 +226,7 @@ func (f MLPreviewDatafeed) WithErrorTrace() func(*MLPreviewDatafeedRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLPreviewDatafeed) WithFilterPath(v ...string) func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		r.FilterPath = v
@@ -222,6 +234,7 @@ func (f MLPreviewDatafeed) WithFilterPath(v ...string) func(*MLPreviewDatafeedRe
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLPreviewDatafeed) WithHeader(h map[string]string) func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		if r.Header == nil {
@@ -234,6 +247,7 @@ func (f MLPreviewDatafeed) WithHeader(h map[string]string) func(*MLPreviewDatafe
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLPreviewDatafeed) WithOpaqueID(s string) func(*MLPreviewDatafeedRequest) {
 	return func(r *MLPreviewDatafeedRequest) {
 		if r.Header == nil {

@@ -20,6 +20,7 @@
 package esapi
 
 // API contains the Elasticsearch APIs
+//
 type API struct {
 	Cat         *Cat
 	Cluster     *Cluster
@@ -539,6 +540,7 @@ type XPack struct {
 }
 
 // New creates new API
+//
 func New(t Transport) *API {
 	return &API{
 		AutoscalingDeleteAutoscalingPolicy: newAutoscalingDeleteAutoscalingPolicyFunc(t),

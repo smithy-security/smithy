@@ -117,8 +117,9 @@ func NewDecoder(r io.Reader) *Decoder {
 //
 // The VelocyPack Null value unmarshals into an interface, map, pointer, or slice
 // by setting that Go value to nil. Because null is often used in VelocyPack to mean
-// “not present,” unmarshaling a VelocyPack Null into any other Go type has no effect
+// ``not present,'' unmarshaling a VelocyPack Null into any other Go type has no effect
 // on the value and produces no error.
+//
 func Unmarshal(data Slice, v interface{}) error {
 	if err := unmarshalSlice(data, v); err != nil {
 		return WithStack(err)

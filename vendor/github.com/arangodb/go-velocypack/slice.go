@@ -828,7 +828,7 @@ func (s Slice) searchObjectKeyLinear(attribute string, ieBase, offsetSize, n Val
 }
 
 // perform a binary search for the specified attribute inside an Object
-// template<ValueLength offsetSize>
+//template<ValueLength offsetSize>
 func (s Slice) searchObjectKeyBinary(attribute string, ieBase ValueLength, n ValueLength, offsetSize ValueLength) (Slice, error) {
 	useTranslator := attributeTranslator != nil
 	vpackAssert(n > 0)

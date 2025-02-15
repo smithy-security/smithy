@@ -4,7 +4,6 @@ package ecc
 import (
 	"bytes"
 	"crypto/elliptic"
-
 	"github.com/ProtonMail/go-crypto/bitcurves"
 	"github.com/ProtonMail/go-crypto/brainpool"
 	"github.com/ProtonMail/go-crypto/openpgp/internal/encoding"

@@ -12,10 +12,9 @@ import (
 // For example:
 //
 // it := n.Children()
-//
-//	for it.Next() {
-//			it.Node()
-//	}
+// for it.Next() {
+// 		it.Node()
+// }
 type Iterator struct {
 	started bool
 	node    *Node

@@ -42,9 +42,11 @@ func newIndicesUpdateAliasesFunc(t Transport) IndicesUpdateAliases {
 // IndicesUpdateAliases updates index aliases.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-aliases.html.
+//
 type IndicesUpdateAliases func(body io.Reader, o ...func(*IndicesUpdateAliasesRequest)) (*Response, error)
 
 // IndicesUpdateAliasesRequest configures the Indices Update Aliases API request.
+//
 type IndicesUpdateAliasesRequest struct {
 	Body io.Reader
 
@@ -62,6 +64,7 @@ type IndicesUpdateAliasesRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r IndicesUpdateAliasesRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -149,6 +152,7 @@ func (r IndicesUpdateAliasesRequest) Do(ctx context.Context, transport Transport
 }
 
 // WithContext sets the request context.
+//
 func (f IndicesUpdateAliases) WithContext(v context.Context) func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		r.ctx = v
@@ -156,6 +160,7 @@ func (f IndicesUpdateAliases) WithContext(v context.Context) func(*IndicesUpdate
 }
 
 // WithMasterTimeout - specify timeout for connection to master.
+//
 func (f IndicesUpdateAliases) WithMasterTimeout(v time.Duration) func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		r.MasterTimeout = v
@@ -163,6 +168,7 @@ func (f IndicesUpdateAliases) WithMasterTimeout(v time.Duration) func(*IndicesUp
 }
 
 // WithTimeout - request timeout.
+//
 func (f IndicesUpdateAliases) WithTimeout(v time.Duration) func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		r.Timeout = v
@@ -170,6 +176,7 @@ func (f IndicesUpdateAliases) WithTimeout(v time.Duration) func(*IndicesUpdateAl
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f IndicesUpdateAliases) WithPretty() func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		r.Pretty = true
@@ -177,6 +184,7 @@ func (f IndicesUpdateAliases) WithPretty() func(*IndicesUpdateAliasesRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f IndicesUpdateAliases) WithHuman() func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		r.Human = true
@@ -184,6 +192,7 @@ func (f IndicesUpdateAliases) WithHuman() func(*IndicesUpdateAliasesRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f IndicesUpdateAliases) WithErrorTrace() func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		r.ErrorTrace = true
@@ -191,6 +200,7 @@ func (f IndicesUpdateAliases) WithErrorTrace() func(*IndicesUpdateAliasesRequest
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f IndicesUpdateAliases) WithFilterPath(v ...string) func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		r.FilterPath = v
@@ -198,6 +208,7 @@ func (f IndicesUpdateAliases) WithFilterPath(v ...string) func(*IndicesUpdateAli
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f IndicesUpdateAliases) WithHeader(h map[string]string) func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		if r.Header == nil {
@@ -210,6 +221,7 @@ func (f IndicesUpdateAliases) WithHeader(h map[string]string) func(*IndicesUpdat
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f IndicesUpdateAliases) WithOpaqueID(s string) func(*IndicesUpdateAliasesRequest) {
 	return func(r *IndicesUpdateAliasesRequest) {
 		if r.Header == nil {

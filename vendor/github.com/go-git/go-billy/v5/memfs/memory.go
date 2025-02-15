@@ -25,7 +25,7 @@ type Memory struct {
 	tempCount int
 }
 
-// New returns a new Memory filesystem.
+//New returns a new Memory filesystem.
 func New() billy.Filesystem {
 	fs := &Memory{s: newStorage()}
 	return chroot.New(fs, string(separator))

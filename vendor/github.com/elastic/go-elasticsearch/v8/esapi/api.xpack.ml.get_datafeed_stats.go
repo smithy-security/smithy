@@ -41,9 +41,11 @@ func newMLGetDatafeedStatsFunc(t Transport) MLGetDatafeedStats {
 // MLGetDatafeedStats - Retrieves usage information for datafeeds.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-get-datafeed-stats.html.
+//
 type MLGetDatafeedStats func(o ...func(*MLGetDatafeedStatsRequest)) (*Response, error)
 
 // MLGetDatafeedStatsRequest configures the ML Get Datafeed Stats API request.
+//
 type MLGetDatafeedStatsRequest struct {
 	DatafeedID string
 
@@ -60,6 +62,7 @@ type MLGetDatafeedStatsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLGetDatafeedStatsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -148,6 +151,7 @@ func (r MLGetDatafeedStatsRequest) Do(ctx context.Context, transport Transport) 
 }
 
 // WithContext sets the request context.
+//
 func (f MLGetDatafeedStats) WithContext(v context.Context) func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		r.ctx = v
@@ -155,6 +159,7 @@ func (f MLGetDatafeedStats) WithContext(v context.Context) func(*MLGetDatafeedSt
 }
 
 // WithDatafeedID - the ID of the datafeeds stats to fetch.
+//
 func (f MLGetDatafeedStats) WithDatafeedID(v string) func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		r.DatafeedID = v
@@ -162,6 +167,7 @@ func (f MLGetDatafeedStats) WithDatafeedID(v string) func(*MLGetDatafeedStatsReq
 }
 
 // WithAllowNoMatch - whether to ignore if a wildcard expression matches no datafeeds. (this includes `_all` string or when no datafeeds have been specified).
+//
 func (f MLGetDatafeedStats) WithAllowNoMatch(v bool) func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		r.AllowNoMatch = &v
@@ -169,6 +175,7 @@ func (f MLGetDatafeedStats) WithAllowNoMatch(v bool) func(*MLGetDatafeedStatsReq
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLGetDatafeedStats) WithPretty() func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		r.Pretty = true
@@ -176,6 +183,7 @@ func (f MLGetDatafeedStats) WithPretty() func(*MLGetDatafeedStatsRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLGetDatafeedStats) WithHuman() func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		r.Human = true
@@ -183,6 +191,7 @@ func (f MLGetDatafeedStats) WithHuman() func(*MLGetDatafeedStatsRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLGetDatafeedStats) WithErrorTrace() func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		r.ErrorTrace = true
@@ -190,6 +199,7 @@ func (f MLGetDatafeedStats) WithErrorTrace() func(*MLGetDatafeedStatsRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLGetDatafeedStats) WithFilterPath(v ...string) func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		r.FilterPath = v
@@ -197,6 +207,7 @@ func (f MLGetDatafeedStats) WithFilterPath(v ...string) func(*MLGetDatafeedStats
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLGetDatafeedStats) WithHeader(h map[string]string) func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		if r.Header == nil {
@@ -209,6 +220,7 @@ func (f MLGetDatafeedStats) WithHeader(h map[string]string) func(*MLGetDatafeedS
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLGetDatafeedStats) WithOpaqueID(s string) func(*MLGetDatafeedStatsRequest) {
 	return func(r *MLGetDatafeedStatsRequest) {
 		if r.Header == nil {

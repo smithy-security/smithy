@@ -42,9 +42,11 @@ func newCatNodeattrsFunc(t Transport) CatNodeattrs {
 // CatNodeattrs returns information about custom node attributes.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/cat-nodeattrs.html.
+//
 type CatNodeattrs func(o ...func(*CatNodeattrsRequest)) (*Response, error)
 
 // CatNodeattrsRequest configures the Cat Nodeattrs API request.
+//
 type CatNodeattrsRequest struct {
 	Format        string
 	H             []string
@@ -65,6 +67,7 @@ type CatNodeattrsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r CatNodeattrsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -168,6 +171,7 @@ func (r CatNodeattrsRequest) Do(ctx context.Context, transport Transport) (*Resp
 }
 
 // WithContext sets the request context.
+//
 func (f CatNodeattrs) WithContext(v context.Context) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.ctx = v
@@ -175,6 +179,7 @@ func (f CatNodeattrs) WithContext(v context.Context) func(*CatNodeattrsRequest) 
 }
 
 // WithFormat - a short version of the accept header, e.g. json, yaml.
+//
 func (f CatNodeattrs) WithFormat(v string) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.Format = v
@@ -182,6 +187,7 @@ func (f CatNodeattrs) WithFormat(v string) func(*CatNodeattrsRequest) {
 }
 
 // WithH - comma-separated list of column names to display.
+//
 func (f CatNodeattrs) WithH(v ...string) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.H = v
@@ -189,6 +195,7 @@ func (f CatNodeattrs) WithH(v ...string) func(*CatNodeattrsRequest) {
 }
 
 // WithHelp - return help information.
+//
 func (f CatNodeattrs) WithHelp(v bool) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.Help = &v
@@ -196,6 +203,7 @@ func (f CatNodeattrs) WithHelp(v bool) func(*CatNodeattrsRequest) {
 }
 
 // WithLocal - return local information, do not retrieve the state from master node (default: false).
+//
 func (f CatNodeattrs) WithLocal(v bool) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.Local = &v
@@ -203,6 +211,7 @@ func (f CatNodeattrs) WithLocal(v bool) func(*CatNodeattrsRequest) {
 }
 
 // WithMasterTimeout - explicit operation timeout for connection to master node.
+//
 func (f CatNodeattrs) WithMasterTimeout(v time.Duration) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.MasterTimeout = v
@@ -210,6 +219,7 @@ func (f CatNodeattrs) WithMasterTimeout(v time.Duration) func(*CatNodeattrsReque
 }
 
 // WithS - comma-separated list of column names or column aliases to sort by.
+//
 func (f CatNodeattrs) WithS(v ...string) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.S = v
@@ -217,6 +227,7 @@ func (f CatNodeattrs) WithS(v ...string) func(*CatNodeattrsRequest) {
 }
 
 // WithV - verbose mode. display column headers.
+//
 func (f CatNodeattrs) WithV(v bool) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.V = &v
@@ -224,6 +235,7 @@ func (f CatNodeattrs) WithV(v bool) func(*CatNodeattrsRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f CatNodeattrs) WithPretty() func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.Pretty = true
@@ -231,6 +243,7 @@ func (f CatNodeattrs) WithPretty() func(*CatNodeattrsRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f CatNodeattrs) WithHuman() func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.Human = true
@@ -238,6 +251,7 @@ func (f CatNodeattrs) WithHuman() func(*CatNodeattrsRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f CatNodeattrs) WithErrorTrace() func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.ErrorTrace = true
@@ -245,6 +259,7 @@ func (f CatNodeattrs) WithErrorTrace() func(*CatNodeattrsRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f CatNodeattrs) WithFilterPath(v ...string) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		r.FilterPath = v
@@ -252,6 +267,7 @@ func (f CatNodeattrs) WithFilterPath(v ...string) func(*CatNodeattrsRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f CatNodeattrs) WithHeader(h map[string]string) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		if r.Header == nil {
@@ -264,6 +280,7 @@ func (f CatNodeattrs) WithHeader(h map[string]string) func(*CatNodeattrsRequest)
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f CatNodeattrs) WithOpaqueID(s string) func(*CatNodeattrsRequest) {
 	return func(r *CatNodeattrsRequest) {
 		if r.Header == nil {

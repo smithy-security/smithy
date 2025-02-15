@@ -41,9 +41,11 @@ func newMLExplainDataFrameAnalyticsFunc(t Transport) MLExplainDataFrameAnalytics
 // MLExplainDataFrameAnalytics - Explains a data frame analytics config.
 //
 // See full documentation at http://www.elastic.co/guide/en/elasticsearch/reference/current/explain-dfanalytics.html.
+//
 type MLExplainDataFrameAnalytics func(o ...func(*MLExplainDataFrameAnalyticsRequest)) (*Response, error)
 
 // MLExplainDataFrameAnalyticsRequest configures the ML Explain Data Frame Analytics API request.
+//
 type MLExplainDataFrameAnalyticsRequest struct {
 	DocumentID string
 
@@ -60,6 +62,7 @@ type MLExplainDataFrameAnalyticsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLExplainDataFrameAnalyticsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -150,6 +153,7 @@ func (r MLExplainDataFrameAnalyticsRequest) Do(ctx context.Context, transport Tr
 }
 
 // WithContext sets the request context.
+//
 func (f MLExplainDataFrameAnalytics) WithContext(v context.Context) func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		r.ctx = v
@@ -157,6 +161,7 @@ func (f MLExplainDataFrameAnalytics) WithContext(v context.Context) func(*MLExpl
 }
 
 // WithBody - The data frame analytics config to explain.
+//
 func (f MLExplainDataFrameAnalytics) WithBody(v io.Reader) func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		r.Body = v
@@ -164,6 +169,7 @@ func (f MLExplainDataFrameAnalytics) WithBody(v io.Reader) func(*MLExplainDataFr
 }
 
 // WithDocumentID - the ID of the data frame analytics to explain.
+//
 func (f MLExplainDataFrameAnalytics) WithDocumentID(v string) func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		r.DocumentID = v
@@ -171,6 +177,7 @@ func (f MLExplainDataFrameAnalytics) WithDocumentID(v string) func(*MLExplainDat
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLExplainDataFrameAnalytics) WithPretty() func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		r.Pretty = true
@@ -178,6 +185,7 @@ func (f MLExplainDataFrameAnalytics) WithPretty() func(*MLExplainDataFrameAnalyt
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLExplainDataFrameAnalytics) WithHuman() func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		r.Human = true
@@ -185,6 +193,7 @@ func (f MLExplainDataFrameAnalytics) WithHuman() func(*MLExplainDataFrameAnalyti
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLExplainDataFrameAnalytics) WithErrorTrace() func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		r.ErrorTrace = true
@@ -192,6 +201,7 @@ func (f MLExplainDataFrameAnalytics) WithErrorTrace() func(*MLExplainDataFrameAn
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLExplainDataFrameAnalytics) WithFilterPath(v ...string) func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		r.FilterPath = v
@@ -199,6 +209,7 @@ func (f MLExplainDataFrameAnalytics) WithFilterPath(v ...string) func(*MLExplain
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLExplainDataFrameAnalytics) WithHeader(h map[string]string) func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		if r.Header == nil {
@@ -211,6 +222,7 @@ func (f MLExplainDataFrameAnalytics) WithHeader(h map[string]string) func(*MLExp
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLExplainDataFrameAnalytics) WithOpaqueID(s string) func(*MLExplainDataFrameAnalyticsRequest) {
 	return func(r *MLExplainDataFrameAnalyticsRequest) {
 		if r.Header == nil {

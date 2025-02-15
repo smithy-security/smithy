@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"time"
-
 	thrift "github.com/apache/thrift/lib/go/thrift"
 )
 
@@ -18,5 +17,7 @@ var _ = context.Background
 var _ = time.Now
 var _ = bytes.Equal
 
+
 func init() {
 }
+

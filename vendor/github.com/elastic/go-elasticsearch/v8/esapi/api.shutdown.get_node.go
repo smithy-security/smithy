@@ -40,9 +40,11 @@ func newShutdownGetNodeFunc(t Transport) ShutdownGetNode {
 // ShutdownGetNode retrieve status of a node or nodes that are currently marked as shutting down. Designed for indirect use by ECE/ESS and ECK. Direct use is not supported.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current.
+//
 type ShutdownGetNode func(o ...func(*ShutdownGetNodeRequest)) (*Response, error)
 
 // ShutdownGetNodeRequest configures the Shutdown Get Node API request.
+//
 type ShutdownGetNodeRequest struct {
 	NodeID string
 
@@ -57,6 +59,7 @@ type ShutdownGetNodeRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r ShutdownGetNodeRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -139,6 +142,7 @@ func (r ShutdownGetNodeRequest) Do(ctx context.Context, transport Transport) (*R
 }
 
 // WithContext sets the request context.
+//
 func (f ShutdownGetNode) WithContext(v context.Context) func(*ShutdownGetNodeRequest) {
 	return func(r *ShutdownGetNodeRequest) {
 		r.ctx = v
@@ -146,6 +150,7 @@ func (f ShutdownGetNode) WithContext(v context.Context) func(*ShutdownGetNodeReq
 }
 
 // WithNodeID - which node for which to retrieve the shutdown status.
+//
 func (f ShutdownGetNode) WithNodeID(v string) func(*ShutdownGetNodeRequest) {
 	return func(r *ShutdownGetNodeRequest) {
 		r.NodeID = v
@@ -153,6 +158,7 @@ func (f ShutdownGetNode) WithNodeID(v string) func(*ShutdownGetNodeRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f ShutdownGetNode) WithPretty() func(*ShutdownGetNodeRequest) {
 	return func(r *ShutdownGetNodeRequest) {
 		r.Pretty = true
@@ -160,6 +166,7 @@ func (f ShutdownGetNode) WithPretty() func(*ShutdownGetNodeRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f ShutdownGetNode) WithHuman() func(*ShutdownGetNodeRequest) {
 	return func(r *ShutdownGetNodeRequest) {
 		r.Human = true
@@ -167,6 +174,7 @@ func (f ShutdownGetNode) WithHuman() func(*ShutdownGetNodeRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f ShutdownGetNode) WithErrorTrace() func(*ShutdownGetNodeRequest) {
 	return func(r *ShutdownGetNodeRequest) {
 		r.ErrorTrace = true
@@ -174,6 +182,7 @@ func (f ShutdownGetNode) WithErrorTrace() func(*ShutdownGetNodeRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f ShutdownGetNode) WithFilterPath(v ...string) func(*ShutdownGetNodeRequest) {
 	return func(r *ShutdownGetNodeRequest) {
 		r.FilterPath = v
@@ -181,6 +190,7 @@ func (f ShutdownGetNode) WithFilterPath(v ...string) func(*ShutdownGetNodeReques
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f ShutdownGetNode) WithHeader(h map[string]string) func(*ShutdownGetNodeRequest) {
 	return func(r *ShutdownGetNodeRequest) {
 		if r.Header == nil {
@@ -193,6 +203,7 @@ func (f ShutdownGetNode) WithHeader(h map[string]string) func(*ShutdownGetNodeRe
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f ShutdownGetNode) WithOpaqueID(s string) func(*ShutdownGetNodeRequest) {
 	return func(r *ShutdownGetNodeRequest) {
 		if r.Header == nil {

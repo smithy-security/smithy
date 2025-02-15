@@ -40,9 +40,11 @@ func newSlmGetLifecycleFunc(t Transport) SlmGetLifecycle {
 // SlmGetLifecycle - Retrieves one or more snapshot lifecycle policy definitions and information about the latest snapshot attempts.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/slm-api-get-policy.html.
+//
 type SlmGetLifecycle func(o ...func(*SlmGetLifecycleRequest)) (*Response, error)
 
 // SlmGetLifecycleRequest configures the Slm Get Lifecycle API request.
+//
 type SlmGetLifecycleRequest struct {
 	PolicyID []string
 
@@ -57,6 +59,7 @@ type SlmGetLifecycleRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SlmGetLifecycleRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -139,6 +142,7 @@ func (r SlmGetLifecycleRequest) Do(ctx context.Context, transport Transport) (*R
 }
 
 // WithContext sets the request context.
+//
 func (f SlmGetLifecycle) WithContext(v context.Context) func(*SlmGetLifecycleRequest) {
 	return func(r *SlmGetLifecycleRequest) {
 		r.ctx = v
@@ -146,6 +150,7 @@ func (f SlmGetLifecycle) WithContext(v context.Context) func(*SlmGetLifecycleReq
 }
 
 // WithPolicyID - comma-separated list of snapshot lifecycle policies to retrieve.
+//
 func (f SlmGetLifecycle) WithPolicyID(v ...string) func(*SlmGetLifecycleRequest) {
 	return func(r *SlmGetLifecycleRequest) {
 		r.PolicyID = v
@@ -153,6 +158,7 @@ func (f SlmGetLifecycle) WithPolicyID(v ...string) func(*SlmGetLifecycleRequest)
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SlmGetLifecycle) WithPretty() func(*SlmGetLifecycleRequest) {
 	return func(r *SlmGetLifecycleRequest) {
 		r.Pretty = true
@@ -160,6 +166,7 @@ func (f SlmGetLifecycle) WithPretty() func(*SlmGetLifecycleRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SlmGetLifecycle) WithHuman() func(*SlmGetLifecycleRequest) {
 	return func(r *SlmGetLifecycleRequest) {
 		r.Human = true
@@ -167,6 +174,7 @@ func (f SlmGetLifecycle) WithHuman() func(*SlmGetLifecycleRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SlmGetLifecycle) WithErrorTrace() func(*SlmGetLifecycleRequest) {
 	return func(r *SlmGetLifecycleRequest) {
 		r.ErrorTrace = true
@@ -174,6 +182,7 @@ func (f SlmGetLifecycle) WithErrorTrace() func(*SlmGetLifecycleRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SlmGetLifecycle) WithFilterPath(v ...string) func(*SlmGetLifecycleRequest) {
 	return func(r *SlmGetLifecycleRequest) {
 		r.FilterPath = v
@@ -181,6 +190,7 @@ func (f SlmGetLifecycle) WithFilterPath(v ...string) func(*SlmGetLifecycleReques
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SlmGetLifecycle) WithHeader(h map[string]string) func(*SlmGetLifecycleRequest) {
 	return func(r *SlmGetLifecycleRequest) {
 		if r.Header == nil {
@@ -193,6 +203,7 @@ func (f SlmGetLifecycle) WithHeader(h map[string]string) func(*SlmGetLifecycleRe
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SlmGetLifecycle) WithOpaqueID(s string) func(*SlmGetLifecycleRequest) {
 	return func(r *SlmGetLifecycleRequest) {
 		if r.Header == nil {

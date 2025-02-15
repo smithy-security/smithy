@@ -40,9 +40,11 @@ func newWatcherAckWatchFunc(t Transport) WatcherAckWatch {
 // WatcherAckWatch - Acknowledges a watch, manually throttling the execution of the watch's actions.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/watcher-api-ack-watch.html.
+//
 type WatcherAckWatch func(watch_id string, o ...func(*WatcherAckWatchRequest)) (*Response, error)
 
 // WatcherAckWatchRequest configures the Watcher Ack Watch API request.
+//
 type WatcherAckWatchRequest struct {
 	ActionID []string
 	WatchID  string
@@ -58,6 +60,7 @@ type WatcherAckWatchRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r WatcherAckWatchRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -144,6 +147,7 @@ func (r WatcherAckWatchRequest) Do(ctx context.Context, transport Transport) (*R
 }
 
 // WithContext sets the request context.
+//
 func (f WatcherAckWatch) WithContext(v context.Context) func(*WatcherAckWatchRequest) {
 	return func(r *WatcherAckWatchRequest) {
 		r.ctx = v
@@ -151,6 +155,7 @@ func (f WatcherAckWatch) WithContext(v context.Context) func(*WatcherAckWatchReq
 }
 
 // WithActionID - a list of the action ids to be acked.
+//
 func (f WatcherAckWatch) WithActionID(v ...string) func(*WatcherAckWatchRequest) {
 	return func(r *WatcherAckWatchRequest) {
 		r.ActionID = v
@@ -158,6 +163,7 @@ func (f WatcherAckWatch) WithActionID(v ...string) func(*WatcherAckWatchRequest)
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f WatcherAckWatch) WithPretty() func(*WatcherAckWatchRequest) {
 	return func(r *WatcherAckWatchRequest) {
 		r.Pretty = true
@@ -165,6 +171,7 @@ func (f WatcherAckWatch) WithPretty() func(*WatcherAckWatchRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f WatcherAckWatch) WithHuman() func(*WatcherAckWatchRequest) {
 	return func(r *WatcherAckWatchRequest) {
 		r.Human = true
@@ -172,6 +179,7 @@ func (f WatcherAckWatch) WithHuman() func(*WatcherAckWatchRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f WatcherAckWatch) WithErrorTrace() func(*WatcherAckWatchRequest) {
 	return func(r *WatcherAckWatchRequest) {
 		r.ErrorTrace = true
@@ -179,6 +187,7 @@ func (f WatcherAckWatch) WithErrorTrace() func(*WatcherAckWatchRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f WatcherAckWatch) WithFilterPath(v ...string) func(*WatcherAckWatchRequest) {
 	return func(r *WatcherAckWatchRequest) {
 		r.FilterPath = v
@@ -186,6 +195,7 @@ func (f WatcherAckWatch) WithFilterPath(v ...string) func(*WatcherAckWatchReques
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f WatcherAckWatch) WithHeader(h map[string]string) func(*WatcherAckWatchRequest) {
 	return func(r *WatcherAckWatchRequest) {
 		if r.Header == nil {
@@ -198,6 +208,7 @@ func (f WatcherAckWatch) WithHeader(h map[string]string) func(*WatcherAckWatchRe
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f WatcherAckWatch) WithOpaqueID(s string) func(*WatcherAckWatchRequest) {
 	return func(r *WatcherAckWatchRequest) {
 		if r.Header == nil {

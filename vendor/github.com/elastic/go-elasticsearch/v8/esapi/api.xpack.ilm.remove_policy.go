@@ -40,9 +40,11 @@ func newILMRemovePolicyFunc(t Transport) ILMRemovePolicy {
 // ILMRemovePolicy - Removes the assigned lifecycle policy and stops managing the specified index
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-remove-policy.html.
+//
 type ILMRemovePolicy func(index string, o ...func(*ILMRemovePolicyRequest)) (*Response, error)
 
 // ILMRemovePolicyRequest configures the ILM Remove Policy API request.
+//
 type ILMRemovePolicyRequest struct {
 	Index string
 
@@ -57,6 +59,7 @@ type ILMRemovePolicyRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r ILMRemovePolicyRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -137,6 +140,7 @@ func (r ILMRemovePolicyRequest) Do(ctx context.Context, transport Transport) (*R
 }
 
 // WithContext sets the request context.
+//
 func (f ILMRemovePolicy) WithContext(v context.Context) func(*ILMRemovePolicyRequest) {
 	return func(r *ILMRemovePolicyRequest) {
 		r.ctx = v
@@ -144,6 +148,7 @@ func (f ILMRemovePolicy) WithContext(v context.Context) func(*ILMRemovePolicyReq
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f ILMRemovePolicy) WithPretty() func(*ILMRemovePolicyRequest) {
 	return func(r *ILMRemovePolicyRequest) {
 		r.Pretty = true
@@ -151,6 +156,7 @@ func (f ILMRemovePolicy) WithPretty() func(*ILMRemovePolicyRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f ILMRemovePolicy) WithHuman() func(*ILMRemovePolicyRequest) {
 	return func(r *ILMRemovePolicyRequest) {
 		r.Human = true
@@ -158,6 +164,7 @@ func (f ILMRemovePolicy) WithHuman() func(*ILMRemovePolicyRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f ILMRemovePolicy) WithErrorTrace() func(*ILMRemovePolicyRequest) {
 	return func(r *ILMRemovePolicyRequest) {
 		r.ErrorTrace = true
@@ -165,6 +172,7 @@ func (f ILMRemovePolicy) WithErrorTrace() func(*ILMRemovePolicyRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f ILMRemovePolicy) WithFilterPath(v ...string) func(*ILMRemovePolicyRequest) {
 	return func(r *ILMRemovePolicyRequest) {
 		r.FilterPath = v
@@ -172,6 +180,7 @@ func (f ILMRemovePolicy) WithFilterPath(v ...string) func(*ILMRemovePolicyReques
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f ILMRemovePolicy) WithHeader(h map[string]string) func(*ILMRemovePolicyRequest) {
 	return func(r *ILMRemovePolicyRequest) {
 		if r.Header == nil {
@@ -184,6 +193,7 @@ func (f ILMRemovePolicy) WithHeader(h map[string]string) func(*ILMRemovePolicyRe
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f ILMRemovePolicy) WithOpaqueID(s string) func(*ILMRemovePolicyRequest) {
 	return func(r *ILMRemovePolicyRequest) {
 		if r.Header == nil {

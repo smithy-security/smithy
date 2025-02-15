@@ -41,9 +41,11 @@ func newMLGetFiltersFunc(t Transport) MLGetFilters {
 // MLGetFilters - Retrieves filters.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-get-filter.html.
+//
 type MLGetFilters func(o ...func(*MLGetFiltersRequest)) (*Response, error)
 
 // MLGetFiltersRequest configures the ML Get Filters API request.
+//
 type MLGetFiltersRequest struct {
 	FilterID string
 
@@ -61,6 +63,7 @@ type MLGetFiltersRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLGetFiltersRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -151,6 +154,7 @@ func (r MLGetFiltersRequest) Do(ctx context.Context, transport Transport) (*Resp
 }
 
 // WithContext sets the request context.
+//
 func (f MLGetFilters) WithContext(v context.Context) func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		r.ctx = v
@@ -158,6 +162,7 @@ func (f MLGetFilters) WithContext(v context.Context) func(*MLGetFiltersRequest) 
 }
 
 // WithFilterID - the ID of the filter to fetch.
+//
 func (f MLGetFilters) WithFilterID(v string) func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		r.FilterID = v
@@ -165,6 +170,7 @@ func (f MLGetFilters) WithFilterID(v string) func(*MLGetFiltersRequest) {
 }
 
 // WithFrom - skips a number of filters.
+//
 func (f MLGetFilters) WithFrom(v int) func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		r.From = &v
@@ -172,6 +178,7 @@ func (f MLGetFilters) WithFrom(v int) func(*MLGetFiltersRequest) {
 }
 
 // WithSize - specifies a max number of filters to get.
+//
 func (f MLGetFilters) WithSize(v int) func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		r.Size = &v
@@ -179,6 +186,7 @@ func (f MLGetFilters) WithSize(v int) func(*MLGetFiltersRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLGetFilters) WithPretty() func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		r.Pretty = true
@@ -186,6 +194,7 @@ func (f MLGetFilters) WithPretty() func(*MLGetFiltersRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLGetFilters) WithHuman() func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		r.Human = true
@@ -193,6 +202,7 @@ func (f MLGetFilters) WithHuman() func(*MLGetFiltersRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLGetFilters) WithErrorTrace() func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		r.ErrorTrace = true
@@ -200,6 +210,7 @@ func (f MLGetFilters) WithErrorTrace() func(*MLGetFiltersRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLGetFilters) WithFilterPath(v ...string) func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		r.FilterPath = v
@@ -207,6 +218,7 @@ func (f MLGetFilters) WithFilterPath(v ...string) func(*MLGetFiltersRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLGetFilters) WithHeader(h map[string]string) func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		if r.Header == nil {
@@ -219,6 +231,7 @@ func (f MLGetFilters) WithHeader(h map[string]string) func(*MLGetFiltersRequest)
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLGetFilters) WithOpaqueID(s string) func(*MLGetFiltersRequest) {
 	return func(r *MLGetFiltersRequest) {
 		if r.Header == nil {
