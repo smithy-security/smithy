@@ -41,9 +41,11 @@ func newSecurityGrantAPIKeyFunc(t Transport) SecurityGrantAPIKey {
 // SecurityGrantAPIKey - Creates an API key on behalf of another user.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-grant-api-key.html.
+//
 type SecurityGrantAPIKey func(body io.Reader, o ...func(*SecurityGrantAPIKeyRequest)) (*Response, error)
 
 // SecurityGrantAPIKeyRequest configures the Security GrantAPI Key API request.
+//
 type SecurityGrantAPIKeyRequest struct {
 	Body io.Reader
 
@@ -60,6 +62,7 @@ type SecurityGrantAPIKeyRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityGrantAPIKeyRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -143,6 +146,7 @@ func (r SecurityGrantAPIKeyRequest) Do(ctx context.Context, transport Transport)
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityGrantAPIKey) WithContext(v context.Context) func(*SecurityGrantAPIKeyRequest) {
 	return func(r *SecurityGrantAPIKeyRequest) {
 		r.ctx = v
@@ -150,6 +154,7 @@ func (f SecurityGrantAPIKey) WithContext(v context.Context) func(*SecurityGrantA
 }
 
 // WithRefresh - if `true` (the default) then refresh the affected shards to make this operation visible to search, if `wait_for` then wait for a refresh to make this operation visible to search, if `false` then do nothing with refreshes..
+//
 func (f SecurityGrantAPIKey) WithRefresh(v string) func(*SecurityGrantAPIKeyRequest) {
 	return func(r *SecurityGrantAPIKeyRequest) {
 		r.Refresh = v
@@ -157,6 +162,7 @@ func (f SecurityGrantAPIKey) WithRefresh(v string) func(*SecurityGrantAPIKeyRequ
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityGrantAPIKey) WithPretty() func(*SecurityGrantAPIKeyRequest) {
 	return func(r *SecurityGrantAPIKeyRequest) {
 		r.Pretty = true
@@ -164,6 +170,7 @@ func (f SecurityGrantAPIKey) WithPretty() func(*SecurityGrantAPIKeyRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityGrantAPIKey) WithHuman() func(*SecurityGrantAPIKeyRequest) {
 	return func(r *SecurityGrantAPIKeyRequest) {
 		r.Human = true
@@ -171,6 +178,7 @@ func (f SecurityGrantAPIKey) WithHuman() func(*SecurityGrantAPIKeyRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityGrantAPIKey) WithErrorTrace() func(*SecurityGrantAPIKeyRequest) {
 	return func(r *SecurityGrantAPIKeyRequest) {
 		r.ErrorTrace = true
@@ -178,6 +186,7 @@ func (f SecurityGrantAPIKey) WithErrorTrace() func(*SecurityGrantAPIKeyRequest) 
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityGrantAPIKey) WithFilterPath(v ...string) func(*SecurityGrantAPIKeyRequest) {
 	return func(r *SecurityGrantAPIKeyRequest) {
 		r.FilterPath = v
@@ -185,6 +194,7 @@ func (f SecurityGrantAPIKey) WithFilterPath(v ...string) func(*SecurityGrantAPIK
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityGrantAPIKey) WithHeader(h map[string]string) func(*SecurityGrantAPIKeyRequest) {
 	return func(r *SecurityGrantAPIKeyRequest) {
 		if r.Header == nil {
@@ -197,6 +207,7 @@ func (f SecurityGrantAPIKey) WithHeader(h map[string]string) func(*SecurityGrant
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityGrantAPIKey) WithOpaqueID(s string) func(*SecurityGrantAPIKeyRequest) {
 	return func(r *SecurityGrantAPIKeyRequest) {
 		if r.Header == nil {

@@ -3,6 +3,7 @@
 package gen // CEL
 import "github.com/antlr4-go/antlr/v4"
 
+
 // CELListener is a complete listener for a parse tree produced by CELParser.
 type CELListener interface {
 	antlr.ParseTreeListener

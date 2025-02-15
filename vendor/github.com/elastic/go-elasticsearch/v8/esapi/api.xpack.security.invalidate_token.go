@@ -41,9 +41,11 @@ func newSecurityInvalidateTokenFunc(t Transport) SecurityInvalidateToken {
 // SecurityInvalidateToken - Invalidates one or more access tokens or refresh tokens.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-invalidate-token.html.
+//
 type SecurityInvalidateToken func(body io.Reader, o ...func(*SecurityInvalidateTokenRequest)) (*Response, error)
 
 // SecurityInvalidateTokenRequest configures the Security Invalidate Token API request.
+//
 type SecurityInvalidateTokenRequest struct {
 	Body io.Reader
 
@@ -58,6 +60,7 @@ type SecurityInvalidateTokenRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityInvalidateTokenRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -137,6 +140,7 @@ func (r SecurityInvalidateTokenRequest) Do(ctx context.Context, transport Transp
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityInvalidateToken) WithContext(v context.Context) func(*SecurityInvalidateTokenRequest) {
 	return func(r *SecurityInvalidateTokenRequest) {
 		r.ctx = v
@@ -144,6 +148,7 @@ func (f SecurityInvalidateToken) WithContext(v context.Context) func(*SecurityIn
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityInvalidateToken) WithPretty() func(*SecurityInvalidateTokenRequest) {
 	return func(r *SecurityInvalidateTokenRequest) {
 		r.Pretty = true
@@ -151,6 +156,7 @@ func (f SecurityInvalidateToken) WithPretty() func(*SecurityInvalidateTokenReque
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityInvalidateToken) WithHuman() func(*SecurityInvalidateTokenRequest) {
 	return func(r *SecurityInvalidateTokenRequest) {
 		r.Human = true
@@ -158,6 +164,7 @@ func (f SecurityInvalidateToken) WithHuman() func(*SecurityInvalidateTokenReques
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityInvalidateToken) WithErrorTrace() func(*SecurityInvalidateTokenRequest) {
 	return func(r *SecurityInvalidateTokenRequest) {
 		r.ErrorTrace = true
@@ -165,6 +172,7 @@ func (f SecurityInvalidateToken) WithErrorTrace() func(*SecurityInvalidateTokenR
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityInvalidateToken) WithFilterPath(v ...string) func(*SecurityInvalidateTokenRequest) {
 	return func(r *SecurityInvalidateTokenRequest) {
 		r.FilterPath = v
@@ -172,6 +180,7 @@ func (f SecurityInvalidateToken) WithFilterPath(v ...string) func(*SecurityInval
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityInvalidateToken) WithHeader(h map[string]string) func(*SecurityInvalidateTokenRequest) {
 	return func(r *SecurityInvalidateTokenRequest) {
 		if r.Header == nil {
@@ -184,6 +193,7 @@ func (f SecurityInvalidateToken) WithHeader(h map[string]string) func(*SecurityI
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityInvalidateToken) WithOpaqueID(s string) func(*SecurityInvalidateTokenRequest) {
 	return func(r *SecurityInvalidateTokenRequest) {
 		if r.Header == nil {

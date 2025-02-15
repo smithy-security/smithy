@@ -192,9 +192,7 @@ func (d *Data) SetDictionary(dict arrow.ArrayData) {
 
 // NewSliceData returns a new slice that shares backing data with the input.
 // The returned Data slice starts at i and extends j-i elements, such as:
-//
-//	slice := data[i:j]
-//
+//    slice := data[i:j]
 // The returned value must be Release'd after use.
 //
 // NewSliceData panics if the slice is outside the valid range of the input Data.

@@ -132,9 +132,9 @@ func NewTable(schema *arrow.Schema, cols []arrow.Column, rows int64) *simpleTabl
 // of slices of arrow.Array.
 //
 // Like other NewTable functions this can panic if:
-//   - len(schema.Fields) != len(data)
-//   - the total length of each column's array slice (ie: number of rows
-//     in the column) aren't the same for all columns.
+//  - len(schema.Fields) != len(data)
+//  - the total length of each column's array slice (ie: number of rows
+//    in the column) aren't the same for all columns.
 func NewTableFromSlice(schema *arrow.Schema, data [][]arrow.Array) *simpleTable {
 	if len(data) != len(schema.Fields()) {
 		panic("array/table: mismatch in number of columns and data for creating a table")

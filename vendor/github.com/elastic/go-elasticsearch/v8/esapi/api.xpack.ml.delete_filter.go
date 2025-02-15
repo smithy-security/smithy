@@ -40,9 +40,11 @@ func newMLDeleteFilterFunc(t Transport) MLDeleteFilter {
 // MLDeleteFilter - Deletes a filter.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-delete-filter.html.
+//
 type MLDeleteFilter func(filter_id string, o ...func(*MLDeleteFilterRequest)) (*Response, error)
 
 // MLDeleteFilterRequest configures the ML Delete Filter API request.
+//
 type MLDeleteFilterRequest struct {
 	FilterID string
 
@@ -57,6 +59,7 @@ type MLDeleteFilterRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLDeleteFilterRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -137,6 +140,7 @@ func (r MLDeleteFilterRequest) Do(ctx context.Context, transport Transport) (*Re
 }
 
 // WithContext sets the request context.
+//
 func (f MLDeleteFilter) WithContext(v context.Context) func(*MLDeleteFilterRequest) {
 	return func(r *MLDeleteFilterRequest) {
 		r.ctx = v
@@ -144,6 +148,7 @@ func (f MLDeleteFilter) WithContext(v context.Context) func(*MLDeleteFilterReque
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLDeleteFilter) WithPretty() func(*MLDeleteFilterRequest) {
 	return func(r *MLDeleteFilterRequest) {
 		r.Pretty = true
@@ -151,6 +156,7 @@ func (f MLDeleteFilter) WithPretty() func(*MLDeleteFilterRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLDeleteFilter) WithHuman() func(*MLDeleteFilterRequest) {
 	return func(r *MLDeleteFilterRequest) {
 		r.Human = true
@@ -158,6 +164,7 @@ func (f MLDeleteFilter) WithHuman() func(*MLDeleteFilterRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLDeleteFilter) WithErrorTrace() func(*MLDeleteFilterRequest) {
 	return func(r *MLDeleteFilterRequest) {
 		r.ErrorTrace = true
@@ -165,6 +172,7 @@ func (f MLDeleteFilter) WithErrorTrace() func(*MLDeleteFilterRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLDeleteFilter) WithFilterPath(v ...string) func(*MLDeleteFilterRequest) {
 	return func(r *MLDeleteFilterRequest) {
 		r.FilterPath = v
@@ -172,6 +180,7 @@ func (f MLDeleteFilter) WithFilterPath(v ...string) func(*MLDeleteFilterRequest)
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLDeleteFilter) WithHeader(h map[string]string) func(*MLDeleteFilterRequest) {
 	return func(r *MLDeleteFilterRequest) {
 		if r.Header == nil {
@@ -184,6 +193,7 @@ func (f MLDeleteFilter) WithHeader(h map[string]string) func(*MLDeleteFilterRequ
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLDeleteFilter) WithOpaqueID(s string) func(*MLDeleteFilterRequest) {
 	return func(r *MLDeleteFilterRequest) {
 		if r.Header == nil {

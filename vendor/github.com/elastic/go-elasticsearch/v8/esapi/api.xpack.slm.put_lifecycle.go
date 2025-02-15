@@ -41,9 +41,11 @@ func newSlmPutLifecycleFunc(t Transport) SlmPutLifecycle {
 // SlmPutLifecycle - Creates or updates a snapshot lifecycle policy.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/slm-api-put-policy.html.
+//
 type SlmPutLifecycle func(policy_id string, o ...func(*SlmPutLifecycleRequest)) (*Response, error)
 
 // SlmPutLifecycleRequest configures the Slm Put Lifecycle API request.
+//
 type SlmPutLifecycleRequest struct {
 	Body io.Reader
 
@@ -60,6 +62,7 @@ type SlmPutLifecycleRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SlmPutLifecycleRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -144,6 +147,7 @@ func (r SlmPutLifecycleRequest) Do(ctx context.Context, transport Transport) (*R
 }
 
 // WithContext sets the request context.
+//
 func (f SlmPutLifecycle) WithContext(v context.Context) func(*SlmPutLifecycleRequest) {
 	return func(r *SlmPutLifecycleRequest) {
 		r.ctx = v
@@ -151,6 +155,7 @@ func (f SlmPutLifecycle) WithContext(v context.Context) func(*SlmPutLifecycleReq
 }
 
 // WithBody - The snapshot lifecycle policy definition to register.
+//
 func (f SlmPutLifecycle) WithBody(v io.Reader) func(*SlmPutLifecycleRequest) {
 	return func(r *SlmPutLifecycleRequest) {
 		r.Body = v
@@ -158,6 +163,7 @@ func (f SlmPutLifecycle) WithBody(v io.Reader) func(*SlmPutLifecycleRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SlmPutLifecycle) WithPretty() func(*SlmPutLifecycleRequest) {
 	return func(r *SlmPutLifecycleRequest) {
 		r.Pretty = true
@@ -165,6 +171,7 @@ func (f SlmPutLifecycle) WithPretty() func(*SlmPutLifecycleRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SlmPutLifecycle) WithHuman() func(*SlmPutLifecycleRequest) {
 	return func(r *SlmPutLifecycleRequest) {
 		r.Human = true
@@ -172,6 +179,7 @@ func (f SlmPutLifecycle) WithHuman() func(*SlmPutLifecycleRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SlmPutLifecycle) WithErrorTrace() func(*SlmPutLifecycleRequest) {
 	return func(r *SlmPutLifecycleRequest) {
 		r.ErrorTrace = true
@@ -179,6 +187,7 @@ func (f SlmPutLifecycle) WithErrorTrace() func(*SlmPutLifecycleRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SlmPutLifecycle) WithFilterPath(v ...string) func(*SlmPutLifecycleRequest) {
 	return func(r *SlmPutLifecycleRequest) {
 		r.FilterPath = v
@@ -186,6 +195,7 @@ func (f SlmPutLifecycle) WithFilterPath(v ...string) func(*SlmPutLifecycleReques
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SlmPutLifecycle) WithHeader(h map[string]string) func(*SlmPutLifecycleRequest) {
 	return func(r *SlmPutLifecycleRequest) {
 		if r.Header == nil {
@@ -198,6 +208,7 @@ func (f SlmPutLifecycle) WithHeader(h map[string]string) func(*SlmPutLifecycleRe
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SlmPutLifecycle) WithOpaqueID(s string) func(*SlmPutLifecycleRequest) {
 	return func(r *SlmPutLifecycleRequest) {
 		if r.Header == nil {

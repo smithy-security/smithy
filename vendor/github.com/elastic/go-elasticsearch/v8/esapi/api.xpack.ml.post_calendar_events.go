@@ -41,9 +41,11 @@ func newMLPostCalendarEventsFunc(t Transport) MLPostCalendarEvents {
 // MLPostCalendarEvents - Posts scheduled events in a calendar.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-post-calendar-event.html.
+//
 type MLPostCalendarEvents func(calendar_id string, body io.Reader, o ...func(*MLPostCalendarEventsRequest)) (*Response, error)
 
 // MLPostCalendarEventsRequest configures the ML Post Calendar Events API request.
+//
 type MLPostCalendarEventsRequest struct {
 	Body io.Reader
 
@@ -60,6 +62,7 @@ type MLPostCalendarEventsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLPostCalendarEventsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -146,6 +149,7 @@ func (r MLPostCalendarEventsRequest) Do(ctx context.Context, transport Transport
 }
 
 // WithContext sets the request context.
+//
 func (f MLPostCalendarEvents) WithContext(v context.Context) func(*MLPostCalendarEventsRequest) {
 	return func(r *MLPostCalendarEventsRequest) {
 		r.ctx = v
@@ -153,6 +157,7 @@ func (f MLPostCalendarEvents) WithContext(v context.Context) func(*MLPostCalenda
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLPostCalendarEvents) WithPretty() func(*MLPostCalendarEventsRequest) {
 	return func(r *MLPostCalendarEventsRequest) {
 		r.Pretty = true
@@ -160,6 +165,7 @@ func (f MLPostCalendarEvents) WithPretty() func(*MLPostCalendarEventsRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLPostCalendarEvents) WithHuman() func(*MLPostCalendarEventsRequest) {
 	return func(r *MLPostCalendarEventsRequest) {
 		r.Human = true
@@ -167,6 +173,7 @@ func (f MLPostCalendarEvents) WithHuman() func(*MLPostCalendarEventsRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLPostCalendarEvents) WithErrorTrace() func(*MLPostCalendarEventsRequest) {
 	return func(r *MLPostCalendarEventsRequest) {
 		r.ErrorTrace = true
@@ -174,6 +181,7 @@ func (f MLPostCalendarEvents) WithErrorTrace() func(*MLPostCalendarEventsRequest
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLPostCalendarEvents) WithFilterPath(v ...string) func(*MLPostCalendarEventsRequest) {
 	return func(r *MLPostCalendarEventsRequest) {
 		r.FilterPath = v
@@ -181,6 +189,7 @@ func (f MLPostCalendarEvents) WithFilterPath(v ...string) func(*MLPostCalendarEv
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLPostCalendarEvents) WithHeader(h map[string]string) func(*MLPostCalendarEventsRequest) {
 	return func(r *MLPostCalendarEventsRequest) {
 		if r.Header == nil {
@@ -193,6 +202,7 @@ func (f MLPostCalendarEvents) WithHeader(h map[string]string) func(*MLPostCalend
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLPostCalendarEvents) WithOpaqueID(s string) func(*MLPostCalendarEventsRequest) {
 	return func(r *MLPostCalendarEventsRequest) {
 		if r.Header == nil {

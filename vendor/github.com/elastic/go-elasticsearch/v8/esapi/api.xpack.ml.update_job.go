@@ -41,9 +41,11 @@ func newMLUpdateJobFunc(t Transport) MLUpdateJob {
 // MLUpdateJob - Updates certain properties of an anomaly detection job.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-update-job.html.
+//
 type MLUpdateJob func(job_id string, body io.Reader, o ...func(*MLUpdateJobRequest)) (*Response, error)
 
 // MLUpdateJobRequest configures the ML Update Job API request.
+//
 type MLUpdateJobRequest struct {
 	Body io.Reader
 
@@ -60,6 +62,7 @@ type MLUpdateJobRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLUpdateJobRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -146,6 +149,7 @@ func (r MLUpdateJobRequest) Do(ctx context.Context, transport Transport) (*Respo
 }
 
 // WithContext sets the request context.
+//
 func (f MLUpdateJob) WithContext(v context.Context) func(*MLUpdateJobRequest) {
 	return func(r *MLUpdateJobRequest) {
 		r.ctx = v
@@ -153,6 +157,7 @@ func (f MLUpdateJob) WithContext(v context.Context) func(*MLUpdateJobRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLUpdateJob) WithPretty() func(*MLUpdateJobRequest) {
 	return func(r *MLUpdateJobRequest) {
 		r.Pretty = true
@@ -160,6 +165,7 @@ func (f MLUpdateJob) WithPretty() func(*MLUpdateJobRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLUpdateJob) WithHuman() func(*MLUpdateJobRequest) {
 	return func(r *MLUpdateJobRequest) {
 		r.Human = true
@@ -167,6 +173,7 @@ func (f MLUpdateJob) WithHuman() func(*MLUpdateJobRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLUpdateJob) WithErrorTrace() func(*MLUpdateJobRequest) {
 	return func(r *MLUpdateJobRequest) {
 		r.ErrorTrace = true
@@ -174,6 +181,7 @@ func (f MLUpdateJob) WithErrorTrace() func(*MLUpdateJobRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLUpdateJob) WithFilterPath(v ...string) func(*MLUpdateJobRequest) {
 	return func(r *MLUpdateJobRequest) {
 		r.FilterPath = v
@@ -181,6 +189,7 @@ func (f MLUpdateJob) WithFilterPath(v ...string) func(*MLUpdateJobRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLUpdateJob) WithHeader(h map[string]string) func(*MLUpdateJobRequest) {
 	return func(r *MLUpdateJobRequest) {
 		if r.Header == nil {
@@ -193,6 +202,7 @@ func (f MLUpdateJob) WithHeader(h map[string]string) func(*MLUpdateJobRequest) {
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLUpdateJob) WithOpaqueID(s string) func(*MLUpdateJobRequest) {
 	return func(r *MLUpdateJobRequest) {
 		if r.Header == nil {

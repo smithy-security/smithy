@@ -259,7 +259,7 @@ func (e *Entity) EncryptPrivateKeys(passphrase []byte, config *packet.Config) er
 	var keysToEncrypt []*packet.PrivateKey
 	// Add entity private key to encrypt.
 	if e.PrivateKey != nil && !e.PrivateKey.Dummy() && !e.PrivateKey.Encrypted {
-		keysToEncrypt = append(keysToEncrypt, e.PrivateKey)
+		keysToEncrypt = append(keysToEncrypt,  e.PrivateKey)
 	}
 
 	// Add subkeys to encrypt.
@@ -284,7 +284,7 @@ func (e *Entity) DecryptPrivateKeys(passphrase []byte) error {
 	// Add subkeys to decrypt.
 	for _, sub := range e.Subkeys {
 		if sub.PrivateKey != nil && !sub.PrivateKey.Dummy() && sub.PrivateKey.Encrypted {
-			keysToDecrypt = append(keysToDecrypt, sub.PrivateKey)
+			keysToDecrypt = append(keysToDecrypt,  sub.PrivateKey)
 		}
 	}
 	return packet.DecryptPrivateKeys(keysToDecrypt, passphrase)

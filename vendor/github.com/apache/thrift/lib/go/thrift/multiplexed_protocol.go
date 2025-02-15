@@ -220,7 +220,7 @@ func (t *TMultiplexedProcessor) Process(ctx context.Context, in, out TProtocol) 
 	return actualProcessor.Process(ctx, smb, out)
 }
 
-// Protocol that use stored message for ReadMessageBegin
+//Protocol that use stored message for ReadMessageBegin
 type storedMessageProtocol struct {
 	TProtocol
 	name   string

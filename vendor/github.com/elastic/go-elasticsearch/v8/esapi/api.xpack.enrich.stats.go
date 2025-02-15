@@ -40,9 +40,11 @@ func newEnrichStatsFunc(t Transport) EnrichStats {
 // EnrichStats - Gets enrich coordinator statistics and information about enrich policies that are currently executing.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/enrich-stats-api.html.
+//
 type EnrichStats func(o ...func(*EnrichStatsRequest)) (*Response, error)
 
 // EnrichStatsRequest configures the Enrich Stats API request.
+//
 type EnrichStatsRequest struct {
 	Pretty     bool
 	Human      bool
@@ -55,6 +57,7 @@ type EnrichStatsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r EnrichStatsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -130,6 +133,7 @@ func (r EnrichStatsRequest) Do(ctx context.Context, transport Transport) (*Respo
 }
 
 // WithContext sets the request context.
+//
 func (f EnrichStats) WithContext(v context.Context) func(*EnrichStatsRequest) {
 	return func(r *EnrichStatsRequest) {
 		r.ctx = v
@@ -137,6 +141,7 @@ func (f EnrichStats) WithContext(v context.Context) func(*EnrichStatsRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f EnrichStats) WithPretty() func(*EnrichStatsRequest) {
 	return func(r *EnrichStatsRequest) {
 		r.Pretty = true
@@ -144,6 +149,7 @@ func (f EnrichStats) WithPretty() func(*EnrichStatsRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f EnrichStats) WithHuman() func(*EnrichStatsRequest) {
 	return func(r *EnrichStatsRequest) {
 		r.Human = true
@@ -151,6 +157,7 @@ func (f EnrichStats) WithHuman() func(*EnrichStatsRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f EnrichStats) WithErrorTrace() func(*EnrichStatsRequest) {
 	return func(r *EnrichStatsRequest) {
 		r.ErrorTrace = true
@@ -158,6 +165,7 @@ func (f EnrichStats) WithErrorTrace() func(*EnrichStatsRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f EnrichStats) WithFilterPath(v ...string) func(*EnrichStatsRequest) {
 	return func(r *EnrichStatsRequest) {
 		r.FilterPath = v
@@ -165,6 +173,7 @@ func (f EnrichStats) WithFilterPath(v ...string) func(*EnrichStatsRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f EnrichStats) WithHeader(h map[string]string) func(*EnrichStatsRequest) {
 	return func(r *EnrichStatsRequest) {
 		if r.Header == nil {
@@ -177,6 +186,7 @@ func (f EnrichStats) WithHeader(h map[string]string) func(*EnrichStatsRequest) {
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f EnrichStats) WithOpaqueID(s string) func(*EnrichStatsRequest) {
 	return func(r *EnrichStatsRequest) {
 		if r.Header == nil {

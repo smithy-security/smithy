@@ -41,9 +41,11 @@ func newCatSegmentsFunc(t Transport) CatSegments {
 // CatSegments provides low-level information about the segments in the shards of an index.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/cat-segments.html.
+//
 type CatSegments func(o ...func(*CatSegmentsRequest)) (*Response, error)
 
 // CatSegmentsRequest configures the Cat Segments API request.
+//
 type CatSegmentsRequest struct {
 	Index []string
 
@@ -65,6 +67,7 @@ type CatSegmentsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r CatSegmentsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -171,6 +174,7 @@ func (r CatSegmentsRequest) Do(ctx context.Context, transport Transport) (*Respo
 }
 
 // WithContext sets the request context.
+//
 func (f CatSegments) WithContext(v context.Context) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.ctx = v
@@ -178,6 +182,7 @@ func (f CatSegments) WithContext(v context.Context) func(*CatSegmentsRequest) {
 }
 
 // WithIndex - a list of index names to limit the returned information.
+//
 func (f CatSegments) WithIndex(v ...string) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.Index = v
@@ -185,6 +190,7 @@ func (f CatSegments) WithIndex(v ...string) func(*CatSegmentsRequest) {
 }
 
 // WithBytes - the unit in which to display byte values.
+//
 func (f CatSegments) WithBytes(v string) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.Bytes = v
@@ -192,6 +198,7 @@ func (f CatSegments) WithBytes(v string) func(*CatSegmentsRequest) {
 }
 
 // WithFormat - a short version of the accept header, e.g. json, yaml.
+//
 func (f CatSegments) WithFormat(v string) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.Format = v
@@ -199,6 +206,7 @@ func (f CatSegments) WithFormat(v string) func(*CatSegmentsRequest) {
 }
 
 // WithH - comma-separated list of column names to display.
+//
 func (f CatSegments) WithH(v ...string) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.H = v
@@ -206,6 +214,7 @@ func (f CatSegments) WithH(v ...string) func(*CatSegmentsRequest) {
 }
 
 // WithHelp - return help information.
+//
 func (f CatSegments) WithHelp(v bool) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.Help = &v
@@ -213,6 +222,7 @@ func (f CatSegments) WithHelp(v bool) func(*CatSegmentsRequest) {
 }
 
 // WithS - comma-separated list of column names or column aliases to sort by.
+//
 func (f CatSegments) WithS(v ...string) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.S = v
@@ -220,6 +230,7 @@ func (f CatSegments) WithS(v ...string) func(*CatSegmentsRequest) {
 }
 
 // WithV - verbose mode. display column headers.
+//
 func (f CatSegments) WithV(v bool) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.V = &v
@@ -227,6 +238,7 @@ func (f CatSegments) WithV(v bool) func(*CatSegmentsRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f CatSegments) WithPretty() func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.Pretty = true
@@ -234,6 +246,7 @@ func (f CatSegments) WithPretty() func(*CatSegmentsRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f CatSegments) WithHuman() func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.Human = true
@@ -241,6 +254,7 @@ func (f CatSegments) WithHuman() func(*CatSegmentsRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f CatSegments) WithErrorTrace() func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.ErrorTrace = true
@@ -248,6 +262,7 @@ func (f CatSegments) WithErrorTrace() func(*CatSegmentsRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f CatSegments) WithFilterPath(v ...string) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.FilterPath = v
@@ -255,6 +270,7 @@ func (f CatSegments) WithFilterPath(v ...string) func(*CatSegmentsRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f CatSegments) WithHeader(h map[string]string) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		if r.Header == nil {
@@ -267,6 +283,7 @@ func (f CatSegments) WithHeader(h map[string]string) func(*CatSegmentsRequest) {
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f CatSegments) WithOpaqueID(s string) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		if r.Header == nil {

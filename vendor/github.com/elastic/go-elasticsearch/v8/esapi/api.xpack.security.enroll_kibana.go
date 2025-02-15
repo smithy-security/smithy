@@ -40,9 +40,11 @@ func newSecurityEnrollKibanaFunc(t Transport) SecurityEnrollKibana {
 // SecurityEnrollKibana - Allows a kibana instance to configure itself to communicate with a secured elasticsearch cluster.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/security-api-kibana-enrollment.html.
+//
 type SecurityEnrollKibana func(o ...func(*SecurityEnrollKibanaRequest)) (*Response, error)
 
 // SecurityEnrollKibanaRequest configures the Security Enroll Kibana API request.
+//
 type SecurityEnrollKibanaRequest struct {
 	Pretty     bool
 	Human      bool
@@ -55,6 +57,7 @@ type SecurityEnrollKibanaRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityEnrollKibanaRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -130,6 +133,7 @@ func (r SecurityEnrollKibanaRequest) Do(ctx context.Context, transport Transport
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityEnrollKibana) WithContext(v context.Context) func(*SecurityEnrollKibanaRequest) {
 	return func(r *SecurityEnrollKibanaRequest) {
 		r.ctx = v
@@ -137,6 +141,7 @@ func (f SecurityEnrollKibana) WithContext(v context.Context) func(*SecurityEnrol
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityEnrollKibana) WithPretty() func(*SecurityEnrollKibanaRequest) {
 	return func(r *SecurityEnrollKibanaRequest) {
 		r.Pretty = true
@@ -144,6 +149,7 @@ func (f SecurityEnrollKibana) WithPretty() func(*SecurityEnrollKibanaRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityEnrollKibana) WithHuman() func(*SecurityEnrollKibanaRequest) {
 	return func(r *SecurityEnrollKibanaRequest) {
 		r.Human = true
@@ -151,6 +157,7 @@ func (f SecurityEnrollKibana) WithHuman() func(*SecurityEnrollKibanaRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityEnrollKibana) WithErrorTrace() func(*SecurityEnrollKibanaRequest) {
 	return func(r *SecurityEnrollKibanaRequest) {
 		r.ErrorTrace = true
@@ -158,6 +165,7 @@ func (f SecurityEnrollKibana) WithErrorTrace() func(*SecurityEnrollKibanaRequest
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityEnrollKibana) WithFilterPath(v ...string) func(*SecurityEnrollKibanaRequest) {
 	return func(r *SecurityEnrollKibanaRequest) {
 		r.FilterPath = v
@@ -165,6 +173,7 @@ func (f SecurityEnrollKibana) WithFilterPath(v ...string) func(*SecurityEnrollKi
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityEnrollKibana) WithHeader(h map[string]string) func(*SecurityEnrollKibanaRequest) {
 	return func(r *SecurityEnrollKibanaRequest) {
 		if r.Header == nil {
@@ -177,6 +186,7 @@ func (f SecurityEnrollKibana) WithHeader(h map[string]string) func(*SecurityEnro
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityEnrollKibana) WithOpaqueID(s string) func(*SecurityEnrollKibanaRequest) {
 	return func(r *SecurityEnrollKibanaRequest) {
 		if r.Header == nil {
