@@ -619,8 +619,7 @@ const batchErrorsTargetLength = 2000
 // to the end.
 //
 // Example format:
-//
-//	"[message 1, message 2, +8 more errors...]"
+//     "[message 1, message 2, +8 more errors...]"
 func joinBatchErrors(errs []error) string {
 	var buf bytes.Buffer
 	fmt.Fprint(&buf, "[")

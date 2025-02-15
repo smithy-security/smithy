@@ -42,9 +42,11 @@ func newSecurityGetUserProfileFunc(t Transport) SecurityGetUserProfile {
 // This API is experimental.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-user-profile.html.
+//
 type SecurityGetUserProfile func(uid string, o ...func(*SecurityGetUserProfileRequest)) (*Response, error)
 
 // SecurityGetUserProfileRequest configures the Security Get User Profile API request.
+//
 type SecurityGetUserProfileRequest struct {
 	UID string
 
@@ -61,6 +63,7 @@ type SecurityGetUserProfileRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityGetUserProfileRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -145,6 +148,7 @@ func (r SecurityGetUserProfileRequest) Do(ctx context.Context, transport Transpo
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityGetUserProfile) WithContext(v context.Context) func(*SecurityGetUserProfileRequest) {
 	return func(r *SecurityGetUserProfileRequest) {
 		r.ctx = v
@@ -152,6 +156,7 @@ func (f SecurityGetUserProfile) WithContext(v context.Context) func(*SecurityGet
 }
 
 // WithData - a list of keys for which the corresponding application data are retrieved..
+//
 func (f SecurityGetUserProfile) WithData(v ...string) func(*SecurityGetUserProfileRequest) {
 	return func(r *SecurityGetUserProfileRequest) {
 		r.Data = v
@@ -159,6 +164,7 @@ func (f SecurityGetUserProfile) WithData(v ...string) func(*SecurityGetUserProfi
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityGetUserProfile) WithPretty() func(*SecurityGetUserProfileRequest) {
 	return func(r *SecurityGetUserProfileRequest) {
 		r.Pretty = true
@@ -166,6 +172,7 @@ func (f SecurityGetUserProfile) WithPretty() func(*SecurityGetUserProfileRequest
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityGetUserProfile) WithHuman() func(*SecurityGetUserProfileRequest) {
 	return func(r *SecurityGetUserProfileRequest) {
 		r.Human = true
@@ -173,6 +180,7 @@ func (f SecurityGetUserProfile) WithHuman() func(*SecurityGetUserProfileRequest)
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityGetUserProfile) WithErrorTrace() func(*SecurityGetUserProfileRequest) {
 	return func(r *SecurityGetUserProfileRequest) {
 		r.ErrorTrace = true
@@ -180,6 +188,7 @@ func (f SecurityGetUserProfile) WithErrorTrace() func(*SecurityGetUserProfileReq
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityGetUserProfile) WithFilterPath(v ...string) func(*SecurityGetUserProfileRequest) {
 	return func(r *SecurityGetUserProfileRequest) {
 		r.FilterPath = v
@@ -187,6 +196,7 @@ func (f SecurityGetUserProfile) WithFilterPath(v ...string) func(*SecurityGetUse
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityGetUserProfile) WithHeader(h map[string]string) func(*SecurityGetUserProfileRequest) {
 	return func(r *SecurityGetUserProfileRequest) {
 		if r.Header == nil {
@@ -199,6 +209,7 @@ func (f SecurityGetUserProfile) WithHeader(h map[string]string) func(*SecurityGe
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityGetUserProfile) WithOpaqueID(s string) func(*SecurityGetUserProfileRequest) {
 	return func(r *SecurityGetUserProfileRequest) {
 		if r.Header == nil {

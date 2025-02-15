@@ -43,9 +43,11 @@ func newIndicesPutTemplateFunc(t Transport) IndicesPutTemplate {
 // IndicesPutTemplate creates or updates an index template.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html.
+//
 type IndicesPutTemplate func(name string, body io.Reader, o ...func(*IndicesPutTemplateRequest)) (*Response, error)
 
 // IndicesPutTemplateRequest configures the Indices Put Template API request.
+//
 type IndicesPutTemplateRequest struct {
 	Body io.Reader
 
@@ -66,6 +68,7 @@ type IndicesPutTemplateRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r IndicesPutTemplateRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -160,6 +163,7 @@ func (r IndicesPutTemplateRequest) Do(ctx context.Context, transport Transport) 
 }
 
 // WithContext sets the request context.
+//
 func (f IndicesPutTemplate) WithContext(v context.Context) func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		r.ctx = v
@@ -167,6 +171,7 @@ func (f IndicesPutTemplate) WithContext(v context.Context) func(*IndicesPutTempl
 }
 
 // WithCreate - whether the index template should only be added if new or can also replace an existing one.
+//
 func (f IndicesPutTemplate) WithCreate(v bool) func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		r.Create = &v
@@ -174,6 +179,7 @@ func (f IndicesPutTemplate) WithCreate(v bool) func(*IndicesPutTemplateRequest) 
 }
 
 // WithMasterTimeout - specify timeout for connection to master.
+//
 func (f IndicesPutTemplate) WithMasterTimeout(v time.Duration) func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		r.MasterTimeout = v
@@ -181,6 +187,7 @@ func (f IndicesPutTemplate) WithMasterTimeout(v time.Duration) func(*IndicesPutT
 }
 
 // WithOrder - the order for this template when merging multiple matching ones (higher numbers are merged later, overriding the lower numbers).
+//
 func (f IndicesPutTemplate) WithOrder(v int) func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		r.Order = &v
@@ -188,6 +195,7 @@ func (f IndicesPutTemplate) WithOrder(v int) func(*IndicesPutTemplateRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f IndicesPutTemplate) WithPretty() func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		r.Pretty = true
@@ -195,6 +203,7 @@ func (f IndicesPutTemplate) WithPretty() func(*IndicesPutTemplateRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f IndicesPutTemplate) WithHuman() func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		r.Human = true
@@ -202,6 +211,7 @@ func (f IndicesPutTemplate) WithHuman() func(*IndicesPutTemplateRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f IndicesPutTemplate) WithErrorTrace() func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		r.ErrorTrace = true
@@ -209,6 +219,7 @@ func (f IndicesPutTemplate) WithErrorTrace() func(*IndicesPutTemplateRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f IndicesPutTemplate) WithFilterPath(v ...string) func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		r.FilterPath = v
@@ -216,6 +227,7 @@ func (f IndicesPutTemplate) WithFilterPath(v ...string) func(*IndicesPutTemplate
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f IndicesPutTemplate) WithHeader(h map[string]string) func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		if r.Header == nil {
@@ -228,6 +240,7 @@ func (f IndicesPutTemplate) WithHeader(h map[string]string) func(*IndicesPutTemp
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f IndicesPutTemplate) WithOpaqueID(s string) func(*IndicesPutTemplateRequest) {
 	return func(r *IndicesPutTemplateRequest) {
 		if r.Header == nil {

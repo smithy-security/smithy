@@ -187,10 +187,10 @@ func TimestampFromStringInLocation(val string, unit TimeUnit, loc *time.Location
 // or a space, and [.zzzzzzzzz] can be either left out or up to 9 digits of
 // fractions of a second.
 //
-//		 YYYY-MM-DD
-//		 YYYY-MM-DD[T]HH
-//	  YYYY-MM-DD[T]HH:MM
-//	  YYYY-MM-DD[T]HH:MM:SS[.zzzzzzzz]
+//	 YYYY-MM-DD
+//	 YYYY-MM-DD[T]HH
+//   YYYY-MM-DD[T]HH:MM
+//   YYYY-MM-DD[T]HH:MM:SS[.zzzzzzzz]
 //
 // You can also optionally have an ending Z to indicate UTC or indicate a specific
 // timezone using ±HH, ±HHMM or ±HH:MM at the end of the string.

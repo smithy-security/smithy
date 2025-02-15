@@ -30,6 +30,7 @@ import (
 )
 
 // Discoverable defines the interface for transports supporting node discovery.
+//
 type Discoverable interface {
 	DiscoverNodes() error
 }
@@ -37,6 +38,7 @@ type Discoverable interface {
 // nodeInfo represents the information about node in a cluster.
 //
 // See: https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html
+//
 type nodeInfo struct {
 	ID         string
 	Name       string
@@ -49,6 +51,7 @@ type nodeInfo struct {
 }
 
 // DiscoverNodes reloads the client connections by fetching information from the cluster.
+//
 func (c *Client) DiscoverNodes() error {
 	var conns []*Connection
 

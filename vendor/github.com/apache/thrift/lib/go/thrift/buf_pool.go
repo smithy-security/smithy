@@ -43,9 +43,9 @@ func getBufFromPool() *bytes.Buffer {
 //
 // You usually want to use it this way:
 //
-//	buf := getBufFromPool()
-//	defer returnBufToPool(&buf)
-//	// use buf
+//     buf := getBufFromPool()
+//     defer returnBufToPool(&buf)
+//     // use buf
 func returnBufToPool(buf **bytes.Buffer) {
 	bufPool.Put(*buf)
 	*buf = nil

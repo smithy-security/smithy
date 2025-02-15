@@ -41,9 +41,11 @@ func newIndicesDeleteTemplateFunc(t Transport) IndicesDeleteTemplate {
 // IndicesDeleteTemplate deletes an index template.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-templates.html.
+//
 type IndicesDeleteTemplate func(name string, o ...func(*IndicesDeleteTemplateRequest)) (*Response, error)
 
 // IndicesDeleteTemplateRequest configures the Indices Delete Template API request.
+//
 type IndicesDeleteTemplateRequest struct {
 	Name string
 
@@ -61,6 +63,7 @@ type IndicesDeleteTemplateRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r IndicesDeleteTemplateRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -147,6 +150,7 @@ func (r IndicesDeleteTemplateRequest) Do(ctx context.Context, transport Transpor
 }
 
 // WithContext sets the request context.
+//
 func (f IndicesDeleteTemplate) WithContext(v context.Context) func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		r.ctx = v
@@ -154,6 +158,7 @@ func (f IndicesDeleteTemplate) WithContext(v context.Context) func(*IndicesDelet
 }
 
 // WithMasterTimeout - specify timeout for connection to master.
+//
 func (f IndicesDeleteTemplate) WithMasterTimeout(v time.Duration) func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		r.MasterTimeout = v
@@ -161,6 +166,7 @@ func (f IndicesDeleteTemplate) WithMasterTimeout(v time.Duration) func(*IndicesD
 }
 
 // WithTimeout - explicit operation timeout.
+//
 func (f IndicesDeleteTemplate) WithTimeout(v time.Duration) func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		r.Timeout = v
@@ -168,6 +174,7 @@ func (f IndicesDeleteTemplate) WithTimeout(v time.Duration) func(*IndicesDeleteT
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f IndicesDeleteTemplate) WithPretty() func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		r.Pretty = true
@@ -175,6 +182,7 @@ func (f IndicesDeleteTemplate) WithPretty() func(*IndicesDeleteTemplateRequest) 
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f IndicesDeleteTemplate) WithHuman() func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		r.Human = true
@@ -182,6 +190,7 @@ func (f IndicesDeleteTemplate) WithHuman() func(*IndicesDeleteTemplateRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f IndicesDeleteTemplate) WithErrorTrace() func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		r.ErrorTrace = true
@@ -189,6 +198,7 @@ func (f IndicesDeleteTemplate) WithErrorTrace() func(*IndicesDeleteTemplateReque
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f IndicesDeleteTemplate) WithFilterPath(v ...string) func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		r.FilterPath = v
@@ -196,6 +206,7 @@ func (f IndicesDeleteTemplate) WithFilterPath(v ...string) func(*IndicesDeleteTe
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f IndicesDeleteTemplate) WithHeader(h map[string]string) func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		if r.Header == nil {
@@ -208,6 +219,7 @@ func (f IndicesDeleteTemplate) WithHeader(h map[string]string) func(*IndicesDele
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f IndicesDeleteTemplate) WithOpaqueID(s string) func(*IndicesDeleteTemplateRequest) {
 	return func(r *IndicesDeleteTemplateRequest) {
 		if r.Header == nil {

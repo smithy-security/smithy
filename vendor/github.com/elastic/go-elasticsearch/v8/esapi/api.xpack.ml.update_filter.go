@@ -41,9 +41,11 @@ func newMLUpdateFilterFunc(t Transport) MLUpdateFilter {
 // MLUpdateFilter - Updates the description of a filter, adds items, or removes items.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-update-filter.html.
+//
 type MLUpdateFilter func(body io.Reader, filter_id string, o ...func(*MLUpdateFilterRequest)) (*Response, error)
 
 // MLUpdateFilterRequest configures the ML Update Filter API request.
+//
 type MLUpdateFilterRequest struct {
 	Body io.Reader
 
@@ -60,6 +62,7 @@ type MLUpdateFilterRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLUpdateFilterRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -146,6 +149,7 @@ func (r MLUpdateFilterRequest) Do(ctx context.Context, transport Transport) (*Re
 }
 
 // WithContext sets the request context.
+//
 func (f MLUpdateFilter) WithContext(v context.Context) func(*MLUpdateFilterRequest) {
 	return func(r *MLUpdateFilterRequest) {
 		r.ctx = v
@@ -153,6 +157,7 @@ func (f MLUpdateFilter) WithContext(v context.Context) func(*MLUpdateFilterReque
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLUpdateFilter) WithPretty() func(*MLUpdateFilterRequest) {
 	return func(r *MLUpdateFilterRequest) {
 		r.Pretty = true
@@ -160,6 +165,7 @@ func (f MLUpdateFilter) WithPretty() func(*MLUpdateFilterRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLUpdateFilter) WithHuman() func(*MLUpdateFilterRequest) {
 	return func(r *MLUpdateFilterRequest) {
 		r.Human = true
@@ -167,6 +173,7 @@ func (f MLUpdateFilter) WithHuman() func(*MLUpdateFilterRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLUpdateFilter) WithErrorTrace() func(*MLUpdateFilterRequest) {
 	return func(r *MLUpdateFilterRequest) {
 		r.ErrorTrace = true
@@ -174,6 +181,7 @@ func (f MLUpdateFilter) WithErrorTrace() func(*MLUpdateFilterRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLUpdateFilter) WithFilterPath(v ...string) func(*MLUpdateFilterRequest) {
 	return func(r *MLUpdateFilterRequest) {
 		r.FilterPath = v
@@ -181,6 +189,7 @@ func (f MLUpdateFilter) WithFilterPath(v ...string) func(*MLUpdateFilterRequest)
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLUpdateFilter) WithHeader(h map[string]string) func(*MLUpdateFilterRequest) {
 	return func(r *MLUpdateFilterRequest) {
 		if r.Header == nil {
@@ -193,6 +202,7 @@ func (f MLUpdateFilter) WithHeader(h map[string]string) func(*MLUpdateFilterRequ
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLUpdateFilter) WithOpaqueID(s string) func(*MLUpdateFilterRequest) {
 	return func(r *MLUpdateFilterRequest) {
 		if r.Header == nil {

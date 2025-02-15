@@ -40,9 +40,11 @@ func newILMDeleteLifecycleFunc(t Transport) ILMDeleteLifecycle {
 // ILMDeleteLifecycle - Deletes the specified lifecycle policy definition. A currently used policy cannot be deleted.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-delete-lifecycle.html.
+//
 type ILMDeleteLifecycle func(policy string, o ...func(*ILMDeleteLifecycleRequest)) (*Response, error)
 
 // ILMDeleteLifecycleRequest configures the ILM Delete Lifecycle API request.
+//
 type ILMDeleteLifecycleRequest struct {
 	Policy string
 
@@ -57,6 +59,7 @@ type ILMDeleteLifecycleRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r ILMDeleteLifecycleRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -137,6 +140,7 @@ func (r ILMDeleteLifecycleRequest) Do(ctx context.Context, transport Transport) 
 }
 
 // WithContext sets the request context.
+//
 func (f ILMDeleteLifecycle) WithContext(v context.Context) func(*ILMDeleteLifecycleRequest) {
 	return func(r *ILMDeleteLifecycleRequest) {
 		r.ctx = v
@@ -144,6 +148,7 @@ func (f ILMDeleteLifecycle) WithContext(v context.Context) func(*ILMDeleteLifecy
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f ILMDeleteLifecycle) WithPretty() func(*ILMDeleteLifecycleRequest) {
 	return func(r *ILMDeleteLifecycleRequest) {
 		r.Pretty = true
@@ -151,6 +156,7 @@ func (f ILMDeleteLifecycle) WithPretty() func(*ILMDeleteLifecycleRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f ILMDeleteLifecycle) WithHuman() func(*ILMDeleteLifecycleRequest) {
 	return func(r *ILMDeleteLifecycleRequest) {
 		r.Human = true
@@ -158,6 +164,7 @@ func (f ILMDeleteLifecycle) WithHuman() func(*ILMDeleteLifecycleRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f ILMDeleteLifecycle) WithErrorTrace() func(*ILMDeleteLifecycleRequest) {
 	return func(r *ILMDeleteLifecycleRequest) {
 		r.ErrorTrace = true
@@ -165,6 +172,7 @@ func (f ILMDeleteLifecycle) WithErrorTrace() func(*ILMDeleteLifecycleRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f ILMDeleteLifecycle) WithFilterPath(v ...string) func(*ILMDeleteLifecycleRequest) {
 	return func(r *ILMDeleteLifecycleRequest) {
 		r.FilterPath = v
@@ -172,6 +180,7 @@ func (f ILMDeleteLifecycle) WithFilterPath(v ...string) func(*ILMDeleteLifecycle
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f ILMDeleteLifecycle) WithHeader(h map[string]string) func(*ILMDeleteLifecycleRequest) {
 	return func(r *ILMDeleteLifecycleRequest) {
 		if r.Header == nil {
@@ -184,6 +193,7 @@ func (f ILMDeleteLifecycle) WithHeader(h map[string]string) func(*ILMDeleteLifec
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f ILMDeleteLifecycle) WithOpaqueID(s string) func(*ILMDeleteLifecycleRequest) {
 	return func(r *ILMDeleteLifecycleRequest) {
 		if r.Header == nil {

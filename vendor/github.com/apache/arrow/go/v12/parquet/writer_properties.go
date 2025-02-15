@@ -63,7 +63,6 @@ type ColumnProperties struct {
 // DefaultColumnProperties returns the default properties which get utilized for writing.
 //
 // The default column properties are the following constants:
-//
 //	Encoding:						Encodings.Plain
 //	Codec:							compress.Codecs.Uncompressed
 //	DictionaryEnabled:	DefaultDictionaryEnabled
@@ -331,9 +330,8 @@ func defaultWriterProperties() *WriterProperties {
 // properties will be utilized for writing.
 //
 // The Default properties use the following constants:
-//
 //	Allocator:					memory.DefaultAllocator
-//	DictionaryPageSize: DefaultDictionaryPageSizeLimit
+// 	DictionaryPageSize: DefaultDictionaryPageSizeLimit
 //	BatchSize:					DefaultWriteBatchSize
 //	MaxRowGroupLength:	DefaultMaxRowGroupLen
 //	PageSize:						DefaultDataPageSize
@@ -415,7 +413,7 @@ func (w *WriterProperties) CompressionFor(path string) compress.Compression {
 	return w.defColumnProps.Codec
 }
 
-// CompressionPath is the same as CompressionFor but takes a ColumnPath
+//CompressionPath is the same as CompressionFor but takes a ColumnPath
 func (w *WriterProperties) CompressionPath(path ColumnPath) compress.Compression {
 	return w.CompressionFor(path.String())
 }

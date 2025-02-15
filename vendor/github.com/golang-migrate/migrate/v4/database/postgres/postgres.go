@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"go.uber.org/atomic"
 	"io"
 	"io/ioutil"
 	nurl "net/url"
@@ -14,8 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"go.uber.org/atomic"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database"

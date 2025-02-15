@@ -3,6 +3,7 @@
 package gen // CEL
 import "github.com/antlr4-go/antlr/v4"
 
+
 type BaseCELVisitor struct {
 	*antlr.BaseParseTreeVisitor
 }

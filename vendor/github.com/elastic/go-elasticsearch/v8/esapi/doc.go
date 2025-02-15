@@ -79,7 +79,7 @@ or locally by:
 	go doc github.com/elastic/go-elasticsearch/v8/esapi Index
 	go doc github.com/elastic/go-elasticsearch/v8/esapi IndexRequest
 
-# Response
+Response
 
 The esapi.Response type is a lightweight wrapper around http.Response.
 
@@ -93,7 +93,7 @@ The Response type implements a couple of convenience methods for accessing
 the status, checking an error status code or printing
 the response body for debugging purposes.
 
-# Additional Information
+Additional Information
 
 See the Elasticsearch documentation at
 https://www.elastic.co/guide/en/elasticsearch/reference/master/api-conventions.html for detailed information
@@ -107,5 +107,6 @@ https://github.com/elastic/go-elasticsearch/tree/master/internal/cmd/generate/co
 The API is tested by integration tests common to all Elasticsearch official clients, generated from the
 source at https://github.com/elastic/elasticsearch/tree/master/rest-api-spec/src/main/resources/rest-api-spec/test.
 The generator is provided by the internal package available at internal/cmd/generate/commands/gentests.
+
 */
 package esapi
