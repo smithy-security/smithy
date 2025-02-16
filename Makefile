@@ -11,7 +11,6 @@ commits_since_latest_tag=$(shell git log --oneline $(latest_tag)..HEAD | wc -l)
 # /components/producers/golang-nancy/examples is ignored as it's an example of a vulnerable go.mod.
 GO_TEST_PACKAGES=$(shell find . -path './components/producers/golang-nancy/examples' -prune -o -name 'go.mod' -exec dirname {} \; | sort -u)
 VENDOR_DIRS=$(shell find . -type d -name "vendor")
-NOT_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "-not -path \""$$i"/*\""}' | tr '\n' ' ')
 EXCLUDE_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "--exclude-path \""$$i"\""}' | tr '\n' ' ')
 GO_TEST_OUT_DIR_PATH=$(shell pwd)/tests/output
 
@@ -103,7 +102,7 @@ publish-component-containers: $(component_containers_publish)
 publish-containers: publish-component-containers smithyctl-image-publish
 
 clean-protos:
-	@find . $(NOT_VENDOR_PATHS) -name '*.pb.go' -delete
+	@find . -not -path "*/vendor/*" -name '*.pb.go' -delete
 
 clean-migrations-compose:
 	cd tests/migrations/ && docker compose rm --force
@@ -157,8 +156,8 @@ install-go-fmt-tools:
 
 fmt-go:
 	echo "Tidying up Go files"
-	$(shell find . -type f -name "*.go" -not -name "*.pb.*" $(NOT_VENDOR_PATHS) | xargs gofmt -w | uniq)
-	@goimports -local $$(cat go.mod | grep -E "^module" | sed 's/module //') -w $$(find . -type f -name *.go -not -name "*.pb.*" $(NOT_VENDOR_PATHS) | xargs -n 1 dirname | uniq)
+	$(shell find . -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" | xargs gofmt -w)
+	$(shell find . -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -exec goimports -local github.com/smithy-security/smithy -w {} \;)
 
 install-md-fmt-tools:
 	@npm ci
