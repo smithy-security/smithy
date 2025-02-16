@@ -80,12 +80,6 @@ smithyctl-image: cmd/smithyctl/bin
 smithyctl-image-publish: smithyctl-image
 	$(DOCKER) push "${CONTAINER_REPO}/smithyctl:${SMITHY_VERSION}"
 
-third_party/tektoncd/swagger-v$(TEKTON_VERSION).json:
-	@wget "https://raw.githubusercontent.com/tektoncd/pipeline/v$(TEKTON_VERSION)/pkg/apis/pipeline/v1beta1/swagger.json" -O $@
-
-components/base/openapi_schema.json: third_party/tektoncd/swagger-v$(TEKTON_VERSION).json
-	@cp $< $@
-
 $(go_protos): %.pb.go: %.proto
 	$(PROTOC) --go_out=. --go_opt=paths=source_relative $<
 
