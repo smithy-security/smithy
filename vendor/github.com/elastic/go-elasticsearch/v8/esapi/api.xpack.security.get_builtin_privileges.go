@@ -40,9 +40,11 @@ func newSecurityGetBuiltinPrivilegesFunc(t Transport) SecurityGetBuiltinPrivileg
 // SecurityGetBuiltinPrivileges - Retrieves the list of cluster privileges and index privileges that are available in this version of Elasticsearch.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-builtin-privileges.html.
+//
 type SecurityGetBuiltinPrivileges func(o ...func(*SecurityGetBuiltinPrivilegesRequest)) (*Response, error)
 
 // SecurityGetBuiltinPrivilegesRequest configures the Security Get Builtin Privileges API request.
+//
 type SecurityGetBuiltinPrivilegesRequest struct {
 	Pretty     bool
 	Human      bool
@@ -55,6 +57,7 @@ type SecurityGetBuiltinPrivilegesRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityGetBuiltinPrivilegesRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -130,6 +133,7 @@ func (r SecurityGetBuiltinPrivilegesRequest) Do(ctx context.Context, transport T
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityGetBuiltinPrivileges) WithContext(v context.Context) func(*SecurityGetBuiltinPrivilegesRequest) {
 	return func(r *SecurityGetBuiltinPrivilegesRequest) {
 		r.ctx = v
@@ -137,6 +141,7 @@ func (f SecurityGetBuiltinPrivileges) WithContext(v context.Context) func(*Secur
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityGetBuiltinPrivileges) WithPretty() func(*SecurityGetBuiltinPrivilegesRequest) {
 	return func(r *SecurityGetBuiltinPrivilegesRequest) {
 		r.Pretty = true
@@ -144,6 +149,7 @@ func (f SecurityGetBuiltinPrivileges) WithPretty() func(*SecurityGetBuiltinPrivi
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityGetBuiltinPrivileges) WithHuman() func(*SecurityGetBuiltinPrivilegesRequest) {
 	return func(r *SecurityGetBuiltinPrivilegesRequest) {
 		r.Human = true
@@ -151,6 +157,7 @@ func (f SecurityGetBuiltinPrivileges) WithHuman() func(*SecurityGetBuiltinPrivil
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityGetBuiltinPrivileges) WithErrorTrace() func(*SecurityGetBuiltinPrivilegesRequest) {
 	return func(r *SecurityGetBuiltinPrivilegesRequest) {
 		r.ErrorTrace = true
@@ -158,6 +165,7 @@ func (f SecurityGetBuiltinPrivileges) WithErrorTrace() func(*SecurityGetBuiltinP
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityGetBuiltinPrivileges) WithFilterPath(v ...string) func(*SecurityGetBuiltinPrivilegesRequest) {
 	return func(r *SecurityGetBuiltinPrivilegesRequest) {
 		r.FilterPath = v
@@ -165,6 +173,7 @@ func (f SecurityGetBuiltinPrivileges) WithFilterPath(v ...string) func(*Security
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityGetBuiltinPrivileges) WithHeader(h map[string]string) func(*SecurityGetBuiltinPrivilegesRequest) {
 	return func(r *SecurityGetBuiltinPrivilegesRequest) {
 		if r.Header == nil {
@@ -177,6 +186,7 @@ func (f SecurityGetBuiltinPrivileges) WithHeader(h map[string]string) func(*Secu
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityGetBuiltinPrivileges) WithOpaqueID(s string) func(*SecurityGetBuiltinPrivilegesRequest) {
 	return func(r *SecurityGetBuiltinPrivilegesRequest) {
 		if r.Header == nil {

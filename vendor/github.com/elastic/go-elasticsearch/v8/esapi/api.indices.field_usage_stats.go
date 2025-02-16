@@ -43,9 +43,11 @@ func newIndicesFieldUsageStatsFunc(t Transport) IndicesFieldUsageStats {
 // This API is experimental.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/field-usage-stats.html.
+//
 type IndicesFieldUsageStats func(index string, o ...func(*IndicesFieldUsageStatsRequest)) (*Response, error)
 
 // IndicesFieldUsageStatsRequest configures the Indices Field Usage Stats API request.
+//
 type IndicesFieldUsageStatsRequest struct {
 	Index string
 
@@ -65,6 +67,7 @@ type IndicesFieldUsageStatsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r IndicesFieldUsageStatsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -159,6 +162,7 @@ func (r IndicesFieldUsageStatsRequest) Do(ctx context.Context, transport Transpo
 }
 
 // WithContext sets the request context.
+//
 func (f IndicesFieldUsageStats) WithContext(v context.Context) func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.ctx = v
@@ -166,6 +170,7 @@ func (f IndicesFieldUsageStats) WithContext(v context.Context) func(*IndicesFiel
 }
 
 // WithAllowNoIndices - whether to ignore if a wildcard indices expression resolves into no concrete indices. (this includes `_all` string or when no indices have been specified).
+//
 func (f IndicesFieldUsageStats) WithAllowNoIndices(v bool) func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.AllowNoIndices = &v
@@ -173,6 +178,7 @@ func (f IndicesFieldUsageStats) WithAllowNoIndices(v bool) func(*IndicesFieldUsa
 }
 
 // WithExpandWildcards - whether to expand wildcard expression to concrete indices that are open, closed or both..
+//
 func (f IndicesFieldUsageStats) WithExpandWildcards(v string) func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.ExpandWildcards = v
@@ -180,6 +186,7 @@ func (f IndicesFieldUsageStats) WithExpandWildcards(v string) func(*IndicesField
 }
 
 // WithFields - a list of fields to include in the stats if only a subset of fields should be returned (supports wildcards).
+//
 func (f IndicesFieldUsageStats) WithFields(v ...string) func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.Fields = v
@@ -187,6 +194,7 @@ func (f IndicesFieldUsageStats) WithFields(v ...string) func(*IndicesFieldUsageS
 }
 
 // WithIgnoreUnavailable - whether specified concrete indices should be ignored when unavailable (missing or closed).
+//
 func (f IndicesFieldUsageStats) WithIgnoreUnavailable(v bool) func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.IgnoreUnavailable = &v
@@ -194,6 +202,7 @@ func (f IndicesFieldUsageStats) WithIgnoreUnavailable(v bool) func(*IndicesField
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f IndicesFieldUsageStats) WithPretty() func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.Pretty = true
@@ -201,6 +210,7 @@ func (f IndicesFieldUsageStats) WithPretty() func(*IndicesFieldUsageStatsRequest
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f IndicesFieldUsageStats) WithHuman() func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.Human = true
@@ -208,6 +218,7 @@ func (f IndicesFieldUsageStats) WithHuman() func(*IndicesFieldUsageStatsRequest)
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f IndicesFieldUsageStats) WithErrorTrace() func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.ErrorTrace = true
@@ -215,6 +226,7 @@ func (f IndicesFieldUsageStats) WithErrorTrace() func(*IndicesFieldUsageStatsReq
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f IndicesFieldUsageStats) WithFilterPath(v ...string) func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		r.FilterPath = v
@@ -222,6 +234,7 @@ func (f IndicesFieldUsageStats) WithFilterPath(v ...string) func(*IndicesFieldUs
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f IndicesFieldUsageStats) WithHeader(h map[string]string) func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		if r.Header == nil {
@@ -234,6 +247,7 @@ func (f IndicesFieldUsageStats) WithHeader(h map[string]string) func(*IndicesFie
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f IndicesFieldUsageStats) WithOpaqueID(s string) func(*IndicesFieldUsageStatsRequest) {
 	return func(r *IndicesFieldUsageStatsRequest) {
 		if r.Header == nil {

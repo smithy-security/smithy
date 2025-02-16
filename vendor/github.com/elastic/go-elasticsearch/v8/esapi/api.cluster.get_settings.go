@@ -42,9 +42,11 @@ func newClusterGetSettingsFunc(t Transport) ClusterGetSettings {
 // ClusterGetSettings returns cluster settings.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/cluster-get-settings.html.
+//
 type ClusterGetSettings func(o ...func(*ClusterGetSettingsRequest)) (*Response, error)
 
 // ClusterGetSettingsRequest configures the Cluster Get Settings API request.
+//
 type ClusterGetSettingsRequest struct {
 	FlatSettings    *bool
 	IncludeDefaults *bool
@@ -62,6 +64,7 @@ type ClusterGetSettingsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r ClusterGetSettingsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -153,6 +156,7 @@ func (r ClusterGetSettingsRequest) Do(ctx context.Context, transport Transport) 
 }
 
 // WithContext sets the request context.
+//
 func (f ClusterGetSettings) WithContext(v context.Context) func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.ctx = v
@@ -160,6 +164,7 @@ func (f ClusterGetSettings) WithContext(v context.Context) func(*ClusterGetSetti
 }
 
 // WithFlatSettings - return settings in flat format (default: false).
+//
 func (f ClusterGetSettings) WithFlatSettings(v bool) func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.FlatSettings = &v
@@ -167,6 +172,7 @@ func (f ClusterGetSettings) WithFlatSettings(v bool) func(*ClusterGetSettingsReq
 }
 
 // WithIncludeDefaults - whether to return all default clusters setting..
+//
 func (f ClusterGetSettings) WithIncludeDefaults(v bool) func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.IncludeDefaults = &v
@@ -174,6 +180,7 @@ func (f ClusterGetSettings) WithIncludeDefaults(v bool) func(*ClusterGetSettings
 }
 
 // WithMasterTimeout - explicit operation timeout for connection to master node.
+//
 func (f ClusterGetSettings) WithMasterTimeout(v time.Duration) func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.MasterTimeout = v
@@ -181,6 +188,7 @@ func (f ClusterGetSettings) WithMasterTimeout(v time.Duration) func(*ClusterGetS
 }
 
 // WithTimeout - explicit operation timeout.
+//
 func (f ClusterGetSettings) WithTimeout(v time.Duration) func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.Timeout = v
@@ -188,6 +196,7 @@ func (f ClusterGetSettings) WithTimeout(v time.Duration) func(*ClusterGetSetting
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f ClusterGetSettings) WithPretty() func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.Pretty = true
@@ -195,6 +204,7 @@ func (f ClusterGetSettings) WithPretty() func(*ClusterGetSettingsRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f ClusterGetSettings) WithHuman() func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.Human = true
@@ -202,6 +212,7 @@ func (f ClusterGetSettings) WithHuman() func(*ClusterGetSettingsRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f ClusterGetSettings) WithErrorTrace() func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.ErrorTrace = true
@@ -209,6 +220,7 @@ func (f ClusterGetSettings) WithErrorTrace() func(*ClusterGetSettingsRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f ClusterGetSettings) WithFilterPath(v ...string) func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		r.FilterPath = v
@@ -216,6 +228,7 @@ func (f ClusterGetSettings) WithFilterPath(v ...string) func(*ClusterGetSettings
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f ClusterGetSettings) WithHeader(h map[string]string) func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		if r.Header == nil {
@@ -228,6 +241,7 @@ func (f ClusterGetSettings) WithHeader(h map[string]string) func(*ClusterGetSett
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f ClusterGetSettings) WithOpaqueID(s string) func(*ClusterGetSettingsRequest) {
 	return func(r *ClusterGetSettingsRequest) {
 		if r.Header == nil {

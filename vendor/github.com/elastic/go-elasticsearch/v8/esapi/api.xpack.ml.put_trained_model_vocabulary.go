@@ -43,9 +43,11 @@ func newMLPutTrainedModelVocabularyFunc(t Transport) MLPutTrainedModelVocabulary
 // This API is experimental.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/put-trained-model-vocabulary.html.
+//
 type MLPutTrainedModelVocabulary func(body io.Reader, model_id string, o ...func(*MLPutTrainedModelVocabularyRequest)) (*Response, error)
 
 // MLPutTrainedModelVocabularyRequest configures the ML Put Trained Model Vocabulary API request.
+//
 type MLPutTrainedModelVocabularyRequest struct {
 	Body io.Reader
 
@@ -62,6 +64,7 @@ type MLPutTrainedModelVocabularyRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r MLPutTrainedModelVocabularyRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -148,6 +151,7 @@ func (r MLPutTrainedModelVocabularyRequest) Do(ctx context.Context, transport Tr
 }
 
 // WithContext sets the request context.
+//
 func (f MLPutTrainedModelVocabulary) WithContext(v context.Context) func(*MLPutTrainedModelVocabularyRequest) {
 	return func(r *MLPutTrainedModelVocabularyRequest) {
 		r.ctx = v
@@ -155,6 +159,7 @@ func (f MLPutTrainedModelVocabulary) WithContext(v context.Context) func(*MLPutT
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f MLPutTrainedModelVocabulary) WithPretty() func(*MLPutTrainedModelVocabularyRequest) {
 	return func(r *MLPutTrainedModelVocabularyRequest) {
 		r.Pretty = true
@@ -162,6 +167,7 @@ func (f MLPutTrainedModelVocabulary) WithPretty() func(*MLPutTrainedModelVocabul
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f MLPutTrainedModelVocabulary) WithHuman() func(*MLPutTrainedModelVocabularyRequest) {
 	return func(r *MLPutTrainedModelVocabularyRequest) {
 		r.Human = true
@@ -169,6 +175,7 @@ func (f MLPutTrainedModelVocabulary) WithHuman() func(*MLPutTrainedModelVocabula
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f MLPutTrainedModelVocabulary) WithErrorTrace() func(*MLPutTrainedModelVocabularyRequest) {
 	return func(r *MLPutTrainedModelVocabularyRequest) {
 		r.ErrorTrace = true
@@ -176,6 +183,7 @@ func (f MLPutTrainedModelVocabulary) WithErrorTrace() func(*MLPutTrainedModelVoc
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f MLPutTrainedModelVocabulary) WithFilterPath(v ...string) func(*MLPutTrainedModelVocabularyRequest) {
 	return func(r *MLPutTrainedModelVocabularyRequest) {
 		r.FilterPath = v
@@ -183,6 +191,7 @@ func (f MLPutTrainedModelVocabulary) WithFilterPath(v ...string) func(*MLPutTrai
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f MLPutTrainedModelVocabulary) WithHeader(h map[string]string) func(*MLPutTrainedModelVocabularyRequest) {
 	return func(r *MLPutTrainedModelVocabularyRequest) {
 		if r.Header == nil {
@@ -195,6 +204,7 @@ func (f MLPutTrainedModelVocabulary) WithHeader(h map[string]string) func(*MLPut
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f MLPutTrainedModelVocabulary) WithOpaqueID(s string) func(*MLPutTrainedModelVocabularyRequest) {
 	return func(r *MLPutTrainedModelVocabularyRequest) {
 		if r.Header == nil {

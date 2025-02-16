@@ -25,9 +25,6 @@ package v1
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	v1 "github.com/census-instrumentation/opencensus-proto/gen-go/agent/common/v1"
 	v12 "github.com/census-instrumentation/opencensus-proto/gen-go/resource/v1"
 	v11 "github.com/census-instrumentation/opencensus-proto/gen-go/trace/v1"
@@ -36,6 +33,8 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (

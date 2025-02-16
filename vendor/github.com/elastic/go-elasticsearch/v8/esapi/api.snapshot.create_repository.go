@@ -43,9 +43,11 @@ func newSnapshotCreateRepositoryFunc(t Transport) SnapshotCreateRepository {
 // SnapshotCreateRepository creates a repository.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/modules-snapshots.html.
+//
 type SnapshotCreateRepository func(repository string, body io.Reader, o ...func(*SnapshotCreateRepositoryRequest)) (*Response, error)
 
 // SnapshotCreateRepositoryRequest configures the Snapshot Create Repository API request.
+//
 type SnapshotCreateRepositoryRequest struct {
 	Body io.Reader
 
@@ -66,6 +68,7 @@ type SnapshotCreateRepositoryRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SnapshotCreateRepositoryRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -160,6 +163,7 @@ func (r SnapshotCreateRepositoryRequest) Do(ctx context.Context, transport Trans
 }
 
 // WithContext sets the request context.
+//
 func (f SnapshotCreateRepository) WithContext(v context.Context) func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		r.ctx = v
@@ -167,6 +171,7 @@ func (f SnapshotCreateRepository) WithContext(v context.Context) func(*SnapshotC
 }
 
 // WithMasterTimeout - explicit operation timeout for connection to master node.
+//
 func (f SnapshotCreateRepository) WithMasterTimeout(v time.Duration) func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		r.MasterTimeout = v
@@ -174,6 +179,7 @@ func (f SnapshotCreateRepository) WithMasterTimeout(v time.Duration) func(*Snaps
 }
 
 // WithTimeout - explicit operation timeout.
+//
 func (f SnapshotCreateRepository) WithTimeout(v time.Duration) func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		r.Timeout = v
@@ -181,6 +187,7 @@ func (f SnapshotCreateRepository) WithTimeout(v time.Duration) func(*SnapshotCre
 }
 
 // WithVerify - whether to verify the repository after creation.
+//
 func (f SnapshotCreateRepository) WithVerify(v bool) func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		r.Verify = &v
@@ -188,6 +195,7 @@ func (f SnapshotCreateRepository) WithVerify(v bool) func(*SnapshotCreateReposit
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SnapshotCreateRepository) WithPretty() func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		r.Pretty = true
@@ -195,6 +203,7 @@ func (f SnapshotCreateRepository) WithPretty() func(*SnapshotCreateRepositoryReq
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SnapshotCreateRepository) WithHuman() func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		r.Human = true
@@ -202,6 +211,7 @@ func (f SnapshotCreateRepository) WithHuman() func(*SnapshotCreateRepositoryRequ
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SnapshotCreateRepository) WithErrorTrace() func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		r.ErrorTrace = true
@@ -209,6 +219,7 @@ func (f SnapshotCreateRepository) WithErrorTrace() func(*SnapshotCreateRepositor
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SnapshotCreateRepository) WithFilterPath(v ...string) func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		r.FilterPath = v
@@ -216,6 +227,7 @@ func (f SnapshotCreateRepository) WithFilterPath(v ...string) func(*SnapshotCrea
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SnapshotCreateRepository) WithHeader(h map[string]string) func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		if r.Header == nil {
@@ -228,6 +240,7 @@ func (f SnapshotCreateRepository) WithHeader(h map[string]string) func(*Snapshot
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SnapshotCreateRepository) WithOpaqueID(s string) func(*SnapshotCreateRepositoryRequest) {
 	return func(r *SnapshotCreateRepositoryRequest) {
 		if r.Header == nil {

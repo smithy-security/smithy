@@ -42,9 +42,11 @@ func newSearchableSnapshotsCacheStatsFunc(t Transport) SearchableSnapshotsCacheS
 // This API is experimental.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/searchable-snapshots-apis.html.
+//
 type SearchableSnapshotsCacheStats func(o ...func(*SearchableSnapshotsCacheStatsRequest)) (*Response, error)
 
 // SearchableSnapshotsCacheStatsRequest configures the Searchable Snapshots Cache Stats API request.
+//
 type SearchableSnapshotsCacheStatsRequest struct {
 	NodeID []string
 
@@ -59,6 +61,7 @@ type SearchableSnapshotsCacheStatsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SearchableSnapshotsCacheStatsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -143,6 +146,7 @@ func (r SearchableSnapshotsCacheStatsRequest) Do(ctx context.Context, transport 
 }
 
 // WithContext sets the request context.
+//
 func (f SearchableSnapshotsCacheStats) WithContext(v context.Context) func(*SearchableSnapshotsCacheStatsRequest) {
 	return func(r *SearchableSnapshotsCacheStatsRequest) {
 		r.ctx = v
@@ -150,6 +154,7 @@ func (f SearchableSnapshotsCacheStats) WithContext(v context.Context) func(*Sear
 }
 
 // WithNodeID - a list of node ids or names to limit the returned information; use `_local` to return information from the node you're connecting to, leave empty to get information from all nodes.
+//
 func (f SearchableSnapshotsCacheStats) WithNodeID(v ...string) func(*SearchableSnapshotsCacheStatsRequest) {
 	return func(r *SearchableSnapshotsCacheStatsRequest) {
 		r.NodeID = v
@@ -157,6 +162,7 @@ func (f SearchableSnapshotsCacheStats) WithNodeID(v ...string) func(*SearchableS
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SearchableSnapshotsCacheStats) WithPretty() func(*SearchableSnapshotsCacheStatsRequest) {
 	return func(r *SearchableSnapshotsCacheStatsRequest) {
 		r.Pretty = true
@@ -164,6 +170,7 @@ func (f SearchableSnapshotsCacheStats) WithPretty() func(*SearchableSnapshotsCac
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SearchableSnapshotsCacheStats) WithHuman() func(*SearchableSnapshotsCacheStatsRequest) {
 	return func(r *SearchableSnapshotsCacheStatsRequest) {
 		r.Human = true
@@ -171,6 +178,7 @@ func (f SearchableSnapshotsCacheStats) WithHuman() func(*SearchableSnapshotsCach
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SearchableSnapshotsCacheStats) WithErrorTrace() func(*SearchableSnapshotsCacheStatsRequest) {
 	return func(r *SearchableSnapshotsCacheStatsRequest) {
 		r.ErrorTrace = true
@@ -178,6 +186,7 @@ func (f SearchableSnapshotsCacheStats) WithErrorTrace() func(*SearchableSnapshot
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SearchableSnapshotsCacheStats) WithFilterPath(v ...string) func(*SearchableSnapshotsCacheStatsRequest) {
 	return func(r *SearchableSnapshotsCacheStatsRequest) {
 		r.FilterPath = v
@@ -185,6 +194,7 @@ func (f SearchableSnapshotsCacheStats) WithFilterPath(v ...string) func(*Searcha
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SearchableSnapshotsCacheStats) WithHeader(h map[string]string) func(*SearchableSnapshotsCacheStatsRequest) {
 	return func(r *SearchableSnapshotsCacheStatsRequest) {
 		if r.Header == nil {
@@ -197,6 +207,7 @@ func (f SearchableSnapshotsCacheStats) WithHeader(h map[string]string) func(*Sea
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SearchableSnapshotsCacheStats) WithOpaqueID(s string) func(*SearchableSnapshotsCacheStatsRequest) {
 	return func(r *SearchableSnapshotsCacheStatsRequest) {
 		if r.Header == nil {

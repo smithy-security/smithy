@@ -40,9 +40,11 @@ func newSecurityGetUserFunc(t Transport) SecurityGetUser {
 // SecurityGetUser - Retrieves information about users in the native realm and built-in users.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-user.html.
+//
 type SecurityGetUser func(o ...func(*SecurityGetUserRequest)) (*Response, error)
 
 // SecurityGetUserRequest configures the Security Get User API request.
+//
 type SecurityGetUserRequest struct {
 	Username []string
 
@@ -57,6 +59,7 @@ type SecurityGetUserRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityGetUserRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -139,6 +142,7 @@ func (r SecurityGetUserRequest) Do(ctx context.Context, transport Transport) (*R
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityGetUser) WithContext(v context.Context) func(*SecurityGetUserRequest) {
 	return func(r *SecurityGetUserRequest) {
 		r.ctx = v
@@ -146,6 +150,7 @@ func (f SecurityGetUser) WithContext(v context.Context) func(*SecurityGetUserReq
 }
 
 // WithUsername - a list of usernames.
+//
 func (f SecurityGetUser) WithUsername(v ...string) func(*SecurityGetUserRequest) {
 	return func(r *SecurityGetUserRequest) {
 		r.Username = v
@@ -153,6 +158,7 @@ func (f SecurityGetUser) WithUsername(v ...string) func(*SecurityGetUserRequest)
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityGetUser) WithPretty() func(*SecurityGetUserRequest) {
 	return func(r *SecurityGetUserRequest) {
 		r.Pretty = true
@@ -160,6 +166,7 @@ func (f SecurityGetUser) WithPretty() func(*SecurityGetUserRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityGetUser) WithHuman() func(*SecurityGetUserRequest) {
 	return func(r *SecurityGetUserRequest) {
 		r.Human = true
@@ -167,6 +174,7 @@ func (f SecurityGetUser) WithHuman() func(*SecurityGetUserRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityGetUser) WithErrorTrace() func(*SecurityGetUserRequest) {
 	return func(r *SecurityGetUserRequest) {
 		r.ErrorTrace = true
@@ -174,6 +182,7 @@ func (f SecurityGetUser) WithErrorTrace() func(*SecurityGetUserRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityGetUser) WithFilterPath(v ...string) func(*SecurityGetUserRequest) {
 	return func(r *SecurityGetUserRequest) {
 		r.FilterPath = v
@@ -181,6 +190,7 @@ func (f SecurityGetUser) WithFilterPath(v ...string) func(*SecurityGetUserReques
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityGetUser) WithHeader(h map[string]string) func(*SecurityGetUserRequest) {
 	return func(r *SecurityGetUserRequest) {
 		if r.Header == nil {
@@ -193,6 +203,7 @@ func (f SecurityGetUser) WithHeader(h map[string]string) func(*SecurityGetUserRe
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityGetUser) WithOpaqueID(s string) func(*SecurityGetUserRequest) {
 	return func(r *SecurityGetUserRequest) {
 		if r.Header == nil {

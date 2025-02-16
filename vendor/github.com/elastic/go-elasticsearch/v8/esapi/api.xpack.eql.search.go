@@ -43,9 +43,11 @@ func newEqlSearchFunc(t Transport) EqlSearch {
 // EqlSearch - Returns results matching a query expressed in Event Query Language (EQL)
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/eql-search-api.html.
+//
 type EqlSearch func(index string, body io.Reader, o ...func(*EqlSearchRequest)) (*Response, error)
 
 // EqlSearchRequest configures the Eql Search API request.
+//
 type EqlSearchRequest struct {
 	Index string
 
@@ -66,6 +68,7 @@ type EqlSearchRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r EqlSearchRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -162,6 +165,7 @@ func (r EqlSearchRequest) Do(ctx context.Context, transport Transport) (*Respons
 }
 
 // WithContext sets the request context.
+//
 func (f EqlSearch) WithContext(v context.Context) func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		r.ctx = v
@@ -169,6 +173,7 @@ func (f EqlSearch) WithContext(v context.Context) func(*EqlSearchRequest) {
 }
 
 // WithKeepAlive - update the time interval in which the results (partial or final) for this search will be available.
+//
 func (f EqlSearch) WithKeepAlive(v time.Duration) func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		r.KeepAlive = v
@@ -176,6 +181,7 @@ func (f EqlSearch) WithKeepAlive(v time.Duration) func(*EqlSearchRequest) {
 }
 
 // WithKeepOnCompletion - control whether the response should be stored in the cluster if it completed within the provided [wait_for_completion] time (default: false).
+//
 func (f EqlSearch) WithKeepOnCompletion(v bool) func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		r.KeepOnCompletion = &v
@@ -183,6 +189,7 @@ func (f EqlSearch) WithKeepOnCompletion(v bool) func(*EqlSearchRequest) {
 }
 
 // WithWaitForCompletionTimeout - specify the time that the request should block waiting for the final response.
+//
 func (f EqlSearch) WithWaitForCompletionTimeout(v time.Duration) func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		r.WaitForCompletionTimeout = v
@@ -190,6 +197,7 @@ func (f EqlSearch) WithWaitForCompletionTimeout(v time.Duration) func(*EqlSearch
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f EqlSearch) WithPretty() func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		r.Pretty = true
@@ -197,6 +205,7 @@ func (f EqlSearch) WithPretty() func(*EqlSearchRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f EqlSearch) WithHuman() func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		r.Human = true
@@ -204,6 +213,7 @@ func (f EqlSearch) WithHuman() func(*EqlSearchRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f EqlSearch) WithErrorTrace() func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		r.ErrorTrace = true
@@ -211,6 +221,7 @@ func (f EqlSearch) WithErrorTrace() func(*EqlSearchRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f EqlSearch) WithFilterPath(v ...string) func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		r.FilterPath = v
@@ -218,6 +229,7 @@ func (f EqlSearch) WithFilterPath(v ...string) func(*EqlSearchRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f EqlSearch) WithHeader(h map[string]string) func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		if r.Header == nil {
@@ -230,6 +242,7 @@ func (f EqlSearch) WithHeader(h map[string]string) func(*EqlSearchRequest) {
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f EqlSearch) WithOpaqueID(s string) func(*EqlSearchRequest) {
 	return func(r *EqlSearchRequest) {
 		if r.Header == nil {

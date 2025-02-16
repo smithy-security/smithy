@@ -27,16 +27,19 @@ import (
 )
 
 // Measurable defines the interface for transports supporting metrics.
+//
 type Measurable interface {
 	Metrics() (Metrics, error)
 }
 
 // connectionable defines the interface for transports returning a list of connections.
+//
 type connectionable interface {
 	connections() []*Connection
 }
 
 // Metrics represents the transport metrics.
+//
 type Metrics struct {
 	Requests  int         `json:"requests"`
 	Failures  int         `json:"failures"`
@@ -46,6 +49,7 @@ type Metrics struct {
 }
 
 // ConnectionMetric represents metric information for a connection.
+//
 type ConnectionMetric struct {
 	URL       string     `json:"url"`
 	Failures  int        `json:"failures,omitempty"`
@@ -60,6 +64,7 @@ type ConnectionMetric struct {
 }
 
 // metrics represents the inner state of metrics.
+//
 type metrics struct {
 	sync.RWMutex
 
@@ -71,6 +76,7 @@ type metrics struct {
 }
 
 // Metrics returns the transport metrics.
+//
 func (c *Client) Metrics() (Metrics, error) {
 	if c.metrics == nil {
 		return Metrics{}, errors.New("transport metrics not enabled")
@@ -124,6 +130,7 @@ func (c *Client) Metrics() (Metrics, error) {
 }
 
 // String returns the metrics as a string.
+//
 func (m Metrics) String() string {
 	var (
 		i int
@@ -168,6 +175,7 @@ func (m Metrics) String() string {
 }
 
 // String returns the connection information as a string.
+//
 func (cm ConnectionMetric) String() string {
 	var b strings.Builder
 	b.WriteString("{")

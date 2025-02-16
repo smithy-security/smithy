@@ -40,9 +40,11 @@ func newSecurityAuthenticateFunc(t Transport) SecurityAuthenticate {
 // SecurityAuthenticate - Enables authentication as a user and retrieve information about the authenticated user.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-authenticate.html.
+//
 type SecurityAuthenticate func(o ...func(*SecurityAuthenticateRequest)) (*Response, error)
 
 // SecurityAuthenticateRequest configures the Security Authenticate API request.
+//
 type SecurityAuthenticateRequest struct {
 	Pretty     bool
 	Human      bool
@@ -55,6 +57,7 @@ type SecurityAuthenticateRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityAuthenticateRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -130,6 +133,7 @@ func (r SecurityAuthenticateRequest) Do(ctx context.Context, transport Transport
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityAuthenticate) WithContext(v context.Context) func(*SecurityAuthenticateRequest) {
 	return func(r *SecurityAuthenticateRequest) {
 		r.ctx = v
@@ -137,6 +141,7 @@ func (f SecurityAuthenticate) WithContext(v context.Context) func(*SecurityAuthe
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityAuthenticate) WithPretty() func(*SecurityAuthenticateRequest) {
 	return func(r *SecurityAuthenticateRequest) {
 		r.Pretty = true
@@ -144,6 +149,7 @@ func (f SecurityAuthenticate) WithPretty() func(*SecurityAuthenticateRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityAuthenticate) WithHuman() func(*SecurityAuthenticateRequest) {
 	return func(r *SecurityAuthenticateRequest) {
 		r.Human = true
@@ -151,6 +157,7 @@ func (f SecurityAuthenticate) WithHuman() func(*SecurityAuthenticateRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityAuthenticate) WithErrorTrace() func(*SecurityAuthenticateRequest) {
 	return func(r *SecurityAuthenticateRequest) {
 		r.ErrorTrace = true
@@ -158,6 +165,7 @@ func (f SecurityAuthenticate) WithErrorTrace() func(*SecurityAuthenticateRequest
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityAuthenticate) WithFilterPath(v ...string) func(*SecurityAuthenticateRequest) {
 	return func(r *SecurityAuthenticateRequest) {
 		r.FilterPath = v
@@ -165,6 +173,7 @@ func (f SecurityAuthenticate) WithFilterPath(v ...string) func(*SecurityAuthenti
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityAuthenticate) WithHeader(h map[string]string) func(*SecurityAuthenticateRequest) {
 	return func(r *SecurityAuthenticateRequest) {
 		if r.Header == nil {
@@ -177,6 +186,7 @@ func (f SecurityAuthenticate) WithHeader(h map[string]string) func(*SecurityAuth
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityAuthenticate) WithOpaqueID(s string) func(*SecurityAuthenticateRequest) {
 	return func(r *SecurityAuthenticateRequest) {
 		if r.Header == nil {

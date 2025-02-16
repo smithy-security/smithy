@@ -42,9 +42,11 @@ func newClusterDeleteVotingConfigExclusionsFunc(t Transport) ClusterDeleteVoting
 // ClusterDeleteVotingConfigExclusions clears cluster voting config exclusions.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/voting-config-exclusions.html.
+//
 type ClusterDeleteVotingConfigExclusions func(o ...func(*ClusterDeleteVotingConfigExclusionsRequest)) (*Response, error)
 
 // ClusterDeleteVotingConfigExclusionsRequest configures the Cluster Delete Voting Config Exclusions API request.
+//
 type ClusterDeleteVotingConfigExclusionsRequest struct {
 	MasterTimeout  time.Duration
 	WaitForRemoval *bool
@@ -60,6 +62,7 @@ type ClusterDeleteVotingConfigExclusionsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r ClusterDeleteVotingConfigExclusionsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -143,6 +146,7 @@ func (r ClusterDeleteVotingConfigExclusionsRequest) Do(ctx context.Context, tran
 }
 
 // WithContext sets the request context.
+//
 func (f ClusterDeleteVotingConfigExclusions) WithContext(v context.Context) func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		r.ctx = v
@@ -150,6 +154,7 @@ func (f ClusterDeleteVotingConfigExclusions) WithContext(v context.Context) func
 }
 
 // WithMasterTimeout - timeout for submitting request to master.
+//
 func (f ClusterDeleteVotingConfigExclusions) WithMasterTimeout(v time.Duration) func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		r.MasterTimeout = v
@@ -157,6 +162,7 @@ func (f ClusterDeleteVotingConfigExclusions) WithMasterTimeout(v time.Duration) 
 }
 
 // WithWaitForRemoval - specifies whether to wait for all excluded nodes to be removed from the cluster before clearing the voting configuration exclusions list..
+//
 func (f ClusterDeleteVotingConfigExclusions) WithWaitForRemoval(v bool) func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		r.WaitForRemoval = &v
@@ -164,6 +170,7 @@ func (f ClusterDeleteVotingConfigExclusions) WithWaitForRemoval(v bool) func(*Cl
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f ClusterDeleteVotingConfigExclusions) WithPretty() func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		r.Pretty = true
@@ -171,6 +178,7 @@ func (f ClusterDeleteVotingConfigExclusions) WithPretty() func(*ClusterDeleteVot
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f ClusterDeleteVotingConfigExclusions) WithHuman() func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		r.Human = true
@@ -178,6 +186,7 @@ func (f ClusterDeleteVotingConfigExclusions) WithHuman() func(*ClusterDeleteVoti
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f ClusterDeleteVotingConfigExclusions) WithErrorTrace() func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		r.ErrorTrace = true
@@ -185,6 +194,7 @@ func (f ClusterDeleteVotingConfigExclusions) WithErrorTrace() func(*ClusterDelet
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f ClusterDeleteVotingConfigExclusions) WithFilterPath(v ...string) func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		r.FilterPath = v
@@ -192,6 +202,7 @@ func (f ClusterDeleteVotingConfigExclusions) WithFilterPath(v ...string) func(*C
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f ClusterDeleteVotingConfigExclusions) WithHeader(h map[string]string) func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		if r.Header == nil {
@@ -204,6 +215,7 @@ func (f ClusterDeleteVotingConfigExclusions) WithHeader(h map[string]string) fun
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f ClusterDeleteVotingConfigExclusions) WithOpaqueID(s string) func(*ClusterDeleteVotingConfigExclusionsRequest) {
 	return func(r *ClusterDeleteVotingConfigExclusionsRequest) {
 		if r.Header == nil {

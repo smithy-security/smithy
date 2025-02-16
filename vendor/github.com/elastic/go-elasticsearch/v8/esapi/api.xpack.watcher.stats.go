@@ -41,9 +41,11 @@ func newWatcherStatsFunc(t Transport) WatcherStats {
 // WatcherStats - Retrieves the current Watcher metrics.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/watcher-api-stats.html.
+//
 type WatcherStats func(o ...func(*WatcherStatsRequest)) (*Response, error)
 
 // WatcherStatsRequest configures the Watcher Stats API request.
+//
 type WatcherStatsRequest struct {
 	Metric []string
 
@@ -60,6 +62,7 @@ type WatcherStatsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r WatcherStatsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -150,6 +153,7 @@ func (r WatcherStatsRequest) Do(ctx context.Context, transport Transport) (*Resp
 }
 
 // WithContext sets the request context.
+//
 func (f WatcherStats) WithContext(v context.Context) func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		r.ctx = v
@@ -157,6 +161,7 @@ func (f WatcherStats) WithContext(v context.Context) func(*WatcherStatsRequest) 
 }
 
 // WithMetric - controls what additional stat metrics should be include in the response.
+//
 func (f WatcherStats) WithMetric(v ...string) func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		r.Metric = v
@@ -164,6 +169,7 @@ func (f WatcherStats) WithMetric(v ...string) func(*WatcherStatsRequest) {
 }
 
 // WithEmitStacktraces - emits stack traces of currently running watches.
+//
 func (f WatcherStats) WithEmitStacktraces(v bool) func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		r.EmitStacktraces = &v
@@ -171,6 +177,7 @@ func (f WatcherStats) WithEmitStacktraces(v bool) func(*WatcherStatsRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f WatcherStats) WithPretty() func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		r.Pretty = true
@@ -178,6 +185,7 @@ func (f WatcherStats) WithPretty() func(*WatcherStatsRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f WatcherStats) WithHuman() func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		r.Human = true
@@ -185,6 +193,7 @@ func (f WatcherStats) WithHuman() func(*WatcherStatsRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f WatcherStats) WithErrorTrace() func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		r.ErrorTrace = true
@@ -192,6 +201,7 @@ func (f WatcherStats) WithErrorTrace() func(*WatcherStatsRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f WatcherStats) WithFilterPath(v ...string) func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		r.FilterPath = v
@@ -199,6 +209,7 @@ func (f WatcherStats) WithFilterPath(v ...string) func(*WatcherStatsRequest) {
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f WatcherStats) WithHeader(h map[string]string) func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		if r.Header == nil {
@@ -211,6 +222,7 @@ func (f WatcherStats) WithHeader(h map[string]string) func(*WatcherStatsRequest)
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f WatcherStats) WithOpaqueID(s string) func(*WatcherStatsRequest) {
 	return func(r *WatcherStatsRequest) {
 		if r.Header == nil {

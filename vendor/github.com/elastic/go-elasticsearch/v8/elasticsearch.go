@@ -64,6 +64,7 @@ func init() {
 }
 
 // Config represents the client configuration.
+//
 type Config struct {
 	Addresses []string // A list of Elasticsearch nodes to use.
 	Username  string   // Username for HTTP Basic Authentication.
@@ -108,6 +109,7 @@ type Config struct {
 }
 
 // Client represents the Elasticsearch client.
+//
 type Client struct {
 	*esapi.API          // Embeds the API methods
 	Transport           elastictransport.Interface
@@ -125,6 +127,7 @@ type Client struct {
 //
 // It will use the ELASTICSEARCH_URL environment variable, if set,
 // to configure the addresses; use a comma to separate multiple URLs.
+//
 func NewDefaultClient() (*Client, error) {
 	return NewClient(Config{})
 }
@@ -140,6 +143,7 @@ func NewDefaultClient() (*Client, error) {
 // environment variable is ignored.
 //
 // It's an error to set both cfg.Addresses and cfg.CloudID.
+//
 func NewClient(cfg Config) (*Client, error) {
 	var addrs []string
 
@@ -234,6 +238,7 @@ func NewClient(cfg Config) (*Client, error) {
 }
 
 // Perform delegates to Transport to execute a request and return a response.
+//
 func (c *Client) Perform(req *http.Request) (*http.Response, error) {
 	// Compatibility Header
 	if c.compatibilityHeader {
@@ -297,6 +302,7 @@ func (c *Client) doProductCheck(f func() error) error {
 }
 
 // genuineCheckHeader validates the presence of the X-Elastic-Product header
+//
 func genuineCheckHeader(header http.Header) error {
 	if header.Get("X-Elastic-Product") != "Elasticsearch" {
 		return errors.New(unknownProduct)
@@ -305,6 +311,7 @@ func genuineCheckHeader(header http.Header) error {
 }
 
 // Metrics returns the client metrics.
+//
 func (c *Client) Metrics() (elastictransport.Metrics, error) {
 	if mt, ok := c.Transport.(elastictransport.Measurable); ok {
 		return mt.Metrics()
@@ -313,6 +320,7 @@ func (c *Client) Metrics() (elastictransport.Metrics, error) {
 }
 
 // DiscoverNodes reloads the client connections by fetching information from the cluster.
+//
 func (c *Client) DiscoverNodes() error {
 	if dt, ok := c.Transport.(elastictransport.Discoverable); ok {
 		return dt.DiscoverNodes()
@@ -322,6 +330,7 @@ func (c *Client) DiscoverNodes() error {
 
 // addrsFromEnvironment returns a list of addresses by splitting
 // the ELASTICSEARCH_URL environment variable with comma, or an empty list.
+//
 func addrsFromEnvironment() []string {
 	var addrs []string
 
@@ -336,6 +345,7 @@ func addrsFromEnvironment() []string {
 }
 
 // addrsToURLs creates a list of url.URL structures from url list.
+//
 func addrsToURLs(addrs []string) ([]*url.URL, error) {
 	var urls []*url.URL
 	for _, addr := range addrs {
@@ -351,6 +361,7 @@ func addrsToURLs(addrs []string) ([]*url.URL, error) {
 
 // addrFromCloudID extracts the Elasticsearch URL from CloudID.
 // See: https://www.elastic.co/guide/en/cloud/current/ec-cloud-id.html
+//
 func addrFromCloudID(input string) (string, error) {
 	var scheme = "https://"
 

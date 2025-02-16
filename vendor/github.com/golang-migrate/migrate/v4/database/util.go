@@ -2,10 +2,9 @@ package database
 
 import (
 	"fmt"
+	"go.uber.org/atomic"
 	"hash/crc32"
 	"strings"
-
-	"go.uber.org/atomic"
 )
 
 const advisoryLockIDSalt uint = 1486364155

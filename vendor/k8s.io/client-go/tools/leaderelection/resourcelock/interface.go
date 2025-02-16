@@ -19,10 +19,9 @@ package resourcelock
 import (
 	"context"
 	"fmt"
-	"time"
-
 	clientset "k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
+	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"

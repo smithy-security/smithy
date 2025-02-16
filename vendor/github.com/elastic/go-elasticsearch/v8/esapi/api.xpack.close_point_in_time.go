@@ -41,9 +41,11 @@ func newClosePointInTimeFunc(t Transport) ClosePointInTime {
 // ClosePointInTime - Close a point in time
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/point-in-time-api.html.
+//
 type ClosePointInTime func(o ...func(*ClosePointInTimeRequest)) (*Response, error)
 
 // ClosePointInTimeRequest configures the Close Point In Time API request.
+//
 type ClosePointInTimeRequest struct {
 	Body io.Reader
 
@@ -58,6 +60,7 @@ type ClosePointInTimeRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r ClosePointInTimeRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -137,6 +140,7 @@ func (r ClosePointInTimeRequest) Do(ctx context.Context, transport Transport) (*
 }
 
 // WithContext sets the request context.
+//
 func (f ClosePointInTime) WithContext(v context.Context) func(*ClosePointInTimeRequest) {
 	return func(r *ClosePointInTimeRequest) {
 		r.ctx = v
@@ -144,6 +148,7 @@ func (f ClosePointInTime) WithContext(v context.Context) func(*ClosePointInTimeR
 }
 
 // WithBody - a point-in-time id to close.
+//
 func (f ClosePointInTime) WithBody(v io.Reader) func(*ClosePointInTimeRequest) {
 	return func(r *ClosePointInTimeRequest) {
 		r.Body = v
@@ -151,6 +156,7 @@ func (f ClosePointInTime) WithBody(v io.Reader) func(*ClosePointInTimeRequest) {
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f ClosePointInTime) WithPretty() func(*ClosePointInTimeRequest) {
 	return func(r *ClosePointInTimeRequest) {
 		r.Pretty = true
@@ -158,6 +164,7 @@ func (f ClosePointInTime) WithPretty() func(*ClosePointInTimeRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f ClosePointInTime) WithHuman() func(*ClosePointInTimeRequest) {
 	return func(r *ClosePointInTimeRequest) {
 		r.Human = true
@@ -165,6 +172,7 @@ func (f ClosePointInTime) WithHuman() func(*ClosePointInTimeRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f ClosePointInTime) WithErrorTrace() func(*ClosePointInTimeRequest) {
 	return func(r *ClosePointInTimeRequest) {
 		r.ErrorTrace = true
@@ -172,6 +180,7 @@ func (f ClosePointInTime) WithErrorTrace() func(*ClosePointInTimeRequest) {
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f ClosePointInTime) WithFilterPath(v ...string) func(*ClosePointInTimeRequest) {
 	return func(r *ClosePointInTimeRequest) {
 		r.FilterPath = v
@@ -179,6 +188,7 @@ func (f ClosePointInTime) WithFilterPath(v ...string) func(*ClosePointInTimeRequ
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f ClosePointInTime) WithHeader(h map[string]string) func(*ClosePointInTimeRequest) {
 	return func(r *ClosePointInTimeRequest) {
 		if r.Header == nil {
@@ -191,6 +201,7 @@ func (f ClosePointInTime) WithHeader(h map[string]string) func(*ClosePointInTime
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f ClosePointInTime) WithOpaqueID(s string) func(*ClosePointInTimeRequest) {
 	return func(r *ClosePointInTimeRequest) {
 		if r.Header == nil {

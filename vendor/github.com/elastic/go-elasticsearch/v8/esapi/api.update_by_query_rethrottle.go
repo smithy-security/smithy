@@ -41,9 +41,11 @@ func newUpdateByQueryRethrottleFunc(t Transport) UpdateByQueryRethrottle {
 // UpdateByQueryRethrottle changes the number of requests per second for a particular Update By Query operation.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-update-by-query.html.
+//
 type UpdateByQueryRethrottle func(task_id string, requests_per_second *int, o ...func(*UpdateByQueryRethrottleRequest)) (*Response, error)
 
 // UpdateByQueryRethrottleRequest configures the Update By Query Rethrottle API request.
+//
 type UpdateByQueryRethrottleRequest struct {
 	TaskID string
 
@@ -60,6 +62,7 @@ type UpdateByQueryRethrottleRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r UpdateByQueryRethrottleRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -144,6 +147,7 @@ func (r UpdateByQueryRethrottleRequest) Do(ctx context.Context, transport Transp
 }
 
 // WithContext sets the request context.
+//
 func (f UpdateByQueryRethrottle) WithContext(v context.Context) func(*UpdateByQueryRethrottleRequest) {
 	return func(r *UpdateByQueryRethrottleRequest) {
 		r.ctx = v
@@ -151,6 +155,7 @@ func (f UpdateByQueryRethrottle) WithContext(v context.Context) func(*UpdateByQu
 }
 
 // WithRequestsPerSecond - the throttle to set on this request in floating sub-requests per second. -1 means set no throttle..
+//
 func (f UpdateByQueryRethrottle) WithRequestsPerSecond(v int) func(*UpdateByQueryRethrottleRequest) {
 	return func(r *UpdateByQueryRethrottleRequest) {
 		r.RequestsPerSecond = &v
@@ -158,6 +163,7 @@ func (f UpdateByQueryRethrottle) WithRequestsPerSecond(v int) func(*UpdateByQuer
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f UpdateByQueryRethrottle) WithPretty() func(*UpdateByQueryRethrottleRequest) {
 	return func(r *UpdateByQueryRethrottleRequest) {
 		r.Pretty = true
@@ -165,6 +171,7 @@ func (f UpdateByQueryRethrottle) WithPretty() func(*UpdateByQueryRethrottleReque
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f UpdateByQueryRethrottle) WithHuman() func(*UpdateByQueryRethrottleRequest) {
 	return func(r *UpdateByQueryRethrottleRequest) {
 		r.Human = true
@@ -172,6 +179,7 @@ func (f UpdateByQueryRethrottle) WithHuman() func(*UpdateByQueryRethrottleReques
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f UpdateByQueryRethrottle) WithErrorTrace() func(*UpdateByQueryRethrottleRequest) {
 	return func(r *UpdateByQueryRethrottleRequest) {
 		r.ErrorTrace = true
@@ -179,6 +187,7 @@ func (f UpdateByQueryRethrottle) WithErrorTrace() func(*UpdateByQueryRethrottleR
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f UpdateByQueryRethrottle) WithFilterPath(v ...string) func(*UpdateByQueryRethrottleRequest) {
 	return func(r *UpdateByQueryRethrottleRequest) {
 		r.FilterPath = v
@@ -186,6 +195,7 @@ func (f UpdateByQueryRethrottle) WithFilterPath(v ...string) func(*UpdateByQuery
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f UpdateByQueryRethrottle) WithHeader(h map[string]string) func(*UpdateByQueryRethrottleRequest) {
 	return func(r *UpdateByQueryRethrottleRequest) {
 		if r.Header == nil {
@@ -198,6 +208,7 @@ func (f UpdateByQueryRethrottle) WithHeader(h map[string]string) func(*UpdateByQ
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f UpdateByQueryRethrottle) WithOpaqueID(s string) func(*UpdateByQueryRethrottleRequest) {
 	return func(r *UpdateByQueryRethrottleRequest) {
 		if r.Header == nil {

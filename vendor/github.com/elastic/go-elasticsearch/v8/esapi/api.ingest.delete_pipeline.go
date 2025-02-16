@@ -41,9 +41,11 @@ func newIngestDeletePipelineFunc(t Transport) IngestDeletePipeline {
 // IngestDeletePipeline deletes a pipeline.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/delete-pipeline-api.html.
+//
 type IngestDeletePipeline func(id string, o ...func(*IngestDeletePipelineRequest)) (*Response, error)
 
 // IngestDeletePipelineRequest configures the Ingest Delete Pipeline API request.
+//
 type IngestDeletePipelineRequest struct {
 	PipelineID string
 
@@ -61,6 +63,7 @@ type IngestDeletePipelineRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r IngestDeletePipelineRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -149,6 +152,7 @@ func (r IngestDeletePipelineRequest) Do(ctx context.Context, transport Transport
 }
 
 // WithContext sets the request context.
+//
 func (f IngestDeletePipeline) WithContext(v context.Context) func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		r.ctx = v
@@ -156,6 +160,7 @@ func (f IngestDeletePipeline) WithContext(v context.Context) func(*IngestDeleteP
 }
 
 // WithMasterTimeout - explicit operation timeout for connection to master node.
+//
 func (f IngestDeletePipeline) WithMasterTimeout(v time.Duration) func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		r.MasterTimeout = v
@@ -163,6 +168,7 @@ func (f IngestDeletePipeline) WithMasterTimeout(v time.Duration) func(*IngestDel
 }
 
 // WithTimeout - explicit operation timeout.
+//
 func (f IngestDeletePipeline) WithTimeout(v time.Duration) func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		r.Timeout = v
@@ -170,6 +176,7 @@ func (f IngestDeletePipeline) WithTimeout(v time.Duration) func(*IngestDeletePip
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f IngestDeletePipeline) WithPretty() func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		r.Pretty = true
@@ -177,6 +184,7 @@ func (f IngestDeletePipeline) WithPretty() func(*IngestDeletePipelineRequest) {
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f IngestDeletePipeline) WithHuman() func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		r.Human = true
@@ -184,6 +192,7 @@ func (f IngestDeletePipeline) WithHuman() func(*IngestDeletePipelineRequest) {
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f IngestDeletePipeline) WithErrorTrace() func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		r.ErrorTrace = true
@@ -191,6 +200,7 @@ func (f IngestDeletePipeline) WithErrorTrace() func(*IngestDeletePipelineRequest
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f IngestDeletePipeline) WithFilterPath(v ...string) func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		r.FilterPath = v
@@ -198,6 +208,7 @@ func (f IngestDeletePipeline) WithFilterPath(v ...string) func(*IngestDeletePipe
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f IngestDeletePipeline) WithHeader(h map[string]string) func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		if r.Header == nil {
@@ -210,6 +221,7 @@ func (f IngestDeletePipeline) WithHeader(h map[string]string) func(*IngestDelete
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f IngestDeletePipeline) WithOpaqueID(s string) func(*IngestDeletePipelineRequest) {
 	return func(r *IngestDeletePipelineRequest) {
 		if r.Header == nil {

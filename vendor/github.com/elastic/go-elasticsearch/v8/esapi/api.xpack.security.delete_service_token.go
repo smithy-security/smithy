@@ -40,9 +40,11 @@ func newSecurityDeleteServiceTokenFunc(t Transport) SecurityDeleteServiceToken {
 // SecurityDeleteServiceToken - Deletes a service account token.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-delete-service-token.html.
+//
 type SecurityDeleteServiceToken func(name string, namespace string, service string, o ...func(*SecurityDeleteServiceTokenRequest)) (*Response, error)
 
 // SecurityDeleteServiceTokenRequest configures the Security Delete Service Token API request.
+//
 type SecurityDeleteServiceTokenRequest struct {
 	Name      string
 	Namespace string
@@ -61,6 +63,7 @@ type SecurityDeleteServiceTokenRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r SecurityDeleteServiceTokenRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -153,6 +156,7 @@ func (r SecurityDeleteServiceTokenRequest) Do(ctx context.Context, transport Tra
 }
 
 // WithContext sets the request context.
+//
 func (f SecurityDeleteServiceToken) WithContext(v context.Context) func(*SecurityDeleteServiceTokenRequest) {
 	return func(r *SecurityDeleteServiceTokenRequest) {
 		r.ctx = v
@@ -160,6 +164,7 @@ func (f SecurityDeleteServiceToken) WithContext(v context.Context) func(*Securit
 }
 
 // WithRefresh - if `true` then refresh the affected shards to make this operation visible to search, if `wait_for` (the default) then wait for a refresh to make this operation visible to search, if `false` then do nothing with refreshes..
+//
 func (f SecurityDeleteServiceToken) WithRefresh(v string) func(*SecurityDeleteServiceTokenRequest) {
 	return func(r *SecurityDeleteServiceTokenRequest) {
 		r.Refresh = v
@@ -167,6 +172,7 @@ func (f SecurityDeleteServiceToken) WithRefresh(v string) func(*SecurityDeleteSe
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f SecurityDeleteServiceToken) WithPretty() func(*SecurityDeleteServiceTokenRequest) {
 	return func(r *SecurityDeleteServiceTokenRequest) {
 		r.Pretty = true
@@ -174,6 +180,7 @@ func (f SecurityDeleteServiceToken) WithPretty() func(*SecurityDeleteServiceToke
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f SecurityDeleteServiceToken) WithHuman() func(*SecurityDeleteServiceTokenRequest) {
 	return func(r *SecurityDeleteServiceTokenRequest) {
 		r.Human = true
@@ -181,6 +188,7 @@ func (f SecurityDeleteServiceToken) WithHuman() func(*SecurityDeleteServiceToken
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f SecurityDeleteServiceToken) WithErrorTrace() func(*SecurityDeleteServiceTokenRequest) {
 	return func(r *SecurityDeleteServiceTokenRequest) {
 		r.ErrorTrace = true
@@ -188,6 +196,7 @@ func (f SecurityDeleteServiceToken) WithErrorTrace() func(*SecurityDeleteService
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f SecurityDeleteServiceToken) WithFilterPath(v ...string) func(*SecurityDeleteServiceTokenRequest) {
 	return func(r *SecurityDeleteServiceTokenRequest) {
 		r.FilterPath = v
@@ -195,6 +204,7 @@ func (f SecurityDeleteServiceToken) WithFilterPath(v ...string) func(*SecurityDe
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f SecurityDeleteServiceToken) WithHeader(h map[string]string) func(*SecurityDeleteServiceTokenRequest) {
 	return func(r *SecurityDeleteServiceTokenRequest) {
 		if r.Header == nil {
@@ -207,6 +217,7 @@ func (f SecurityDeleteServiceToken) WithHeader(h map[string]string) func(*Securi
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f SecurityDeleteServiceToken) WithOpaqueID(s string) func(*SecurityDeleteServiceTokenRequest) {
 	return func(r *SecurityDeleteServiceTokenRequest) {
 		if r.Header == nil {

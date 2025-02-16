@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	exec "golang.org/x/sys/execabs"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -15,8 +16,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-
-	exec "golang.org/x/sys/execabs"
 
 	"golang.org/x/tools/cover"
 )

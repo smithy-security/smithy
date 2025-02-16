@@ -103,6 +103,7 @@ func NewEncoder(w io.Writer) *Encoder {
 // Velocypack cannot represent cyclic data structures and Marshal does not
 // handle them. Passing cyclic structures to Marshal will result in
 // an infinite recursion.
+//
 func Marshal(v interface{}) (result Slice, err error) {
 	defer func() {
 		if r := recover(); r != nil {

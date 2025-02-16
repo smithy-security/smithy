@@ -41,9 +41,11 @@ func newTransformGetTransformStatsFunc(t Transport) TransformGetTransformStats {
 // TransformGetTransformStats - Retrieves usage information for transforms.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/current/get-transform-stats.html.
+//
 type TransformGetTransformStats func(transform_id string, o ...func(*TransformGetTransformStatsRequest)) (*Response, error)
 
 // TransformGetTransformStatsRequest configures the Transform Get Transform Stats API request.
+//
 type TransformGetTransformStatsRequest struct {
 	TransformID string
 
@@ -62,6 +64,7 @@ type TransformGetTransformStatsRequest struct {
 }
 
 // Do executes the request and returns response or error.
+//
 func (r TransformGetTransformStatsRequest) Do(ctx context.Context, transport Transport) (*Response, error) {
 	var (
 		method string
@@ -154,6 +157,7 @@ func (r TransformGetTransformStatsRequest) Do(ctx context.Context, transport Tra
 }
 
 // WithContext sets the request context.
+//
 func (f TransformGetTransformStats) WithContext(v context.Context) func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		r.ctx = v
@@ -161,6 +165,7 @@ func (f TransformGetTransformStats) WithContext(v context.Context) func(*Transfo
 }
 
 // WithAllowNoMatch - whether to ignore if a wildcard expression matches no transforms. (this includes `_all` string or when no transforms have been specified).
+//
 func (f TransformGetTransformStats) WithAllowNoMatch(v bool) func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		r.AllowNoMatch = &v
@@ -168,6 +173,7 @@ func (f TransformGetTransformStats) WithAllowNoMatch(v bool) func(*TransformGetT
 }
 
 // WithFrom - skips a number of transform stats, defaults to 0.
+//
 func (f TransformGetTransformStats) WithFrom(v int) func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		r.From = &v
@@ -175,6 +181,7 @@ func (f TransformGetTransformStats) WithFrom(v int) func(*TransformGetTransformS
 }
 
 // WithSize - specifies a max number of transform stats to get, defaults to 100.
+//
 func (f TransformGetTransformStats) WithSize(v int) func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		r.Size = &v
@@ -182,6 +189,7 @@ func (f TransformGetTransformStats) WithSize(v int) func(*TransformGetTransformS
 }
 
 // WithPretty makes the response body pretty-printed.
+//
 func (f TransformGetTransformStats) WithPretty() func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		r.Pretty = true
@@ -189,6 +197,7 @@ func (f TransformGetTransformStats) WithPretty() func(*TransformGetTransformStat
 }
 
 // WithHuman makes statistical values human-readable.
+//
 func (f TransformGetTransformStats) WithHuman() func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		r.Human = true
@@ -196,6 +205,7 @@ func (f TransformGetTransformStats) WithHuman() func(*TransformGetTransformStats
 }
 
 // WithErrorTrace includes the stack trace for errors in the response body.
+//
 func (f TransformGetTransformStats) WithErrorTrace() func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		r.ErrorTrace = true
@@ -203,6 +213,7 @@ func (f TransformGetTransformStats) WithErrorTrace() func(*TransformGetTransform
 }
 
 // WithFilterPath filters the properties of the response body.
+//
 func (f TransformGetTransformStats) WithFilterPath(v ...string) func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		r.FilterPath = v
@@ -210,6 +221,7 @@ func (f TransformGetTransformStats) WithFilterPath(v ...string) func(*TransformG
 }
 
 // WithHeader adds the headers to the HTTP request.
+//
 func (f TransformGetTransformStats) WithHeader(h map[string]string) func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		if r.Header == nil {
@@ -222,6 +234,7 @@ func (f TransformGetTransformStats) WithHeader(h map[string]string) func(*Transf
 }
 
 // WithOpaqueID adds the X-Opaque-Id header to the HTTP request.
+//
 func (f TransformGetTransformStats) WithOpaqueID(s string) func(*TransformGetTransformStatsRequest) {
 	return func(r *TransformGetTransformStatsRequest) {
 		if r.Header == nil {
