@@ -44,5 +44,5 @@ fi
 
 if make -C "${COMPONENT_PATH}" --no-print-directory --dry-run extras >/dev/null 2>&1
 then
-    make -C "${COMPONENT_PATH}" --no-print-directory --quiet extras CONTAINER_REPO="${CONTAINER_REPO}" SMITHY_VERSION="${SMITHY_VERSION}"
+    make -C "${COMPONENT_PATH}" --no-print-directory --quiet extras CONTAINER_REPO="${CONTAINER_REPO}" SMITHY_VERSION="${SMITHY_VERSION}" BUILD_ARCHITECTURE="${build_architecture}"
 fi
