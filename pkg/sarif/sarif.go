@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/url"
 	"strings"
 	"time"
@@ -239,7 +240,9 @@ func parseOut(
 
 func addIssue(rules map[string]*sarif.ReportingDescriptor, issues []*v1.Issue, target, toolName string, res *sarif.Result) []*v1.Issue {
 	var description string
-
+	if res == nil {
+		return issues
+	}
 	rule, ok := rules[*res.RuleID]
 	if !ok {
 		log.Printf("could not find rule with id %s, double check tool %s output contains a tool.driver.rules section ", *res.RuleID, toolName)
@@ -248,12 +251,25 @@ func addIssue(rules map[string]*sarif.ReportingDescriptor, issues []*v1.Issue, t
 		ruleInfo, _ := json.Marshal(rule)
 		description = fmt.Sprintf("MatchedRule: %s \n Message: %s", ruleInfo, *res.Message.Text)
 	}
+	severity := v1.Severity_SEVERITY_UNSPECIFIED
+	if res.Level != nil {
+		severity = levelToSeverity(*res.Level)
+	}
+
+	if res.Message.Text == nil {
+		slog.Error("detect nil Message.Text in sarif finding, skipping")
+		return issues
+	}
+	if res.RuleID == nil {
+		slog.Error("detect nil RuleID in sarif finding, skipping")
+		return issues
+	}
 	issues = append(issues, &v1.Issue{
 		Target:      target,
 		Title:       *res.Message.Text,
 		Description: description,
 		Type:        *res.RuleID,
-		Severity:    levelToSeverity(*res.Level),
+		Severity:    severity,
 		Confidence:  v1.Confidence_CONFIDENCE_UNSPECIFIED,
 	})
 
