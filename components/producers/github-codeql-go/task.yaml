@@ -21,14 +21,14 @@ spec:
       - name: GITHUB_TOKEN
         value: "$(params.producer-github-codeql-go-github-token)"
     script: |
-      /codeql/codeql database create codeql-dbs\
+      /codeql/codeql database create $(workspaces.scratch.path)/codeql-dbs\
         --source-root=$(workspaces.source-code.path) \
         --db-cluster \
         --language=go \
         --threads=10 \
         --overwrite
               
-      /codeql/codeql database analyze /codeql-dbs/go codeql/go-queries --format=sarif-latest --output=$(workspaces.scratch.path)/out.sarif.json
+      /codeql/codeql database analyze $(workspaces.scratch.path)/codeql-dbs/go codeql/go-queries --format=sarif-latest --output=$(workspaces.scratch.path)/out.sarif.json
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent
