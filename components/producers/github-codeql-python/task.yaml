@@ -33,7 +33,7 @@ spec:
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql-go:{{ .Chart.AppVersion }}'
-    command: ["/app/components/producers/github-codeql/github-codeql-go"]
+    command: ["/app/components/producers/github-codeql-go/github-codeql-go-parser"]
     args:
     - "-in=$(workspaces.scratch.path)/out.sarif.json"
     - "-out=$(workspaces.scratch.path)/github-codeql-python.pb"
