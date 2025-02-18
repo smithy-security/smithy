@@ -21,14 +21,14 @@ spec:
       - name: GITHUB_TOKEN
         value: "$(params.producer-github-codeql-javascript-typescript-github-token)"
     script: |
-      /codeql/codeql database create codeql-dbs\
+      /codeql/codeql database create $(workspaces.scratch.path)/codeql-dbs\
         --source-root=$(workspaces.source-code.path) \
         --db-cluster\
         --language=javascript-typescript\
         --threads=10\
         --overwrite
       
-      /codeql/codeql database analyze /codeql-dbs/javascript codeql/javascript-queries --format=sarif-latest --output=$(workspaces.scratch.path)/out.sarif.json
+      /codeql/codeql database analyze $(workspaces.scratch.path)/codeql-dbs/javascript codeql/javascript-queries --format=sarif-latest --output=$(workspaces.scratch.path)/out.sarif.json
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent

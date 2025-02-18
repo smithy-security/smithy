@@ -28,7 +28,7 @@ spec:
         --threads=10\
         --overwrite
       
-      /codeql/codeql database analyze /codeql-dbs/python codeql/python-queries --format=sarif-latest --output=$(workspaces.scratch.path)/out.sarif.json
+      /codeql/codeql database analyze $(workspaces.scratch.path)/codeql-dbs/python codeql/python-queries --format=sarif-latest --output=$(workspaces.scratch.path)/out.sarif.json
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent
