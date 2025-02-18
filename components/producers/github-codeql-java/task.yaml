@@ -1,0 +1,39 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: producer-github-codeql-java
+  labels:
+    v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy-security.com/test-type: sast
+spec:
+  description: Run CodeQL against the provided code and print the results
+  params:
+  - name: producer-github-codeql-java-github-token
+    description: The optional GitHub token to use for scanning.
+    type: string
+    default: ""
+  steps:
+  - name: run-codeql
+    imagePullPolicy: IfNotPresent
+    image: '{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql:{{ .Chart.AppVersion }}'
+    env:
+      - name: GITHUB_TOKEN
+        value: "$(params.producer-github-codeql-java-github-token)"
+    script: |
+      /codeql/codeql database create codeql-dbs\
+        --source-root=$(workspaces.source-code.path) \
+        --db-cluster \
+        --language=java \
+        --threads=10 \
+        --overwrite
+              
+      /codeql/codeql database analyze /codeql-dbs/java codeql/java-queries --format=sarif-latest --output=$(workspaces.scratch.path)/out.sarif.json
+
+  - name: produce-issues
+    imagePullPolicy: IfNotPresent
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql-java:{{ .Chart.AppVersion }}'
+    command: ["/app/components/producers/github-codeql/github-codeql-java"]
+    args:
+    - "-in=$(workspaces.scratch.path)/out.sarif.json"
+    - "-out=$(workspaces.scratch.path)/github-codeql-java.pb"
