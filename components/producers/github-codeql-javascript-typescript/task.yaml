@@ -16,7 +16,7 @@ spec:
   steps:
   - name: run-codeql
     imagePullPolicy: IfNotPresent
-    image: '{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql:{{ .Chart.AppVersion }}'
     env:
       - name: GITHUB_TOKEN
         value: "$(params.producer-github-codeql-javascript-typescript-github-token)"
