@@ -21,6 +21,7 @@ import (
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
+	"github.com/smithy-security/smithy/smithyctl/annotation"
 	"github.com/smithy-security/smithy/smithyctl/internal/logging"
 )
 
@@ -41,7 +42,8 @@ type (
 
 	// FetchPackageResponse wraps the FetchPackage response.
 	FetchPackageResponse struct {
-		Component v1.Component
+		Component   v1.Component
+		Annotations map[string]string
 	}
 )
 
@@ -164,17 +166,17 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 		oras.PackManifestOptions{
 			Layers: []ocispec.Descriptor{blobDescriptor},
 			ManifestAnnotations: map[string]string{
-				"smithy.sdk.version":           sdkVersion,
-				"smithy.component.description": component.Description,
-				"smithy.component.name":        component.Name,
-				"smithy.component.type":        component.Type.String(),
-				"smithy.component.version":     componentVersion,
-				"smithy.component.source": fmt.Sprintf(
+				annotation.SmithySDKVersion:       sdkVersion,
+				annotation.SmithyComponentDescr:   component.Description,
+				annotation.SmithyComponentName:    component.Name,
+				annotation.SmithyComponentType:    component.Type.String(),
+				annotation.SmithyComponentVersion: componentVersion,
+				annotation.SmithyComponentSource: fmt.Sprintf(
 					"new-components/%s/%s",
 					component.Type,
 					component.Name,
 				),
-				"smithy.component.url": fmt.Sprintf(
+				annotation.SmithyComponentURL: fmt.Sprintf(
 					"https://github.com/smithy-security/smithy/tree/main/new-components/%s/%s",
 					component.Type,
 					component.Name,
@@ -290,6 +292,7 @@ func (r *orasRegistry) FetchPackage(ctx context.Context, ref reference.Reference
 	}
 
 	return &FetchPackageResponse{
-		Component: component,
+		Annotations: descr.Annotations,
+		Component:   component,
 	}, nil
 }

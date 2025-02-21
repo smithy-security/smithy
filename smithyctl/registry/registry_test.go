@@ -17,6 +17,7 @@ import (
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
+	"github.com/smithy-security/smithy/smithyctl/annotation"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
@@ -140,6 +141,18 @@ func (suite *RegistryTestSuite) TestPackageAndFetch() {
 	require.NoError(suite.T(), err)
 	require.NotNil(suite.T(), resp)
 	assert.Equal(suite.T(), component, &resp.Component)
+	assert.NotEmpty(suite.T(), resp.Annotations)
+	assert.Contains(
+		suite.T(),
+		resp.Annotations,
+		annotation.SmithySDKVersion,
+		annotation.SmithyComponentDescr,
+		annotation.SmithyComponentName,
+		annotation.SmithyComponentType,
+		annotation.SmithyComponentVersion,
+		annotation.SmithyComponentSource,
+		annotation.SmithyComponentURL,
+	)
 }
 
 func TestNew(t *testing.T) {
