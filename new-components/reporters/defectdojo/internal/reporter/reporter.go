@@ -216,10 +216,6 @@ func (d dojoLogger) handleResults(ctx context.Context, findings []*vf.Vulnerabil
 				}
 				filePaths := makeFilePaths(vuln)
 				falsePositive := false
-				// cvssScore := 0.0
-				// if len(vuln.GetCve().GetCvss()) > 0 {
-				// 	cvssScore = *vuln.GetCve().GetCvss()[0].OverallScore
-				// }
 
 				cweID := 0
 				if vuln.Cwe != nil {
