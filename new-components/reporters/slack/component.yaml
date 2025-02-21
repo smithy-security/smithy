@@ -1,0 +1,6 @@
+name: slack
+description: "Logs findings to slack"
+type: reporter
+steps:
+  - name: slack
+    image: "localhost:5000/components/reporters/slack:latest"
