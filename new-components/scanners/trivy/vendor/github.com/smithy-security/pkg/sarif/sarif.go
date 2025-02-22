@@ -156,7 +156,7 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 	if res.OccurrenceCount != nil {
 		occurrencesCount = ptr.Ptr(int32(*res.OccurrenceCount))
 	} else {
-		res.OccurrenceCount = ptr.Ptr(1)
+		occurrencesCount = ptr.Ptr(int32(1))
 	}
 	labels, err := s.mapProperties(res.Properties)
 	if err != nil {
@@ -172,6 +172,7 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 			firstSeenTime = ptr.Ptr(s.clock.Now().Unix())
 			firstSeenTimeDT = timestamppb.New(s.clock.Now())
 		}
+
 		if res.Provenance.LastDetectionTimeUtc != nil {
 			lastSeenTimeDT = timestamppb.New(*res.Provenance.LastDetectionTimeUtc)
 			lastSeenTime = ptr.Ptr(res.Provenance.LastDetectionTimeUtc.Unix())
@@ -179,9 +180,18 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 			lastSeenTime = ptr.Ptr(s.clock.Now().Unix())
 			lastSeenTimeDT = timestamppb.New(s.clock.Now())
 		}
+
+		modifiedTime = ptr.Ptr(s.clock.Now().Unix())
+		modifiedTimeDT = timestamppb.New(s.clock.Now())
+	} else {
+		firstSeenTime = ptr.Ptr(s.clock.Now().Unix())
+		firstSeenTimeDT = timestamppb.New(s.clock.Now())
+		lastSeenTime = ptr.Ptr(s.clock.Now().Unix())
+		lastSeenTimeDT = timestamppb.New(s.clock.Now())
 		modifiedTime = ptr.Ptr(s.clock.Now().Unix())
 		modifiedTimeDT = timestamppb.New(s.clock.Now())
 	}
+
 	rule := s.ruleToTools[*ruleID]
 	var cve *ocsf.Cve
 	if rule.FullDescription != nil {
@@ -382,6 +392,9 @@ func (s *SarifTransformer) detectPackageFromLogicalLocation(logicalLocation sari
 func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode, []*ocsf.AffectedPackage) {
 	var affectedCode []*ocsf.AffectedCode
 	var affectedPackages []*ocsf.AffectedPackage
+	if s.targetType == TargetTypeWeb { // websites do not carry code or package info
+		return nil, nil
+	}
 	for _, location := range res.Locations {
 		if location.PhysicalLocation == nil {
 			continue
@@ -554,6 +567,9 @@ func (s *SarifTransformer) mapDataSource(locations []sarif.Location) (string, er
 			dataSourceURI = "pkg:" + s.findingsEcosystem + "/" + *location.PhysicalLocation.ArtifactLocation.Uri
 		case TargetTypeRepository:
 			uriSchema = ocsffindinginfo.DataSource_URI_SCHEMA_FILE
+		case TargetTypeWeb: //explicitly setting uriSchema to nothing since web should have a http(s) prefix
+			uriSchema = ocsffindinginfo.DataSource_URI_SCHEMA_UNSPECIFIED
+			dataSourceURI = *location.PhysicalLocation.ArtifactLocation.Uri
 		}
 		dataSource := ocsffindinginfo.DataSource{
 			TargetType: targetType,

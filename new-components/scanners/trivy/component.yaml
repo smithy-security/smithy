@@ -1,0 +1,25 @@
+name: trivy
+description: "Runs Aquasec/Trivy against an image then parses findings into the OCSF format"
+type: scanner
+parameters:
+  - name: image
+    type: string
+    value: ""
+steps:
+  - name: run-trivy
+    image: docker.io/aquasec/trivy:latest
+    executable: >
+       image
+        --detection-priority="precise"
+        --parallel=0
+        --format=sarif
+        --output=$(workspaces.scratch.path)/trivy-out.sarif.json
+        --scanners=vuln
+        --scanners=misconfig 
+        --scanners=secret 
+        --scanners=license
+        {{ .parameters.repo_name }}
+  - name: parser
+    image: "localhost:5000/components/scanners/trivy:latest"
+    env_vars:
+      TRIVY_RAW_OUT_FILE_PATH: $(workspaces.scratch.path)/trivy-out.sarif.json
