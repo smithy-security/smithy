@@ -1,0 +1,14 @@
+name: zap
+description: "Runs zaproxy then parses findings into the OCSF format"
+type: scanner
+parameters:
+  - name: image
+    type: string
+    value: ""
+steps:
+  - name: run-orchestrated-zap
+    image: <>
+  - name: parser
+    image: "localhost:5000/components/scanners/zap:latest"
+    env_vars:
+      ZAP_RAW_OUT_FILE_PATH: $(workspaces.scratch.path)/zap-report.json
