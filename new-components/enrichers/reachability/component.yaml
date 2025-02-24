@@ -1,0 +1,21 @@
+name: reachability
+description: "Adds a boolean 'Reachable-Code' enrichment to the passed findings"
+type: enricher
+parameters:
+  - name: programming_language
+    type: string
+    value: ""
+steps:
+  - name: get-reachables
+    image: new-components/enrichers/reachability/cdxgen-atom-runner
+    executable: /runner
+    args:
+      - --source-location
+      - "{{ sourceCodeWorkspace }}"
+      - --scratch-location
+      - "{{ scratchWorkspace }}"
+  - name: enrich
+    executable: /bin/app
+    image: new-components/enrichers/reachability
+    env_vars:
+      ATOM_FILE_PATH: "{{ scratchWorkspace }}/reachables.json"
