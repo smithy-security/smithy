@@ -1,0 +1,37 @@
+name: reachability
+description: "Adds a boolean 'Reachable-Code' enrichment to the passed findings"
+type: enricher
+parameters:
+  - name: programming-language
+    type: string
+    value: ""
+steps:
+  - name: run-cdxgen
+    image: ghcr.io/cyclonedx/cdxgen:v11.1.0
+    executable: node
+    args:
+      - /opt/cdxgen/bin/cdxgen.js
+      - -t
+      - "{{ .parameters.programming-language }}"
+      - --deep
+      - -r
+      - --feature-flags safe-pip-install
+      - -p
+      - -o
+      - "{{ sourceCodeWorkspace }}/bom.json"
+      - "{{ sourceCodeWorkspace }}"
+      - --spec-version
+      - "1.5"
+    env_vars:
+      - NPM_INSTALL_ARGS: "--force --ignore-scripts --package-lock --legacy-peer-deps"
+  - name: run-atom
+    imagePullPolicy: IfNotPresent
+    image: ghcr.io/appthreat/atom:v2.0.18@sha256:893ed9ede9eea19540027faf72aa618e2b488192378f590fd2a1277b77712c1a
+    executable: /bin/sh
+    args:
+      - -c
+      - atom reachables -o {{ sourceCodeWorkspace }}/app.atom -s {{ scratchWorkspace }}/reachables.json -l {{ .parameters.programming-language }} {{ sourceCodeWorkspace }}
+  - name: reachability
+    image: "new-components/enrichers/reachability"
+    env_vars:
+      ATOM_FILE_PATH: "{{ scratchWorkspace }}/reachables.json"
