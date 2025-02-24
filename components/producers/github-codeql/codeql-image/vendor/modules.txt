@@ -1,0 +1,17 @@
+# github.com/go-enry/go-enry/v2 v2.9.2
+## explicit; go 1.14
+github.com/go-enry/go-enry/v2
+github.com/go-enry/go-enry/v2/data
+github.com/go-enry/go-enry/v2/data/rule
+github.com/go-enry/go-enry/v2/internal/tokenizer
+github.com/go-enry/go-enry/v2/internal/tokenizer/flex
+github.com/go-enry/go-enry/v2/regex
+# github.com/go-enry/go-oniguruma v1.2.1
+## explicit; go 1.14
+github.com/go-enry/go-oniguruma
+# github.com/go-errors/errors v1.5.1
+## explicit; go 1.14
+github.com/go-errors/errors
+# github.com/smithy-security/pkg/detect-repo-languages v0.0.0-20250224152126-1825c2dd709a
+## explicit; go 1.23.3
+github.com/smithy-security/pkg/detect-repo-languages
