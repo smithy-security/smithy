@@ -1,0 +1,57 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: producer-cloudpi
+  labels:
+    v1.dracon.ocurity.com/component: producer
+    v1.dracon.ocurity.com/test-type: sca
+spec:
+  params:
+  - name: AWS_ACCESS_KEY_ID
+    type: string
+    description: "aws access key id"
+  - name: AWS_SECRET_ACCESS_KEY
+    type: string
+    description: "aws secret access key"
+  - name: AWS_REGION
+    type: string
+    description: "aws region"
+  volumes:
+    - name: scratch
+      emptyDir: {}
+  workspaces:
+    - name: output
+      description: The workspace containing the source-code to scan.
+  steps:
+  - name: run-cartography
+    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/cloudpi-cartography:{{ .Chart.AppVersion }}'
+    env:
+      - name: AWS_ACCESS_KEY_ID
+        value: $(params.AWS_ACCESS_KEY_ID)
+      - name: AWS_SECRET_ACCESS_KEY
+        value: $(params.AWS_SECRET_ACCESS_KEY)
+      - name: AWS_REGION
+        value: $(params.AWS_REGION)
+      - name: READ_PATH
+        value: $(workspaces.output.path)/.dracon/producers
+      - name: WRITE_PATH
+        value: "$(workspaces.output.path)/.dracon/producers"
+    command: 
+      - cartography
+    args:
+      - --neo4j-uri
+      - bolt://dracon.dracon.svc:7687
+    volumeMounts:
+    - mountPath: /scratch
+      name: scratch
+  - name: run-trivy
+    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/cloudpi-trivy:{{ .Chart.AppVersion }}'
+    env:
+      - name: READ_PATH
+        value: $(workspaces.output.path)/.dracon/producers
+      - name: WRITE_PATH
+        value: "$(workspaces.output.path)/.dracon/producers"
+    volumeMounts:
+    - mountPath: /scratch
+      name: scratch
