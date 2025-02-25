@@ -9,8 +9,8 @@ require (
 	github.com/google/go-containerregistry v0.19.0
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/ory/dockertest/v3 v3.11.0
-	github.com/smithy-security/smithy v0.60.1-0.20250206101744-6d0b3953246a
-	github.com/smithy-security/smithy/sdk v0.0.4-alpha.0.20250206150110-bea6298b73f0
+	github.com/smithy-security/smithy v0.63.0
+	github.com/smithy-security/smithy/sdk v0.0.5-alpha
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/mock v0.5.0

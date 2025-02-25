@@ -88,10 +88,10 @@ github.com/rogpeppe/go-internal v1.13.1/go.mod h1:uMEvuHeurkdAXX61udpOXGD/AzZDWN
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ=
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
-github.com/smithy-security/smithy v0.60.1-0.20250206101744-6d0b3953246a h1:XyJevR3ZT0j46aeXNYfVvK8TU3jTQGeXiV3hBI2Kplk=
-github.com/smithy-security/smithy v0.60.1-0.20250206101744-6d0b3953246a/go.mod h1:aJhBjYXuV5x2LIFpdIW6VawlMpFskH01y+E3aizwB1E=
-github.com/smithy-security/smithy/sdk v0.0.4-alpha.0.20250206150110-bea6298b73f0 h1:Yz7GYjVwpX+GbqUTEZOFL+iSs6LDD0p5vE37P0U7MO8=
-github.com/smithy-security/smithy/sdk v0.0.4-alpha.0.20250206150110-bea6298b73f0/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
+github.com/smithy-security/smithy v0.63.0 h1:7dQZu90CQCUItTOuWm8TmAgPsWiAFBmuVJmBzba3OgA=
+github.com/smithy-security/smithy v0.63.0/go.mod h1:Vax9FlFepD+NHTGESTotAEkcKKBtcd6rHm7YvmsAaqg=
+github.com/smithy-security/smithy/sdk v0.0.5-alpha h1:0ENqmqsf5jQBG63Yt0Zx4WeHeEB26XXYPtospV+69zg=
+github.com/smithy-security/smithy/sdk v0.0.5-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
 github.com/spf13/cobra v1.8.1 h1:e5/vxKd/rZsfSJMUX1agtjeTDf+qv1/JdBF8gg5k9ZM=
 github.com/spf13/cobra v1.8.1/go.mod h1:wHxEcudfqmLYa8iTfL+OuZPbBZkmvliBWKIezN3kD9Y=
 github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=

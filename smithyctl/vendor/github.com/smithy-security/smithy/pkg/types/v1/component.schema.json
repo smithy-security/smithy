@@ -25,7 +25,8 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^[a-z_]*$"
           },
           "type": {
             "type": "string",
