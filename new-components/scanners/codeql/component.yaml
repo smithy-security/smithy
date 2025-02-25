@@ -1,0 +1,20 @@
+name: codeql
+  description: Run CodeQL against the provided code and print the results
+type: scanner
+parameters:
+  - name: repo_name
+    type: string
+    value: tree
+steps:
+  - name: run-codeql
+    imagePullPolicy: IfNotPresent
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql-go:{{ .Chart.AppVersion }}'
+    command:
+      - /build/codeql-runner
+    args:
+      - -scratch-location=$(workspaces.scratch.path) 
+      - -source-location=$(workspaces.source-code.path)
+  - name: parser
+    image: "localhost:5000/components/scanners/codeql:latest"
+    env_vars:
+      CODEQL_RAW_OUT_FILE_GLOB: $(workspaces.scratch.path)/*.sarif.json
