@@ -122,7 +122,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should JSON marshal correctly a non empty const pointer to a string",
 			param: v1.Parameter{
 				Name:  "non-empty-const-ptr-str",
-				Type:  v1.ParameterTypeConststring,
+				Type:  v1.ParameterTypeConstString,
 				Value: ptr("{{.Helm.template.value}}"),
 			},
 			encoding: encodingJSON,
@@ -131,7 +131,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should YAML marshal correctly a non empty const pointer to a string",
 			param: v1.Parameter{
 				Name:  "non-empty-const-ptr-str",
-				Type:  v1.ParameterTypeConststring,
+				Type:  v1.ParameterTypeConstString,
 				Value: ptr("{{.Helm.template.value}}"),
 			},
 			encoding: encodingYAML,
@@ -140,7 +140,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should JSON marshal correctly an empty const pointer to a string",
 			param: v1.Parameter{
 				Name:  "empty-const-ptr-str",
-				Type:  v1.ParameterTypeConststring,
+				Type:  v1.ParameterTypeConstString,
 				Value: ptr(""),
 			},
 			encoding: encodingJSON,
@@ -149,7 +149,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should YAML marshal correctly an empty const pointer to a string",
 			param: v1.Parameter{
 				Name:  "empty-const-ptr-str",
-				Type:  v1.ParameterTypeConststring,
+				Type:  v1.ParameterTypeConstString,
 				Value: ptr(""),
 			},
 			encoding: encodingYAML,
@@ -158,7 +158,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should JSON marshal correctly a non empty const string",
 			param: v1.Parameter{
 				Name:  "non-empty-const-str",
-				Type:  v1.ParameterTypeConststring,
+				Type:  v1.ParameterTypeConstString,
 				Value: "{{.Helm.template.value}}",
 			},
 			encoding: encodingJSON,
@@ -167,7 +167,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should YAML marshal correctly a non empty const string",
 			param: v1.Parameter{
 				Name:  "non-empty-const-str",
-				Type:  v1.ParameterTypeConststring,
+				Type:  v1.ParameterTypeConstString,
 				Value: "{{.Helm.template.value}}",
 			},
 			encoding: encodingYAML,
@@ -176,7 +176,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should JSON marshal correctly an empty string",
 			param: v1.Parameter{
 				Name:  "empty-const-str",
-				Type:  v1.ParameterTypeConststring,
+				Type:  v1.ParameterTypeConstString,
 				Value: "",
 			},
 			encoding: encodingJSON,
@@ -185,7 +185,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should YAML marshal correctly an empty string",
 			param: v1.Parameter{
 				Name:  "empty-const-str",
-				Type:  v1.ParameterTypeConststring,
+				Type:  v1.ParameterTypeConstString,
 				Value: "",
 			},
 			encoding: encodingYAML,
@@ -194,7 +194,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should JSON marshal correctly an nil const string",
 			param: v1.Parameter{
 				Name: "nil-const-str",
-				Type: v1.ParameterTypeConststring,
+				Type: v1.ParameterTypeConstString,
 			},
 			encoding: encodingJSON,
 		},
@@ -202,7 +202,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should YAML marshal correctly an nil const string",
 			param: v1.Parameter{
 				Name: "nil-const-str",
-				Type: v1.ParameterTypeConststring,
+				Type: v1.ParameterTypeConstString,
 			},
 			encoding: encodingYAML,
 		},
@@ -210,7 +210,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should JSON marshal correctly a non empty list string",
 			param: v1.Parameter{
 				Name:  "non-empty-list-str",
-				Type:  v1.ParameterTypeListstring,
+				Type:  v1.ParameterTypeListString,
 				Value: []string{"dracon", "is", "not", "smithy"},
 			},
 			encoding: encodingJSON,
@@ -219,7 +219,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should YAML marshal correctly a non empty list string",
 			param: v1.Parameter{
 				Name:  "non-empty-list-str",
-				Type:  v1.ParameterTypeListstring,
+				Type:  v1.ParameterTypeListString,
 				Value: []string{"dracon", "is", "not", "smithy"},
 			},
 			encoding: encodingYAML,
@@ -228,7 +228,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should JSON marshal correctly an empty list string",
 			param: v1.Parameter{
 				Name:  "empty-list-str",
-				Type:  v1.ParameterTypeListstring,
+				Type:  v1.ParameterTypeListString,
 				Value: make([]string, 0),
 			},
 			encoding: encodingJSON,
@@ -237,7 +237,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should YAML marshal correctly an empty list string",
 			param: v1.Parameter{
 				Name:  "empty-list-str",
-				Type:  v1.ParameterTypeListstring,
+				Type:  v1.ParameterTypeListString,
 				Value: make([]string, 0),
 			},
 			encoding: encodingYAML,
@@ -246,7 +246,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should JSON marshal correctly an nil list string",
 			param: v1.Parameter{
 				Name:  "nil-list-str",
-				Type:  v1.ParameterTypeListstring,
+				Type:  v1.ParameterTypeListString,
 				Value: nil,
 			},
 			encoding: encodingJSON,
@@ -255,7 +255,7 @@ func TestParameter(t *testing.T) {
 			testCase: "it should YAML marshal correctly an nil list string",
 			param: v1.Parameter{
 				Name:  "nil-list-str",
-				Type:  v1.ParameterTypeListstring,
+				Type:  v1.ParameterTypeListString,
 				Value: nil,
 			},
 			encoding: encodingYAML,
@@ -310,7 +310,7 @@ func TestParameter(t *testing.T) {
 func validateStringParam(t *testing.T, expectedParam, givenParam v1.Parameter) {
 	t.Helper()
 
-	if expectedParam.Type != v1.ParameterTypeString && expectedParam.Type != v1.ParameterTypeConststring {
+	if expectedParam.Type != v1.ParameterTypeString && expectedParam.Type != v1.ParameterTypeConstString {
 		return
 	}
 
@@ -325,7 +325,7 @@ func validateStringParam(t *testing.T, expectedParam, givenParam v1.Parameter) {
 func validateListParam(t *testing.T, expectedParam, givenParam v1.Parameter) {
 	t.Helper()
 
-	if expectedParam.Type != v1.ParameterTypeListstring {
+	if expectedParam.Type != v1.ParameterTypeListString {
 		return
 	}
 
