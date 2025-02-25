@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package smithy.security.smithy.v1;
+
+import "api/proto/v1/issue.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/smithy-security/smithy/api/proto/v1";
+
+/*
+   Scan related information, unique and immutable per scan run
+   This message is copied from LaunchToolRequest to LaunchToolResponse
+   by each producer wrapper
+*/
+message ScanInfo {
+  // scan unique identifier
+  string scan_uuid = 1;
+  // timestamp of when the scan was triggered (passed to LaunchToolResponse)
+  google.protobuf.Timestamp scan_start_time = 2;
+  // [Optional] scan tags is a user defined list of tags for this scan
+  map<string, string> scan_tags = 3;
+}
+
+/* LaunchToolResponse consists of a response built by a producer,
+ * to be interpreted by a consumer */
+message LaunchToolResponse {
+  // The scan information, see above for details
+  ScanInfo scan_info = 1;
+  // The name of the tool that ran the scan
+  string tool_name = 2;
+  // Issues discovered during the scan
+  repeated smithy.v1.Issue issues = 3;
+  // The target of the scan
+  string scan_target = 4;
+}
+
+/*
+   An EnrichedLaunchToolResponse consists of deduplicated vulnerability
+   information, with added metadata for consumers
+*/
+message EnrichedLaunchToolResponse {
+  // The results of the original scan prior to enrichment
+  LaunchToolResponse original_results = 1;
+  // Enriched, deduplicated issues
+  repeated EnrichedIssue issues = 2;
+}
