@@ -20,7 +20,7 @@ var (
 type (
 	// ParameterType represents the type of parameter that can be parsed by the
 	// system.
-	// ENUM(string, const:string, list:string)
+	// ENUM(string, const_string=const:string, list_string=list:string)
 	ParameterType string
 
 	// Parameter is a struct whose value must be of the type as it's defined in the
@@ -82,13 +82,13 @@ func (p *Parameter) UnmarshalYAML(value *yaml.Node) error {
 	p.Type = partialParameter.Type
 
 	switch partialParameter.Type {
-	case ParameterTypeString, ParameterTypeConststring:
+	case ParameterTypeString, ParameterTypeConstString:
 		strPtr := struct{ Value *string }{}
 		if err := value.Decode(&strPtr); err != nil {
 			return errors.Errorf("failed to unmarshal parameter %s: %w", p.Name, err)
 		}
 		p.Value = strPtr.Value
-	case ParameterTypeListstring:
+	case ParameterTypeListString:
 		parameterValue := struct{ Value []string }{}
 		err = value.Decode(&parameterValue)
 		p.Value = parameterValue.Value
@@ -118,13 +118,13 @@ func (p *Parameter) UnmarshalJSON(b []byte) error {
 	p.Type = partialParameter.Type
 
 	switch partialParameter.Type {
-	case ParameterTypeString, ParameterTypeConststring:
+	case ParameterTypeString, ParameterTypeConstString:
 		strPtr := struct{ Value *string }{}
 		if err = json.Unmarshal(b, &strPtr); err != nil {
 			return errors.Errorf("failed to unmarshal parameter %s: %w", p.Name, err)
 		}
 		p.Value = strPtr.Value
-	case ParameterTypeListstring:
+	case ParameterTypeListString:
 		parameterValue := &struct{ Value []string }{}
 		err = json.Unmarshal(b, parameterValue)
 		p.Value = parameterValue.Value
@@ -175,12 +175,12 @@ func (p *Parameter) Validate() error {
 	var correctType bool
 
 	switch p.Type {
-	case ParameterTypeString, ParameterTypeConststring:
+	case ParameterTypeString, ParameterTypeConstString:
 		_, correctType = p.Value.(*string)
 		if !correctType {
 			_, correctType = p.Value.(string)
 		}
-	case ParameterTypeListstring:
+	case ParameterTypeListString:
 		_, correctType = p.Value.([]string)
 	default:
 		err = ErrUnknownParameterType
