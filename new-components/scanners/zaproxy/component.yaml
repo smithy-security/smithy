@@ -7,8 +7,8 @@ parameters:
     value: ""
 steps:
   - name: run-orchestrated-zap
-    image: <>
+    image: zap-with-orchestration:latest
   - name: parser
     image: "localhost:5000/components/scanners/zap:latest"
     env_vars:
-      ZAP_RAW_OUT_FILE_PATH: $(workspaces.scratch.path)/zap-report.json
+      ZAP_RAW_OUT_FILE_PATH: repos/zap-report.json
