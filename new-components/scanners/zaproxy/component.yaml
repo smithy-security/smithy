@@ -7,8 +7,10 @@ parameters:
     value: ""
 steps:
   - name: run-orchestrated-zap
-    image: <>
+    image: "new-components/scanners/zaproxy/zap-with-orchestration-script"
+    executable: /workdir/entrypoint.sh
   - name: parser
-    image: "localhost:5000/components/scanners/zap:latest"
+    image: "new-components/scanners/zaproxy"
+    executable: /bin/app
     env_vars:
-      ZAP_RAW_OUT_FILE_PATH: $(workspaces.scratch.path)/zap-report.json
+      ZAP_RAW_OUT_FILE_PATH: repos/zap-report.json

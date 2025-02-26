@@ -1,6 +1,5 @@
 
 #!/usr/bin/env python
-# Base64 orchestration file
 import time
 import requests
 import urllib
@@ -9,7 +8,7 @@ zap_api_key="changeme"
 zap_api_host="localhost"
 zap_api_port="8081"
 target_url="http://bodgeit.com:8080/bodgeit"
-report_dir="/scratch"
+report_dir="/repos"
 report_filename="zap-report.json"
 
 report_title="TestReport"
