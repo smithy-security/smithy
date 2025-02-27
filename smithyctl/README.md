@@ -43,4 +43,4 @@ smithyctl version
 
 Compile `smithyctl` locally by running `make smithyctl/cmd/bin` in the root of this project.
 
-You can then find the binary in `/bin/smithyctl/cmd/{GOOS}/{GOARCH}/smithyctl`.
+You can then find the binary in `./bin/smithyctl/cmd/{GOOS}/{GOARCH}/smithyctl`.
