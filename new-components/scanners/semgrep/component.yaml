@@ -1,0 +1,20 @@
+name: semgrep
+description: "Runs Semgrep then parses findings into the OCSF format"
+type: scanner
+parameters:
+steps:
+  - name: run-semgrep
+    image: docker.io/returntocorp/semgrep:1.80
+    executable: >
+      semgrep
+        scan
+        --metrics=off
+        --config="p/default"
+        --sarif
+        --sarif-output
+        $(workspaces.scratch.path)/semgrep-out.sarif.json
+        $(workspaces.source-code.path)
+  - name: parser
+    image: "localhost:5000/components/scanners/semgrep:latest"
+    env_vars:
+      SEMGREP_RAW_OUT_FILE_PATH: $(workspaces.scratch.path)/semgrep-out.sarif.json
