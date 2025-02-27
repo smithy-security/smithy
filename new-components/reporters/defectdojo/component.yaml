@@ -1,0 +1,6 @@
+name: defectdojo
+description: "Logs findings to remote defectdojo"
+type: reporter
+steps:
+  - name: defectdojo
+    image: "localhost:5000/components/reporters/defectdojo:latest"
