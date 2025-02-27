@@ -1,0 +1,69 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  annotations:
+  labels:
+    v1.dracon.ocurity.com/component: producer
+    v1.dracon.ocurity.com/test-type: sca
+  name: producer-cloudpi
+  namespace: dracon
+spec:
+  params:
+  - description: aws access key id
+    name: AWS_ACCESS_KEY_ID
+    type: string
+  - description: aws secret access key
+    name: AWS_SECRET_ACCESS_KEY
+    type: string
+  - description: aws region
+    name: AWS_DEFAULT_REGION
+    type: string
+  - description: database uri
+    name: DATABASE_URI
+    default: "bolt://dracon.dracon.svc:7687"
+  - description: severity flag to identify vulnerabilities
+    name: SEVERITY
+    default: HIGH
+  steps:
+  - name: run-cartography
+    image: 'kind-registry:5000/components/producers/cloudpi:v0.13.0'
+    env:
+      - name: AWS_ACCESS_KEY_ID
+        value: $(params.AWS_ACCESS_KEY_ID)
+      - name: AWS_SECRET_ACCESS_KEY
+        value: $(params.AWS_SECRET_ACCESS_KEY)
+      - name: AWS_DEFAULT_REGION
+        value: $(params.AWS_DEFAULT_REGION)
+      - name: READ_PATH
+        value: $(workspaces.output.path)/.dracon/producers
+      - name: WRITE_PATH
+        value: "$(workspaces.output.path)/.dracon/producers"
+    command: 
+      - cartography
+    args:
+      - --neo4j-uri
+      - bolt://dracon.dracon.svc:7687
+  - args:
+    - main.py
+    command:
+    - python
+    computeResources: {}
+    env:
+    - name: AWS_ACCESS_KEY_ID
+      value: $(params.AWS_ACCESS_KEY_ID)
+    - name: AWS_SECRET_ACCESS_KEY
+      value: $(params.AWS_SECRET_ACCESS_KEY)
+    - name: AWS_DEFAULT_REGION
+      value: $(params.AWS_DEFAULT_REGION)
+    - name: DATABASE_URI
+      value: $(params.DATABASE_URI)
+    - name: SEVERITY
+      value: $(params.SEVERITY)
+    image: kind-registry:5000/components/producers/neo4jclient:v0.13.8
+    name: run-trivy
+    volumeMounts:
+    - mountPath: /scratch
+      name: scratch
+  volumes:
+  - emptyDir: {}
+    name: scratch

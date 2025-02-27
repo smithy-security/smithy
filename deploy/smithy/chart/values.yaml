@@ -59,6 +59,21 @@ postgresql:
   enabled: true
   <<: *psqlConfig
 
+neo4j:
+  # if set, a Neo4j instance will be deployed
+  enabled: true
+  neo4j:
+    edition: community
+    name: neo4j
+  volumes:
+    data:
+      mode: defaultStorageClass
+  services:
+    neo4j:
+      enabled: false
+  # TODO: add authorization
+  config:
+    dbms.security.auth_enabled: "false"
 
 # this section controls aspects of managing a database used to store deduplication enrichments
 # the database should use the Postgres dialect.
