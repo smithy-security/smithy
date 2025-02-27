@@ -1,0 +1,20 @@
+name: elastisearch
+description: "Logs findings to a remote elasticsearch"
+type: reporter
+parameters:
+  - name: elasticsearch_url
+    type: string
+    value: ""
+  - name: elasticsearch_index
+    type: string
+    value: ""
+  - name: elasticsearch_api_key
+    type: string
+    value: ""
+steps:
+  - name:
+    image: "localhost:5000/components/reporters/elasticsearch:latest"
+    env_vars:
+      - ELASTICSEARCH_URL: {{ .parameters.elasticsearch_url }}
+      - ELASTICSEARCH_INDEX: {{ .parameters.elasticsearch_index }}
+      - ELASTICSEARCH_API_KEY: {{ .parameters.elasticsearch_api_key }}
