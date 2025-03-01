@@ -1,0 +1,36 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: enricher-github-url
+  labels:
+    v1.smithy.smithy-security.com/component: enricher
+spec:
+  description: Reconstructs a URL pointing to a github reference, file and line.
+  params:
+  - name: enricher-github-url-organization-name
+    type: string
+  - name: enricher-github-url-repository-name
+    type: string
+  - name: enricher-github-url-reference
+    type: string
+  
+  workspaces:
+    - name: output
+      description: The workspace containing the source-code to scan.
+  steps:
+  - name: run-enricher
+    imagePullPolicy: IfNotPresent
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/enrichers/codeowners:{{ .Chart.AppVersion }}'
+    command: ["/app/components/enrichers/codeowners/codeowners"]
+    env:
+    - name: READ_PATH
+      value: $(workspaces.scratch.path)
+    - name: WRITE_PATH
+      value: "$(workspaces.scratch.path)/codeowners"
+    - name: ORG_NAME
+      value: "$(params.enricher-github-url-organization-name)"
+    - name: REFERENCE
+      value: "$(params.enricher-github-url-repository-name)"
+    - name: REPO_NAME
+      value: "$(params.enricher-github-url-reference)"
