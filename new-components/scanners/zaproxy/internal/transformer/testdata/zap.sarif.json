@@ -1,0 +1,975 @@
+{
+    "runs": [
+        {
+            "results": [
+                {
+                    "level": "error",
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "http:\/\/bodgeit.com:8080\/bodgeit\/search.jsp?q=%3C%2Ffont%3E%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E%3Cfont%3E"
+                                },
+                                "region": {
+                                    "startLine": 70,
+                                    "snippet": {
+                                        "text": "<\/font><scrIpt>alert(1);<\/scRipt><font>"
+                                    }
+                                }
+                            },
+                            "properties": {
+                                "attack": "<\/font><scrIpt>alert(1);<\/scRipt><font>"
+                            }
+                        }
+                    ],
+                    "message": {
+                        "text": "Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML\/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.\nWhen an attacker gets a user's browser to execute his\/her code, the code will run within the security context (or zone) of the hosting web site. With this level of privilege, the code has the ability to read, modify and transmit any sensitive data accessible by the browser. A Cross-site Scripted user could have his\/her account hijacked (cookie theft), their browser redirected to another location, or possibly shown fraudulent content delivered by the web site they are visiting. Cross-site Scripting attacks essentially compromise the trust relationship between a user and the web site. Applications utilizing browser object instances which load content from the file system may execute code under the local machine zone allowing for system compromise.\n\nThere are three types of Cross-site Scripting attacks: non-persistent, persistent and DOM-based.\nNon-persistent attacks and DOM-based attacks require a user to either visit a specially crafted link laced with malicious code, or visit a malicious web page containing a web form, which when posted to the vulnerable site, will mount the attack. Using a malicious form will oftentimes take place when the vulnerable resource only accepts HTTP POST requests. In such a case, the form can be submitted automatically, without the victim's knowledge (e.g. by using JavaScript). Upon clicking on the malicious link or submitting the malicious form, the XSS payload will get echoed back and will get interpreted by the user's browser and execute. Another technique to send almost arbitrary requests (GET and POST) is by using an embedded client, such as Adobe Flash.\nPersistent attacks occur when the malicious code is submitted to a web site where it's stored for a period of time. Examples of an attacker's favorite targets often include message board posts, web mail messages, and web chat software. The unsuspecting user is not required to interact with any additional site\/link (e.g. an attacker site or a malicious link sent via email), just simply view the web page containing the code."
+                    },
+                    "ruleId": "40012",
+                    "webRequest": {
+                        "protocol": "HTTP",
+                        "version": "1.1",
+                        "target": "http:\/\/bodgeit.com:8080\/bodgeit\/search.jsp?q=%3C%2Ffont%3E%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E%3Cfont%3E",
+                        "method": "GET",
+                        "headers": {
+                            "Cookie": "JSESSIONID=A26D9F5A3946F522400CBD3B6BD544BD; b_id=4",
+                            "cache-control": "no-cache",
+                            "host": "bodgeit.com:8080",
+                            "pragma": "no-cache",
+                            "referer": "http:\/\/bodgeit.com:8080\/bodgeit\/search.jsp",
+                            "user-agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/131.0.0.0 Safari\/537.36"
+                        },
+                        "body": {}
+                    },
+                    "webResponse": {
+                        "statusCode": 200,
+                        "reasonPhrase": "",
+                        "protocol": "HTTP",
+                        "version": "1.1",
+                        "headers": {
+                            "Content-Length": "2044",
+                            "Content-Type": "text\/html;charset=ISO-8859-1",
+                            "Date": "Sun, 23 Feb 2025 15:22:18 GMT"
+                        },
+                        "body": {
+                            "text": "\n\n\n\n\n\n\n<!DOCTYPE HTML PUBLIC \"-\/\/W3C\/\/DTD HTML 3.2\/\/EN\">\n<html>\n<head>\n<title>The BodgeIt Store<\/title>\n<link href=\"style.css\" rel=\"stylesheet\" type=\"text\/css\" \/>\n<script type=\"text\/javascript\" src=\".\/js\/util.js\"><\/script>\n<\/head>\n<body>\n\n<center>\n<table width=\"80%\" class=\"border\">\n<tr BGCOLOR=#C3D9FF>\n<td align=\"center\" colspan=\"6\">\n<H1>The BodgeIt Store<\/H1>\n<table width=\"100%\" class=\\\"noborder\\\">\n<tr BGCOLOR=#C3D9FF>\n<td align=\"center\" width=\"30%\">\u0026nbsp;<\/td>\n<td align=\"center\" width=\"40%\">We bodge it, so you dont have to!<\/td>\n<td align=\"center\" width=\"30%\" style=\"text-align: right\" >\nGuest user\n\n<\/tr>\n<\/table>\n<\/td>\n<\/tr>\n<tr>\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"home.jsp\">Home<\/a><\/td>\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"about.jsp\">About Us<\/a><\/td>\n\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"contact.jsp\">Contact Us<\/a><\/td>\n<!-- td align=\"center\" width=\"16%\"><a href=\"admin.jsp\">Admin<\/a><\/td-->\n\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE>\n\n\t\t<a href=\"login.jsp\">Login<\/a>\n\n<\/td>\n\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"basket.jsp\">Your Basket<\/a><\/td>\n\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"search.jsp\">Search<\/a><\/td>\n<\/tr>\n<tr>\n<td align=\"center\" colspan=\"6\">\n<table width=\"100%\" class=\"border\">\n<tr>\n<td align=\"left\" valign=\"top\" width=\"25%\">\n<a href=\"product.jsp?typeid=6\">Doodahs<\/a><br\/>\n<a href=\"product.jsp?typeid=5\">Gizmos<\/a><br\/>\n<a href=\"product.jsp?typeid=3\">Thingamajigs<\/a><br\/>\n<a href=\"product.jsp?typeid=2\">Thingies<\/a><br\/>\n<a href=\"product.jsp?typeid=7\">Whatchamacallits<\/a><br\/>\n<a href=\"product.jsp?typeid=4\">Whatsits<\/a><br\/>\n<a href=\"product.jsp?typeid=1\">Widgets<\/a><br\/>\n\n<br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/>\n<\/td>\n<td valign=\"top\" width=\"70%\">\n\n<h3>Search<\/h3>\n<font size=\"-1\">\n\n<b>You searched for:<\/b> <\/font><scrIpt>alert(1);<\/scRipt><font><br\/><br\/>\n<div><b>No Results Found<\/b><\/div>\n\n<\/font>\n<\/td>\n<\/tr>\n<\/table>\n<\/td>\n<\/tr>\n<\/table>\n<\/center>\n<\/body>\n<\/html>\n"
+                        },
+                        "noResponseReceived": false
+                    }
+                },
+                {
+                    "level": "error",
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "http:\/\/bodgeit.com:8080\/bodgeit\/contact.jsp"
+                                },
+                                "region": {
+                                    "startLine": 69,
+                                    "snippet": {
+                                        "text": "<\/td><scrIpt>alert(1);<\/scRipt><td>"
+                                    }
+                                }
+                            },
+                            "properties": {
+                                "attack": "<\/td><scrIpt>alert(1);<\/scRipt><td>"
+                            }
+                        }
+                    ],
+                    "message": {
+                        "text": "Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML\/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.\nWhen an attacker gets a user's browser to execute his\/her code, the code will run within the security context (or zone) of the hosting web site. With this level of privilege, the code has the ability to read, modify and transmit any sensitive data accessible by the browser. A Cross-site Scripted user could have his\/her account hijacked (cookie theft), their browser redirected to another location, or possibly shown fraudulent content delivered by the web site they are visiting. Cross-site Scripting attacks essentially compromise the trust relationship between a user and the web site. Applications utilizing browser object instances which load content from the file system may execute code under the local machine zone allowing for system compromise.\n\nThere are three types of Cross-site Scripting attacks: non-persistent, persistent and DOM-based.\nNon-persistent attacks and DOM-based attacks require a user to either visit a specially crafted link laced with malicious code, or visit a malicious web page containing a web form, which when posted to the vulnerable site, will mount the attack. Using a malicious form will oftentimes take place when the vulnerable resource only accepts HTTP POST requests. In such a case, the form can be submitted automatically, without the victim's knowledge (e.g. by using JavaScript). Upon clicking on the malicious link or submitting the malicious form, the XSS payload will get echoed back and will get interpreted by the user's browser and execute. Another technique to send almost arbitrary requests (GET and POST) is by using an embedded client, such as Adobe Flash.\nPersistent attacks occur when the malicious code is submitted to a web site where it's stored for a period of time. Examples of an attacker's favorite targets often include message board posts, web mail messages, and web chat software. The unsuspecting user is not required to interact with any additional site\/link (e.g. an attacker site or a malicious link sent via email), just simply view the web page containing the code."
+                    },
+                    "ruleId": "40012",
+                    "webRequest": {
+                        "protocol": "HTTP",
+                        "version": "1.1",
+                        "target": "http:\/\/bodgeit.com:8080\/bodgeit\/contact.jsp",
+                        "method": "POST",
+                        "headers": {
+                            "Cookie": "JSESSIONID=A26D9F5A3946F522400CBD3B6BD544BD; b_id=4",
+                            "cache-control": "no-cache",
+                            "content-length": "105",
+                            "content-type": "application\/x-www-form-urlencoded",
+                            "host": "bodgeit.com:8080",
+                            "pragma": "no-cache",
+                            "referer": "http:\/\/bodgeit.com:8080\/bodgeit\/contact.jsp",
+                            "user-agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/131.0.0.0 Safari\/537.36"
+                        },
+                        "body": {
+                            "binary": "bnVsbD0mYW50aWNzcmY9MC4xNTA4MDUzNzExMDczMzY5NCZjb21tZW50cz0lM0MlMkZ0ZCUzRSUzQ3NjcklwdCUzRWFsZXJ0JTI4MSUyOSUzQiUzQyUyRnNjUmlwdCUzRSUzQ3RkJTNF"
+                        }
+                    },
+                    "webResponse": {
+                        "statusCode": 200,
+                        "reasonPhrase": "",
+                        "protocol": "HTTP",
+                        "version": "1.1",
+                        "headers": {
+                            "Content-Length": "2025",
+                            "Content-Type": "text\/html;charset=ISO-8859-1",
+                            "Date": "Sun, 23 Feb 2025 15:22:18 GMT"
+                        },
+                        "body": {
+                            "text": "\n\n\n\n\n\n<!DOCTYPE HTML PUBLIC \"-\/\/W3C\/\/DTD HTML 3.2\/\/EN\">\n<html>\n<head>\n<title>The BodgeIt Store<\/title>\n<link href=\"style.css\" rel=\"stylesheet\" type=\"text\/css\" \/>\n<script type=\"text\/javascript\" src=\".\/js\/util.js\"><\/script>\n<\/head>\n<body>\n\n<center>\n<table width=\"80%\" class=\"border\">\n<tr BGCOLOR=#C3D9FF>\n<td align=\"center\" colspan=\"6\">\n<H1>The BodgeIt Store<\/H1>\n<table width=\"100%\" class=\\\"noborder\\\">\n<tr BGCOLOR=#C3D9FF>\n<td align=\"center\" width=\"30%\">\u0026nbsp;<\/td>\n<td align=\"center\" width=\"40%\">We bodge it, so you dont have to!<\/td>\n<td align=\"center\" width=\"30%\" style=\"text-align: right\" >\nGuest user\n\n<\/tr>\n<\/table>\n<\/td>\n<\/tr>\n<tr>\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"home.jsp\">Home<\/a><\/td>\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"about.jsp\">About Us<\/a><\/td>\n\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"contact.jsp\">Contact Us<\/a><\/td>\n<!-- td align=\"center\" width=\"16%\"><a href=\"admin.jsp\">Admin<\/a><\/td-->\n\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE>\n\n\t\t<a href=\"login.jsp\">Login<\/a>\n\n<\/td>\n\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"basket.jsp\">Your Basket<\/a><\/td>\n\n<td align=\"center\" width=\"16%\" BGCOLOR=#EEEEEE><a href=\"search.jsp\">Search<\/a><\/td>\n<\/tr>\n<tr>\n<td align=\"center\" colspan=\"6\">\n<table width=\"100%\" class=\"border\">\n<tr>\n<td align=\"left\" valign=\"top\" width=\"25%\">\n<a href=\"product.jsp?typeid=6\">Doodahs<\/a><br\/>\n<a href=\"product.jsp?typeid=5\">Gizmos<\/a><br\/>\n<a href=\"product.jsp?typeid=3\">Thingamajigs<\/a><br\/>\n<a href=\"product.jsp?typeid=2\">Thingies<\/a><br\/>\n<a href=\"product.jsp?typeid=7\">Whatchamacallits<\/a><br\/>\n<a href=\"product.jsp?typeid=4\">Whatsits<\/a><br\/>\n<a href=\"product.jsp?typeid=1\">Widgets<\/a><br\/>\n\n<br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/><br\/>\n<\/td>\n<td valign=\"top\" width=\"70%\">\n\n\n<br\/><p style=\"color:green\">Thank you for your feedback:<\/p><br\/>\n<br\/><center><table border=\"1\" width=\"80%\" class=\"border\">\n<tr><td><\/td><scrIpt>alert(1);<\/scRipt><td><\/td><\/tr>\n<\/table><\/center><br\/>\n"
+                        },
+                        "noResponseReceived": false
+                    }
+                },
+                {
+                    "level": "error",
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uri": "http:\/\/bodgeit.com:8080\/bodgeit\/basket.jsp"
+                                },
+                                "region": {
+                                    "startLine": 1,
+                                    "snippet": {
+                                        "text": ""
+                                    }
+                                }
+                            },
+                            "properties": {
+                                "attack": "5-2"
+                            }
+                        }
+                    ],
+                    "message": {
+                        "text": "The original page results were successfully replicated using the expression [5-2] as the parameter value\nThe parameter value being modified was stripped from the HTML output for the purposes of the comparison."
+                    },
+                    "ruleId": "40018",
+                    "webRequest": {
+                        "protocol": "HTTP",
+                        "version": "1.1",
+                        "target": "http:\/\/bodgeit.com:8080\/bodgeit\/basket.jsp",
+                        "method": "POST",
+                        "headers": {
+                            "Cookie": "JSESSIONID=A26D9F5A3946F522400CBD3B6BD544BD; b_id=4",
+                            "cache-control": "no-cache",
+                            "content-length": "34",
+                            "content-type": "application\/x-www-form-urlencoded",
+                            "host": "bodgeit.com:8080",
+                            "pragma": "no-cache",
+                            "referer": "http:\/\/bodgeit.com:8080\/bodgeit\/product.jsp?prodid=3",
+                            "user-agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/131.0.0.0 Safari\/537.36"
+                        },
+                        "body": {
+                            "binary": "cHJvZHVjdGlkPTUtMiZwcmljZT00LjcmcXVhbnRpdHk9Mw=="
+                        }
+                    },
+                    "webResponse": {
+                        "statusCode": 500,
+                        "reasonPhrase": "",
+                        "protocol": "HTTP",
+                        "version": "1.1",
+                        "headers": {
+                            "Connection": "close",
+                            "Content-Language": "en",
+                            "Content-Length": "2707",
+                            "Content-Type": "text\/html;charset=utf-8",
+                            "Date": "Sun, 23 Feb 2025 15:22:21 GMT"
+                        },
+                        "body": {
+                            "text": "<!doctype html><html lang=\"en\"><head><title>HTTP Status 500 \u2013 Internal Server Error<\/title><style type=\"text\/css\">body {font-family:Tahoma,Arial,sans-serif;} h1, h2, h3, b {color:white;background-color:#525D76;} h1 {font-size:22px;} h2 {font-size:16px;} h3 {font-size:14px;} p {font-size:12px;} a {color:black;} .line {height:1px;background-color:#525D76;border:none;}<\/style><\/head><body><h1>HTTP Status 500 \u2013 Internal Server Error<\/h1><hr class=\"line\" \/><p><b>Type<\/b> Exception Report<\/p><p><b>Message<\/b> An exception occurred processing [\u0026#47;basket.jsp] at line [189]<\/p><p><b>Description<\/b> The server encountered an unexpected condition that prevented it from fulfilling the request.<\/p><p><b>Exception<\/b><\/p><pre>org.apache.jasper.JasperException: An exception occurred processing [\u0026#47;basket.jsp] at line [189]\n\n186: \t\t\t\tquantity += rs.getInt(\u0026quot;quantity\u0026quot;);\n187: \t\t\t\trs.close();\n188: \t\t\t\tstmt.close();\n189: \t\t\t\tstmt = conn.prepareStatement(\u0026quot;UPDATE BasketContents SET quantity = \u0026quot; + Integer.parseInt(quantity) + \n190: \t\t\t\t\t\t\u0026quot; WHERE basketid=\u0026quot; + basketId + \u0026quot; AND productid = \u0026quot; + productId);\n191: \t\t\t\tstmt.execute();\n192: \t\t\t\tif (Integer.parseInt(quantity) \u0026lt; 0) {\n\n\nStacktrace:\n\torg.apache.jasper.servlet.JspServletWrapper.handleJspException(JspServletWrapper.java:610)\n\torg.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:499)\n\torg.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:376)\n\torg.apache.jasper.servlet.JspServlet.service(JspServlet.java:324)\n\tjavax.servlet.http.HttpServlet.service(HttpServlet.java:623)\n\torg.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)\n<\/pre><p><b>Root Cause<\/b><\/p><pre>java.lang.NumberFormatException: For input string: \u0026quot;3333333333\u0026quot;\n\tjava.base\u0026#47;java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)\n\tjava.base\u0026#47;java.lang.Integer.parseInt(Integer.java:662)\n\tjava.base\u0026#47;java.lang.Integer.parseInt(Integer.java:778)\n\torg.apache.jsp.basket_jsp._jspService(basket_jsp.java:316)\n\torg.apache.jasper.runtime.HttpJspBase.service(HttpJspBase.java:67)\n\tjavax.servlet.http.HttpServlet.service(HttpServlet.java:623)\n\torg.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:466)\n\torg.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:376)\n\torg.apache.jasper.servlet.JspServlet.service(JspServlet.java:324)\n\tjavax.servlet.http.HttpServlet.service(HttpServlet.java:623)\n\torg.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)\n<\/pre><p><b>Note<\/b> The full stack trace of the root cause is available in the server logs.<\/p><hr class=\"line\" \/><h3>Apache Tomcat\/9.0.98<\/h3><\/body><\/html>"
+                        },
+                        "noResponseReceived": true
+                    }
+                }
+            ],
+            "taxonomies": [
+                {
+                    "downloadUri": "https:\/\/cwe.mitre.org\/data\/xml\/cwec_v4.8.xml.zip",
+                    "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                    "informationUri": "https:\/\/cwe.mitre.org\/data\/published\/cwe_v4.8.pdf",
+                    "isComprehensive": true,
+                    "language": "en",
+                    "minimumRequiredLocalizedDataSemanticVersion": "4.8",
+                    "name": "CWE",
+                    "organization": "MITRE",
+                    "releaseDateUtc": "2022-06-28",
+                    "shortDescription": {
+                        "text": "The MITRE Common Weakness Enumeration"
+                    },
+                    "taxa": [
+                        {
+                            "guid": "098ecca7-f059-3e81-a2ff-a54023da4848",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/-1.html",
+                            "id": "-1"
+                        },
+                        {
+                            "guid": "f8907572-697a-32f6-a1bc-c0750dbb374f",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/0.html",
+                            "id": "0"
+                        },
+                        {
+                            "guid": "84e87a3d-cea6-399f-9468-a8389ebaea13",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/16.html",
+                            "id": "16"
+                        },
+                        {
+                            "guid": "34782a59-653a-3101-9472-c42338c40ddd",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/20.html",
+                            "id": "20"
+                        },
+                        {
+                            "guid": "5dd429c8-e5e3-37a8-bf40-f7b2d72a9085",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/79.html",
+                            "id": "79"
+                        },
+                        {
+                            "guid": "ff0466a9-1201-3bed-930e-db9d31099304",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/89.html",
+                            "id": "89"
+                        },
+                        {
+                            "guid": "4082c354-a1df-32be-8e34-4663cff1a974",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/91.html",
+                            "id": "91"
+                        },
+                        {
+                            "guid": "a548dc9b-12d7-341c-974d-525368dc16c0",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/120.html",
+                            "id": "120"
+                        },
+                        {
+                            "guid": "3bddb023-8ebf-31c6-a225-4e6f9735cc03",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/200.html",
+                            "id": "200"
+                        },
+                        {
+                            "guid": "2816a958-2243-3961-9a73-6134e0736148",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/352.html",
+                            "id": "352"
+                        },
+                        {
+                            "guid": "c60fb1e0-6538-36e7-9dfd-7702d6cf8b1f",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/693.html",
+                            "id": "693"
+                        },
+                        {
+                            "guid": "3b219658-b060-3ce2-9009-97890c7cea66",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/1004.html",
+                            "id": "1004"
+                        },
+                        {
+                            "guid": "d8d0ef05-721c-3cbc-8dff-5209722467f8",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/1021.html",
+                            "id": "1021"
+                        },
+                        {
+                            "guid": "4ef91eff-12a3-3611-9fa7-b36884d2a991",
+                            "helpUri": "https:\/\/cwe.mitre.org\/data\/definitions\/1275.html",
+                            "id": "1275"
+                        }
+                    ],
+                    "version": "4.8"
+                }
+            ],
+            "tool": {
+                "driver": {
+                    "guid": "3716e880-7ee2-34d2-9cf1-0f88c0dc613a",
+                    "informationUri": "https:\/\/www.zaproxy.org\/",
+                    "name": "ZAP",
+                    "rules": [
+                        {
+                            "id": "10010",
+                            "defaultConfiguration": {
+                                "level": "note"
+                            },
+                            "fullDescription": {
+                                "text": "A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible."
+                            },
+                            "name": "Cookie No HttpOnly Flag",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/owasp.org\/www-community\/HttpOnly"
+                                ],
+                                "solution": {
+                                    "text": "Ensure that the HttpOnly flag is set for all cookies."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "3b219658-b060-3ce2-9009-97890c7cea66",
+                                        "id": "1004",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Cookie No HttpOnly Flag"
+                            }
+                        },
+                        {
+                            "id": "10020",
+                            "defaultConfiguration": {
+                                "level": "warning"
+                            },
+                            "fullDescription": {
+                                "text": "The response does not protect against 'ClickJacking' attacks. It should include either Content-Security-Policy with 'frame-ancestors' directive or X-Frame-Options."
+                            },
+                            "name": "Missing Anti-clickjacking Header",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/developer.mozilla.org\/en-US\/docs\/Web\/HTTP\/Headers\/X-Frame-Options"
+                                ],
+                                "solution": {
+                                    "text": "Modern Web browsers support the Content-Security-Policy and X-Frame-Options HTTP headers. Ensure one of them is set on all web pages returned by your site\/app.\nIf you expect the page to be framed only by pages on your server (e.g. it's part of a FRAMESET) then you'll want to use SAMEORIGIN, otherwise if you never expect the page to be framed, you should use DENY. Alternatively consider implementing Content Security Policy's \"frame-ancestors\" directive."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "d8d0ef05-721c-3cbc-8dff-5209722467f8",
+                                        "id": "1021",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Missing Anti-clickjacking Header"
+                            }
+                        },
+                        {
+                            "id": "10021",
+                            "defaultConfiguration": {
+                                "level": "note"
+                            },
+                            "fullDescription": {
+                                "text": "The Anti-MIME-Sniffing header X-Content-Type-Options was not set to 'nosniff'. This allows older versions of Internet Explorer and Chrome to perform MIME-sniffing on the response body, potentially causing the response body to be interpreted and displayed as a content type other than the declared content type. Current (early 2014) and legacy versions of Firefox will use the declared content type (if one is set), rather than performing MIME-sniffing."
+                            },
+                            "name": "X-Content-Type-Options Header Missing",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/learn.microsoft.com\/en-us\/previous-versions\/windows\/internet-explorer\/ie-developer\/compatibility\/gg622941(v=vs.85)",
+                                    "https:\/\/owasp.org\/www-community\/Security_Headers"
+                                ],
+                                "solution": {
+                                    "text": "Ensure that the application\/web server sets the Content-Type header appropriately, and that it sets the X-Content-Type-Options header to 'nosniff' for all web pages.\nIf possible, ensure that the end user uses a standards-compliant and modern web browser that does not perform MIME-sniffing at all, or that can be directed by the web application\/web server to not perform MIME-sniffing."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "c60fb1e0-6538-36e7-9dfd-7702d6cf8b1f",
+                                        "id": "693",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "X-Content-Type-Options Header Missing"
+                            }
+                        },
+                        {
+                            "id": "10023",
+                            "defaultConfiguration": {
+                                "level": "note"
+                            },
+                            "fullDescription": {
+                                "text": "The response appeared to contain common error messages returned by platforms such as ASP.NET, and Web-servers such as IIS and Apache. You can configure the list of common debug messages."
+                            },
+                            "name": "Information Disclosure - Debug Error Messages",
+                            "properties": {
+                                "references": [],
+                                "solution": {
+                                    "text": "Disable debugging messages before pushing to production."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "3bddb023-8ebf-31c6-a225-4e6f9735cc03",
+                                        "id": "200",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Information Disclosure - Debug Error Messages"
+                            }
+                        },
+                        {
+                            "id": "10027",
+                            "defaultConfiguration": {
+                                "level": "none"
+                            },
+                            "fullDescription": {
+                                "text": "The response appears to contain suspicious comments which may help an attacker. Note: Matches made within script blocks or files are against the entire content not only comments."
+                            },
+                            "name": "Information Disclosure - Suspicious Comments",
+                            "properties": {
+                                "references": [],
+                                "solution": {
+                                    "text": "Remove all comments that return information that may help an attacker and fix any underlying problems they refer to."
+                                },
+                                "confidence": "low"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "3bddb023-8ebf-31c6-a225-4e6f9735cc03",
+                                        "id": "200",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Information Disclosure - Suspicious Comments"
+                            }
+                        },
+                        {
+                            "id": "10031",
+                            "defaultConfiguration": {
+                                "level": "none"
+                            },
+                            "fullDescription": {
+                                "text": "This check looks at user-supplied input in query string parameters and POST data to identify where certain HTML attribute values might be controlled. This provides hot-spot detection for XSS (cross-site scripting) that will require further review by a security analyst to determine exploitability."
+                            },
+                            "name": "User Controllable HTML Element Attribute (Potential XSS)",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/cheatsheetseries.owasp.org\/cheatsheets\/Input_Validation_Cheat_Sheet.html"
+                                ],
+                                "solution": {
+                                    "text": "Validate all input and sanitize output it before writing to any HTML attributes."
+                                },
+                                "confidence": "low"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "34782a59-653a-3101-9472-c42338c40ddd",
+                                        "id": "20",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "User Controllable HTML Element Attribute (Potential XSS)"
+                            }
+                        },
+                        {
+                            "id": "10038",
+                            "defaultConfiguration": {
+                                "level": "warning"
+                            },
+                            "fullDescription": {
+                                "text": "Content Security Policy (CSP) is an added layer of security that helps to detect and mitigate certain types of attacks, including Cross Site Scripting (XSS) and data injection attacks. These attacks are used for everything from data theft to site defacement or distribution of malware. CSP provides a set of standard HTTP headers that allow website owners to declare approved sources of content that browsers should be allowed to load on that page \u2014 covered types are JavaScript, CSS, HTML frames, fonts, images and embeddable objects such as Java applets, ActiveX, audio and video files."
+                            },
+                            "name": "Content Security Policy (CSP) Header Not Set",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/developer.mozilla.org\/en-US\/docs\/Web\/Security\/CSP\/Introducing_Content_Security_Policy",
+                                    "https:\/\/cheatsheetseries.owasp.org\/cheatsheets\/Content_Security_Policy_Cheat_Sheet.html",
+                                    "https:\/\/www.w3.org\/TR\/CSP\/",
+                                    "https:\/\/w3c.github.io\/webappsec-csp\/",
+                                    "https:\/\/web.dev\/articles\/csp",
+                                    "https:\/\/caniuse.com\/#feat=contentsecuritypolicy",
+                                    "https:\/\/content-security-policy.com\/"
+                                ],
+                                "solution": {
+                                    "text": "Ensure that your web server, application server, load balancer, etc. is configured to set the Content-Security-Policy header."
+                                },
+                                "confidence": "high"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "c60fb1e0-6538-36e7-9dfd-7702d6cf8b1f",
+                                        "id": "693",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Content Security Policy (CSP) Header Not Set"
+                            }
+                        },
+                        {
+                            "id": "10054",
+                            "defaultConfiguration": {
+                                "level": "note"
+                            },
+                            "fullDescription": {
+                                "text": "A cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks."
+                            },
+                            "name": "Cookie without SameSite Attribute",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/tools.ietf.org\/html\/draft-ietf-httpbis-cookie-same-site"
+                                ],
+                                "solution": {
+                                    "text": "Ensure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "4ef91eff-12a3-3611-9fa7-b36884d2a991",
+                                        "id": "1275",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Cookie without SameSite Attribute"
+                            }
+                        },
+                        {
+                            "id": "10058",
+                            "defaultConfiguration": {
+                                "level": "none"
+                            },
+                            "fullDescription": {
+                                "text": "A request that was originally observed as a POST was also accepted as a GET. This issue does not represent a security weakness unto itself, however, it may facilitate simplification of other attacks. For example if the original POST is subject to Cross-Site Scripting (XSS), then this finding may indicate that a simplified (GET based) XSS may also be possible."
+                            },
+                            "name": "GET for POST",
+                            "properties": {
+                                "references": [],
+                                "solution": {
+                                    "text": "Ensure that only POST is accepted where POST is expected."
+                                },
+                                "confidence": "high"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "84e87a3d-cea6-399f-9468-a8389ebaea13",
+                                        "id": "16",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "GET for POST"
+                            }
+                        },
+                        {
+                            "id": "10104",
+                            "defaultConfiguration": {
+                                "level": "none"
+                            },
+                            "fullDescription": {
+                                "text": "Check for differences in response based on fuzzed User Agent (eg. mobile sites, access as a Search Engine Crawler). Compares the response statuscode and the hashcode of the response body with the original response."
+                            },
+                            "name": "User Agent Fuzzer",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/owasp.org\/wstg"
+                                ],
+                                "solution": {
+                                    "text": ""
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [],
+                            "shortDescription": {
+                                "text": "User Agent Fuzzer"
+                            }
+                        },
+                        {
+                            "id": "10109",
+                            "defaultConfiguration": {
+                                "level": "none"
+                            },
+                            "fullDescription": {
+                                "text": "The application appears to be a modern web application. If you need to explore it automatically then the Ajax Spider may well be more effective than the standard one."
+                            },
+                            "name": "Modern Web Application",
+                            "properties": {
+                                "references": [],
+                                "solution": {
+                                    "text": "This is an informational alert and so no changes are required."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [],
+                            "shortDescription": {
+                                "text": "Modern Web Application"
+                            }
+                        },
+                        {
+                            "id": "10111",
+                            "defaultConfiguration": {
+                                "level": "none"
+                            },
+                            "fullDescription": {
+                                "text": "The given request has been identified as an authentication request. The 'Other Info' field contains a set of key=value lines which identify any relevant fields. If the request is in a context which has an Authentication Method set to \"Auto-Detect\" then this rule will change the authentication to match the request identified."
+                            },
+                            "name": "Authentication Request Identified",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/www.zaproxy.org\/docs\/desktop\/addons\/authentication-helper\/auth-req-id\/"
+                                ],
+                                "solution": {
+                                    "text": "This is an informational alert rather than a vulnerability and so there is nothing to fix."
+                                },
+                                "confidence": "high"
+                            },
+                            "relationships": [],
+                            "shortDescription": {
+                                "text": "Authentication Request Identified"
+                            }
+                        },
+                        {
+                            "id": "10112",
+                            "defaultConfiguration": {
+                                "level": "none"
+                            },
+                            "fullDescription": {
+                                "text": "The given response has been identified as containing a session management token. The 'Other Info' field contains a set of header tokens that can be used in the Header Based Session Management Method. If the request is in a context which has a Session Management Method set to \"Auto-Detect\" then this rule will change the session management to use the tokens identified."
+                            },
+                            "name": "Session Management Response Identified",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/www.zaproxy.org\/docs\/desktop\/addons\/authentication-helper\/session-mgmt-id"
+                                ],
+                                "solution": {
+                                    "text": "This is an informational alert rather than a vulnerability and so there is nothing to fix."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [],
+                            "shortDescription": {
+                                "text": "Session Management Response Identified"
+                            }
+                        },
+                        {
+                            "id": "10202",
+                            "defaultConfiguration": {
+                                "level": "warning"
+                            },
+                            "fullDescription": {
+                                "text": "No Anti-CSRF tokens were found in a HTML submission form.\nA cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL\/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf.\n\nCSRF attacks are effective in a number of situations, including:\n    * The victim has an active session on the target site.\n    * The victim is authenticated via HTTP auth on the target site.\n    * The victim is on the same local network as the target site.\n\nCSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, allowing the attack to operate within the bounds of the same-origin policy."
+                            },
+                            "name": "Absence of Anti-CSRF Tokens",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/cheatsheetseries.owasp.org\/cheatsheets\/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html",
+                                    "https:\/\/cwe.mitre.org\/data\/definitions\/352.html"
+                                ],
+                                "solution": {
+                                    "text": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nFor example, use anti-CSRF packages such as the OWASP CSRFGuard.\n\nPhase: Implementation\nEnsure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.\n\nPhase: Architecture and Design\nGenerate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).\nNote that this can be bypassed using XSS.\n\nIdentify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.\nNote that this can be bypassed using XSS.\n\nUse the ESAPI Session Management control.\nThis control includes a component for CSRF.\n\nDo not use the GET method for any request that triggers a state change.\n\nPhase: Implementation\nCheck the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+                                },
+                                "confidence": "low"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "2816a958-2243-3961-9a73-6134e0736148",
+                                        "id": "352",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Absence of Anti-CSRF Tokens"
+                            }
+                        },
+                        {
+                            "id": "30001",
+                            "defaultConfiguration": {
+                                "level": "warning"
+                            },
+                            "fullDescription": {
+                                "text": "Buffer overflow errors are characterized by the overwriting of memory spaces of the background web process, which should have never been modified intentionally or unintentionally. Overwriting values of the IP (Instruction Pointer), BP (Base Pointer) and other registers causes exceptions, segmentation faults, and other process errors to occur. Usually these errors end execution of the application in an unexpected way."
+                            },
+                            "name": "Buffer Overflow",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/owasp.org\/www-community\/attacks\/Buffer_overflow_attack"
+                                ],
+                                "solution": {
+                                    "text": "Rewrite the background program using proper return length checking. This will require a recompile of the background executable."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "a548dc9b-12d7-341c-974d-525368dc16c0",
+                                        "id": "120",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Buffer Overflow"
+                            }
+                        },
+                        {
+                            "id": "40012",
+                            "defaultConfiguration": {
+                                "level": "error"
+                            },
+                            "fullDescription": {
+                                "text": "Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML\/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.\nWhen an attacker gets a user's browser to execute his\/her code, the code will run within the security context (or zone) of the hosting web site. With this level of privilege, the code has the ability to read, modify and transmit any sensitive data accessible by the browser. A Cross-site Scripted user could have his\/her account hijacked (cookie theft), their browser redirected to another location, or possibly shown fraudulent content delivered by the web site they are visiting. Cross-site Scripting attacks essentially compromise the trust relationship between a user and the web site. Applications utilizing browser object instances which load content from the file system may execute code under the local machine zone allowing for system compromise.\n\nThere are three types of Cross-site Scripting attacks: non-persistent, persistent and DOM-based.\nNon-persistent attacks and DOM-based attacks require a user to either visit a specially crafted link laced with malicious code, or visit a malicious web page containing a web form, which when posted to the vulnerable site, will mount the attack. Using a malicious form will oftentimes take place when the vulnerable resource only accepts HTTP POST requests. In such a case, the form can be submitted automatically, without the victim's knowledge (e.g. by using JavaScript). Upon clicking on the malicious link or submitting the malicious form, the XSS payload will get echoed back and will get interpreted by the user's browser and execute. Another technique to send almost arbitrary requests (GET and POST) is by using an embedded client, such as Adobe Flash.\nPersistent attacks occur when the malicious code is submitted to a web site where it's stored for a period of time. Examples of an attacker's favorite targets often include message board posts, web mail messages, and web chat software. The unsuspecting user is not required to interact with any additional site\/link (e.g. an attacker site or a malicious link sent via email), just simply view the web page containing the code."
+                            },
+                            "name": "Cross Site Scripting (Reflected)",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/owasp.org\/www-community\/attacks\/xss\/",
+                                    "https:\/\/cwe.mitre.org\/data\/definitions\/79.html"
+                                ],
+                                "solution": {
+                                    "text": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nExamples of libraries and frameworks that make it easier to generate properly encoded output include Microsoft's Anti-XSS library, the OWASP ESAPI Encoding module, and Apache Wicket.\n\nPhases: Implementation; Architecture and Design\nUnderstand the context in which your data will be used and the encoding that will be expected. This is especially important when transmitting data between different components, or when generating outputs that can contain multiple encodings at the same time, such as web pages or multi-part mail messages. Study all expected communication protocols and data representations to determine the required encoding strategies.\nFor any data that will be output to another web page, especially any data that was received from external inputs, use the appropriate encoding on all non-alphanumeric characters.\nConsult the XSS Prevention Cheat Sheet for more details on the types of encoding and escaping that are needed.\n\nPhase: Architecture and Design\nFor any security checks that are performed on the client side, ensure that these checks are duplicated on the server side, in order to avoid CWE-602. Attackers can bypass the client-side checks by modifying values after the checks have been performed, or by changing the client to remove the client-side checks entirely. Then, these modified values would be submitted to the server.\n\nIf available, use structured mechanisms that automatically enforce the separation between data and code. These mechanisms may be able to provide the relevant quoting, encoding, and validation automatically, instead of relying on the developer to provide this capability at every point where output is generated.\n\nPhase: Implementation\nFor every web page that is generated, use and specify a character encoding such as ISO-8859-1 or UTF-8. When an encoding is not specified, the web browser may choose a different encoding by guessing which encoding is actually being used by the web page. This can cause the web browser to treat certain sequences as special, opening up the client to subtle XSS attacks. See CWE-116 for more mitigations related to encoding\/escaping.\n\nTo help mitigate XSS attacks against the user's session cookie, set the session cookie to be HttpOnly. In browsers that support the HttpOnly feature (such as more recent versions of Internet Explorer and Firefox), this attribute can prevent the user's session cookie from being accessible to malicious client-side scripts that use document.cookie. This is not a complete solution, since HttpOnly is not supported by all browsers. More importantly, XMLHTTPRequest and other powerful browser technologies provide read access to HTTP headers, including the Set-Cookie header in which the HttpOnly flag is set.\n\nAssume all input is malicious. Use an \"accept known good\" input validation strategy, i.e., use an allow list of acceptable inputs that strictly conform to specifications. Reject any input that does not strictly conform to specifications, or transform it into something that does. Do not rely exclusively on looking for malicious or malformed inputs (i.e., do not rely on a deny list). However, deny lists can be useful for detecting potential attacks or determining which inputs are so malformed that they should be rejected outright.\n\nWhen performing input validation, consider all potentially relevant properties, including length, type of input, the full range of acceptable values, missing or extra inputs, syntax, consistency across related fields, and conformance to business rules. As an example of business rule logic, \"boat\" may be syntactically valid because it only contains alphanumeric characters, but it is not valid if you are expecting colors such as \"red\" or \"blue.\"\n\nEnsure that you perform input validation at well-defined interfaces within the application. This will help protect the application even if a component is reused or moved elsewhere.\n\t"
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "5dd429c8-e5e3-37a8-bf40-f7b2d72a9085",
+                                        "id": "79",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Cross Site Scripting (Reflected)"
+                            }
+                        },
+                        {
+                            "id": "40018",
+                            "defaultConfiguration": {
+                                "level": "error"
+                            },
+                            "fullDescription": {
+                                "text": "SQL injection may be possible."
+                            },
+                            "name": "SQL Injection",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/cheatsheetseries.owasp.org\/cheatsheets\/SQL_Injection_Prevention_Cheat_Sheet.html"
+                                ],
+                                "solution": {
+                                    "text": "Do not trust client side input, even if there is client side validation in place.\nIn general, type check all data on the server side.\nIf the application uses JDBC, use PreparedStatement or CallableStatement, with parameters passed by '?'\nIf the application uses ASP, use ADO Command Objects with strong type checking and parameterized queries.\nIf database Stored Procedures can be used, use them.\nDo *not* concatenate strings into queries in the stored procedure, or use 'exec', 'exec immediate', or equivalent functionality!\nDo not create dynamic SQL queries using simple string concatenation.\nEscape all data received from the client.\nApply an 'allow list' of allowed characters, or a 'deny list' of disallowed characters in user input.\nApply the principle of least privilege by using the least privileged database user possible.\nIn particular, avoid using the 'sa' or 'db-owner' database users. This does not eliminate SQL injection, but minimizes its impact.\nGrant the minimum database access that is necessary for the application."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "ff0466a9-1201-3bed-930e-db9d31099304",
+                                        "id": "89",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "SQL Injection"
+                            }
+                        },
+                        {
+                            "id": "40026",
+                            "defaultConfiguration": {
+                                "level": "error"
+                            },
+                            "fullDescription": {
+                                "text": "Cross-site Scripting (XSS) is an attack technique that involves echoing attacker-supplied code into a user's browser instance. A browser instance can be a standard web browser client, or a browser object embedded in a software product such as the browser within WinAmp, an RSS reader, or an email client. The code itself is usually written in HTML\/JavaScript, but may also extend to VBScript, ActiveX, Java, Flash, or any other browser-supported technology.\nWhen an attacker gets a user's browser to execute his\/her code, the code will run within the security context (or zone) of the hosting web site. With this level of privilege, the code has the ability to read, modify and transmit any sensitive data accessible by the browser. A Cross-site Scripted user could have his\/her account hijacked (cookie theft), their browser redirected to another location, or possibly shown fraudulent content delivered by the web site they are visiting. Cross-site Scripting attacks essentially compromise the trust relationship between a user and the web site. Applications utilizing browser object instances which load content from the file system may execute code under the local machine zone allowing for system compromise.\n\nThere are three types of Cross-site Scripting attacks: non-persistent, persistent and DOM-based.\nNon-persistent attacks and DOM-based attacks require a user to either visit a specially crafted link laced with malicious code, or visit a malicious web page containing a web form, which when posted to the vulnerable site, will mount the attack. Using a malicious form will oftentimes take place when the vulnerable resource only accepts HTTP POST requests. In such a case, the form can be submitted automatically, without the victim's knowledge (e.g. by using JavaScript). Upon clicking on the malicious link or submitting the malicious form, the XSS payload will get echoed back and will get interpreted by the user's browser and execute. Another technique to send almost arbitrary requests (GET and POST) is by using an embedded client, such as Adobe Flash.\nPersistent attacks occur when the malicious code is submitted to a web site where it's stored for a period of time. Examples of an attacker's favorite targets often include message board posts, web mail messages, and web chat software. The unsuspecting user is not required to interact with any additional site\/link (e.g. an attacker site or a malicious link sent via email), just simply view the web page containing the code."
+                            },
+                            "name": "Cross Site Scripting (DOM Based)",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/owasp.org\/www-community\/attacks\/xss\/",
+                                    "https:\/\/cwe.mitre.org\/data\/definitions\/79.html"
+                                ],
+                                "solution": {
+                                    "text": "Phase: Architecture and Design\nUse a vetted library or framework that does not allow this weakness to occur or provides constructs that make this weakness easier to avoid.\nExamples of libraries and frameworks that make it easier to generate properly encoded output include Microsoft's Anti-XSS library, the OWASP ESAPI Encoding module, and Apache Wicket.\n\nPhases: Implementation; Architecture and Design\nUnderstand the context in which your data will be used and the encoding that will be expected. This is especially important when transmitting data between different components, or when generating outputs that can contain multiple encodings at the same time, such as web pages or multi-part mail messages. Study all expected communication protocols and data representations to determine the required encoding strategies.\nFor any data that will be output to another web page, especially any data that was received from external inputs, use the appropriate encoding on all non-alphanumeric characters.\nConsult the XSS Prevention Cheat Sheet for more details on the types of encoding and escaping that are needed.\n\nPhase: Architecture and Design\nFor any security checks that are performed on the client side, ensure that these checks are duplicated on the server side, in order to avoid CWE-602. Attackers can bypass the client-side checks by modifying values after the checks have been performed, or by changing the client to remove the client-side checks entirely. Then, these modified values would be submitted to the server.\n\nIf available, use structured mechanisms that automatically enforce the separation between data and code. These mechanisms may be able to provide the relevant quoting, encoding, and validation automatically, instead of relying on the developer to provide this capability at every point where output is generated.\n\nPhase: Implementation\nFor every web page that is generated, use and specify a character encoding such as ISO-8859-1 or UTF-8. When an encoding is not specified, the web browser may choose a different encoding by guessing which encoding is actually being used by the web page. This can cause the web browser to treat certain sequences as special, opening up the client to subtle XSS attacks. See CWE-116 for more mitigations related to encoding\/escaping.\n\nTo help mitigate XSS attacks against the user's session cookie, set the session cookie to be HttpOnly. In browsers that support the HttpOnly feature (such as more recent versions of Internet Explorer and Firefox), this attribute can prevent the user's session cookie from being accessible to malicious client-side scripts that use document.cookie. This is not a complete solution, since HttpOnly is not supported by all browsers. More importantly, XMLHTTPRequest and other powerful browser technologies provide read access to HTTP headers, including the Set-Cookie header in which the HttpOnly flag is set.\n\nAssume all input is malicious. Use an \"accept known good\" input validation strategy, i.e., use an allow list of acceptable inputs that strictly conform to specifications. Reject any input that does not strictly conform to specifications, or transform it into something that does. Do not rely exclusively on looking for malicious or malformed inputs (i.e., do not rely on a deny list). However, deny lists can be useful for detecting potential attacks or determining which inputs are so malformed that they should be rejected outright.\n\nWhen performing input validation, consider all potentially relevant properties, including length, type of input, the full range of acceptable values, missing or extra inputs, syntax, consistency across related fields, and conformance to business rules. As an example of business rule logic, \"boat\" may be syntactically valid because it only contains alphanumeric characters, but it is not valid if you are expecting colors such as \"red\" or \"blue.\"\n\nEnsure that you perform input validation at well-defined interfaces within the application. This will help protect the application even if a component is reused or moved elsewhere.\n\t"
+                                },
+                                "confidence": "high"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "5dd429c8-e5e3-37a8-bf40-f7b2d72a9085",
+                                        "id": "79",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Cross Site Scripting (DOM Based)"
+                            }
+                        },
+                        {
+                            "id": "90017",
+                            "defaultConfiguration": {
+                                "level": "warning"
+                            },
+                            "fullDescription": {
+                                "text": "Injection using XSL transformations may be possible, and may allow an attacker to read system information, read and write files, or execute arbitrary code."
+                            },
+                            "name": "XSLT Injection",
+                            "properties": {
+                                "references": [
+                                    "https:\/\/www.contextis.com\/blog\/xslt-server-side-injection-attacks"
+                                ],
+                                "solution": {
+                                    "text": "Sanitize and analyze every user input coming from any client-side."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "4082c354-a1df-32be-8e34-4663cff1a974",
+                                        "id": "91",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "XSLT Injection"
+                            }
+                        },
+                        {
+                            "id": "90022",
+                            "defaultConfiguration": {
+                                "level": "note"
+                            },
+                            "fullDescription": {
+                                "text": "This page contains an error\/warning message that may disclose sensitive information like the location of the file that produced the unhandled exception. This information can be used to launch further attacks against the web application. The alert could be a false positive if the error message is found inside a documentation page."
+                            },
+                            "name": "Application Error Disclosure",
+                            "properties": {
+                                "references": [],
+                                "solution": {
+                                    "text": "Review the source code of this page. Implement custom error pages. Consider implementing a mechanism to provide a unique error reference\/identifier to the client (browser) while logging the details on the server side and not exposing them to the user."
+                                },
+                                "confidence": "medium"
+                            },
+                            "relationships": [
+                                {
+                                    "kinds": [
+                                        "superset"
+                                    ],
+                                    "target": {
+                                        "guid": "3bddb023-8ebf-31c6-a225-4e6f9735cc03",
+                                        "id": "200",
+                                        "toolComponent": {
+                                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                                            "name": "CWE"
+                                        }
+                                    }
+                                }
+                            ],
+                            "shortDescription": {
+                                "text": "Application Error Disclosure"
+                            }
+                        }
+                    ],
+                    "semanticVersion": "2.16.0",
+                    "supportedTaxonomies": [
+                        {
+                            "guid": "b000a760-3e52-3565-a35c-f61369da53b7",
+                            "name": "CWE"
+                        }
+                    ],
+                    "version": "2.16.0"
+                }
+            }
+        }
+    ],
+    "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+    "version": "2.1.0"
+}
