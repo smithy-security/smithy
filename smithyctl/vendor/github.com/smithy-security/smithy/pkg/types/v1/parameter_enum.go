@@ -14,10 +14,10 @@ import (
 const (
 	// ParameterTypeString is a ParameterType of type string.
 	ParameterTypeString ParameterType = "string"
-	// ParameterTypeConststring is a ParameterType of type const:string.
-	ParameterTypeConststring ParameterType = "const:string"
-	// ParameterTypeListstring is a ParameterType of type list:string.
-	ParameterTypeListstring ParameterType = "list:string"
+	// ParameterTypeConstString is a ParameterType of type const_string.
+	ParameterTypeConstString ParameterType = "const:string"
+	// ParameterTypeListString is a ParameterType of type list_string.
+	ParameterTypeListString ParameterType = "list:string"
 )
 
 var ErrInvalidParameterType = errors.New("not a valid ParameterType")
@@ -36,8 +36,8 @@ func (x ParameterType) IsValid() bool {
 
 var _ParameterTypeValue = map[string]ParameterType{
 	"string":       ParameterTypeString,
-	"const:string": ParameterTypeConststring,
-	"list:string":  ParameterTypeListstring,
+	"const:string": ParameterTypeConstString,
+	"list:string":  ParameterTypeListString,
 }
 
 // ParseParameterType attempts to convert a string to a ParameterType.
