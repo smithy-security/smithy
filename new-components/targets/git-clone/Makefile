@@ -1,5 +1,10 @@
 .PHONY: run run-with-seeder shutdown build-target
 
+BUILD_ARCHITECTURE=
+COMPONENT_REGISTRY=localhost:5000
+COMPONENT_REPOSITORY=smithy-security/smithy/components/targets/git-clone
+COMPONENT_TAG=latest
+
 run:
 	docker-compose up --build --force-recreate --remove-orphans gitea target
 
@@ -21,3 +26,8 @@ build-target:
 	GOOS="linux" \
 	GOARCH="amd64" \
 		go build -ldflags "-s -w" -trimpath -o target ./cmd/git-clone/main.go
+
+image:
+	docker build $$([ "${BUILD_ARCHITECTURE}" != "" ] && echo "--platform=${BUILD_ARCHITECTURE}" ) \
+				 --tag $(COMPONENT_REGISTRY)/$(COMPONENT_REPOSITORY):$(COMPONENT_TAG) \
+				 --file dockerfiles/git-clone/Dockerfile .
