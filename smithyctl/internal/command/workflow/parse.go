@@ -3,7 +3,6 @@ package workflow
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"net/url"
 	"os"
 	"path"
@@ -17,6 +16,8 @@ import (
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
+	"github.com/smithy-security/smithy/smithyctl/internal/images"
+	dockerimages "github.com/smithy-security/smithy/smithyctl/internal/images/docker"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
@@ -52,8 +53,10 @@ type (
 	}
 
 	specParser struct {
-		componentFetcher ComponentFetcher
-		componentParser  ComponentParser
+		componentFetcher     ComponentFetcher
+		componentParser      ComponentParser
+		remoteImagesResolver func() images.Resolver
+		localImagesResolver  func(context.Context, dockerimages.Client, string, ...dockerimages.BuilderOptionFn) (images.Resolver, error)
 	}
 )
 
@@ -80,14 +83,33 @@ func NewSpecParser(fetcher ComponentFetcher, componentParser ComponentParser) (*
 	case componentParser == nil:
 		return nil, errors.New("component parser is nil")
 	}
+
+	remoteComponentImageResolver, err := dockerimages.NewResolver(nil)
+	if err != nil {
+		return nil, errors.Errorf("could not initialise docker image resolver: %w", err)
+	}
+
 	return &specParser{
 		componentFetcher: fetcher,
 		componentParser:  componentParser,
+		remoteImagesResolver: func() images.Resolver {
+			return remoteComponentImageResolver
+		},
+		localImagesResolver: func(
+			ctx context.Context,
+			client dockerimages.Client,
+			componentPath string,
+			opts ...dockerimages.BuilderOptionFn,
+		) (images.Resolver, error) {
+			return dockerimages.NewResolverBuilder(
+				ctx, nil, componentPath, opts...,
+			)
+		},
 	}, nil
 }
 
 // UnmarshalYAML overrides default yaml unmarshalling to cover for remotes being specified in paths or remotely.
-func (c *Component) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (c *Component) UnmarshalYAML(unmarshal func(any) error) error {
 	var stringValue string
 	if err := unmarshal(&stringValue); err == nil {
 		if strings.HasPrefix(stringValue, "file") {
@@ -112,21 +134,25 @@ func (c *Component) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	return nil
 }
 
+type ParserConfig struct {
+	SpecPath             string
+	OverridesPath        string
+	BuildComponentImages bool
+	ResolutionOpts       []images.ResolutionOptionFn
+	BuildOpts            []dockerimages.BuilderOptionFn
+}
+
 // Parse parses the workflow step into a correct format.
 // If the component reference is remote, it fetches it and parses it.
 // It also takes care of optional overrides and templating their values into the base component.
 // Finally, it validates the workflow and returns it, ready to be executed.
-func (sp *specParser) Parse(
-	ctx context.Context,
-	specPath string,
-	overridesPath string,
-) (*v1.Workflow, error) {
-	rawWf, err := parseRawWorkflowSpec(specPath)
+func (sp *specParser) Parse(ctx context.Context, config ParserConfig) (*v1.Workflow, error) {
+	rawWf, err := parseRawWorkflowSpec(config.SpecPath)
 	if err != nil {
 		return nil, err
 	}
 
-	overrides, err := parseOverrides(overridesPath)
+	overrides, err := parseOverrides(config.OverridesPath)
 	if err != nil {
 		return nil, err
 	}
@@ -146,13 +172,25 @@ func (sp *specParser) Parse(
 		var (
 			parsedComponent *v1.Component
 			err             error
+			resolver        images.Resolver = sp.remoteImagesResolver()
 		)
 
 		switch {
 		case c.Component.HasRemoteReference():
 			parsedComponent, err = sp.parseRemoteComponent(ctx, c.Component.remoteComponentReference)
+			resolver = sp.remoteImagesResolver()
 		case c.Component.HasLocalReference():
 			parsedComponent, err = sp.parseLocalComponent(c.Component.localComponentReference)
+			cleanedUp := &url.URL{
+				Host: c.Component.localComponentReference.Host,
+				Path: c.Component.localComponentReference.Path,
+			}
+
+			if err == nil && config.BuildComponentImages {
+				resolver, err = sp.localImagesResolver(
+					ctx, nil, cleanedUp.String()[2:], config.BuildOpts...,
+				)
+			}
 		case c.Component.IsInitialised():
 			parsedComponent = c.Component.pkgComponent
 		default:
@@ -162,6 +200,16 @@ func (sp *specParser) Parse(
 		if err != nil {
 			errs = errors.Join(errs, err)
 			continue
+		}
+
+		for index, step := range parsedComponent.Steps {
+			renderedImageRef, err := resolver.Resolve(ctx, step.Image)
+			if err != nil {
+				return nil, errors.Errorf("%s: could not resolve image: %w", step.Image, err)
+			}
+
+			step.Image = renderedImageRef
+			parsedComponent.Steps[index] = step
 		}
 
 		componentMap[parsedComponent.Name] = parsedComponent
@@ -193,13 +241,7 @@ func (sp *specParser) Parse(
 	}
 
 	// Sorting components by stages.
-	for _, ct := range []v1.ComponentType{
-		v1.ComponentTypeTarget,
-		v1.ComponentTypeScanner,
-		v1.ComponentTypeEnricher,
-		v1.ComponentTypeFilter,
-		v1.ComponentTypeReporter,
-	} {
+	for _, ct := range v1.ComponentTypeValues() {
 		if refs := filterComponents(components, ct); len(refs) > 0 {
 			wf.Stages = append(wf.Stages, v1.Stage{ComponentRefs: refs})
 		}
@@ -216,9 +258,9 @@ func (wa workflowAdapter) validate() error {
 	for _, c := range wa.Components {
 		switch {
 		case c.Component.IsInitialised() && c.Component.pkgComponent == nil:
-			return fmt.Errorf("invalid component %q, empty details", c.Component.pkgComponent.Name)
+			return errors.Errorf("invalid component %q, empty details", c.Component.pkgComponent.Name)
 		case c.Component.HasRemoteReference() && c.Component.remoteComponentReference == nil:
-			return fmt.Errorf("invalid component remote reference %q", c.Component.pkgComponent.Name)
+			return errors.Errorf("invalid component remote reference %q", c.Component.pkgComponent.Name)
 		case c.Component.HasLocalReference() && c.Component.localComponentReference == nil:
 			return errors.New("invalid component, it can be a remote reference or an actual component, not both")
 		}
@@ -255,8 +297,8 @@ func parseRawWorkflowSpec(path string) (*workflowAdapter, error) {
 
 	if !strings.HasSuffix(path, defaultSmithyWorkflowFileNameYaml) && !strings.HasSuffix(path, defaultSmithyWorkflowFileNameYml) {
 		return nil, errors.Errorf(
-			"invalid file path %s, has to either point to a component file",
-			path,
+			"invalid file path %s, has to be a workflow defintion YAML file named %s or %s",
+			path, defaultSmithyWorkflowFileNameYaml, defaultSmithyWorkflowFileNameYml,
 		)
 	}
 
@@ -265,12 +307,12 @@ func parseRawWorkflowSpec(path string) (*workflowAdapter, error) {
 		if os.IsNotExist(err) {
 			return nil, errors.Errorf("%s does not exist", path)
 		}
-		return nil, fmt.Errorf("failed to read workflow config file: %w", err)
+		return nil, errors.Errorf("failed to read workflow config file: %w", err)
 	}
 
 	var workflow workflowAdapter
 	if err := yaml.NewDecoder(bytes.NewReader(b)).Decode(&workflow); err != nil {
-		return nil, fmt.Errorf("failed to decode file '%s': %w", path, err)
+		return nil, errors.Errorf("failed to decode file '%s': %w", path, err)
 	}
 
 	return &workflow, workflow.validate()
@@ -290,12 +332,12 @@ func parseOverrides(path string) (map[string]map[string]v1.Parameter, error) {
 		if os.IsNotExist(err) {
 			return nil, errors.Errorf("%s does not exist", path)
 		}
-		return nil, fmt.Errorf("failed to read overrides file: %w", err)
+		return nil, errors.Errorf("failed to read overrides file: %w", err)
 	}
 
 	var tmpOverrides map[string][]v1.Parameter
 	if err := yaml.NewDecoder(bytes.NewReader(b)).Decode(&tmpOverrides); err != nil {
-		return nil, fmt.Errorf("failed to decode file overrides '%s': %w", path, err)
+		return nil, errors.Errorf("failed to decode file overrides '%s': %w", path, err)
 	}
 
 	for componentName, params := range tmpOverrides {
