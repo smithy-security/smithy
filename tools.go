@@ -8,4 +8,4 @@ import (
 
 // ENUMs GEN
 //go:generate go run github.com/abice/go-enum --file ./pkg/types/v1/parameter.go
-//go:generate go run github.com/abice/go-enum --file ./pkg/types/v1/component.go
+//go:generate go run github.com/abice/go-enum --file ./pkg/types/v1/component.go --values --names
