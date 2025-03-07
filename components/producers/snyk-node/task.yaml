@@ -30,8 +30,13 @@ spec:
       echo "authenticating to snyk"
       snyk auth $(params.producer-snyk-node-api-key)
 
-      baseDir = $(pwd)
-      cd $(workspaces.source-code.path)/
+
+      echo "Finding a file name `package.json` that is not in node_modules"
+      pkg=$( find $(workspaces.source-code.path) -name package.json -not -path "*/node_modules/*" | awk '{print length, $0}' | sort -n | head -n 1 | cut -d' ' -f2-)
+      echo "file package.json found in $(dirname $pkg)"
+
+      cd $(dirname $pkg)
+
       if [ -e yarn.lock ]
       then
         yarn install
@@ -40,9 +45,8 @@ spec:
         exitCode=$?
       fi
 
-      cd ${baseDir}
       echo "running snyk test"
-      snyk test --prune-repeated-subdependencies --skip-unresolved --sarif-file-output=$(workspaces.scratch.path)/snyk.out $(workspaces.source-code.path)/
+      snyk test --prune-repeated-subdependencies --skip-unresolved --sarif-file-output=$(workspaces.scratch.path)/snyk.out .
       exitCode=$?
       if [[ ${exitCode} -ne 0 && ${exitCode} -ne 1 ]]
       then
@@ -51,6 +55,7 @@ spec:
       else
         echo "Snyk completed successfully! exitcode ${exitCode}"
       fi
+      
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/snyk-docker:{{ .Chart.AppVersion }}'
