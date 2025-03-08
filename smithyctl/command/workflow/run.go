@@ -9,7 +9,9 @@ import (
 	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
 	"github.com/smithy-security/smithy/smithyctl/internal/command/workflow"
 	"github.com/smithy-security/smithy/smithyctl/internal/engine"
-	"github.com/smithy-security/smithy/smithyctl/internal/engine/docker"
+	dockerexecutor "github.com/smithy-security/smithy/smithyctl/internal/engine/docker"
+	"github.com/smithy-security/smithy/smithyctl/internal/images"
+	dockerimages "github.com/smithy-security/smithy/smithyctl/internal/images/docker"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
@@ -24,8 +26,13 @@ type runFlags struct {
 	registryAuthEnabled    bool
 	registryAuthUsername   string
 
-	registryAuthPassword string
+	registryAuthPassword    string
+	imageRegistry           string
+	imageNamespace          string
+	baseComponentDockerfile string
+
 	cleanRun             bool
+	buildComponentImages bool
 }
 
 // NewRunCommand returns a new run workflow command.
@@ -105,6 +112,38 @@ func NewRunCommand() *cobra.Command {
 			false,
 			"whether to clean up the local findings database or not post run",
 		)
+	cmd.
+		Flags().
+		BoolVar(
+			&runCmdFlags.buildComponentImages,
+			"build-component-images",
+			false,
+			"build any component images whose tag is set to latest listed in components from the local filesystem",
+		)
+	cmd.
+		Flags().
+		StringVar(
+			&runCmdFlags.imageRegistry,
+			"image-registry",
+			"",
+			"registry to use for the images",
+		)
+	cmd.
+		Flags().
+		StringVar(
+			&runCmdFlags.imageNamespace,
+			"image-namespace",
+			images.DefaultNamespace,
+			"namespace that will be added to all the images built by the system",
+		)
+	cmd.
+		Flags().
+		StringVar(
+			&runCmdFlags.baseComponentDockerfile,
+			"base-component-dockerfile",
+			"new-components/Dockerfile",
+			"base Dockerfile to use to build all the images",
+		)
 
 	return cmd
 }
@@ -126,12 +165,35 @@ func runWorkflow(ctx context.Context, flags runFlags) error {
 		return errors.Errorf("failed to initialize workflow spec parser: %w", err)
 	}
 
-	wf, err := parser.Parse(ctx, flags.specPath, flags.overridesPath)
+	imageResolutionOptions := []images.ResolutionOptionFn{}
+	if runCmdFlags.imageRegistry != "" {
+		imageResolutionOptions = append(imageResolutionOptions, images.WithRegistry(runCmdFlags.registryURL))
+	}
+
+	if runCmdFlags.imageNamespace != "" {
+		imageResolutionOptions = append(imageResolutionOptions, images.WithNamespace(runCmdFlags.imageNamespace))
+	}
+
+	buildOptions := []dockerimages.BuilderOptionFn{}
+	if runCmdFlags.baseComponentDockerfile != "" {
+		buildOptions = append(buildOptions, dockerimages.WithBaseDockerfilePath(runCmdFlags.baseComponentDockerfile))
+	}
+
+	wf, err := parser.Parse(
+		ctx,
+		workflow.ParserConfig{
+			SpecPath:             flags.specPath,
+			OverridesPath:        flags.overridesPath,
+			BuildComponentImages: flags.buildComponentImages,
+			BuildOpts:            buildOptions,
+			ResolutionOpts:       imageResolutionOptions,
+		},
+	)
 	if err != nil {
 		return errors.Errorf("failed to parse workflow spec: %w", err)
 	}
 
-	dockerExec, err := docker.NewExecutor()
+	dockerExec, err := dockerexecutor.NewExecutor()
 	if err != nil {
 		return errors.Errorf("failed to initialize docker executor: %w", err)
 	}

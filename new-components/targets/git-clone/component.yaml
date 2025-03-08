@@ -13,4 +13,4 @@ steps:
     env_vars:
       GIT_CLONE_REPO_URL: "{{ .parameters.repo_url }}"
       GIT_CLONE_REFERENCE: "{{ .parameters.reference }}"
-    image: "localhost:5000/components/targets/git-clone:latest"
+    image: new-components/targets/git-clone
