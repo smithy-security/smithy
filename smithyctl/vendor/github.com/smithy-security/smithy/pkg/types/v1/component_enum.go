@@ -7,8 +7,8 @@
 package v1
 
 import (
-	"errors"
 	"fmt"
+	"strings"
 )
 
 const (
@@ -26,7 +26,35 @@ const (
 	ComponentTypeReporter ComponentType = "reporter"
 )
 
-var ErrInvalidComponentType = errors.New("not a valid ComponentType")
+var ErrInvalidComponentType = fmt.Errorf("not a valid ComponentType, try [%s]", strings.Join(_ComponentTypeNames, ", "))
+
+var _ComponentTypeNames = []string{
+	string(ComponentTypeUnknown),
+	string(ComponentTypeTarget),
+	string(ComponentTypeScanner),
+	string(ComponentTypeEnricher),
+	string(ComponentTypeFilter),
+	string(ComponentTypeReporter),
+}
+
+// ComponentTypeNames returns a list of possible string values of ComponentType.
+func ComponentTypeNames() []string {
+	tmp := make([]string, len(_ComponentTypeNames))
+	copy(tmp, _ComponentTypeNames)
+	return tmp
+}
+
+// ComponentTypeValues returns a list of the values for ComponentType
+func ComponentTypeValues() []ComponentType {
+	return []ComponentType{
+		ComponentTypeUnknown,
+		ComponentTypeTarget,
+		ComponentTypeScanner,
+		ComponentTypeEnricher,
+		ComponentTypeFilter,
+		ComponentTypeReporter,
+	}
+}
 
 // String implements the Stringer interface.
 func (x ComponentType) String() string {
