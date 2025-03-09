@@ -103,6 +103,11 @@ clean-migrations-compose:
 
 clean: clean-protos clean-migrations-compose
 
+smithyctl/bin:
+	$(eval GOOS:=linux)
+	$(eval GOARCH:=amd64)
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) cd smithyctl && go build -o ../bin/$(GOOS)/$(GOARCH)/smithyctl cmd/main.go
+
 ########################################
 ######### CODE QUALITY TARGETS #########
 ########################################
