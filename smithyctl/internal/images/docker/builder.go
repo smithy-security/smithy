@@ -96,7 +96,10 @@ func NewBuilder(
 ) (*Builder, error) {
 	var err error
 	if utils.IsNil(client) {
-		client, err = dockerclient.NewClientWithOpts(dockerclient.FromEnv)
+		client, err = dockerclient.NewClientWithOpts(
+			dockerclient.FromEnv,
+			dockerclient.WithAPIVersionNegotiation(),
+		)
 		if err != nil {
 			return nil, errors.Errorf("failed to create docker client: %w", err)
 		}
