@@ -1,0 +1,4 @@
+git-clone:
+- name: "image"
+  type: "string"
+  value: "ubuntu:latest"
