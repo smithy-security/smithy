@@ -59,9 +59,10 @@ func (e *executor) createContainer(ctx context.Context, conf engine.ContainerCon
 	resp, err := e.dockerClient.ContainerCreate(
 		ctx,
 		&container.Config{
-			Image: conf.Image,
-			Cmd:   conf.Cmd,
-			Env:   conf.EnvVars,
+			Image:      conf.Image,
+			Entrypoint: []string{conf.Executable},
+			Cmd:        conf.Cmd,
+			Env:        conf.EnvVars,
 		},
 		&container.HostConfig{
 			Binds: conf.VolumeBindings,
