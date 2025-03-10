@@ -7,3 +7,4 @@ steps:
     env_vars:
       CUSTOM_ANNOTATION_NAME: reachability
       CUSTOM_ANNOTATION_VALUES: '{"foo":"bar"}'
+    executable: /bin/app
