@@ -46,9 +46,19 @@ func WithPlatform(p string) BuilderOptionFn {
 	}
 }
 
+// WithBaseDockerfilePath sets the base Dockerfile that will be used to build
+// all the components
 func WithBaseDockerfilePath(dockerfilePath string) BuilderOptionFn {
 	return func(o *builderOptions) {
 		o.baseDockerfilePath = dockerfilePath
+	}
+}
+
+// WithLabels overrides the labels that will be set in the component image to
+// be built
+func WithLabels(labelMap map[string]string) BuilderOptionFn {
+	return func(o *builderOptions) {
+		o.labels = labelMap
 	}
 }
 
