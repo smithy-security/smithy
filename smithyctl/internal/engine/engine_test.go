@@ -85,6 +85,7 @@ func TestExecutor_Execute(t *testing.T) {
 										EnvVars: map[string]string{
 											"REPO_URL": "github.com/andream16/tree",
 										},
+										Executable: "/bin/clone",
 									},
 								},
 							},
@@ -100,12 +101,14 @@ func TestExecutor_Execute(t *testing.T) {
 								Type:        v1.ComponentTypeScanner,
 								Steps: []v1.Step{
 									{
-										Name:  scanner1ComponentStepName1,
-										Image: scanner1ComponentImage,
+										Name:       scanner1ComponentStepName1,
+										Image:      scanner1ComponentImage,
+										Executable: "/bin/prescan",
 									},
 									{
-										Name:  scanner1ComponentStepName2,
-										Image: scanner1ComponentImage,
+										Name:       scanner1ComponentStepName2,
+										Image:      scanner1ComponentImage,
+										Executable: "/bin/scan",
 									},
 								},
 							},
@@ -117,8 +120,9 @@ func TestExecutor_Execute(t *testing.T) {
 								Type:        v1.ComponentTypeScanner,
 								Steps: []v1.Step{
 									{
-										Name:  scanner2ComponentStepName,
-										Image: scanner2ComponentImage,
+										Name:       scanner2ComponentStepName,
+										Image:      scanner2ComponentImage,
+										Executable: "/bin/scan",
 									},
 								},
 							},
@@ -134,8 +138,9 @@ func TestExecutor_Execute(t *testing.T) {
 								Type:        v1.ComponentTypeEnricher,
 								Steps: []v1.Step{
 									{
-										Name:  enricherComponentStepName,
-										Image: enricherComponentImage,
+										Name:       enricherComponentStepName,
+										Image:      enricherComponentImage,
+										Executable: "/bin/enrich",
 									},
 								},
 							},
@@ -151,8 +156,9 @@ func TestExecutor_Execute(t *testing.T) {
 								Type:        v1.ComponentTypeFilter,
 								Steps: []v1.Step{
 									{
-										Name:  filterComponentStepName,
-										Image: filterComponentImage,
+										Name:       filterComponentStepName,
+										Image:      filterComponentImage,
+										Executable: "/bin/filter",
 									},
 								},
 							},
@@ -170,7 +176,7 @@ func TestExecutor_Execute(t *testing.T) {
 									{
 										Name:       reporterComponentStepName,
 										Image:      reporterComponentImage,
-										Executable: "/bin/reporter",
+										Executable: "/bin/report",
 										Args:       []string{"-arg1=1"},
 									},
 								},
@@ -220,7 +226,7 @@ func TestExecutor_Execute(t *testing.T) {
 					engine.ContainerConfig{
 						Name:           targetComponentStepName,
 						Image:          targetComponentImage,
-						Cmd:            make([]string, 0),
+						Executable:     "/bin/clone",
 						EnvVars:        append(envVars, "REPO_URL=github.com/andream16/tree"),
 						VolumeBindings: volumeBindings,
 						Platform:       platform,
@@ -234,7 +240,7 @@ func TestExecutor_Execute(t *testing.T) {
 					engine.ContainerConfig{
 						Name:           scanner1ComponentStepName1,
 						Image:          scanner1ComponentImage,
-						Cmd:            make([]string, 0),
+						Executable:     "/bin/prescan",
 						EnvVars:        envVars,
 						VolumeBindings: volumeBindings,
 						Platform:       platform,
@@ -248,7 +254,7 @@ func TestExecutor_Execute(t *testing.T) {
 					engine.ContainerConfig{
 						Name:           scanner1ComponentStepName2,
 						Image:          scanner1ComponentImage,
-						Cmd:            make([]string, 0),
+						Executable:     "/bin/scan",
 						EnvVars:        envVars,
 						VolumeBindings: volumeBindings,
 						Platform:       platform,
@@ -262,7 +268,7 @@ func TestExecutor_Execute(t *testing.T) {
 					engine.ContainerConfig{
 						Name:           scanner2ComponentStepName,
 						Image:          scanner2ComponentImage,
-						Cmd:            make([]string, 0),
+						Executable:     "/bin/scan",
 						EnvVars:        envVars,
 						VolumeBindings: volumeBindings,
 						Platform:       platform,
@@ -276,7 +282,7 @@ func TestExecutor_Execute(t *testing.T) {
 					engine.ContainerConfig{
 						Name:           enricherComponentStepName,
 						Image:          enricherComponentImage,
-						Cmd:            make([]string, 0),
+						Executable:     "/bin/enrich",
 						EnvVars:        envVars,
 						VolumeBindings: volumeBindings,
 						Platform:       platform,
@@ -290,7 +296,7 @@ func TestExecutor_Execute(t *testing.T) {
 					engine.ContainerConfig{
 						Name:           filterComponentStepName,
 						Image:          filterComponentImage,
-						Cmd:            make([]string, 0),
+						Executable:     "/bin/filter",
 						EnvVars:        envVars,
 						VolumeBindings: volumeBindings,
 						Platform:       platform,
@@ -302,10 +308,10 @@ func TestExecutor_Execute(t *testing.T) {
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:  reporterComponentStepName,
-						Image: reporterComponentImage,
+						Name:       reporterComponentStepName,
+						Image:      reporterComponentImage,
+						Executable: "/bin/report",
 						Cmd: []string{
-							"/bin/reporter",
 							"-arg1=1",
 						},
 						EnvVars:        envVars,
