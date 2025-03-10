@@ -35,6 +35,7 @@ type (
 	ContainerConfig struct {
 		Name           string
 		Image          string
+		Executable     string
 		Cmd            []string
 		EnvVars        []string
 		VolumeBindings []string
@@ -116,18 +117,18 @@ func (e *executor) executeStep(ctx context.Context, instanceID uuid.UUID, step v
 		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
 	}
 
-	var cmd = make([]string, 0)
-	if step.Executable != "" {
-		cmd = append([]string{step.Executable}, step.Args...)
+	if step.Executable == "" {
+		return errors.Errorf("%s: you need to set an executable absolute path for each step", step.Name)
 	}
 
 	if err := e.containerExec.RunAndWait(
 		ctx,
 		ContainerConfig{
-			Name:    step.Name,
-			Image:   fmt.Sprintf("%s:%s", image, tag),
-			Cmd:     cmd,
-			EnvVars: envVars,
+			Name:       step.Name,
+			Image:      fmt.Sprintf("%s:%s", image, tag),
+			Executable: step.Executable,
+			Cmd:        step.Args,
+			EnvVars:    envVars,
 			VolumeBindings: []string{
 				// This is shared between all containers for simplicity.
 				path.Join(absPath, fmt.Sprintf("%s:/workspace", smithyDir)),
