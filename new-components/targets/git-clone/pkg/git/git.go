@@ -27,6 +27,7 @@ type (
 	Conf struct {
 		RepoURL   string
 		Reference string
+		ClonePath string
 
 		ConfAuth ConfAuth
 	}
@@ -66,6 +67,11 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 		return nil, err
 	}
 
+	clonePath, err := env.GetOrDefault("GIT_CLONE_PATH", "", envOpts...)
+	if err != nil {
+		return nil, err
+	}
+
 	authEnabled, err := env.GetOrDefault(
 		"GIT_CLONE_AUTH_ENABLED",
 		false,
@@ -93,6 +99,7 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	return &Conf{
 		RepoURL:   repoURL,
 		Reference: reference,
+		ClonePath: clonePath,
 		ConfAuth: ConfAuth{
 			Username:    accessUsername,
 			AuthEnabled: authEnabled,
@@ -115,9 +122,11 @@ func NewManager(conf *Conf) (*manager, error) {
 		return nil, fmt.Errorf(errInvalidConfigurationStr+": %w", "repo_url", "couldn't parse", err)
 	}
 
-	repoName, err := extractRepoName(u.Path)
-	if err != nil {
-		return nil, err
+	if conf.ClonePath == "" {
+		conf.ClonePath, err = extractRepoName(u.Path)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	opts := &git.CloneOptions{
@@ -151,7 +160,7 @@ func NewManager(conf *Conf) (*manager, error) {
 	}
 
 	return &manager{
-		clonePath:    repoName,
+		clonePath:    conf.ClonePath,
 		cloneOptions: opts,
 	}, nil
 }
