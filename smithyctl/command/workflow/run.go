@@ -3,6 +3,7 @@ package workflow
 import (
 	"context"
 
+	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
 
@@ -160,9 +161,12 @@ func runWorkflow(ctx context.Context, flags runFlags) error {
 		return errors.Errorf("failed to initialize package registry: %w", err)
 	}
 
-	parser, err := workflow.NewSpecParser(reg, component.NewSpecParser())
+	dockerClient, err := dockerclient.NewClientWithOpts(
+		dockerclient.FromEnv,
+		dockerclient.WithAPIVersionNegotiation(),
+	)
 	if err != nil {
-		return errors.Errorf("failed to initialize workflow spec parser: %w", err)
+		return errors.Errorf("failed to bootstrap docker client: %w", err)
 	}
 
 	imageResolutionOptions := []images.ResolutionOptionFn{}
@@ -179,21 +183,29 @@ func runWorkflow(ctx context.Context, flags runFlags) error {
 		buildOptions = append(buildOptions, dockerimages.WithBaseDockerfilePath(runCmdFlags.baseComponentDockerfile))
 	}
 
+	imageResolver, err := workflow.NewDockerImageResolver(flags.buildComponentImages, dockerClient, buildOptions...)
+	if err != nil {
+		return errors.Errorf("could not bootstrap image resolver: %w", err)
+	}
+
+	parser, err := workflow.NewSpecParser(reg, component.NewSpecParser(), imageResolver)
+	if err != nil {
+		return errors.Errorf("failed to initialize workflow spec parser: %w", err)
+	}
+
 	wf, err := parser.Parse(
 		ctx,
 		workflow.ParserConfig{
-			SpecPath:             flags.specPath,
-			OverridesPath:        flags.overridesPath,
-			BuildComponentImages: flags.buildComponentImages,
-			BuildOpts:            buildOptions,
-			ResolutionOpts:       imageResolutionOptions,
+			SpecPath:       flags.specPath,
+			OverridesPath:  flags.overridesPath,
+			ResolutionOpts: imageResolutionOptions,
 		},
 	)
 	if err != nil {
 		return errors.Errorf("failed to parse workflow spec: %w", err)
 	}
 
-	dockerExec, err := dockerexecutor.NewExecutor()
+	dockerExec, err := dockerexecutor.NewExecutor(dockerClient)
 	if err != nil {
 		return errors.Errorf("failed to initialize docker executor: %w", err)
 	}

@@ -10,11 +10,11 @@ import (
 	"os/exec"
 
 	dockertypes "github.com/docker/docker/api/types"
-	dockerclient "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/go-errors/errors"
-	"github.com/smithy-security/pkg/utils"
 	"golang.org/x/sync/errgroup"
+
+	"github.com/smithy-security/pkg/utils"
 
 	"github.com/smithy-security/smithy/smithyctl/internal/images"
 )
@@ -94,15 +94,8 @@ func NewBuilder(
 	componentPath string,
 	opts ...BuilderOptionFn,
 ) (*Builder, error) {
-	var err error
 	if utils.IsNil(client) {
-		client, err = dockerclient.NewClientWithOpts(
-			dockerclient.FromEnv,
-			dockerclient.WithAPIVersionNegotiation(),
-		)
-		if err != nil {
-			return nil, errors.Errorf("failed to create docker client: %w", err)
-		}
+		return nil, ErrNoDockerClient
 	}
 
 	buildOpts, err := makeOptions(ctx, client, opts...)

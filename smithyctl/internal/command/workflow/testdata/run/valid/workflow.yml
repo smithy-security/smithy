@@ -18,5 +18,5 @@ components:
       description: "Logs findings"
       type: reporter
       steps:
-        - name: custom-annotation
+        - name: json-logger
           image: "localhost:5000/components/reporters/json-logger:latest"

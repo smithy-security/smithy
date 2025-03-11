@@ -7,7 +7,6 @@ import (
 	"os"
 
 	dockerimagetypes "github.com/docker/docker/api/types/image"
-	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/utils"
 
@@ -36,13 +35,8 @@ func NewResolverBuilder(
 	componentPath string,
 	opts ...BuilderOptionFn,
 ) (*ResolverBuilder, error) {
-	var err error
-
 	if utils.IsNil(client) {
-		client, err = dockerclient.NewClientWithOpts(dockerclient.FromEnv)
-		if err != nil {
-			return nil, errors.Errorf("failed to create docker client: %w", err)
-		}
+		return nil, ErrNoDockerClient
 	}
 
 	builder, err := NewBuilder(ctx, client, componentPath, opts...)
