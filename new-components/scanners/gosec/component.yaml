@@ -8,12 +8,14 @@ parameters:
 steps:
   - name: scanner
     image: docker.io/securego/gosec:2.15.0
-    executable: >
-      -fmt=sarif
-      -no-fail
-      -out=/workspace/repos/gosec.json
-      /workspace/repos/{{ .parameters.repo_name }}
+    executable: /bin/entrypoint.sh
+    args:
+      - -fmt=sarif
+      - -no-fail
+      - -out=/workspace/repos/gosec.json
+      - /workspace/repos/{{ .parameters.repo_name }}
   - name: parser
     image: new-components/scanners/gosec
     env_vars:
       GOSEC_RAW_OUT_FILE_PATH: repos/gosec.json
+    executable: /bin/app
