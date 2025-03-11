@@ -82,4 +82,29 @@ func TestComponentDirectory(t *testing.T) {
 		},
 		cr.URLs(),
 	)
+
+	cr, _, err = ParseComponentRepository(
+		"new-components/scanners/some-component/component.yaml",
+		"new-components/scanners/some-component/helper",
+		WithNamespace("some/namespace"),
+		WithRegistry("kind-registry:5000"),
+		WithDefaultTag("1.0.0-dev"),
+		WithExtraTags("latest", "1.0.0-amd64"),
+	)
+	require.NoError(t, err)
+	assert.Equal(t, path.Join("some/namespace", "new-components/scanners/some-component/helper"), cr.Repo())
+	assert.Equal(t, v1.ComponentTypeScanner, cr.Type())
+	assert.Equal(t, "some-component/helper", cr.Name())
+	assert.Equal(t, "1.0.0-dev", cr.Tag())
+	assert.Equal(t, "new-components/scanners/some-component/helper", cr.Directory())
+	assert.Equal(t, "kind-registry:5000", cr.Registry())
+	assert.Equal(t, path.Join("kind-registry:5000", "some/namespace", "new-components/scanners/some-component/helper:1.0.0-dev"), cr.URL())
+	assert.ElementsMatch(t,
+		[]string{
+			path.Join("kind-registry:5000", "some/namespace", "new-components/scanners/some-component/helper:1.0.0-dev"),
+			path.Join("kind-registry:5000", "some/namespace", "new-components/scanners/some-component/helper:1.0.0-amd64"),
+			path.Join("kind-registry:5000", "some/namespace", "new-components/scanners/some-component/helper:latest"),
+		},
+		cr.URLs(),
+	)
 }

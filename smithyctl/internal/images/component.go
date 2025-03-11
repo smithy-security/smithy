@@ -145,7 +145,7 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 	// some-folder/scanners/gosec. if this is not the case, it's not recognised
 	// as a Smithy component image reference and we will just return the parsed
 	// image reference.
-	if parsedRef.RepositoryStr() != componentDirectory {
+	if !strings.HasPrefix(parsedRef.RepositoryStr(), componentDirectory) {
 		return nil, &parsedRef, errors.Errorf("%s: %w", parsedRef.Name(), ErrNotAComponentRepo)
 	}
 
@@ -172,14 +172,18 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 		)
 	}
 
-	componentName := componentDirectoryParts[len(componentDirectoryParts)-1]
 	return &ComponentRepository{
 		repository:         parsedRef,
 		componentType:      componentType,
 		componentNamespace: opts.namespace,
-		componentName:      componentName,
-		directory:          componentDirectory,
-		extraTags:          opts.extraTags,
+		componentName: strings.TrimLeft(
+			strings.Replace(
+				parsedRef.RepositoryStr(),
+				path.Dir(componentDirectory), "", -1),
+			"/",
+		),
+		directory: parsedRef.RepositoryStr(),
+		extraTags: opts.extraTags,
 	}, &parsedRef, nil
 }
 
