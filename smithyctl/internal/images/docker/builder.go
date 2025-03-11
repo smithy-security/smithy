@@ -183,7 +183,7 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 
 	errLine := &buildErrorLine{}
 	err = json.Unmarshal([]byte(lastLine), errLine)
-	if err != nil {
+	if err != nil || errLine.Error == "" {
 		return cr.URL(), nil
 	}
 
