@@ -31,16 +31,19 @@ func TestNewConf(t *testing.T) {
 		conf, err := git.NewConf(makeLoader(map[string]string{
 			"GIT_CLONE_REPO_URL":  repoURL,
 			"GIT_CLONE_REFERENCE": reference,
+			"GIT_CLONE_PATH":      clonePath,
 		}))
 		require.NoError(t, err)
 		assert.Equal(t, repoURL, conf.RepoURL)
 		assert.Equal(t, reference, conf.Reference)
+		assert.Equal(t, clonePath, conf.ClonePath)
 	})
 
 	t.Run("it should configure correctly with auth enabled and defaults", func(t *testing.T) {
 		conf, err := git.NewConf(makeLoader(map[string]string{
 			"GIT_CLONE_REPO_URL":        repoURL,
 			"GIT_CLONE_REFERENCE":       reference,
+			"GIT_CLONE_PATH":            clonePath,
 			"GIT_CLONE_AUTH_ENABLED":    "true",
 			"GIT_CLONE_ACCESS_TOKEN":    accessToken,
 			"GIT_CLONE_ACCESS_USERNAME": accessUsername,
@@ -48,6 +51,7 @@ func TestNewConf(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, repoURL, conf.RepoURL)
 		assert.Equal(t, reference, conf.Reference)
+		assert.Equal(t, clonePath, conf.ClonePath)
 		assert.True(t, conf.ConfAuth.AuthEnabled)
 		assert.Equal(t, accessToken, conf.ConfAuth.AccessToken)
 		assert.Equal(t, accessUsername, conf.ConfAuth.Username)

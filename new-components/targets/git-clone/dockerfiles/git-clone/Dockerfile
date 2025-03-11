@@ -24,7 +24,7 @@ FROM gcr.io/distroless/base-debian12
 COPY --from=builder /wrk/target /bin/target
 
 # Setting the workdir where we'll clone repositories.
-WORKDIR /workspace/repos
+WORKDIR /
 
 # Set the binary as the entry point
 ENTRYPOINT ["/bin/target"]
