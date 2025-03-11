@@ -159,7 +159,7 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 		ctx,
 		buildCtx,
 		dockertypes.ImageBuildOptions{
-			Tags: []string{cr.URL()},
+			Tags: cr.URLs(),
 			BuildArgs: map[string]*string{
 				"COMPONENT_PATH": &componentDirectory,
 			},

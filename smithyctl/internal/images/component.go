@@ -40,9 +40,10 @@ var (
 // resolutionOptions is a struct that defines common properties of all the
 // images of components managed by the system
 type resolutionOptions struct {
-	registry  string
-	namespace string
-	tag       string
+	registry   string
+	namespace  string
+	defaultTag string
+	extraTags  []string
 }
 
 // ResolutionOptionFn is used to define common attributes of all the images
@@ -56,10 +57,19 @@ func WithRegistry(r string) ResolutionOptionFn {
 	}
 }
 
-// WithTag changes the tag that will be set to all the component images
-func WithTag(t string) ResolutionOptionFn {
+// WithDefaultTag changes the tag that will be set by defaylt to an image if it
+// doesn't have tag already
+func WithDefaultTag(t string) ResolutionOptionFn {
 	return func(o *resolutionOptions) {
-		o.tag = t
+		o.defaultTag = t
+	}
+}
+
+// WithDefaultTag changes the tag that will be set by default to all the
+// component images
+func WithExtraTags(tags ...string) ResolutionOptionFn {
+	return func(o *resolutionOptions) {
+		o.extraTags = tags
 	}
 }
 
@@ -72,9 +82,9 @@ func WithNamespace(n string) ResolutionOptionFn {
 
 func makeOptions(opts ...ResolutionOptionFn) resolutionOptions {
 	defaultOpts := resolutionOptions{
-		registry:  DefaultRegistry,
-		namespace: DefaultNamespace,
-		tag:       DefaultTag,
+		registry:   DefaultRegistry,
+		namespace:  DefaultNamespace,
+		defaultTag: DefaultTag,
 	}
 
 	for _, opt := range opts {
@@ -94,6 +104,7 @@ type ComponentRepository struct {
 	componentNamespace string
 	componentName      string
 	directory          string
+	extraTags          []string
 }
 
 // ParseComponentRepository parses the component image repository and verifies
@@ -105,7 +116,7 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 	componentDirectory := path.Dir(componentPath)
 	parsedRef, err := name.NewTag(
 		imageRef,
-		name.WithDefaultTag(opts.tag),
+		name.WithDefaultTag(opts.defaultTag),
 		name.WithDefaultRegistry(opts.registry),
 	)
 	if err != nil {
@@ -152,6 +163,7 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 		componentNamespace: opts.namespace,
 		componentName:      componentName,
 		directory:          componentDirectory,
+		extraTags:          opts.extraTags,
 	}, &parsedRef, nil
 }
 
@@ -160,7 +172,7 @@ func (cr *ComponentRepository) Repo() string {
 	return path.Join(cr.componentNamespace, cr.repository.RepositoryStr())
 }
 
-// Tag returns the tag of the component image
+// Tag returns the default tag of the component image
 func (cr *ComponentRepository) Tag() string {
 	return cr.repository.TagStr()
 }
@@ -186,8 +198,19 @@ func (cr *ComponentRepository) Registry() string {
 	return cr.repository.RegistryStr()
 }
 
-// URL returns the complete registry, namespace, repository and tag of the
-// image
+// URL returns the complete registry, namespace, repository and the default tag
+// of the image
 func (cr *ComponentRepository) URL() string {
 	return path.Join(cr.repository.RegistryStr(), cr.Repo()) + ":" + cr.Tag()
+}
+
+// URLs returns all the component image URLs, not just the one tagged with the
+// default tag
+func (cr *ComponentRepository) URLs() []string {
+	urls := []string{cr.URL()}
+	for _, tag := range cr.extraTags {
+		urls = append(urls, path.Join(cr.repository.RegistryStr(), cr.Repo())+":"+tag)
+	}
+
+	return urls
 }
