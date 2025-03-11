@@ -62,6 +62,13 @@ func (r *ResolverBuilder) Resolve(
 	cr, parsedRef, err := images.ParseComponentRepository(r.Builder.componentPath, imageRef, options...)
 	if errors.Is(err, images.ErrNotAComponentRepo) {
 		return r.Resolver.Resolve(ctx, parsedRef.String())
+	} else if cr != nil && cr.Tag() != images.DefaultTag {
+		fmt.Fprintf(
+			os.Stderr,
+			"image %s is a reference to a component image but the tag is not the default one (%s =/= %s). pulling\n",
+			cr.URL(), cr.Tag(), images.DefaultTag,
+		)
+		return r.Resolver.Resolve(ctx, cr.URL())
 	} else if err != nil {
 		return "", err
 	}
