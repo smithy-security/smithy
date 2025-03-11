@@ -10,27 +10,25 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
+	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
 	"github.com/smithy-security/smithy/smithyctl/internal/images"
-	dockerimages "github.com/smithy-security/smithy/smithyctl/internal/images/docker"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
 func TestSpecParser_Parse(t *testing.T) {
 	var (
-		ctx, cancel       = context.WithTimeout(context.Background(), time.Minute)
-		ctrl              = gomock.NewController(t)
-		mockFetcher       = NewMockComponentFetcher(ctrl)
-		mockImageResolver *images.MockResolver
+		ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
+		ctrl        = gomock.NewController(t)
+		mockFetcher = NewMockComponentFetcher(ctrl)
 	)
 	defer cancel()
 
-	parser, err := NewSpecParser(mockFetcher, component.NewSpecParser())
+	parser, err := NewSpecParser(mockFetcher, component.NewSpecParser(), nil)
 	require.NoError(t, err)
 
-	parser.remoteImagesResolver = func() images.Resolver {
-		return mockImageResolver
-	}
+	mockImageResolver := &imageResolver{}
+	parser.imageResolver = mockImageResolver
 
 	for _, tt := range []struct {
 		testCase         string
@@ -48,17 +46,23 @@ func TestSpecParser_Parse(t *testing.T) {
 			testCase:         "it should return an error because the yaml spec is invalid",
 			workflowSpecPath: "testdata/run/invalid/workflow.yaml",
 			expectations: func(t *testing.T) {
-				mockImageResolver = images.NewMockResolver(ctrl)
-				mockImageResolver.
-					EXPECT().
-					Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
-					Return("localhost:5000/components/targets/git-clone:latest", nil)
+				mockRemoteImageResolver := images.NewMockResolver(ctrl)
+				gomock.InOrder(
+					mockRemoteImageResolver.
+						EXPECT().
+						Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
+						Return("localhost:5000/components/targets/git-clone:latest", nil),
 
-				mockImageResolver.
-					EXPECT().
-					Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
-					Return("localhost:5000/components/reporters/json-logger:latest", nil)
+					mockRemoteImageResolver.
+						EXPECT().
+						Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
+						Return("localhost:5000/components/reporters/json-logger:latest", nil),
+				)
 
+				mockImageResolver.remote = func() (images.Resolver, error) {
+					return mockRemoteImageResolver, nil
+				}
+				mockImageResolver.local = nil
 			},
 			isValid: false,
 		},
@@ -66,16 +70,21 @@ func TestSpecParser_Parse(t *testing.T) {
 			testCase:         "it should return an error because the yml spec is invalid",
 			workflowSpecPath: "testdata/run/invalid/workflow.yml",
 			expectations: func(t *testing.T) {
-				mockImageResolver = images.NewMockResolver(ctrl)
-				mockImageResolver.
+				mockRemoteImageResolver := images.NewMockResolver(ctrl)
+				mockRemoteImageResolver.
 					EXPECT().
 					Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
 					Return("localhost:5000/components/targets/git-clone:latest", nil)
 
-				mockImageResolver.
+				mockRemoteImageResolver.
 					EXPECT().
 					Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
 					Return("localhost:5000/components/reporters/json-logger:latest", nil)
+
+				mockImageResolver.remote = func() (images.Resolver, error) {
+					return mockRemoteImageResolver, nil
+				}
+				mockImageResolver.local = nil
 			},
 			isValid: false,
 		},
@@ -84,37 +93,54 @@ func TestSpecParser_Parse(t *testing.T) {
 			workflowSpecPath: "./testdata/run/valid/workflow.yaml",
 			overridesPath:    "./testdata/run/valid/overrides.yaml",
 			expectations: func(t *testing.T) {
-				mockImageResolver = images.NewMockResolver(ctrl)
-
 				ref, err := reference.Parse("localhost:5000/components/enrichers/enricher:latest")
 				require.NoError(t, err)
-				mockFetcher.
-					EXPECT().
-					FetchPackage(ctx, ref).
-					Return(&registry.FetchPackageResponse{}, nil)
 
-				parser.localImagesResolver = func(
-					ctx context.Context,
-					c dockerimages.Client,
-					componentPath string,
-					bof ...dockerimages.BuilderOptionFn,
-				) (images.Resolver, error) {
-					require.Nil(t, c)
-					require.Equal(t, "", componentPath)
-					require.Empty(t, bof)
+				mockRemoteImageResolver := images.NewMockResolver(ctrl)
+				mockLocalImageresolver := images.NewMockResolver(ctrl)
 
-					return mockImageResolver, nil
+				gomock.InOrder(
+					mockLocalImageresolver.
+						EXPECT().
+						Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
+						Return("localhost:5000/components/targets/git-clone:latest", nil),
+
+					mockFetcher.
+						EXPECT().
+						FetchPackage(ctx, ref).
+						Return(&registry.FetchPackageResponse{
+							Component: v1.Component{
+								Name: "enricher",
+								Steps: []v1.Step{
+									{
+										Image: "localhost:5000/components/enrichers/enricher:latest",
+									},
+								},
+							},
+						}, nil),
+
+					mockRemoteImageResolver.
+						EXPECT().
+						Resolve(ctx, "localhost:5000/components/enrichers/enricher:latest").
+						Return("localhost:5000/components/enrichers/enricher:latest", nil),
+
+					mockRemoteImageResolver.
+						EXPECT().
+						Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
+						Return("localhost:5000/components/reporters/json-logger:latest", nil),
+				)
+
+				mockImageResolver.remote = func() (images.Resolver, error) {
+					return mockRemoteImageResolver, nil
 				}
 
-				mockImageResolver.
-					EXPECT().
-					Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
-					Return("localhost:5000/components/targets/git-clone:latest", nil)
-
-				mockImageResolver.
-					EXPECT().
-					Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
-					Return("localhost:5000/components/reporters/json-logger:latest", nil)
+				mockImageResolver.local = func(
+					ctx context.Context,
+					componentPath string,
+				) (images.Resolver, error) {
+					require.Equal(t, "testdata/run/valid/component.yaml", componentPath)
+					return mockLocalImageresolver, nil
+				}
 			},
 			isValid: true,
 		},
@@ -123,34 +149,35 @@ func TestSpecParser_Parse(t *testing.T) {
 			workflowSpecPath: "./testdata/run/valid/workflow.yml",
 			isValid:          true,
 			expectations: func(t *testing.T) {
-				mockImageResolver = images.NewMockResolver(ctrl)
+				mockRemoteImageResolver := images.NewMockResolver(ctrl)
+				mockLocalImageResolver := images.NewMockResolver(ctrl)
+				gomock.InOrder(
+					mockRemoteImageResolver.
+						EXPECT().
+						Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
+						Return("localhost:5000/components/targets/git-clone:latest", nil),
 
-				mockImageResolver.
-					EXPECT().
-					Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
-					Return("localhost:5000/components/targets/git-clone:latest", nil)
+					mockLocalImageResolver.
+						EXPECT().
+						Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
+						Return("localhost:5000/components/targets/git-clone:latest", nil),
 
-				mockImageResolver.
-					EXPECT().
-					Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
-					Return("localhost:5000/components/targets/git-clone:latest", nil)
+					mockRemoteImageResolver.
+						EXPECT().
+						Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
+						Return("localhost:5000/components/reporters/json-logger:latest", nil),
+				)
 
-				mockImageResolver.
-					EXPECT().
-					Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
-					Return("localhost:5000/components/reporters/json-logger:latest", nil)
+				mockImageResolver.remote = func() (images.Resolver, error) {
+					return mockRemoteImageResolver, nil
+				}
 
-				parser.localImagesResolver = func(
+				mockImageResolver.local = func(
 					ctx context.Context,
-					c dockerimages.Client,
 					componentPath string,
-					bof ...dockerimages.BuilderOptionFn,
 				) (images.Resolver, error) {
-					require.Nil(t, c)
-					require.Equal(t, "", componentPath)
-					require.Empty(t, bof)
-
-					return mockImageResolver, nil
+					require.Equal(t, "testdata/run/valid/component.yaml", componentPath)
+					return mockLocalImageResolver, nil
 				}
 			},
 		},
@@ -163,9 +190,8 @@ func TestSpecParser_Parse(t *testing.T) {
 			wf, err := parser.Parse(
 				ctx,
 				ParserConfig{
-					SpecPath:             tt.workflowSpecPath,
-					OverridesPath:        tt.overridesPath,
-					BuildComponentImages: false,
+					SpecPath:      tt.workflowSpecPath,
+					OverridesPath: tt.overridesPath,
 				})
 			if tt.isValid {
 				require.NoError(t, err, wf.Validate())

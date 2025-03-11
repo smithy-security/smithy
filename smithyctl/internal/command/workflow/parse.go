@@ -11,8 +11,11 @@ import (
 	"text/template"
 
 	"github.com/distribution/reference"
+	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"gopkg.in/yaml.v3"
+
+	"github.com/smithy-security/pkg/utils"
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
@@ -52,11 +55,20 @@ type (
 		Parse(path string) (*v1.Component, error)
 	}
 
+	ComponentImageResolver interface {
+		Remote() (images.Resolver, error)
+		Local(context.Context, string) (images.Resolver, error)
+	}
+
+	imageResolver struct {
+		remote func() (images.Resolver, error)
+		local  func(context.Context, string) (images.Resolver, error)
+	}
+
 	specParser struct {
-		componentFetcher     ComponentFetcher
-		componentParser      ComponentParser
-		remoteImagesResolver func() images.Resolver
-		localImagesResolver  func(context.Context, dockerimages.Client, string, ...dockerimages.BuilderOptionFn) (images.Resolver, error)
+		componentFetcher ComponentFetcher
+		componentParser  ComponentParser
+		imageResolver    ComponentImageResolver
 	}
 )
 
@@ -75,8 +87,54 @@ func (c *Component) IsInitialised() bool {
 	return c.pkgComponent != nil
 }
 
+func NewDockerImageResolver(buildComponentImages bool, dockerClient *dockerclient.Client, opts ...dockerimages.BuilderOptionFn) (ComponentImageResolver, error) {
+	if utils.IsNil(dockerClient) {
+		return nil, errors.Errorf("nil docker client provided")
+	}
+
+	remoteComponentImageResolver, err := dockerimages.NewResolver(dockerClient)
+	if err != nil {
+		return nil, errors.Errorf("could not initialise docker image resolver: %w", err)
+	}
+
+	dockerImageResolver := &imageResolver{
+		remote: func() (images.Resolver, error) {
+			return remoteComponentImageResolver, nil
+		},
+	}
+
+	if buildComponentImages {
+		dockerImageResolver.local = func(
+			ctx context.Context,
+			componentPath string,
+		) (images.Resolver, error) {
+			return dockerimages.NewResolverBuilder(
+				ctx, dockerClient, componentPath, opts...,
+			)
+		}
+	} else {
+		dockerImageResolver.local = func(_ context.Context, _ string) (images.Resolver, error) {
+			return remoteComponentImageResolver, nil
+		}
+	}
+
+	return dockerImageResolver, nil
+}
+
+func (i *imageResolver) Remote() (images.Resolver, error) {
+	return i.remote()
+}
+
+func (i *imageResolver) Local(ctx context.Context, componentPath string) (images.Resolver, error) {
+	return i.local(ctx, componentPath)
+}
+
 // NewSpecParser returns a new workflow spec parser.
-func NewSpecParser(fetcher ComponentFetcher, componentParser ComponentParser) (*specParser, error) {
+func NewSpecParser(
+	fetcher ComponentFetcher,
+	componentParser ComponentParser,
+	imageResolver ComponentImageResolver,
+) (*specParser, error) {
 	switch {
 	case fetcher == nil:
 		return nil, errors.New("componentFetcher is nil")
@@ -84,27 +142,10 @@ func NewSpecParser(fetcher ComponentFetcher, componentParser ComponentParser) (*
 		return nil, errors.New("component parser is nil")
 	}
 
-	remoteComponentImageResolver, err := dockerimages.NewResolver(nil)
-	if err != nil {
-		return nil, errors.Errorf("could not initialise docker image resolver: %w", err)
-	}
-
 	return &specParser{
 		componentFetcher: fetcher,
 		componentParser:  componentParser,
-		remoteImagesResolver: func() images.Resolver {
-			return remoteComponentImageResolver
-		},
-		localImagesResolver: func(
-			ctx context.Context,
-			client dockerimages.Client,
-			componentPath string,
-			opts ...dockerimages.BuilderOptionFn,
-		) (images.Resolver, error) {
-			return dockerimages.NewResolverBuilder(
-				ctx, nil, componentPath, opts...,
-			)
-		},
+		imageResolver:    imageResolver,
 	}, nil
 }
 
@@ -135,11 +176,9 @@ func (c *Component) UnmarshalYAML(unmarshal func(any) error) error {
 }
 
 type ParserConfig struct {
-	SpecPath             string
-	OverridesPath        string
-	BuildComponentImages bool
-	ResolutionOpts       []images.ResolutionOptionFn
-	BuildOpts            []dockerimages.BuilderOptionFn
+	SpecPath       string
+	OverridesPath  string
+	ResolutionOpts []images.ResolutionOptionFn
 }
 
 // Parse parses the workflow step into a correct format.
@@ -172,13 +211,16 @@ func (sp *specParser) Parse(ctx context.Context, config ParserConfig) (*v1.Workf
 		var (
 			parsedComponent *v1.Component
 			err             error
-			resolver        images.Resolver = sp.remoteImagesResolver()
 		)
+
+		resolver, err := sp.imageResolver.Remote()
+		if err != nil {
+			return nil, errors.Errorf("could not bootstrap remote image resolver: %w", err)
+		}
 
 		switch {
 		case c.Component.HasRemoteReference():
 			parsedComponent, err = sp.parseRemoteComponent(ctx, c.Component.remoteComponentReference)
-			resolver = sp.remoteImagesResolver()
 		case c.Component.HasLocalReference():
 			parsedComponent, err = sp.parseLocalComponent(c.Component.localComponentReference)
 			cleanedUp := &url.URL{
@@ -186,10 +228,8 @@ func (sp *specParser) Parse(ctx context.Context, config ParserConfig) (*v1.Workf
 				Path: c.Component.localComponentReference.Path,
 			}
 
-			if err == nil && config.BuildComponentImages {
-				resolver, err = sp.localImagesResolver(
-					ctx, nil, cleanedUp.String()[2:], config.BuildOpts...,
-				)
+			if err == nil {
+				resolver, err = sp.imageResolver.Local(ctx, cleanedUp.String()[2:])
 			}
 		case c.Component.IsInitialised():
 			parsedComponent = c.Component.pkgComponent

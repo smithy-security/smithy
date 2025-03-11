@@ -7,8 +7,8 @@ import (
 	"os"
 
 	dockerimage "github.com/docker/docker/api/types/image"
-	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
+
 	"github.com/smithy-security/pkg/utils"
 
 	"github.com/smithy-security/smithy/smithyctl/internal/images"
@@ -27,13 +27,8 @@ type Resolver struct {
 // Docker client
 func NewResolver(client dockerPuller) (*Resolver, error) {
 	if utils.IsNil(client) {
-		var err error
-		client, err = dockerclient.NewClientWithOpts(dockerclient.FromEnv)
-		if err != nil {
-			return nil, errors.Errorf("failed to create docker client: %w", err)
-		}
+		return nil, ErrNoDockerClient
 	}
-
 	return &Resolver{client: client}, nil
 }
 
