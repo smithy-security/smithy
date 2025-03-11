@@ -48,39 +48,49 @@ type resolutionOptions struct {
 
 // ResolutionOptionFn is used to define common attributes of all the images
 // of components
-type ResolutionOptionFn func(*resolutionOptions)
+type ResolutionOptionFn func(*resolutionOptions) error
 
 // WithRegistry changes the registry that will be used for all the images
 func WithRegistry(r string) ResolutionOptionFn {
-	return func(o *resolutionOptions) {
+	return func(o *resolutionOptions) error {
+		if r == "" {
+			return errors.New("registry should not be an empty string")
+		}
 		o.registry = r
+		return nil
 	}
 }
 
 // WithDefaultTag changes the tag that will be set by defaylt to an image if it
 // doesn't have tag already
 func WithDefaultTag(t string) ResolutionOptionFn {
-	return func(o *resolutionOptions) {
+	return func(o *resolutionOptions) error {
+		if t == "" {
+			return errors.New("default tag should not be an empty string")
+		}
 		o.defaultTag = t
+		return nil
 	}
 }
 
 // WithDefaultTag changes the tag that will be set by default to all the
 // component images
 func WithExtraTags(tags ...string) ResolutionOptionFn {
-	return func(o *resolutionOptions) {
+	return func(o *resolutionOptions) error {
 		o.extraTags = tags
+		return nil
 	}
 }
 
 // WithNamespace changes the namespace used for all the component images
 func WithNamespace(n string) ResolutionOptionFn {
-	return func(o *resolutionOptions) {
+	return func(o *resolutionOptions) error {
 		o.namespace = n
+		return nil
 	}
 }
 
-func makeOptions(opts ...ResolutionOptionFn) resolutionOptions {
+func makeOptions(opts ...ResolutionOptionFn) (resolutionOptions, error) {
 	defaultOpts := resolutionOptions{
 		registry:   DefaultRegistry,
 		namespace:  DefaultNamespace,
@@ -88,10 +98,12 @@ func makeOptions(opts ...ResolutionOptionFn) resolutionOptions {
 	}
 
 	for _, opt := range opts {
-		opt(&defaultOpts)
+		if err := opt(&defaultOpts); err != nil {
+			return resolutionOptions{}, err
+		}
 	}
 
-	return defaultOpts
+	return defaultOpts, nil
 }
 
 // ComponentRepository represents a container image repository of a Smithy
@@ -112,7 +124,11 @@ type ComponentRepository struct {
 func ParseComponentRepository(componentPath, imageRef string, options ...ResolutionOptionFn) (*ComponentRepository, *name.Tag, error) {
 	fmt.Fprintf(os.Stderr, "parsing component repository: %s %s\n", componentPath, imageRef)
 
-	opts := makeOptions(options...)
+	opts, err := makeOptions(options...)
+	if err != nil {
+		return nil, nil, errors.Errorf("there was an error while parsing the resolution options: %w", err)
+	}
+
 	componentDirectory := path.Dir(componentPath)
 	parsedRef, err := name.NewTag(
 		imageRef,
