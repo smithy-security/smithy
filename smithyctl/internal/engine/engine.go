@@ -1,12 +1,15 @@
 package engine
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
+	"maps"
 	"os"
 	"path"
-	"path/filepath"
+	"slices"
+	"text/template"
 
 	"github.com/go-errors/errors"
 	"github.com/google/go-containerregistry/pkg/name"
@@ -31,6 +34,8 @@ type (
 
 	InstanceIDGenerator func() uuid.UUID
 
+	TmpFolderProvisioner func(instanceID uuid.UUID, folderType string) (string, error)
+
 	// ContainerConfig stripped down configuration that we need to run simple containers.
 	ContainerConfig struct {
 		Name           string
@@ -46,11 +51,19 @@ type (
 	ExecutorConfig struct {
 		CleanUpFindingsDB   bool
 		InstanceIDGenerator InstanceIDGenerator
+		TmpFolderProvisioner
+	}
+
+	volumeDescription struct {
+		mountPath string
+		hostPath  string
 	}
 
 	executor struct {
-		containerExec ContainerExecutor
-		conf          *ExecutorConfig
+		containerExec  ContainerExecutor
+		conf           *ExecutorConfig
+		instanceID     uuid.UUID
+		volumeRequests map[string]volumeDescription
 	}
 )
 
@@ -64,23 +77,37 @@ func NewExecutor(containerExecutor ContainerExecutor, conf *ExecutorConfig) (*ex
 		conf.InstanceIDGenerator = uuid.New
 	}
 
+	if conf.TmpFolderProvisioner == nil {
+		conf.TmpFolderProvisioner = func(instanceID uuid.UUID, folderType string) (string, error) {
+			folderNamePattern := folderType + "-" + instanceID.String() + "-*"
+			tmpDir, err := os.MkdirTemp("", folderNamePattern)
+			if err != nil {
+				return "", errors.Errorf("could not provision temporary folder with name %s: %w", folderNamePattern, err)
+			}
+
+			return tmpDir, nil
+		}
+	}
+
 	return &executor{
-		containerExec: containerExecutor,
-		conf:          conf,
+		containerExec:  containerExecutor,
+		conf:           conf,
+		volumeRequests: map[string]volumeDescription{},
 	}, nil
 }
 
 // Execute runs each step in each stage after creating an instance ID.
 // It also cleans up the environment post run.
 func (e *executor) Execute(ctx context.Context, wf *v1Types.Workflow) error {
-	instanceID := e.conf.InstanceIDGenerator()
+	e.instanceID = e.conf.InstanceIDGenerator()
 
 	defer e.cleanup(ctx)
 
 	for _, stage := range wf.Stages {
 		for _, ref := range stage.ComponentRefs {
+			sharedComponentVolumes := map[string]volumeDescription{}
 			for _, step := range ref.Component.Steps {
-				if err := e.executeStep(ctx, instanceID, step); err != nil {
+				if err := e.executeStep(ctx, step, sharedComponentVolumes); err != nil {
 					return errors.Errorf("failed to run step for component '%s': %w", ref.Component.Name, err)
 				}
 			}
@@ -90,13 +117,115 @@ func (e *executor) Execute(ctx context.Context, wf *v1Types.Workflow) error {
 	return nil
 }
 
-// executeStep builds the container run context and runs the container on the passed execution backend.
-func (e *executor) executeStep(ctx context.Context, instanceID uuid.UUID, step v1Types.Step) error {
-	absPath, err := filepath.Abs(".")
+func (e *executor) render(templStr string, funcMaps template.FuncMap) (string, error) {
+	// we initialise the template over and over in order to ensure that we have
+	// a view of the errors occurring while the template is parsed
+	tmpl, err := template.New("templStr").Funcs(funcMaps).Parse(templStr)
 	if err != nil {
-		return errors.Errorf("failed to determine absolute path: %w", err)
+		return "", err
 	}
 
+	var bb bytes.Buffer
+	err = tmpl.Execute(&bb, nil)
+	if err != nil {
+		return "", errors.Errorf("%s: could not render template: %w", templStr, err)
+	}
+
+	return bb.String(), nil
+}
+
+func (e *executor) renderVolumes(
+	step v1Types.Step,
+	sharedComponentVolumes map[string]volumeDescription,
+) ([]volumeDescription, error) {
+	var renderErr error
+	volumeRequests := map[string]volumeDescription{}
+
+	funcMaps := template.FuncMap{
+		"scratchWorkspace": func() string {
+			// this should be unique per component
+			if _, exists := sharedComponentVolumes["scratch"]; !exists {
+				tmpDir, err := e.conf.TmpFolderProvisioner(e.instanceID, "scratch")
+				if err != nil {
+					renderErr = errors.Join(renderErr, err)
+				}
+
+				sharedComponentVolumes["scratch"] = volumeDescription{
+					mountPath: "/workspace/scratch",
+					hostPath:  tmpDir,
+				}
+			}
+
+			volumeRequests["scratch"] = sharedComponentVolumes["scratch"]
+			return volumeRequests["scratch"].mountPath
+		},
+		"sourceCodeWorkspace": func() string {
+			// this should be unique per execution
+			if _, exists := e.volumeRequests["source-code"]; !exists {
+				tmpDir, err := e.conf.TmpFolderProvisioner(e.instanceID, "source-code")
+				if err != nil {
+					renderErr = errors.Join(renderErr, err)
+				}
+
+				e.volumeRequests["source-code"] = volumeDescription{
+					mountPath: "/workspace/source-code",
+					hostPath:  tmpDir,
+				}
+			}
+
+			volumeRequests["source-code"] = e.volumeRequests["source-code"]
+			return e.volumeRequests["source-code"].mountPath
+		},
+	}
+
+	for name, val := range step.EnvVars {
+		newVal, err := e.render(val, funcMaps)
+		if err != nil {
+			return nil, errors.Errorf("could not render expression: %w", err)
+		}
+
+		if renderErr != nil {
+			return nil, errors.Errorf("could not render expression: %w", renderErr)
+		}
+
+		step.EnvVars[name] = newVal
+	}
+
+	for index, arg := range step.Args {
+		newVal, err := e.render(arg, funcMaps)
+		if err != nil {
+			return nil, errors.Errorf("could not render expression: %w", err)
+		}
+
+		if renderErr != nil {
+			return nil, errors.Errorf("could not render expression: %w", renderErr)
+		}
+
+		step.Args[index] = newVal
+	}
+
+	if step.Script != "" {
+		newVal, err := e.render(step.Script, funcMaps)
+		if err != nil {
+			return nil, errors.Errorf("could not render expression: %w", err)
+		}
+
+		if renderErr != nil {
+			return nil, errors.Errorf("could not render expression: %w", renderErr)
+		}
+
+		step.Script = newVal
+	}
+
+	return slices.Collect(maps.Values(volumeRequests)), nil
+}
+
+// executeStep builds the container run context and runs the container on the passed execution backend.
+func (e *executor) executeStep(
+	ctx context.Context,
+	step v1Types.Step,
+	sharedComponentVolumes map[string]volumeDescription,
+) error {
 	ref, err := name.ParseReference(step.Image)
 	if err != nil {
 		return errors.Errorf("failed to determine reference for step '%s': %w", step.Name, err)
@@ -108,8 +237,22 @@ func (e *executor) executeStep(ctx context.Context, instanceID uuid.UUID, step v
 		tag    = ref.Identifier()
 	)
 
+	if step.Executable == "" {
+		return errors.Errorf("%s: you need to set an executable absolute path for each step", step.Name)
+	}
+
+	stepVolumes, err := e.renderVolumes(step, sharedComponentVolumes)
+	if err != nil {
+		return errors.Errorf("%s: could not render step: %w", step.Name, err)
+	}
+
+	volumeBindings := []string{}
+	for _, stepVolume := range stepVolumes {
+		volumeBindings = append(volumeBindings, stepVolume.hostPath+":"+stepVolume.mountPath)
+	}
+
 	envVars := []string{
-		fmt.Sprintf("SMITHY_INSTANCE_ID=%s", instanceID.String()),
+		fmt.Sprintf("SMITHY_INSTANCE_ID=%s", e.instanceID.String()),
 		"SMITHY_LOG_LEVEL=debug",
 	}
 
@@ -117,23 +260,20 @@ func (e *executor) executeStep(ctx context.Context, instanceID uuid.UUID, step v
 		envVars = append(envVars, fmt.Sprintf("%s=%s", k, v))
 	}
 
-	if step.Executable == "" {
-		return errors.Errorf("%s: you need to set an executable absolute path for each step", step.Name)
-	}
-
+	// these are just used to make it easier to test this code so that
+	// we can predict the order of the items in the lists and gomock
+	// doesn't bother us
+	slices.Sort(volumeBindings)
+	slices.Sort(envVars)
 	if err := e.containerExec.RunAndWait(
 		ctx,
 		ContainerConfig{
-			Name:       step.Name,
-			Image:      fmt.Sprintf("%s:%s", image, tag),
-			Executable: step.Executable,
-			Cmd:        step.Args,
-			EnvVars:    envVars,
-			VolumeBindings: []string{
-				// This is shared between all containers for simplicity.
-				path.Join(absPath, fmt.Sprintf("%s:/workspace", smithyDir)),
-				fmt.Sprintf("%s:/workspace/repos", os.TempDir()),
-			},
+			Name:           step.Name,
+			Image:          fmt.Sprintf("%s:%s", image, tag),
+			Executable:     step.Executable,
+			Cmd:            step.Args,
+			EnvVars:        envVars,
+			VolumeBindings: volumeBindings,
 			// Standardising the platform to avoid not fun issues on different OS/ARCH.
 			Platform: &ocispec.Platform{
 				Architecture: "amd64",

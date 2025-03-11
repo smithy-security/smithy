@@ -418,7 +418,18 @@ func renderComponents(components []*v1.Component) error {
 			return errors.Errorf("failed to YAML marshal component '%s': %w", component.Name, err)
 		}
 
-		var tmpl = template.New("componentAsStr")
+		var tmpl = template.New("componentAsStr").Funcs(
+			// leave these two functions in place so that the execution engine
+			// can use them as needed
+			template.FuncMap{
+				"scratchWorkspace": func() string {
+					return "{{ scratchWorkspace }}"
+				},
+				"sourceCodeWorkspace": func() string {
+					return "{{ sourceCodeWorkspace }}"
+				},
+			},
+		)
 
 		tmpl, err = tmpl.Parse(string(b))
 		if err != nil {

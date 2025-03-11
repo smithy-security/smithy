@@ -3,9 +3,7 @@ package engine_test
 import (
 	"context"
 	"fmt"
-	"os"
-	"path"
-	"path/filepath"
+	"slices"
 	"testing"
 	"time"
 
@@ -32,6 +30,12 @@ func TestNewExecutor(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, exe)
 	})
+}
+
+func appendAndSort(sl []string, s ...string) []string {
+	nsl := append(sl, s...)
+	slices.Sort(nsl)
+	return nsl
 }
 
 func TestExecutor_Execute(t *testing.T) {
@@ -66,8 +70,18 @@ func TestExecutor_Execute(t *testing.T) {
 		idGenerator = func() uuid.UUID {
 			return instanceID
 		}
-		mockContainerExec = NewMockContainerExecutor(ctrl)
-		workflow          = &v1.Workflow{
+		tmpFolderProvisioner = func(instanceIDForTmpFolder uuid.UUID, s string) (string, error) {
+			require.Equal(t, instanceID, instanceIDForTmpFolder)
+			require.True(t, s == "scratch" || s == "source-code")
+
+			return "/tmp/" + instanceIDForTmpFolder.String() + "-" + s, nil
+		}
+		sourceCodeHostPath  = "/tmp/" + instanceID.String() + "-source-code"
+		scratchHostPath     = "/tmp/" + instanceID.String() + "-scratch"
+		sourceCodeMountPath = "/workspace/source-code"
+		scratchMountPath    = "/workspace/scratch"
+		mockContainerExec   = NewMockContainerExecutor(ctrl)
+		workflow            = &v1.Workflow{
 			Name:        "test-workflow",
 			Description: "test workflow",
 			Stages: []v1.Stage{
@@ -85,6 +99,7 @@ func TestExecutor_Execute(t *testing.T) {
 										EnvVars: map[string]string{
 											"REPO_URL": "github.com/andream16/tree",
 										},
+										Args:       []string{"{{ sourceCodeWorkspace }}"},
 										Executable: "/bin/clone",
 									},
 								},
@@ -104,11 +119,13 @@ func TestExecutor_Execute(t *testing.T) {
 										Name:       scanner1ComponentStepName1,
 										Image:      scanner1ComponentImage,
 										Executable: "/bin/prescan",
+										Args:       []string{"--from={{ sourceCodeWorkspace }}", "--to={{ scratchWorkspace }}"},
 									},
 									{
 										Name:       scanner1ComponentStepName2,
 										Image:      scanner1ComponentImage,
 										Executable: "/bin/scan",
+										Args:       []string{"{{ scratchWorkspace }}"},
 									},
 								},
 							},
@@ -123,6 +140,10 @@ func TestExecutor_Execute(t *testing.T) {
 										Name:       scanner2ComponentStepName,
 										Image:      scanner2ComponentImage,
 										Executable: "/bin/scan",
+										EnvVars: map[string]string{
+											"FROM": "{{ sourceCodeWorkspace }}",
+											"TO":   "{{ scratchWorkspace }}",
+										},
 									},
 								},
 							},
@@ -187,24 +208,19 @@ func TestExecutor_Execute(t *testing.T) {
 			},
 		}
 	)
+	defer cancel()
 
 	exe, err := engine.NewExecutor(
 		mockContainerExec,
 		&engine.ExecutorConfig{
-			InstanceIDGenerator: idGenerator,
+			InstanceIDGenerator:  idGenerator,
+			TmpFolderProvisioner: tmpFolderProvisioner,
 		},
 	)
 	require.NoError(t, err)
 	require.NotNil(t, exe)
 
-	absPath, err := filepath.Abs(".")
-	require.NoError(t, err)
-
 	var (
-		volumeBindings = []string{
-			path.Join(absPath, ".smithy:/workspace"),
-			fmt.Sprintf("%s:/workspace/repos", os.TempDir()),
-		}
 		envVars = []string{
 			fmt.Sprintf("SMITHY_INSTANCE_ID=%s", instanceID.String()),
 			"SMITHY_LOG_LEVEL=debug",
@@ -215,8 +231,6 @@ func TestExecutor_Execute(t *testing.T) {
 		}
 	)
 
-	defer cancel()
-
 	t.Run("it executes a workflow correctly", func(t *testing.T) {
 		gomock.InOrder(
 			mockContainerExec.
@@ -224,57 +238,74 @@ func TestExecutor_Execute(t *testing.T) {
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:           targetComponentStepName,
-						Image:          targetComponentImage,
-						Executable:     "/bin/clone",
-						EnvVars:        append(envVars, "REPO_URL=github.com/andream16/tree"),
-						VolumeBindings: volumeBindings,
-						Platform:       platform,
+						Name:       targetComponentStepName,
+						Image:      targetComponentImage,
+						Executable: "/bin/clone",
+						EnvVars:    appendAndSort(envVars, "REPO_URL=github.com/andream16/tree"),
+						VolumeBindings: []string{
+							sourceCodeHostPath + ":" + sourceCodeMountPath,
+						},
+						Cmd:      []string{"/workspace/source-code"},
+						Platform: platform,
 					},
 				).
 				Return(nil),
+
 			mockContainerExec.
 				EXPECT().
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:           scanner1ComponentStepName1,
-						Image:          scanner1ComponentImage,
-						Executable:     "/bin/prescan",
-						EnvVars:        envVars,
-						VolumeBindings: volumeBindings,
-						Platform:       platform,
+						Name:       scanner1ComponentStepName1,
+						Image:      scanner1ComponentImage,
+						Executable: "/bin/prescan",
+						EnvVars:    envVars,
+						VolumeBindings: []string{
+							scratchHostPath + ":" + scratchMountPath,
+							sourceCodeHostPath + ":" + sourceCodeMountPath,
+						},
+						Cmd:      []string{"--from=/workspace/source-code", "--to=/workspace/scratch"},
+						Platform: platform,
 					},
 				).
 				Return(nil),
+
 			mockContainerExec.
 				EXPECT().
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:           scanner1ComponentStepName2,
-						Image:          scanner1ComponentImage,
-						Executable:     "/bin/scan",
-						EnvVars:        envVars,
-						VolumeBindings: volumeBindings,
-						Platform:       platform,
+						Name:       scanner1ComponentStepName2,
+						Image:      scanner1ComponentImage,
+						Executable: "/bin/scan",
+						EnvVars:    envVars,
+						VolumeBindings: []string{
+							scratchHostPath + ":" + scratchMountPath,
+						},
+						Cmd:      []string{"/workspace/scratch"},
+						Platform: platform,
 					},
 				).
 				Return(nil),
+
 			mockContainerExec.
 				EXPECT().
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:           scanner2ComponentStepName,
-						Image:          scanner2ComponentImage,
-						Executable:     "/bin/scan",
-						EnvVars:        envVars,
-						VolumeBindings: volumeBindings,
-						Platform:       platform,
+						Name:       scanner2ComponentStepName,
+						Image:      scanner2ComponentImage,
+						Executable: "/bin/scan",
+						EnvVars:    appendAndSort(envVars, "FROM=/workspace/source-code", "TO=/workspace/scratch"),
+						VolumeBindings: []string{
+							scratchHostPath + ":" + scratchMountPath,
+							sourceCodeHostPath + ":" + sourceCodeMountPath,
+						},
+						Platform: platform,
 					},
 				).
 				Return(nil),
+
 			mockContainerExec.
 				EXPECT().
 				RunAndWait(
@@ -283,12 +314,13 @@ func TestExecutor_Execute(t *testing.T) {
 						Name:           enricherComponentStepName,
 						Image:          enricherComponentImage,
 						Executable:     "/bin/enrich",
+						VolumeBindings: []string{},
 						EnvVars:        envVars,
-						VolumeBindings: volumeBindings,
 						Platform:       platform,
 					},
 				).
 				Return(nil),
+
 			mockContainerExec.
 				EXPECT().
 				RunAndWait(
@@ -297,26 +329,27 @@ func TestExecutor_Execute(t *testing.T) {
 						Name:           filterComponentStepName,
 						Image:          filterComponentImage,
 						Executable:     "/bin/filter",
+						VolumeBindings: []string{},
 						EnvVars:        envVars,
-						VolumeBindings: volumeBindings,
 						Platform:       platform,
 					},
 				).
 				Return(nil),
+
 			mockContainerExec.
 				EXPECT().
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:       reporterComponentStepName,
-						Image:      reporterComponentImage,
-						Executable: "/bin/report",
+						Name:           reporterComponentStepName,
+						Image:          reporterComponentImage,
+						Executable:     "/bin/report",
+						VolumeBindings: []string{},
 						Cmd: []string{
 							"-arg1=1",
 						},
-						EnvVars:        envVars,
-						VolumeBindings: volumeBindings,
-						Platform:       platform,
+						EnvVars:  envVars,
+						Platform: platform,
 					},
 				).
 				Return(nil),
