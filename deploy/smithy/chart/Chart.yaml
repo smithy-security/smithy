@@ -14,3 +14,7 @@ dependencies:
     version: 15.1.5
     repository: https://charts.bitnami.com/bitnami
     condition: mongodb.enabled
+  - name: neo4j
+    version: 5.23
+    repository: https://helm.neo4j.com/neo4j
+    condition: neo4j.enabled
