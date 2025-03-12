@@ -15,7 +15,7 @@ steps:
       - --detection-priority=precise
       - --parallel=0
       - --format=sarif
-      - --output=/workspace/repos/trivy-out.sarif.json
+      - --output="{{ scratchWorkspace }}/trivy-out.sarif.json"
       - --scanners=vuln
       - --scanners=misconfig
       - --scanners=secret
@@ -25,4 +25,4 @@ steps:
     image: new-components/scanners/trivy
     executable: /bin/app
     env_vars:
-      TRIVY_RAW_OUT_FILE_PATH: /workspace/repos/trivy-out.sarif.json
+      TRIVY_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/trivy-out.sarif.json"
