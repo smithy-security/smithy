@@ -12,10 +12,10 @@ steps:
     args:
       - -fmt=sarif
       - -no-fail
-      - -out=/workspace/repos/gosec.json
-      - /workspace/repos/{{ .parameters.repo_name }}
+      - -out={{ scratchWorkspace }}/gosec.json
+      - "{{ sourceCodeWorkspace }}/..."
   - name: parser
     image: new-components/scanners/gosec
     env_vars:
-      GOSEC_RAW_OUT_FILE_PATH: repos/gosec.json
+      GOSEC_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/gosec.json"
     executable: /bin/app
