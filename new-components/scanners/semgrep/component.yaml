@@ -12,10 +12,10 @@ steps:
     - p/default
     - --sarif
     - --sarif-output
-    - /workspace/repos/semgrep-out.sarif.json
-    - /workspace/repos/
+    - "{{ scratchWorkspace }}/semgrep-out.sarif.json"
+    - "{{ sourceCodeWorkspace }}"
   - name: parser
     image: new-components/scanners/semgrep
     env_vars:
-      SEMGREP_RAW_OUT_FILE_PATH: /workspace/repos/semgrep-out.sarif.json
+      SEMGREP_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/semgrep-out.sarif.json"
     executable: /bin/app
