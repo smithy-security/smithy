@@ -12,84 +12,37 @@
   <img alt="smithy-logo-light-mode" src="assets/smithy-logo-dark.svg#gh-light-mode-only"/>
 </p>
 
-By [Smithy](https://smithy.security/)
-Security scanning,results unification and enrichment tool
-([ASOC](https://www.gartner.com/reviews/market/application-security-orchestration-and-correlation-asoc-tools))
+Smithy is a workflow engine for security tooling powered by [smithy.security](https://smithy.security/)
+that automates security teams' frameworks built on top of [Open Cybersecurity Schema Framework](https://github.com/ocsf).
 
-Security pipelines on Kubernetes. The purpose of this project is to provide a
-scalable and flexible framework to execute arbitrary security scanning
-tools on code and infrastructure while processing the results in a versatile
-way.
+## Links
 
-```mermaid
-flowchart LR
-    S["Code Setup & Build"]
-
-    P_GoSec["Producer - GoSec (Golang)"]
-    P_SecBugs["Producer - SpotBugs (Java)"]
-    P_Bandit["Producer - Bandit (Python)"]
-    P_TFSec["Producer - TFSec (Terraform)"]
-
-    P_Aggregator["Producer - Results Aggregation"]
-
-    E_Deduplication["Enricher - Deduplication"]
-    E_Policy["Enricher - Policy"]
-    E_Aggregator["Enricher - Enriched Results Aggregator"]
-
-    C_Slack["Consumer - Slack"]
-    C_Elasticsearch["Consumer - Elasticsearch"]
-    C_Jira["Consumer - Jira"]
-
-    S-->P_TFSec
-    S-->P_GoSec
-    S-->P_SecBugs
-    S-->P_Bandit
-
-    P_TFSec-->P_Aggregator
-    P_GoSec-->P_Aggregator
-    P_SecBugs-->P_Aggregator
-    P_Bandit-->P_Aggregator
-
-    P_Aggregator-->E_Deduplication
-    P_Aggregator-->E_Policy
-
-    E_Policy-->E_Aggregator
-    E_Deduplication-->E_Aggregator
-
-    E_Aggregator-->C_Slack
-    E_Aggregator-->C_Elasticsearch
-    E_Aggregator-->C_Jira
-
-
-```
+* [Architecture](./docs/architecture/README.md): understand how Smithy works
+* [SDK](./sdk): build your custom security tooling on top of Smithy. [Example](https://github.com/smithy-security/smithy/pull/749).
+* [Smithyctl](./smithyctl): CLI to build and execute workflows
+* [Blog](https://smithy.security/blog/)
+* Smithy at AppSecDublin: [slides](docs/presentations/Global_AppSecDublin_Presentation.pdf) and [video](https://www.youtube.com/watch?app=desktop\&list=PLpr-xdpM8wG8479ud_l4W93WU5MP2bg78\&v=i9j7n0WDBO0\&feature=youtu.be)
+* Smithy at State Of Open Conf UK 2025: [slides](docs/presentations/SOOCon25.pdf) and [video](https://www.youtube.com/watch?v=SZR_Ll9dYWA)
 
 ## Getting Started
 
-The [Getting Started](docs/getting-started.md) tutorial explains
-how to get started with Smithy.
-You can also access our community contributed pipelines
-[here](https://github.com/smithy-security/smithy-community-pipelines).
+### Prerequisites
 
-## Announcements
+* [Go](https://go.dev/doc/install)
+* [Docker](https://docs.docker.com/engine/install/)
+* Install Smithy with `go install github.com/smithy-security/smithy/smithyctl@latest`
 
-This version of Smithy was announced at OWASP Appsec Dublin in 2023. Check out
-[the slides](docs/presentations/Global_AppSecDublin_Presentation.pdf) and
-[the video](https://www.youtube.com/watch?app=desktop\&list=PLpr-xdpM8wG8479ud_l4W93WU5MP2bg78\&v=i9j7n0WDBO0\&feature=youtu.be)
-of the presentation.
+### Execute a workflow
 
-## Support
+Clone this repository `git clone https://github.com/smithy-security/smithy.git` and run the
+following command from within it:
 
-If you have questions, reach out to us by opening a new
-[issue](https://github.com/smithy-security/smithy/issues/new) on GitHub.
+```shell
+smithyctl workflow run --spec-path=examples/golang/workflow.yaml --build-component-images=true
+```
 
-You can also get support on our [Discord server](https://discord.gg/xzsHxUxK).
+Check the findings in the logs.
 
-## Development & Contributing
+## Contacts
 
-Contributions are welcome, see the [developing](docs/contributers/DEVELOPING.md)
-and [releasing](docs/contributers/RELEASES.md) guides on how to get started.
-
-## License
-
-Smithy is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for
-details.
+Join our [Discord server](https://discord.gg/xzsHxUxK) to get support and ask questions.

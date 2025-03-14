@@ -59,3 +59,12 @@ Steps allow to define what the component has to execute. At least one step has t
 | `name`     | is the name of the step                            | `yes`    |
 | `image`    | is the image of the step to be executed            | `yes`    |
 | `env_vars` | defines optional environment variables of the step | `no`     |
+
+### Extra Template Functions
+
+We have registered some custom go-template functions so that we can extend components with more out-of-the-box capabilities.
+
+| Function              | Description                                                                    |
+|-----------------------|--------------------------------------------------------------------------------|
+| `scratchWorkspace`    | directory that can be used by components to share resources between each other |
+| `sourceCodeWorkspace` | directory which contains the source code, if that was the target type          |
