@@ -8,6 +8,7 @@ import (
 	"maps"
 	"os"
 	"path"
+	"path/filepath"
 	"slices"
 	"text/template"
 
@@ -246,7 +247,15 @@ func (e *executor) executeStep(
 		return errors.Errorf("%s: could not render step: %w", step.Name, err)
 	}
 
-	volumeBindings := []string{}
+	absPath, err := filepath.Abs(".")
+	if err != nil {
+		return errors.Errorf("failed to determine absolute path: %w", err)
+	}
+
+	volumeBindings := []string{
+		path.Join(absPath, fmt.Sprintf("%s:/workspace", smithyDir)),
+	}
+
 	for _, stepVolume := range stepVolumes {
 		volumeBindings = append(volumeBindings, stepVolume.hostPath+":"+stepVolume.mountPath)
 	}
@@ -274,11 +283,6 @@ func (e *executor) executeStep(
 			Cmd:            step.Args,
 			EnvVars:        envVars,
 			VolumeBindings: volumeBindings,
-			// Standardising the platform to avoid not fun issues on different OS/ARCH.
-			Platform: &ocispec.Platform{
-				Architecture: "amd64",
-				OS:           "linux",
-			},
 		},
 	); err != nil {
 		return errors.Errorf("failed to execute step '%s': %w", step.Name, err)

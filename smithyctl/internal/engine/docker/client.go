@@ -24,10 +24,10 @@ type executor struct {
 // NewExecutor returns a new docker executor.
 func NewExecutor(cli *client.Client) (*executor, error) {
 	// // Using available docker setup.
-	// cli, err := client.NewClientWithOpts(client.FromEnv)
-	// if err != nil {
-	// 	return nil, errors.Errorf("failed to create docker client: %w", err)
-	// }
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return nil, errors.Errorf("failed to create docker client: %w", err)
+	}
 	return &executor{dockerClient: cli}, nil
 }
 

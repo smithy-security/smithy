@@ -3,11 +3,12 @@ package engine_test
 import (
 	"context"
 	"fmt"
+	"path"
+	"path/filepath"
 	"slices"
 	"testing"
 	"time"
 
-	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
@@ -62,6 +63,9 @@ func TestExecutor_Execute(t *testing.T) {
 	)
 
 	instanceID, err := uuid.Parse("37087cc2-e4ba-4fe0-8230-cda372778ed7")
+	require.NoError(t, err)
+
+	absPath, err := filepath.Abs(".")
 	require.NoError(t, err)
 
 	var (
@@ -220,16 +224,10 @@ func TestExecutor_Execute(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, exe)
 
-	var (
-		envVars = []string{
-			fmt.Sprintf("SMITHY_INSTANCE_ID=%s", instanceID.String()),
-			"SMITHY_LOG_LEVEL=debug",
-		}
-		platform = &ocispec.Platform{
-			Architecture: "amd64",
-			OS:           "linux",
-		}
-	)
+	var envVars = []string{
+		fmt.Sprintf("SMITHY_INSTANCE_ID=%s", instanceID.String()),
+		"SMITHY_LOG_LEVEL=debug",
+	}
 
 	t.Run("it executes a workflow correctly", func(t *testing.T) {
 		gomock.InOrder(
@@ -243,10 +241,10 @@ func TestExecutor_Execute(t *testing.T) {
 						Executable: "/bin/clone",
 						EnvVars:    appendAndSort(envVars, "REPO_URL=github.com/andream16/tree"),
 						VolumeBindings: []string{
+							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
 							sourceCodeHostPath + ":" + sourceCodeMountPath,
 						},
-						Cmd:      []string{"/workspace/source-code"},
-						Platform: platform,
+						Cmd: []string{"/workspace/source-code"},
 					},
 				).
 				Return(nil),
@@ -261,11 +259,11 @@ func TestExecutor_Execute(t *testing.T) {
 						Executable: "/bin/prescan",
 						EnvVars:    envVars,
 						VolumeBindings: []string{
+							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
 							scratchHostPath + ":" + scratchMountPath,
 							sourceCodeHostPath + ":" + sourceCodeMountPath,
 						},
-						Cmd:      []string{"--from=/workspace/source-code", "--to=/workspace/scratch"},
-						Platform: platform,
+						Cmd: []string{"--from=/workspace/source-code", "--to=/workspace/scratch"},
 					},
 				).
 				Return(nil),
@@ -280,10 +278,10 @@ func TestExecutor_Execute(t *testing.T) {
 						Executable: "/bin/scan",
 						EnvVars:    envVars,
 						VolumeBindings: []string{
+							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
 							scratchHostPath + ":" + scratchMountPath,
 						},
-						Cmd:      []string{"/workspace/scratch"},
-						Platform: platform,
+						Cmd: []string{"/workspace/scratch"},
 					},
 				).
 				Return(nil),
@@ -298,10 +296,10 @@ func TestExecutor_Execute(t *testing.T) {
 						Executable: "/bin/scan",
 						EnvVars:    appendAndSort(envVars, "FROM=/workspace/source-code", "TO=/workspace/scratch"),
 						VolumeBindings: []string{
+							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
 							scratchHostPath + ":" + scratchMountPath,
 							sourceCodeHostPath + ":" + sourceCodeMountPath,
 						},
-						Platform: platform,
 					},
 				).
 				Return(nil),
@@ -311,12 +309,13 @@ func TestExecutor_Execute(t *testing.T) {
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:           enricherComponentStepName,
-						Image:          enricherComponentImage,
-						Executable:     "/bin/enrich",
-						VolumeBindings: []string{},
-						EnvVars:        envVars,
-						Platform:       platform,
+						Name:       enricherComponentStepName,
+						Image:      enricherComponentImage,
+						Executable: "/bin/enrich",
+						VolumeBindings: []string{
+							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
+						},
+						EnvVars: envVars,
 					},
 				).
 				Return(nil),
@@ -326,12 +325,13 @@ func TestExecutor_Execute(t *testing.T) {
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:           filterComponentStepName,
-						Image:          filterComponentImage,
-						Executable:     "/bin/filter",
-						VolumeBindings: []string{},
-						EnvVars:        envVars,
-						Platform:       platform,
+						Name:       filterComponentStepName,
+						Image:      filterComponentImage,
+						Executable: "/bin/filter",
+						VolumeBindings: []string{
+							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
+						},
+						EnvVars: envVars,
 					},
 				).
 				Return(nil),
@@ -341,15 +341,16 @@ func TestExecutor_Execute(t *testing.T) {
 				RunAndWait(
 					ctx,
 					engine.ContainerConfig{
-						Name:           reporterComponentStepName,
-						Image:          reporterComponentImage,
-						Executable:     "/bin/report",
-						VolumeBindings: []string{},
+						Name:       reporterComponentStepName,
+						Image:      reporterComponentImage,
+						Executable: "/bin/report",
+						VolumeBindings: []string{
+							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
+						},
 						Cmd: []string{
 							"-arg1=1",
 						},
-						EnvVars:  envVars,
-						Platform: platform,
+						EnvVars: envVars,
 					},
 				).
 				Return(nil),

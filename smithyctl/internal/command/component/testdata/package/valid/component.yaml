@@ -1,36 +1,20 @@
-name: example-component
-description: "This is an example component that demonstrates its functionality."
-type: target
+name: "git-clone"
+description: "Clones a repository"
+type: "target"
 parameters:
-  - name: input-path
-    type: string
-    value: "/data/input"
-  - name: max-retries
-    type: const:string
-    value: "3"
-  - name: allowed-users
-    type: list:string
-    value:
-      - user1
-      - user2
-      - user3
+  - name: "git_clone_repo_url"
+    type: "string"
+    value: "https://github.com/0c34/govwa.git"
+  - name: "git_clone_reference"
+    type: "string"
+    value: "master"
+  - name: "git_clone_magic_arg"
+    type: "const:string"
+    value: "-a 1 -b 2 -c 3"
 steps:
-  - name: fetch-data
-    args:
-      - "--source=/data/source"
-      - "--destination=/data/destination"
+  - name: "clone-repo"
     env_vars:
-      API_KEY: "your-api-key"
-      DEBUG: "true"
-    executable: "/usr/local/bin/fetcher"
-    image: "example/fetcher:latest"
-    script: ""
-  - name: process-data
-    args:
-      - "--input=/data/destination"
-      - "--output=/data/processed"
-    env_vars:
-      THREADS: "4"
-    executable: "/usr/local/bin/processor"
-    image: "example/processor:latest"
-    script: ""
+      GIT_CLONE_REPO_URL: "{{ parameters.git_clone_repo_url }}"
+      GIT_CLONE_REFERENCE: "{{ parameters.git_clone_reference }}"
+      GIT_CLONE_MAGIC_ARG: "{{- with shlex parameters.git_clone_magic_arg -}}"
+    image: "localhost:5000/components/targets/git-clone:latest"
