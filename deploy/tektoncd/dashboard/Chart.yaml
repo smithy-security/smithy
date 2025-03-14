@@ -1,6 +1,0 @@
-apiVersion: v2
-appVersion: 0.29.2
-description: A Helm chart for Tekton CD dashboard v0.29.2.
-name: tektoncd-dashboard
-type: application
-version: 0.1.0

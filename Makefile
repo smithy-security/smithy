@@ -24,23 +24,7 @@ SMITHY_VERSION=$(shell (echo $(CONTAINER_REPO) | grep -q '^ghcr' && echo $(lates
 SMITHY_OSS_COMPONENTS_NAME=smithy-security-oss-components
 SMITHY_OSS_COMPONENTS_PACKAGE_URL=oci://ghcr.io/smithy-security/smithy/charts/$(SMITHY_OSS_COMPONENTS_NAME)
 
-TEKTON_VERSION=0.44.0
-TEKTON_DASHBOARD_VERSION=0.29.2
-ARANGODB_VERSION=1.2.19
-NGINX_INGRESS_VERSION=4.2.5
-NGINX_INGRESS_NS=ingress-nginx
-NAMESPACE=default
-ES_NAMESPACE=elastic-system
-ES_OPERATOR_VERSION=2.2.0
-ES_VERSION=8.3.2
-MONGODB_VERSION=13.3.0
-PG_VERSION=11.9.8
-SMITHY_NS=smithy
-TEKTON_NS=tekton-pipelines
-ARANGODB_NS=arangodb
-
 DOCKER=docker
-PROTOC=protoc
 BUF_CONTAINER=buf:local
 
 export
@@ -80,14 +64,6 @@ smithyctl-image: cmd/smithyctl/bin
 smithyctl-image-publish: smithyctl-image
 	$(DOCKER) push "${CONTAINER_REPO}/smithyctl:${SMITHY_VERSION}"
 
-$(go_protos): %.pb.go: %.proto
-	$(PROTOC) --go_out=. --go_opt=paths=source_relative $<
-
-protos: $(go_protos)
-
-build: components protos
-	@echo "done building"
-
 $(component_containers_publish): %/publish: %/docker
 	./scripts/publish_component_container.sh $@
 
@@ -95,23 +71,10 @@ publish-component-containers: $(component_containers_publish)
 
 publish-containers: publish-component-containers smithyctl-image-publish
 
-clean-protos:
-	@find . -not -path "*/vendor/*" -name '*.pb.go' -delete
-
-clean-migrations-compose:
-	cd tests/migrations/ && docker compose rm --force
-
-clean: clean-protos clean-migrations-compose
-
-smithyctl/bin:
-	$(eval GOOS:=linux)
-	$(eval GOARCH:=amd64)
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) cd smithyctl && go build -o ../bin/$(GOOS)/$(GOARCH)/smithyctl cmd/main.go
-
 ########################################
 ######### CODE QUALITY TARGETS #########
 ########################################
-.PHONY: lint install-lint-tools tests go-tests fmt fmt-proto fmt-go install-go-fmt-tools migration-tests
+.PHONY: lint install-lint-tools tests go-tests fmt fmt-proto fmt-go install-go-fmt-tools
 
 lint:
 # we need to redirect stderr to stdout because Github actions don't capture the stderr lolz
@@ -144,10 +107,7 @@ go-tests:
 go-cover: go-tests
 	@go tool cover -html=tests/output/cover.out -o=tests/output/cover.html && open tests/output/cover.html
 
-migration-tests: cmd/smithyctl/bin
-	cd tests/migrations/ && docker compose up --abort-on-container-exit --build --exit-code-from tester
-
-test: go-tests migration-tests
+test: go-tests
 
 install-go-fmt-tools:
 	@go install github.com/bufbuild/buf/cmd/buf@v1.28.1
@@ -166,159 +126,6 @@ fmt-md:
 	@npm run format
 
 fmt: fmt-go fmt-proto fmt-md
-
-########################################
-########## DEBUGGING TARGETS ###########
-########################################
-
-print-%:
-	@echo $($*)
-
-########################################
-########## DEPLOYMENT TARGETS ##########
-########################################
-.PHONY: deploy-nginx deploy-arangodb-crds deploy-arangodb-operator add-es-helm-repo deploy-elasticoperator \
-		tektoncd-dashboard-helm deploy-tektoncd-dashboard add-bitnami-repo dev-smithy dev-deploy dev-teardown \
-		install install-oss-components deploy-cluster
-
-deploy-nginx:
-	@helm upgrade nginx-ingress https://github.com/kubernetes/ingress-nginx/releases/download/helm-chart-$(NGINX_INGRESS_VERSION)/ingress-nginx-$(NGINX_INGRESS_VERSION).tgz \
-		--install \
-		--namespace $(NGINX_INGRESS_NS) \
-		--create-namespace \
-		--set "controller.admissionWebhooks.enabled=false"
-
-deploy-arangodb-crds:
-	@helm upgrade arangodb-crds https://github.com/arangodb/kube-arangodb/releases/download/$(ARANGODB_VERSION)/kube-arangodb-crd-$(ARANGODB_VERSION).tgz \
-		--install
-
-deploy-arangodb-operator:
-	@helm install --generate-name https://github.com/arangodb/kube-arangodb/releases/download/1.2.40/kube-arangodb-1.2.40.tgz
-
-add-es-helm-repo:
-	@helm repo add elastic https://helm.elastic.co
-	@helm repo update
-
-deploy-elasticoperator: add-es-helm-repo
-	@helm upgrade elastic-operator elastic/eck-operator \
-		--install \
-		--namespace $(ES_NAMESPACE) \
-		--create-namespace \
-		--version=$(ES_OPERATOR_VERSION)
-
-deploy/tektoncd/pipeline/release-v$(TEKTON_VERSION).yaml:
-	@wget "https://storage.googleapis.com/tekton-releases/pipeline/previous/v$(TEKTON_VERSION)/release.yaml" -O $@
-
-tektoncd-pipeline-helm: deploy/tektoncd/pipeline/release-v$(TEKTON_VERSION).yaml
-	./scripts/generate_tektoncd_pipeline_helm.sh $(TEKTON_VERSION)
-
-deploy-tektoncd-pipeline: tektoncd-pipeline-helm
-	@helm upgrade tektoncd ./deploy/tektoncd/pipeline \
-		--install \
-		--namespace $(TEKTON_NS) \
-		--create-namespace
-
-deploy/tektoncd/dashboard/release-v$(TEKTON_DASHBOARD_VERSION).yaml:
-    @wget "https://github.com/tektoncd/dashboard/releases/download/v$(TEKTON_DASHBOARD_VERSION)/tekton-dashboard-release.yaml" -O $@
-
-tektoncd-dashboard-helm: deploy/tektoncd/dashboard/release-v$(TEKTON_DASHBOARD_VERSION).yaml
-	./scripts/generate_tektoncd_dashboard_helm.sh $(TEKTON_DASHBOARD_VERSION)
-
-deploy-tektoncd-dashboard: tektoncd-dashboard-helm
-	@helm upgrade tektoncd-dashboard ./deploy/tektoncd/dashboard \
-		--install \
-		--values ./deploy/tektoncd/dashboard/values.yaml \
-		--namespace $(TEKTON_NS)
-
-add-bitnami-repo:
-	@helm repo add bitnami https://charts.bitnami.com/bitnami
-
-deploy-cluster:
-	@scripts/kind-with-registry.sh
-
-install: deploy-cluster dev-infra deploy-elasticoperator deploy-arangodb-crds add-bitnami-repo
-	@echo "fetching dependencies if needed"
-	@helm dependency build ./deploy/smithy/chart
-
-	@echo "deploying smithy"
-	@helm upgrade smithy ./deploy/smithy/chart \
-		--install \
-		--values ./deploy/smithy/values/dev.yaml \
-		--create-namespace \
-		--set "image.registry=$(CONTAINER_REPO)" \
-		--namespace $(SMITHY_NS) \
-		--version $(SMITHY_VERSION) \
-		--wait
-
-	@echo "Applying migrations"
-	@helm upgrade deduplication-db-migrations ./deploy/deduplication-db-migrations/chart \
-		--install \
-		--values ./deploy/deduplication-db-migrations/values/dev.yaml \
-		--create-namespace \
-		--set "image.registry=$(CONTAINER_REPO)" \
-		--namespace $(SMITHY_NS) \
-		--set "image.tag=$(SMITHY_VERSION)" \
-		--wait
-
-	@echo "Installing Components"
-	# we are setting the container repo to it's own value so that we can override it from other make targets
-	# e.g. when installing oss components from locally built components, we want to `make install` with CONTAINER_REPO being the kind-registry, and the package_url being the component tar.gz
-	$(MAKE) install-oss-components CONTAINER_REPO=$(CONTAINER_REPO) SMITHY_OSS_COMPONENTS_PACKAGE_URL=$(SMITHY_OSS_COMPONENTS_PACKAGE_URL)
-
-dev-deploy-oss-components:
-	@echo "Deploying components in local smithy instance"
-	$(MAKE) dev-build-oss-components CONTAINER_REPO=$(CONTAINER_REPO)
-	$(MAKE) install-oss-components CONTAINER_REPO=$(CONTAINER_REPO) SMITHY_OSS_COMPONENTS_PACKAGE_URL=$(SMITHY_OSS_COMPONENTS_PACKAGE_URL)
-
-install-oss-components:
-	@helm upgrade $(SMITHY_OSS_COMPONENTS_NAME) \
-		$(SMITHY_OSS_COMPONENTS_PACKAGE_URL) \
-		--install \
-		--create-namespace \
-		--namespace $(SMITHY_NS) \
-		--set image.registry=$(CONTAINER_REPO) \
-		--values ./deploy/deduplication-db-migrations/values/dev.yaml
-	@echo "Done! Bumped version to $(SMITHY_VERSION)"
-
-dev-build-oss-components:
-	@echo "Building open-source components for local smithy instance..."
-	$(eval GOOS:=linux)
-	$(eval GOARCH:=amd64)
-	$(eval CONTAINER_REPO:=localhost:5000/smithy-security/smithy)
-	$(eval TMP_DIR:=tmp)
-
-	@mkdir $(TMP_DIR)
-	$(MAKE) cmd/smithyctl/bin
-	$(MAKE) -j 16 publish-component-containers CONTAINER_REPO=$(CONTAINER_REPO)
-	@docker run \
-		--platform $(GOOS)/$(GOARCH) \
-		-v ./components:/components \
-		-v ./tmp:/tmp \
-		$(CONTAINER_REPO)/smithyctl:$(SMITHY_VERSION) components package \
-			--version $(SMITHY_VERSION) \
-			--chart-version $(SMITHY_VERSION) \
-			--name $(SMITHY_OSS_COMPONENTS_NAME) \
-			./components
-	@rm -r $(TMP_DIR)
-
-dev-smithy:
-	$(eval GOOS:=linux)
-	$(eval GOARCH:=amd64)
-	$(eval CONTAINER_REPO:=localhost:5000/smithy-security/smithy)
-	$(eval SMITHY_OSS_COMPONENTS_PACKAGE_URL:=./$(SMITHY_OSS_COMPONENTS_NAME)-$(SMITHY_VERSION).tgz)
-	$(eval IN_CLUSTER_CONTAINER_REPO:=kind-registry:5000/smithy-security/smithy)
-
-	$(MAKE) -j 16 smithyctl-image-publish CONTAINER_REPO=$(CONTAINER_REPO)
-	$(MAKE) -j 16 dev-build-oss-components CONTAINER_REPO=$(CONTAINER_REPO)
-
-	$(MAKE) install CONTAINER_REPO=$(IN_CLUSTER_CONTAINER_REPO) SMITHY_OSS_COMPONENTS_PACKAGE_URL=$(SMITHY_OSS_COMPONENTS_PACKAGE_URL)
-
-dev-infra: deploy-nginx deploy-tektoncd-pipeline deploy-tektoncd-dashboard
-
-dev-deploy: deploy-cluster dev-infra dev-smithy
-
-dev-teardown:
-	@kind delete clusters smithy-demo
 
 build-buf-container:
 	$(DOCKER) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf

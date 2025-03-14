@@ -1,5 +1,0 @@
-ingress:
-  annotations: {}
-  className: "nginx"
-  host: "tekton.smithy.localhost"
-  tlsEnabled: false

@@ -39,9 +39,6 @@ jobs:
       - name: Run Go tests
         run: make go-tests
 
-      - name: Run migration tests
-        run: make migration-tests
-
       - name: Coveralls
         uses: coverallsapp/github-action@v2
         with:

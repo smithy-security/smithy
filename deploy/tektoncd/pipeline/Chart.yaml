@@ -1,6 +1,0 @@
-apiVersion: v2
-appVersion: 0.44.0
-description: A Helm chart for Tekton CD v0.44.0.
-name: tektoncd-pipeline-operator
-type: application
-version: 0.1.0
