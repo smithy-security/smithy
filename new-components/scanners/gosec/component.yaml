@@ -4,7 +4,7 @@ type: scanner
 parameters:
   - name: repo_name
     type: string
-    value: tree
+    value: go-dvwa
 steps:
   - name: scanner
     image: docker.io/securego/gosec:2.15.0

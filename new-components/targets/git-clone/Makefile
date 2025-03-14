@@ -23,8 +23,6 @@ build-target:
 	# Makes memory exploitation harder.
     # Add a small overhead at compile time.
 	GOFLAGS="-buildmode=pie" \
-	GOOS="linux" \
-	GOARCH="amd64" \
 		go build -ldflags "-s -w" -trimpath -o target ./cmd/git-clone/main.go
 
 image:

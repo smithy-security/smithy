@@ -4,7 +4,7 @@ type: target
 parameters:
   - name: repo_url
     type: string
-    value: https://github.com/andream16/tree.git
+    value: https://github.com/sqreen/go-dvwa.git
   - name: reference
     type: string
     value: master

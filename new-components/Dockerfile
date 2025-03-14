@@ -17,8 +17,6 @@ RUN CGO_CPPFLAGS="-D_FORTIFY_SOURCE=2 -fstack-protector-all" \
     # Makes memory exploitation harder.
     # Add a small overhead at compile time.
     GOFLAGS="-buildmode=pie" \
-    GOOS="linux" \
-    GOARCH="amd64" \
       go build -ldflags "-s -w" -trimpath -o app ${COMPONENT_BINARY_SOURCE_PATH}
 
 # Create a workspace to clone repos to.
