@@ -1,0 +1,16 @@
+name: zap
+description: "Runs zaproxy then parses findings into the OCSF format"
+type: scanner
+parameters:
+  - name: image
+    type: string
+    value: ""
+steps:
+  - name: run-orchestrated-zap
+    image: "new-components/scanners/zaproxy/zap-with-orchestration-script"
+    executable: /workdir/entrypoint.sh
+  - name: parser
+    image: "new-components/scanners/zaproxy"
+    executable: /bin/app
+    env_vars:
+      ZAP_RAW_OUT_FILE_PATH: repos/zap-report.json
