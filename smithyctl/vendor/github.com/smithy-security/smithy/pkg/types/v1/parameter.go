@@ -35,7 +35,7 @@ type (
 		Name string `json:"name" yaml:"name"`
 		// Type is the parameter type.
 		Type ParameterType `json:"type" yaml:"type"`
-		// Value is the JSON encoded/decoded value of the parameter which is decoded based its Type.
+		// Value is the JSON/Yaml encoded/decoded value of the parameter which is decoded based its Type.
 		Value any `json:"value,omitempty" yaml:"value,omitempty"`
 	}
 )
@@ -46,9 +46,9 @@ func (p *Parameter) MarshalYAML() (interface{}, error) {
 	}
 
 	b, err := yaml.Marshal(struct {
-		Name  string
-		Type  ParameterType
-		Value any
+		Name  string        `yaml:"name"`
+		Type  ParameterType `yaml:"type"`
+		Value any           `yaml:"value,omitempty"`
 	}{
 		Name:  p.Name,
 		Type:  p.Type,
@@ -68,8 +68,8 @@ func (p *Parameter) UnmarshalYAML(value *yaml.Node) error {
 
 	var (
 		partialParameter = &struct {
-			Name string
-			Type ParameterType
+			Name string        `yaml:"name"`
+			Type ParameterType `yaml:"type"`
 		}{}
 	)
 
@@ -83,13 +83,17 @@ func (p *Parameter) UnmarshalYAML(value *yaml.Node) error {
 
 	switch partialParameter.Type {
 	case ParameterTypeString, ParameterTypeConstString:
-		strPtr := struct{ Value *string }{}
+		strPtr := struct {
+			Value *string `yaml:"value"`
+		}{}
 		if err := value.Decode(&strPtr); err != nil {
 			return errors.Errorf("failed to unmarshal parameter %s: %w", p.Name, err)
 		}
 		p.Value = strPtr.Value
 	case ParameterTypeListString:
-		parameterValue := struct{ Value []string }{}
+		parameterValue := struct {
+			Value []string `yaml:"value"`
+		}{}
 		err = value.Decode(&parameterValue)
 		p.Value = parameterValue.Value
 	default:
@@ -105,8 +109,8 @@ func (p *Parameter) UnmarshalYAML(value *yaml.Node) error {
 // UnmarshalJSON unmarshal JSON bytes into a Parameter object.
 func (p *Parameter) UnmarshalJSON(b []byte) error {
 	partialParameter := &struct {
-		Name string
-		Type ParameterType
+		Name string        `json:"name"`
+		Type ParameterType `json:"type"`
 	}{}
 
 	var err error
@@ -119,13 +123,17 @@ func (p *Parameter) UnmarshalJSON(b []byte) error {
 
 	switch partialParameter.Type {
 	case ParameterTypeString, ParameterTypeConstString:
-		strPtr := struct{ Value *string }{}
+		strPtr := struct {
+			Value *string `json:"value"`
+		}{}
 		if err = json.Unmarshal(b, &strPtr); err != nil {
 			return errors.Errorf("failed to unmarshal parameter %s: %w", p.Name, err)
 		}
 		p.Value = strPtr.Value
 	case ParameterTypeListString:
-		parameterValue := &struct{ Value []string }{}
+		parameterValue := &struct {
+			Value []string `json:"value"`
+		}{}
 		err = json.Unmarshal(b, parameterValue)
 		p.Value = parameterValue.Value
 	default:
@@ -145,9 +153,9 @@ func (p *Parameter) MarshalJSON() ([]byte, error) {
 	}
 
 	b, err := json.Marshal(struct {
-		Name  string
-		Type  ParameterType
-		Value any
+		Name  string        `json:"name"`
+		Type  ParameterType `json:"type"`
+		Value any           `json:"value"`
 	}{
 		Name:  p.Name,
 		Type:  p.Type,
