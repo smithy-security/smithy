@@ -114,9 +114,6 @@ github.com/mitchellh/copystructure
 # github.com/mitchellh/go-wordwrap v1.0.1
 ## explicit; go 1.14
 github.com/mitchellh/go-wordwrap
-# github.com/mitchellh/mapstructure v1.5.0
-## explicit; go 1.14
-github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
@@ -135,13 +132,6 @@ github.com/shopspring/decimal
 # github.com/smithy-security/pkg/env v0.0.1
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/pkg/sarif v0.0.1
-## explicit; go 1.23.2
-github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0
-# github.com/smithy-security/smithy/new-components/scanners/gosec v0.0.0-20250114182125-ae2b90b14ae1
-## explicit; go 1.23.2
-github.com/smithy-security/smithy/new-components/scanners/gosec/internal/transformer
-github.com/smithy-security/smithy/new-components/scanners/gosec/internal/util/ptr
 # github.com/smithy-security/smithy/sdk v0.0.4-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
