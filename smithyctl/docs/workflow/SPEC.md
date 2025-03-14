@@ -7,13 +7,13 @@ A workflow specification allows to configure a workflow.
 An example `workflow.yaml` looks like:
 
 ```yaml
-description: "Example pipeline"
-name: "example-pipeline"
+description: GoSec based workflow
+name: gosec
 components:
-  - component: "ghcr.io/smithy-security/manifests/components/target/git-clone:v1.0.0"
-  - component: "ghcr.io/smithy-security/manifests/components/scanner/gosec-parser:v1.0.0"
-  - component: "file://new-components/enrichers/custom-annotation/component.yaml"
-  - component: "ghcr.io/smithy-security/manifests/components/reporter/json-logger:v1.0.0"
+  - component: file://new-components/targets/git-clone/component.yaml
+  - component: file://new-components/scanners/gosec/component.yaml
+  - component: file://new-components/enrichers/custom-annotation/component.yaml
+  - component: file://new-components/reporters/json-logger/component.yaml
 ```
 
 Component references can be:
@@ -32,9 +32,6 @@ git-clone:
   - name: "repo_url"
     type: "string"
     value: "https://github.com/0c34/govwa.git"
-  - name: "repo_name"
-    type: "string"
-    value: "govwa"
 gosec-parser:
   - name: "repo_name"
     type: "string"

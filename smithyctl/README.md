@@ -33,7 +33,7 @@ smithyctl version
 ### Component
 
 * [packaging](./docs/component/PACKAGING.md): distributes a component specified in a [component.yaml](./docs/component/SPEC.md)
-* `build`: allows to build component images. Not yet implemented.
+* [build](./docs/component/BUILD.md): allows to build component images.
 
 ### Workflow
 
