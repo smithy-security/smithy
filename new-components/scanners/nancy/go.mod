@@ -6,7 +6,6 @@ require (
 	github.com/go-errors/errors v1.5.1
 	github.com/jonboulle/clockwork v0.5.0
 	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/smithy/new-components/scanners/gosec v0.0.0-20250114182125-ae2b90b14ae1
 	github.com/smithy-security/smithy/sdk v0.0.4-alpha
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.3
@@ -40,13 +39,11 @@ require (
 	github.com/mattn/goveralls v0.0.12 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/package-url/packageurl-go v0.1.0
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
-	github.com/smithy-security/pkg/sarif v0.0.1 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
 	github.com/sqlc-dev/sqlc v1.27.0 // indirect
 	github.com/urfave/cli/v2 v2.27.5 // indirect
