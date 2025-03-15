@@ -134,7 +134,7 @@ func BanditRawOutFileContents(contents []byte) BanditTransformerOption {
 func New(opts ...BanditTransformerOption) (*BanditTransformer, error) {
 	rawOutFilePath, err := env.GetOrDefault(
 		"BANDIT_RAW_OUT_FILE_PATH",
-		"",
+		"bandit.json",
 		env.WithDefaultOnError(false),
 	)
 	if err != nil {
