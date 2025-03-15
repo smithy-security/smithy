@@ -1,0 +1,16 @@
+name: nancy-parser
+description: "Parses nancy findings into OCSF format"
+type: scanner
+steps:
+  - name: scanner
+    image: "new-components/scanners/nancy/scanner:latest"
+    executable: /entrypoint.sh
+    args:
+      - "{{ sourceCodeWorkspace }}"
+      - "{{ scratchWorkspace }}/nancy.out.json"
+  - name: parser
+    image: "new-components/scanners/nancy"
+    env_vars:
+      NANCY_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/nancy.out.json"
+      NANCY_SCANNED_PROJECT_ROOT: "{{ sourceCodeWorkspace }}"
+    executable: /bin/app
