@@ -2,6 +2,7 @@ package transformer
 
 import (
 	_ "embed"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -18,28 +19,27 @@ import (
 )
 
 func fakeClock() clockwork.FakeClock {
-	return clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
+	return *clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
 }
 
 func TestBanditTransformer_Transform(t *testing.T) {
-	var (
-		clock = fakeClock()
-	)
+	clock := fakeClock()
 
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
+		os.Setenv("BANDIT_RAW_OUT_FILE_PATH", "./testdata/bandit.json")
 		ocsfTransformer, err := New(
-			BanditRawOutFilePath("./testdata/bandit.json"),
 			BanditTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
-			BanditTransformerWithClock(clock),
+			BanditTransformerWithClock(&clock),
 		)
 		require.NoError(t, err)
 		transformMethodTest(t, ocsfTransformer.Transform, nil)
 	})
 
 	t.Run("it should error for findings without a line range", func(t *testing.T) {
+		os.Setenv("BANDIT_RAW_OUT_FILE_PATH", "./testdata/bandit.json")
 		ocsfTransformer, err := New(
 			BanditTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
-			BanditTransformerWithClock(clock),
+			BanditTransformerWithClock(&clock),
 			BanditRawOutFileContents([]byte(noLineRangeInput)),
 		)
 		require.NoError(t, err)
@@ -47,9 +47,10 @@ func TestBanditTransformer_Transform(t *testing.T) {
 	})
 
 	t.Run("it should error for findings with an invalid data source", func(t *testing.T) {
+		os.Setenv("BANDIT_RAW_OUT_FILE_PATH", "./testdata/bandit.json")
 		ocsfTransformer, err := New(
 			BanditTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
-			BanditTransformerWithClock(clock),
+			BanditTransformerWithClock(&clock),
 			BanditRawOutFileContents([]byte(noDataSourceInput)),
 		)
 		require.NoError(t, err)
