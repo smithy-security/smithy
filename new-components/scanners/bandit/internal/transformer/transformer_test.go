@@ -2,6 +2,7 @@ package transformer
 
 import (
 	_ "embed"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -27,8 +28,8 @@ func TestBanditTransformer_Transform(t *testing.T) {
 	)
 
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
+		os.Setenv("BANDIT_RAW_OUT_FILE_PATH", "./testdata/bandit.json")
 		ocsfTransformer, err := New(
-			BanditRawOutFilePath("./testdata/bandit.json"),
 			BanditTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
 			BanditTransformerWithClock(clock),
 		)
@@ -37,6 +38,7 @@ func TestBanditTransformer_Transform(t *testing.T) {
 	})
 
 	t.Run("it should error for findings without a line range", func(t *testing.T) {
+		os.Setenv("BANDIT_RAW_OUT_FILE_PATH", "./testdata/bandit.json")
 		ocsfTransformer, err := New(
 			BanditTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
 			BanditTransformerWithClock(clock),
@@ -47,6 +49,7 @@ func TestBanditTransformer_Transform(t *testing.T) {
 	})
 
 	t.Run("it should error for findings with an invalid data source", func(t *testing.T) {
+		os.Setenv("BANDIT_RAW_OUT_FILE_PATH", "./testdata/bandit.json")
 		ocsfTransformer, err := New(
 			BanditTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
 			BanditTransformerWithClock(clock),
