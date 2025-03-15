@@ -16,6 +16,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 
+	log.Println("running bandit")
 	if err := Main(ctx); err != nil {
 		log.Fatalf("unexpected error: %v", err)
 	}
@@ -33,6 +34,6 @@ func Main(ctx context.Context, opts ...component.RunnerOption) error {
 	if err := component.RunScanner(ctx, ocsfTransformer, opts...); err != nil {
 		return errors.Errorf("could not run scanner: %w", err)
 	}
-
+	log.Println("bandit parser completed successfully")
 	return nil
 }
