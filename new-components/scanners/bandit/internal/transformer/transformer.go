@@ -134,7 +134,7 @@ func BanditRawOutFileContents(contents []byte) BanditTransformerOption {
 func New(opts ...BanditTransformerOption) (*BanditTransformer, error) {
 	rawOutFilePath, err := env.GetOrDefault(
 		"BANDIT_RAW_OUT_FILE_PATH",
-		"bandit.json",
+		"",
 		env.WithDefaultOnError(false),
 	)
 	if err != nil {
@@ -161,7 +161,6 @@ func New(opts ...BanditTransformerOption) (*BanditTransformer, error) {
 			return nil, errors.Errorf("failed to apply option: %w", err)
 		}
 	}
-	slog.Debug("Successfully parsed arguments")
 	return &t, nil
 }
 
