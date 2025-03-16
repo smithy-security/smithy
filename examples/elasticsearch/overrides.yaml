@@ -1,0 +1,14 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: "https://github.com/sqreen/go-dvwa"
+elasticsearch:
+- name: "elasticsearch_url"
+  type: "string"
+  value: "Your ES URL here"
+- name: "elasticsearch_index"
+  type: "string"
+  value: "Any Index"
+- name: "elasticsearch_api_key"
+  type: "string"
+  value: "An API Key with the rights to read cluster and write indexes"
