@@ -1,0 +1,8 @@
+description: elasticsearch based workflow
+name: elasticsearch
+components:
+- component: file://new-components/targets/git-clone/component.yaml
+- component: file://new-components/scanners/gosec/component.yaml
+- component: file://new-components/enrichers/custom-annotation/component.yaml
+- component: file://new-components/reporters/json-logger/component.yaml
+- component: file://new-components/reporters/elasticsearch/component.yaml

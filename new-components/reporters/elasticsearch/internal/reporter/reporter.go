@@ -60,8 +60,9 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	if envLoader != nil {
 		envOpts = append(envOpts, env.WithLoader(envLoader))
 	}
-
-	esURL, err := env.GetOrDefault("ELASTICSEARCH_URL", "", append(envOpts, env.WithDefaultOnError(false))...)
+	esURL, err := env.GetOrDefault("ELASTICSEARCH_URL",
+		"",
+		append(envOpts, env.WithDefaultOnError(false))...)
 	if err != nil {
 		return nil, errors.Errorf("could not get env variable for ELASTICSEARCH_URL: %w", err)
 	}
