@@ -15,7 +15,7 @@ func TestNew(t *testing.T) {
 		testCase              string
 		inProducerResultPath  string
 		inEnrichedResultsPath string
-		inATOMFilePath        string
+		inATOMFileGlob        string
 		inEnricherAnnotation  string
 		shouldErr             bool
 		expectedConf          *conf.Conf
@@ -23,15 +23,15 @@ func TestNew(t *testing.T) {
 
 		{
 			testCase:       "it should return the expected configuration with a non empty enricher annotation as all the expected environment variables are set",
-			inATOMFilePath: "/atom-files",
+			inATOMFileGlob: "/atom-files/*.json",
 			shouldErr:      false,
 			expectedConf: &conf.Conf{
-				ATOMFilePath: "/atom-files",
+				ATOMFileGlob: "/atom-files/*.json",
 			},
 		},
 		{
 			testCase:       "it should return and error when atom file path not set",
-			inATOMFilePath: "",
+			inATOMFileGlob: "",
 			shouldErr:      true,
 			expectedConf:   nil,
 		},
@@ -39,13 +39,13 @@ func TestNew(t *testing.T) {
 		t.Run(tt.testCase, func(t *testing.T) {
 			require.NoError(
 				t,
-				os.Setenv(conf.AtomFilePathEnvVarName, tt.inATOMFilePath),
+				os.Setenv(conf.AtomFileGlobEnvVarName, tt.inATOMFileGlob),
 			)
 
 			t.Cleanup(func() {
 				require.NoError(
 					t,
-					os.Unsetenv(conf.AtomFilePathEnvVarName),
+					os.Unsetenv(conf.AtomFileGlobEnvVarName),
 				)
 			})
 

@@ -7,7 +7,7 @@ import (
 
 const (
 	// Environment variables names.
-	atomFilePathEnvVarName = "ATOM_FILE_PATH"
+	atomFileGlobEnvVarName = "ATOM_FILE_GLOB"
 )
 
 type (
@@ -15,7 +15,7 @@ type (
 	Conf struct {
 
 		// ATOMFilePath advertises the location of the atom slice file.
-		ATOMFilePath string
+		ATOMFileGlob string
 	}
 )
 
@@ -28,9 +28,9 @@ func New() (*Conf, error) {
 		dest       *string
 	}{
 		{
-			envVarName: atomFilePathEnvVarName,
+			envVarName: atomFileGlobEnvVarName,
 			required:   true,
-			dest:       &conf.ATOMFilePath,
+			dest:       &conf.ATOMFileGlob,
 		},
 	} {
 		var ok bool

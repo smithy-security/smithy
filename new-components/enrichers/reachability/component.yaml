@@ -18,4 +18,4 @@ steps:
     executable: /bin/app
     image: new-components/enrichers/reachability
     env_vars:
-      ATOM_FILE_PATH: "{{ scratchWorkspace }}/reachables.json"
+      ATOM_FILE_GLOB: "{{ scratchWorkspace }}/*.reachables.json"

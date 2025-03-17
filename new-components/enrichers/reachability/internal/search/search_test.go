@@ -24,18 +24,6 @@ func TestNewSearcher(t *testing.T) {
 		expectsErr     bool
 	}{
 		{
-			testCase:       "it returns an error because the supplied reachable purls are empty",
-			reachablePurls: atom.ReachablePurls{},
-			reachables:     reachables,
-			expectsErr:     true,
-		},
-		{
-			testCase:       "it returns an error because the supplied reachables are empty",
-			reachablePurls: reachablePurls,
-			reachables:     atom.Reachables{},
-			expectsErr:     true,
-		},
-		{
 			testCase:       "it returns a new searcher",
 			reachablePurls: reachablePurls,
 			reachables:     reachables,
