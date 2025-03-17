@@ -13,9 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "go.uber.org/mock/gomock"
-
 	engine "github.com/smithy-security/smithy/smithyctl/internal/engine"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockContainerExecutor is a mock of ContainerExecutor interface.

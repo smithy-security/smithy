@@ -21,8 +21,8 @@ var buildCmdFlags buildFlags
 type (
 	buildFlags struct {
 		registry                string
-		registryAuthUsername    string
-		registryAuthPassword    string
+		username                string
+		password                string
 		namespace               string
 		baseComponentDockerfile string
 		labels                  []string
@@ -73,7 +73,7 @@ func NewBuildCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&buildCmdFlags.registryAuthUsername,
+			&buildCmdFlags.username,
 			"registry-auth-username",
 			"",
 			"username to authenticate with for the image registry",
@@ -81,7 +81,7 @@ func NewBuildCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&buildCmdFlags.registryAuthPassword,
+			&buildCmdFlags.password,
 			"registry-auth-password",
 			"",
 			"password to authenticate with for the image registry",
@@ -134,9 +134,9 @@ func parseFlagsAndBuildImages(ctx context.Context, flags buildFlags, args []stri
 		return errors.Errorf("path should be pointing to a component YAML spec: %s", componentPath)
 	}
 
-	if buildCmdFlags.registryAuthPassword != "" && buildCmdFlags.registryAuthUsername == "" {
+	if buildCmdFlags.password != "" && buildCmdFlags.username == "" {
 		return errors.New("if you set the registry auth password you also need to set the username")
-	} else if buildCmdFlags.registryAuthPassword == "" && buildCmdFlags.registryAuthUsername != "" {
+	} else if buildCmdFlags.password == "" && buildCmdFlags.username != "" {
 		return errors.New("if you set the registry auth username you also need to set the password")
 	}
 
@@ -181,6 +181,10 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 
 	if flags.platform != "" {
 		buildOpts = append(buildOpts, dockerimages.WithPlatform(flags.platform))
+	}
+
+	if flags.username != "" {
+		buildOpts = append(buildOpts, dockerimages.WithUsernamePassword(flags.username, flags.password))
 	}
 
 	dockerClient, err := dockerclient.NewClientWithOpts(

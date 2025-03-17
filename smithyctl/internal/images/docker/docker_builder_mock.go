@@ -15,6 +15,7 @@ import (
 	reflect "reflect"
 
 	types "github.com/docker/docker/api/types"
+	image "github.com/docker/docker/api/types/image"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -55,6 +56,21 @@ func (m *MockdockerBuilder) ImageBuild(ctx context.Context, buildContext io.Read
 func (mr *MockdockerBuilderMockRecorder) ImageBuild(ctx, buildContext, options any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImageBuild", reflect.TypeOf((*MockdockerBuilder)(nil).ImageBuild), ctx, buildContext, options)
+}
+
+// ImagePush mocks base method.
+func (m *MockdockerBuilder) ImagePush(ctx context.Context, image string, options image.PushOptions) (io.ReadCloser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ImagePush", ctx, image, options)
+	ret0, _ := ret[0].(io.ReadCloser)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ImagePush indicates an expected call of ImagePush.
+func (mr *MockdockerBuilderMockRecorder) ImagePush(ctx, image, options any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ImagePush", reflect.TypeOf((*MockdockerBuilder)(nil).ImagePush), ctx, image, options)
 }
 
 // ServerVersion mocks base method.
