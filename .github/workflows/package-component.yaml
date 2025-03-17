@@ -4,11 +4,11 @@ on:
   push:
     tags:
       # Matches: new-components/scanners/gosec/v1.0.0 or new-components/scanners/gosec/v1.0.0-alpha3 for example.
-      - 'new-components/targets/*/v[0-9].[0-9].[0-9]*'
-      - 'new-components/scanners/*/v[0-9].[0-9].[0-9]*'
-      - 'new-components/enrichers/*/v[0-9].[0-9].[0-9]*'
-      - 'new-components/filters/*/v[0-9].[0-9].[0-9]*'
-      - 'new-components/reporters/*/v[0-9].[0-9].[0-9]*'
+      - 'new-components/targets/*/[0-9].[0-9].[0-9]*'
+      - 'new-components/scanners/*/[0-9].[0-9].[0-9]*'
+      - 'new-components/enrichers/*/[0-9].[0-9].[0-9]*'
+      - 'new-components/filters/*/[0-9].[0-9].[0-9]*'
+      - 'new-components/reporters/*/[0-9].[0-9].[0-9]*'
 
 jobs:
   package:
@@ -24,10 +24,10 @@ jobs:
           COMPONENT_NAME=$(echo $TAG | cut -d/ -f2)
           VERSION=$(echo $TAG | cut -d/ -f3)
           
-          echo "component_type=$COMPONENT_TYPE" >> $GITHUB_OUTPUT
+          echo "component_type=$COMPONENT_TYPE" >> $GITHUB_OUTPUT         
+          echo "component_type_singular=$(echo $COMPONENT_TYPE | sed 's/.$//')" >> $GITHUB_OUTPUT
           echo "component_name=$COMPONENT_NAME" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Extract SDK Version
         id: sdk_version
@@ -71,8 +71,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: smithy-security/saas
           event-type: package_published
-          client-payload: |- 
+          client-payload: |-
             {
               "repo_name": "${{ github.repository }}", 
-              "component_tag": "${{ steps.tag_info.outputs.tag }}"
+              "component_tag": "components/${{ steps.tag_info.outputs.component_type_singular }}/${{ steps.tag_info.outputs.component_name }}/${{ steps.tag_info.outputs.version }}"
             }
