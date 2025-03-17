@@ -25,8 +25,8 @@ func newLocalFileLoader(configurationDir, fileOrDir, targetFile string) (*localF
 	}
 
 	if info.IsDir() {
-		fileOrDir = path.Join(fileOrDir, targetFile)
-	} else if path.Base(fileOrDir) != targetFile {
+		fileOrDir = filepath.Join(fileOrDir, targetFile)
+	} else if filepath.Base(fileOrDir) != targetFile {
 		return nil, fmt.Errorf("path %s should be pointing to a %s", fileOrDir, targetFile)
 	}
 
