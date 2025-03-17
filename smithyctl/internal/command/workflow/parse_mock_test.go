@@ -14,10 +14,10 @@ import (
 	reflect "reflect"
 
 	reference "github.com/distribution/reference"
-	gomock "go.uber.org/mock/gomock"
-
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
+	images "github.com/smithy-security/smithy/smithyctl/internal/images"
 	registry "github.com/smithy-security/smithy/smithyctl/registry"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockComponentFetcher is a mock of ComponentFetcher interface.
@@ -96,4 +96,58 @@ func (m *MockComponentParser) Parse(path string) (*v1.Component, error) {
 func (mr *MockComponentParserMockRecorder) Parse(path any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Parse", reflect.TypeOf((*MockComponentParser)(nil).Parse), path)
+}
+
+// MockComponentImageResolver is a mock of ComponentImageResolver interface.
+type MockComponentImageResolver struct {
+	ctrl     *gomock.Controller
+	recorder *MockComponentImageResolverMockRecorder
+	isgomock struct{}
+}
+
+// MockComponentImageResolverMockRecorder is the mock recorder for MockComponentImageResolver.
+type MockComponentImageResolverMockRecorder struct {
+	mock *MockComponentImageResolver
+}
+
+// NewMockComponentImageResolver creates a new mock instance.
+func NewMockComponentImageResolver(ctrl *gomock.Controller) *MockComponentImageResolver {
+	mock := &MockComponentImageResolver{ctrl: ctrl}
+	mock.recorder = &MockComponentImageResolverMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockComponentImageResolver) EXPECT() *MockComponentImageResolverMockRecorder {
+	return m.recorder
+}
+
+// Local mocks base method.
+func (m *MockComponentImageResolver) Local(arg0 context.Context, arg1 string) (images.Resolver, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Local", arg0, arg1)
+	ret0, _ := ret[0].(images.Resolver)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Local indicates an expected call of Local.
+func (mr *MockComponentImageResolverMockRecorder) Local(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Local", reflect.TypeOf((*MockComponentImageResolver)(nil).Local), arg0, arg1)
+}
+
+// Remote mocks base method.
+func (m *MockComponentImageResolver) Remote() (images.Resolver, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Remote")
+	ret0, _ := ret[0].(images.Resolver)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Remote indicates an expected call of Remote.
+func (mr *MockComponentImageResolverMockRecorder) Remote() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remote", reflect.TypeOf((*MockComponentImageResolver)(nil).Remote))
 }
