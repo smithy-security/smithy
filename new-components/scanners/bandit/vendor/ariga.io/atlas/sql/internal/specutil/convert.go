@@ -30,6 +30,8 @@ type (
 	ConvertIndexFunc       func(*sqlspec.Index, *schema.Table) (*schema.Index, error)
 	ConvertViewIndexFunc   func(*sqlspec.Index, *schema.View) (*schema.Index, error)
 	ConvertCheckFunc       func(*sqlspec.Check) (*schema.Check, error)
+	ConvertFuncFunc        func(*sqlspec.Func, *schema.Schema) (*schema.Func, error)
+	ConvertProcFunc        func(*sqlspec.Func, *schema.Schema) (*schema.Proc, error)
 	ColumnTypeSpecFunc     func(schema.Type) (*sqlspec.Column, error)
 	TableSpecFunc          func(*schema.Table) (*sqlspec.Table, error)
 	TableColumnSpecFunc    func(*schema.Column, *schema.Table) (*sqlspec.Column, error)
@@ -58,8 +60,8 @@ type (
 	ScanFuncs struct {
 		Table ConvertTableFunc
 		View  ConvertViewFunc
-		Func  func(*sqlspec.Func) (*schema.Func, error)
-		Proc  func(*sqlspec.Func) (*schema.Proc, error)
+		Func  ConvertFuncFunc
+		Proc  ConvertProcFunc
 		// Triggers add themselves to the relevant tables/views.
 		Triggers func(*schema.Realm, []*sqlspec.Trigger) error
 		// Objects add themselves to the realm.
@@ -96,6 +98,7 @@ const (
 	typeView         = "view"
 	typeTable        = "table"
 	typeColumn       = "column"
+	typeIndex        = "index"
 	typeSchema       = "schema"
 	typeMaterialized = "materialized"
 	typeFunction     = "function"
@@ -220,7 +223,7 @@ func Scan(r *schema.Realm, doc *ScanDoc, funcs *ScanFuncs) error {
 			if !ok {
 				return fmt.Errorf("schema %q not found for function %q", name, sf.Name)
 			}
-			f, err := funcs.Func(sf)
+			f, err := funcs.Func(sf, s)
 			if err != nil {
 				return fmt.Errorf("cannot convert function %q: %w", sf.Name, err)
 			}
@@ -244,7 +247,7 @@ func Scan(r *schema.Realm, doc *ScanDoc, funcs *ScanFuncs) error {
 			if !ok {
 				return fmt.Errorf("schema %q not found for procedure %q", name, sf.Name)
 			}
-			f, err := funcs.Proc(sf)
+			f, err := funcs.Proc(sf, s)
 			if err != nil {
 				return fmt.Errorf("cannot convert procedure %q: %w", sf.Name, err)
 			}
@@ -388,7 +391,7 @@ func Column(spec *sqlspec.Column, conv ConvertTypeFunc) (*schema.Column, error) 
 			Null: spec.Null,
 		},
 	}
-	d, err := Default(spec.Default)
+	d, err := columnDefault(spec.Remain())
 	if err != nil {
 		return nil, err
 	}
@@ -402,6 +405,36 @@ func Column(spec *sqlspec.Column, conv ConvertTypeFunc) (*schema.Column, error) 
 		return nil, err
 	}
 	return out, err
+}
+
+func columnDefault(r *schemahcl.Resource) (schema.Expr, error) {
+	defaultA, okA := r.Attr("default")
+	defaultR, okR := r.Resource("default")
+	switch {
+	case okA && okR:
+		return nil, errors.New("both default and default resource are set")
+	case okA:
+		v, err := Default(defaultA.V)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	case okR:
+		var spec struct {
+			Name string    `spec:",name"`
+			As   cty.Value `spec:"as"`
+		}
+		if err := defaultR.As(&spec); err != nil {
+			return nil, err
+		}
+		v, err := Default(spec.As)
+		if err != nil {
+			return nil, err
+		}
+		return &schema.NamedDefault{Name: spec.Name, Expr: v}, nil
+	default:
+		return nil, nil
+	}
 }
 
 // Default converts a cty.Value (as defined in the spec) into a schema.Expr.
@@ -519,6 +552,7 @@ func PrimaryKey(spec *sqlspec.PrimaryKey, parent *schema.Table) (*schema.Index, 
 		})
 	}
 	pk := &schema.Index{
+		Name:  spec.Name,
 		Table: parent,
 		Parts: parts,
 	}
@@ -881,12 +915,24 @@ func FromColumn(c *schema.Column, columnTypeSpec ColumnTypeSpecFunc) (*sqlspec.C
 			Extra: schemahcl.Resource{Attrs: ct.DefaultExtension.Extra.Attrs},
 		},
 	}
-	if c.Default != nil {
+	switch v := c.Default.(type) {
+	case nil:
+	case *schema.NamedDefault:
 		lv, err := ColumnDefault(c)
 		if err != nil {
 			return nil, err
 		}
-		spec.Default = lv
+		spec.Extra.Children = append(spec.Extra.Children, &schemahcl.Resource{
+			Type:  "default",
+			Name:  v.Name,
+			Attrs: []*schemahcl.Attr{{K: "as", V: lv}},
+		})
+	default:
+		lv, err := ColumnDefault(c)
+		if err != nil {
+			return nil, err
+		}
+		spec.Extra.Attrs = slices.Insert(spec.Extra.Attrs, 0, &schemahcl.Attr{K: "default", V: lv})
 	}
 	convertCommentFromSchema(c.Attrs, &spec.Extra.Attrs)
 	return spec, nil
@@ -1087,7 +1133,9 @@ func SchemaName(ref *schemahcl.Ref) (string, error) {
 }
 
 // ColumnByRef returns a column from the table by its reference.
-func ColumnByRef[T *schema.View | *schema.Table](tv T, ref *schemahcl.Ref) (*schema.Column, error) {
+func ColumnByRef(tv interface {
+	Column(string) (*schema.Column, bool)
+}, ref *schemahcl.Ref) (*schema.Column, error) {
 	vs, err := ref.ByType(typeColumn)
 	if err != nil {
 		return nil, err
@@ -1095,21 +1143,40 @@ func ColumnByRef[T *schema.View | *schema.Table](tv T, ref *schemahcl.Ref) (*sch
 	if len(vs) != 1 {
 		return nil, fmt.Errorf("expected 1 column ref, got %d", len(vs))
 	}
-	switch tv := any(tv).(type) {
+	if c, ok := tv.Column(vs[0]); ok {
+		return c, nil
+	}
+	switch tv := tv.(type) {
 	case *schema.Table:
-		c, ok := tv.Column(vs[0])
-		if !ok {
-			return nil, fmt.Errorf("column %q was not found in table %s", vs[0], tv.Name)
-		}
-		return c, nil
+		return nil, fmt.Errorf("column %q was not found in table %s", vs[0], tv.Name)
 	case *schema.View:
-		c, ok := tv.Column(vs[0])
-		if !ok {
-			return nil, fmt.Errorf("column %q was not found in view %s", vs[0], tv.Name)
-		}
-		return c, nil
+		return nil, fmt.Errorf("column %q was not found in view %s", vs[0], tv.Name)
 	default:
-		return nil, fmt.Errorf("unreachable %T", tv)
+		return nil, fmt.Errorf("column %q was not found in %T", vs[0], tv)
+	}
+}
+
+// IndexByRef returns a index from the table/view by its reference.
+func IndexByRef(tv interface {
+	Index(string) (*schema.Index, bool)
+}, ref *schemahcl.Ref) (*schema.Index, error) {
+	vs, err := ref.ByType(typeIndex)
+	if err != nil {
+		return nil, err
+	}
+	if len(vs) != 1 {
+		return nil, fmt.Errorf("expected 1 index ref, got %d", len(vs))
+	}
+	if c, ok := tv.Index(vs[0]); ok {
+		return c, nil
+	}
+	switch tv := tv.(type) {
+	case *schema.Table:
+		return nil, fmt.Errorf("index %q was not found in table %s", vs[0], tv.Name)
+	case *schema.View:
+		return nil, fmt.Errorf("index %q was not found in view %s", vs[0], tv.Name)
+	default:
+		return nil, fmt.Errorf("index %q was not found in %T", vs[0], tv)
 	}
 }
 
@@ -1200,8 +1267,15 @@ func ColumnRef(cName string) *schemahcl.Ref {
 	})
 }
 
+// IndexRef returns the reference of a index by its name.
+func IndexRef(name string) *schemahcl.Ref {
+	return schemahcl.BuildRef([]schemahcl.PathIndex{
+		{T: typeIndex, V: []string{name}},
+	})
+}
+
 // ExternalColumnRef returns the reference of a column by its name and table name.
-func ExternalColumnRef(cName string, tName string) *schemahcl.Ref {
+func ExternalColumnRef(cName, tName string) *schemahcl.Ref {
 	return schemahcl.BuildRef([]schemahcl.PathIndex{
 		{T: typeTable, V: []string{tName}},
 		{T: typeColumn, V: []string{cName}},

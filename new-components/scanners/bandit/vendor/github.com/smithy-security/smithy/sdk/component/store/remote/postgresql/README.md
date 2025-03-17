@@ -1,6 +1,7 @@
 # Postgresql
 
-This implementation of `component.Storer` interacts with postgresql.
+This implementation of `component.Storer` interacts with
+postgresql.
 
 ## Configuration
 
