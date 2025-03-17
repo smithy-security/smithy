@@ -115,8 +115,8 @@ install-go-fmt-tools:
 
 fmt-go:
 	echo "Tidying up Go files"
-	$(shell find . -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" | xargs gofmt -w)
-	$(shell find . -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -exec goimports -local github.com/smithy-security/smithy -w {} \;)
+	$(shell find . -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*_mock_test.go" | xargs gofmt -w)
+	$(shell find . -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*_mock_test.go" -exec goimports -local github.com/smithy-security/smithy -w {} \;)
 
 install-md-fmt-tools:
 	@npm ci
