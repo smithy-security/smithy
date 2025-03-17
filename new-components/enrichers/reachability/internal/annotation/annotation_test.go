@@ -25,7 +25,7 @@ func TestReachability_Annotate(t *testing.T) {
 		now         = time.Now().Unix()
 
 		conf = conf.Conf{
-			ATOMFilePath: "../../testdata/atom.json",
+			ATOMFileGlob: "../../testdata/*atom.json",
 		}
 		vulns = []*vf.VulnerabilityFinding{
 			{
