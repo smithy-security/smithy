@@ -198,13 +198,13 @@ new-major-release-tag: check-branch check-tag-message
 	)
 
 # new targets for components and smithyctl
-.PHONY: smithyctl/cmd/bin component-sdk-version
+.PHONY: smithyctl/bin component-sdk-version
 
-smithyctl/cmd/bin:
+smithyctl/bin:
 	$(eval GOOS:=linux)
 	$(eval GOARCH:=amd64)
 	@cd smithyctl && \
-		GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl ./cmd/main.go
+		GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl main.go
 
 component-sdk-version:
 	@if [ -z "$(COMPONENT_TYPE)" ]; then \
