@@ -169,7 +169,7 @@ func TestParseFlags(t *testing.T) {
 
 func TestWriteData(t *testing.T) {
 	enricherName := "tests-enricher"
-	workdir, err := os.MkdirTemp("/tmp", "")
+	workdir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 	require.NoError(t, os.Mkdir(filepath.Join(workdir, "raw"), 0755))
 

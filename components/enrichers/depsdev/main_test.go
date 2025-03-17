@@ -51,7 +51,7 @@ func genSampleIssues(t *testing.T) []*v1.Issue {
 
 func prepareIssue(t *testing.T, produceEmptyIssues bool) string {
 	// prepare
-	dir, err := os.MkdirTemp("/tmp", "")
+	dir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
 	var rawIssues []*v1.Issue

@@ -11,10 +11,10 @@ import (
 
 // SetupIODirs creates temporary directories for input and output files
 func SetupIODirs(t *testing.T) (indir, outdir string) {
-	indir, err := os.MkdirTemp("/tmp", "")
+	indir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
-	outdir, err = os.MkdirTemp("/tmp", "")
+	outdir, err = os.MkdirTemp("", "")
 	require.NoError(t, err)
 
 	return indir, outdir

@@ -36,7 +36,7 @@ func genSampleIssues() []*v1.Issue {
 
 func TestParseIssues(t *testing.T) {
 	// prepare
-	dir, err := os.MkdirTemp("/tmp", "")
+	dir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
 	issues := genSampleIssues()

@@ -30,7 +30,7 @@ func assertFilesContents(t *testing.T, fileNamesToContents map[string]string, di
 }
 
 func TestGoPURL(t *testing.T) {
-	out, err := os.MkdirTemp("/tmp", "")
+	out, err := os.MkdirTemp("", "")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,7 +45,7 @@ func TestGoPURL(t *testing.T) {
 }
 
 func TestNPMPURL(t *testing.T) {
-	out, err := os.MkdirTemp("/tmp", "")
+	out, err := os.MkdirTemp("", "")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +59,7 @@ func TestNPMPURL(t *testing.T) {
 }
 
 func TestPyPiPurl(t *testing.T) {
-	out, err := os.MkdirTemp("/tmp", "")
+	out, err := os.MkdirTemp("", "")
 	if err != nil {
 		log.Fatal(err)
 	}

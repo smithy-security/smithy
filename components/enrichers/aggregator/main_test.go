@@ -107,10 +107,10 @@ func createObjects(toolRuns, issuesInEach, annotationsEach int) ([]*v1.EnrichedL
 
 func TestSignIssues(t *testing.T) {
 	// prepare
-	indir, err := os.MkdirTemp("/tmp", "")
+	indir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
-	outdir, err := os.MkdirTemp("/tmp", "")
+	outdir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
 	toolRuns := 1
@@ -169,10 +169,10 @@ func TestSignIssues(t *testing.T) {
 
 func TestAggregateIssues(t *testing.T) {
 	// prepare
-	indir, err := os.MkdirTemp("/tmp", "")
+	indir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
-	outdir, err := os.MkdirTemp("/tmp", "")
+	outdir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
 	toolRuns := 3
@@ -221,10 +221,10 @@ func TestAggregateIssues(t *testing.T) {
 
 func TestAggregateIssuesHandlesNoIssues(t *testing.T) {
 	// prepare
-	indir, err := os.MkdirTemp("/tmp", "")
+	indir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
-	outdir, err := os.MkdirTemp("/tmp", "")
+	outdir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
 	// Create mock input data

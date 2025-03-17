@@ -39,7 +39,7 @@ func Package(ctx context.Context, name, componentFolder string, smithyVersion st
 		return errors.Errorf("%s: path is not a directory", componentFolder)
 	}
 
-	tempFolder, err := os.MkdirTemp("/tmp", "smithy-helm")
+	tempFolder, err := os.MkdirTemp("", "smithy-helm")
 	if err != nil {
 		return errors.Errorf("there was an error while trying to create temp directory: %w", err)
 	}
