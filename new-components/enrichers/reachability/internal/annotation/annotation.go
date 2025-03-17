@@ -37,14 +37,14 @@ func NewReachabilityAnnotator(cfg *conf.Conf) *reachabilityAnnotator {
 }
 
 // Annotate adds annotated values to passed findings.
-func (ca *reachabilityAnnotator) Annotate(
+func (ra *reachabilityAnnotator) Annotate(
 	ctx context.Context,
 	findings []*vf.VulnerabilityFinding,
 ) ([]*vf.VulnerabilityFinding, error) {
 	var (
 		logger = component.LoggerFromContext(ctx).
 			With(slog.Int("num_findings", len(findings))).
-			With(slog.String("provider_name", ca.providerName))
+			With(slog.String("provider_name", ra.providerName))
 	)
 
 	logger.Debug("preparing to annotate findings...")
@@ -54,12 +54,13 @@ func (ca *reachabilityAnnotator) Annotate(
 		return nil, errors.Errorf("could not initialize purl parser: %w", err)
 	}
 
-	ar, err := atom.NewReader(ca.cfg.ATOMFilePath, purlParser)
+	ar, err := atom.NewReader(ra.cfg.ATOMFileGlob, purlParser)
 	if err != nil {
 		return nil, errors.Errorf("could not initialize atom reader: %w", err)
 	}
-	ca.atomReader = ar
-	findings, err = ca.Enrich(ctx, findings)
+
+	ra.atomReader = ar
+	findings, err = ra.Enrich(ctx, findings)
 	if err != nil {
 		return nil, errors.Errorf("could not enrich findings err: %w", err)
 	}
@@ -69,10 +70,10 @@ func (ca *reachabilityAnnotator) Annotate(
 
 // Enrich looks for untagged inputs and processes them outputting if any of them is reachable.
 // The reachability checks leverage atom - https://github.com/AppThreat/atom.
-func (ca *reachabilityAnnotator) Enrich(ctx context.Context, findings []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, error) {
+func (ra *reachabilityAnnotator) Enrich(ctx context.Context, findings []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, error) {
 	var (
 		logger = logging.FromContext(ctx).With(
-			slog.String("atom_file_path", ca.cfg.ATOMFilePath),
+			slog.String("atom_file_glob", ra.cfg.ATOMFileGlob),
 		)
 	)
 
@@ -82,113 +83,116 @@ func (ca *reachabilityAnnotator) Enrich(ctx context.Context, findings []*vf.Vuln
 	logger = logger.With(slog.Int("num_tagged_resources", len(findings)))
 	logger.Debug("preparing to read atom file...")
 
-	reachablesRes, err := ca.atomReader.Read(ctx)
+	reachablesRes, err := ra.atomReader.Read(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("could not read atom reachables from path %s: %w", ca.cfg.ATOMFilePath, err)
+		return nil, fmt.Errorf("could not read atom reachables from paths %s: %w", ra.cfg.ATOMFileGlob, err)
 	}
 
-	logger = logger.With(slog.Int("num_atom_reachables", len(reachablesRes.Reachables)))
-	logger.Debug("successfully read atom file!")
-	logger.Debug("preparing to check for reachable purls...")
+	for _, response := range reachablesRes {
+		logger = logger.With(slog.Int("num_atom_reachables", len(response.Reachables)))
+		logger.Debug("successfully read atom files!")
+		logger.Debug("preparing to check for reachable purls...")
 
-	reachablePurls, err := ca.atomReader.ReachablePurls(ctx, reachablesRes)
-	if err != nil {
-		return nil, fmt.Errorf("could not get reachable purls: %w", err)
-	}
+		reachablePurls, err := ra.atomReader.ReachablePurls(ctx, response)
+		if err != nil {
+			return nil, fmt.Errorf("could not get reachable purls: %w", err)
+		}
 
-	logger = logger.With(slog.Int("num_reachable_purls", len(reachablePurls)))
-	logger.Debug("successfully checked for reachable purls!")
-	logger.Debug("preparing to create a new searcher...")
+		logger = logger.With(slog.Int("num_reachable_purls", len(reachablePurls)))
+		logger.Debug("successfully checked for reachable purls!")
+		logger.Debug("preparing to create a new searcher...")
 
-	searcher, err := search.NewSearcher(reachablesRes.Reachables, reachablePurls)
-	if err != nil {
-		return nil, fmt.Errorf("could not create searcher: %w", err)
-	}
+		searcher, err := search.NewSearcher(response.Reachables, reachablePurls)
+		if err != nil {
+			return nil, fmt.Errorf("could not create searcher: %w", err)
+		}
 
-	logger.Debug("successfully created a new searcher!")
-	logger.Debug("preparing to check for reachable targets...")
-	numEnriched := 0
-	numReachable := 0
-	atomPurlParser, err := purl.NewParser()
-	if err != nil {
-		return nil, errors.Errorf("could not initialize atom purl parser err: %w", err)
-	}
-	for idx, finding := range findings {
-		logger := logger.With(
-			slog.String("vendor", *finding.Finding.FindingInfo.ProductUid),
-			slog.Any("scan_id", finding.ID),
-			slog.Int("num_vulns", len(finding.Finding.Vulnerabilities)),
-		)
-		logger.Debug("preparing to enrich issues in target...")
-		for _, vuln := range finding.Finding.Vulnerabilities {
-			for _, pkg := range vuln.AffectedPackages {
-				parsedPurls, err := atomPurlParser.ParsePurl(*pkg.Purl)
-				if err != nil {
-					logger.Error(
-						"could not search affected package. Continuing...",
-						slog.String("err", err.Error()))
-					continue
+		logger.Debug("successfully created a new searcher!")
+		logger.Debug("preparing to check for reachable targets...")
+		numEnriched := 0
+		numReachable := 0
+		atomPurlParser, err := purl.NewParser()
+		if err != nil {
+			return nil, errors.Errorf("could not initialize atom purl parser err: %w", err)
+		}
+		for idx, finding := range findings {
+			logger := logger.With(
+				slog.String("vendor", *finding.Finding.FindingInfo.ProductUid),
+				slog.Any("scan_id", finding.ID),
+				slog.Int("num_vulns", len(finding.Finding.Vulnerabilities)),
+			)
+			logger.Debug("preparing to enrich issues in target...")
+			for _, vuln := range finding.Finding.Vulnerabilities {
+				for _, pkg := range vuln.AffectedPackages {
+					parsedPurls, err := atomPurlParser.ParsePurl(*pkg.Purl)
+					if err != nil {
+						logger.Error(
+							"could not search affected package. Continuing...",
+							slog.String("err", err.Error()))
+						continue
+					}
+					var reachable bool
+					var reachableEnrichment *ocsf.Enrichment
+					for _, p := range parsedPurls {
+						re, reached, err := ra.isReachable(searcher, p)
+						if err != nil {
+							logger.Error(
+								"could not search affected package. Continuing...",
+								slog.String("err", err.Error()),
+							)
+							continue
+						}
+						reachable = reached
+						reachableEnrichment = re
+						if reached {
+							break
+						}
+					}
+					if reachable {
+						numReachable += 1
+					}
+					numEnriched += 1
+					findings[idx].Finding.Enrichments = append(findings[idx].Finding.Enrichments, reachableEnrichment)
 				}
-				var reachable bool
-				var reachableEnrichment *ocsf.Enrichment
-				for _, p := range parsedPurls {
-					re, reached, err := ca.isReachable(searcher, p)
+
+				for _, code := range vuln.AffectedCode {
+					reachableEnrichment, reachable, err := ra.isReachable(searcher, ra.makeCodeString(code))
 					if err != nil {
 						logger.Error(
 							"could not search affected package. Continuing...",
 							slog.String("err", err.Error()),
 						)
-						continue
 					}
-					reachable = reached
-					reachableEnrichment = re
-					if reached {
-						break
+					if reachable {
+						numReachable += 1
 					}
+					numEnriched += 1
+					findings[idx].Finding.Enrichments = append(findings[idx].Finding.Enrichments, reachableEnrichment)
 				}
-				if reachable {
-					numReachable += 1
-				}
-				numEnriched += 1
-				findings[idx].Finding.Enrichments = append(findings[idx].Finding.Enrichments, reachableEnrichment)
 			}
-			for _, code := range vuln.AffectedCode {
-				reachableEnrichment, reachable, err := ca.isReachable(searcher, ca.makeCodeString(code))
-				if err != nil {
-					logger.Error(
-						"could not search affected package. Continuing...",
-						slog.String("err", err.Error()),
-					)
-				}
-				if reachable {
-					numReachable += 1
-				}
-				numEnriched += 1
-				findings[idx].Finding.Enrichments = append(findings[idx].Finding.Enrichments, reachableEnrichment)
-			}
-		}
 
-		logger = logger.With(slog.Int("num_enriched_issues", numEnriched))
-		logger = logger.With(slog.Int("num_reachable_issues", numReachable))
-		logger.Debug("successfully enriched issues in target!")
+			logger = logger.With(slog.Int("num_enriched_issues", numEnriched))
+			logger = logger.With(slog.Int("num_reachable_issues", numReachable))
+			logger.Debug("successfully enriched issues in target!")
+		}
+		logger.Debug("completed enrichment step!")
 	}
-	logger.Debug("completed enrichment step!")
 	return findings, nil
 }
 
-func (ca *reachabilityAnnotator) makeCodeString(c *ocsf.AffectedCode) string {
+func (ra *reachabilityAnnotator) makeCodeString(c *ocsf.AffectedCode) string {
 	return fmt.Sprintf("%s:%d-%d", *c.File.Path, *c.StartLine, *c.EndLine)
 }
 
-func (ca *reachabilityAnnotator) isReachable(searcher *search.Searcher, target string) (*ocsf.Enrichment, bool, error) {
-	// Search.
+func (ra *reachabilityAnnotator) isReachable(searcher *search.Searcher, target string) (*ocsf.Enrichment, bool, error) {
 	ok, err := searcher.Search(target)
 	if err != nil {
 		return nil, false, err
 	}
+
 	return &ocsf.Enrichment{
-		Name:     ca.annotationName,
+		Name:     ra.annotationName,
 		Value:    fmt.Sprintf("%t", ok),
-		Provider: &ca.providerName,
+		Provider: &ra.providerName,
 	}, ok, nil
 }

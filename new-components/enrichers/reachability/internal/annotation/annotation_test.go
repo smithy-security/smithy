@@ -25,7 +25,7 @@ func TestReachability_Annotate(t *testing.T) {
 		now         = time.Now().Unix()
 
 		conf = conf.Conf{
-			ATOMFilePath: "../../testdata/atom.json",
+			ATOMFileGlob: "../../testdata/*atom.json",
 		}
 		vulns = []*vf.VulnerabilityFinding{
 			{
@@ -245,25 +245,40 @@ func TestReachability_Annotate(t *testing.T) {
 		enrichedVulns, err := annotator.Annotate(ctx, vulns)
 		require.NoError(t, err)
 		require.Len(t, enrichedVulns, 3)
-		assert.Equal(t, []*ocsf.Enrichment{{
-			Name:     "Reachable-Code",
-			Value:    "true",
-			Provider: ptr("reachability-enricher"),
-		},
-		}, enrichedVulns[0].Finding.Enrichments)
+		assert.Equal(
+			t,
+			[]*ocsf.Enrichment{
+				{
+					Name:     "Reachable-Code",
+					Value:    "true",
+					Provider: ptr("reachability-enricher"),
+				},
+			},
+			enrichedVulns[0].Finding.Enrichments,
+		)
 
-		assert.Equal(t, []*ocsf.Enrichment{{
-			Name:     "Reachable-Code",
-			Value:    "true",
-			Provider: ptr("reachability-enricher"),
-		},
-		}, enrichedVulns[1].Finding.Enrichments)
+		assert.Equal(
+			t,
+			[]*ocsf.Enrichment{
+				{
+					Name:     "Reachable-Code",
+					Value:    "true",
+					Provider: ptr("reachability-enricher"),
+				},
+			},
+			enrichedVulns[1].Finding.Enrichments,
+		)
 
-		assert.Equal(t, []*ocsf.Enrichment{{
-			Name:     "Reachable-Code",
-			Value:    "false",
-			Provider: ptr("reachability-enricher"),
-		},
-		}, enrichedVulns[2].Finding.Enrichments)
+		assert.Equal(
+			t,
+			[]*ocsf.Enrichment{
+				{
+					Name:     "Reachable-Code",
+					Value:    "false",
+					Provider: ptr("reachability-enricher"),
+				},
+			},
+			enrichedVulns[2].Finding.Enrichments,
+		)
 	})
 }
