@@ -20,3 +20,19 @@ type Resolver interface {
 type Builder interface {
 	Build(ctx context.Context, cr *ComponentRepository) (string, error)
 }
+
+// ImageRepoProcessor is an interface for an object that can modify the
+// repository of a container in an arbitrary way. This is only going to be
+// applied to component images
+type ImageRepoProcessor interface {
+	Process(repo string) string
+}
+
+// NoOpImageURLProcessor is a struct that is a no-op image repository processor
+// meant to be used by default by resolvers and builders
+type NoOpImageRepoProcessor struct{}
+
+// Process is a no-op processor for the container image URL
+func (n NoOpImageRepoProcessor) Process(repo string) string {
+	return repo
+}
