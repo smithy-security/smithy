@@ -11,6 +11,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/google/go-containerregistry/pkg/name"
 
+	"github.com/smithy-security/pkg/utils"
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 )
 
@@ -40,10 +41,12 @@ var (
 // resolutionOptions is a struct that defines common properties of all the
 // images of components managed by the system
 type resolutionOptions struct {
-	registry   string
-	namespace  string
-	defaultTag string
-	extraTags  []string
+	registry          string
+	namespace         string
+	defaultTag        string
+	extraTags         []string
+	replacements      map[string]string
+	imageRefProcessor ImageRepoProcessor
 }
 
 // ResolutionOptionFn is used to define common attributes of all the images
@@ -90,11 +93,32 @@ func WithNamespace(n string) ResolutionOptionFn {
 	}
 }
 
+// WithImageReplacements sets a map that will be used to replace images before
+// resolving them
+func WithImageReplacements(imageReplacements map[string]string) ResolutionOptionFn {
+	return func(o *resolutionOptions) error {
+		o.replacements = imageReplacements
+		return nil
+	}
+}
+
+// WithImageProcessor adds a processor that will modify
+func WithImageProcessor(processor ImageRepoProcessor) ResolutionOptionFn {
+	return func(o *resolutionOptions) error {
+		if utils.IsNil(processor) {
+			return errors.New("processor provided is nil")
+		}
+		o.imageRefProcessor = processor
+		return nil
+	}
+}
+
 func makeOptions(opts ...ResolutionOptionFn) (resolutionOptions, error) {
 	defaultOpts := resolutionOptions{
-		registry:   DefaultRegistry,
-		namespace:  DefaultNamespace,
-		defaultTag: DefaultTag,
+		registry:          DefaultRegistry,
+		namespace:         DefaultNamespace,
+		defaultTag:        DefaultTag,
+		imageRefProcessor: NoOpImageRepoProcessor{},
 	}
 
 	for _, opt := range opts {
@@ -111,12 +135,28 @@ func makeOptions(opts ...ResolutionOptionFn) (resolutionOptions, error) {
 // and allows a caller to get the complete registry, repository and tag URL of
 // the image
 type ComponentRepository struct {
-	repository         name.Tag
+	defaultRegistry    string
+	defaultRepository  string
+	defaultTag         string
+	defaultURL         string
 	componentType      v1.ComponentType
 	componentNamespace string
 	componentName      string
 	directory          string
-	extraTags          []string
+	extraURLs          []string
+}
+
+func replaceImageURL(replacements map[string]string, ref *name.Tag) (*name.Tag, error) {
+	if replacement, exists := replacements[ref.Name()]; exists {
+		parsedReplacement, err := name.NewTag(replacement)
+		if err != nil {
+			return nil, errors.Errorf("%s => %s: could not parse image replacement into a repository: %w", ref.Name(), replacement, err)
+		}
+
+		return &parsedReplacement, errors.Errorf("%s: can't recognise component type: %w", ref.Name(), ErrNotAComponentRepo)
+	}
+
+	return ref, errors.Errorf("%s: can't recognise component type: %w", ref.Name(), ErrNotAComponentRepo)
 }
 
 // ParseComponentRepository parses the component image repository and verifies
@@ -146,13 +186,15 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 	// as a Smithy component image reference and we will just return the parsed
 	// image reference.
 	if !strings.HasPrefix(parsedRef.RepositoryStr(), componentDirectory) {
-		return nil, &parsedRef, errors.Errorf("%s: %w", parsedRef.Name(), ErrNotAComponentRepo)
+		replacedRef, err := replaceImageURL(opts.replacements, &parsedRef)
+		return nil, replacedRef, err
 	}
 
 	// a Smithy component image and its directory should be of the form
 	// some-folder/[one of our component types]/component-name
 	if !componentRepositoryRegex.MatchString(parsedRef.RepositoryStr()) {
-		return nil, &parsedRef, errors.Errorf("%s: %w", parsedRef.Name(), ErrNotAComponentRepo)
+		replacedRef, err := replaceImageURL(opts.replacements, &parsedRef)
+		return nil, replacedRef, err
 	}
 
 	// get the component type from the path
@@ -160,9 +202,7 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 	rawComponentType := componentDirectoryParts[len(componentDirectoryParts)-2]
 	rawComponentType, exists := pluralToSingularComponentType[rawComponentType]
 	if !exists {
-		return nil, &parsedRef, errors.Errorf(
-			"%s: can't recognise component type: %w", rawComponentType, ErrNotAComponentRepo,
-		)
+		return nil, &parsedRef, err
 	}
 
 	componentType, err := v1.ParseComponentType(rawComponentType)
@@ -172,8 +212,7 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 		)
 	}
 
-	return &ComponentRepository{
-		repository:         parsedRef,
+	cr := &ComponentRepository{
 		componentType:      componentType,
 		componentNamespace: opts.namespace,
 		componentName: strings.TrimLeft(
@@ -183,18 +222,40 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 			"/",
 		),
 		directory: parsedRef.RepositoryStr(),
-		extraTags: opts.extraTags,
-	}, &parsedRef, nil
+	}
+
+	defaultComponentRepository := opts.imageRefProcessor.Process(
+		path.Join(
+			opts.namespace,
+			parsedRef.RepositoryStr(),
+		),
+	)
+	defaultComponentAndRegistry := path.Join(opts.registry, defaultComponentRepository)
+	defaultTag := parsedRef.TagStr()
+	defaultURL := defaultComponentAndRegistry + ":" + defaultTag
+
+	urls := []string{defaultURL}
+	for _, tag := range opts.extraTags {
+		urls = append(urls, defaultComponentAndRegistry+":"+tag)
+	}
+
+	cr.defaultRegistry = opts.registry
+	cr.defaultRepository = defaultComponentRepository
+	cr.defaultTag = defaultTag
+	cr.defaultURL = defaultURL
+	cr.extraURLs = urls
+
+	return cr, &parsedRef, nil
 }
 
 // Repo returns the repository of the component image
 func (cr *ComponentRepository) Repo() string {
-	return path.Join(cr.componentNamespace, cr.repository.RepositoryStr())
+	return cr.defaultRepository
 }
 
 // Tag returns the default tag of the component image
 func (cr *ComponentRepository) Tag() string {
-	return cr.repository.TagStr()
+	return cr.defaultTag
 }
 
 // Directory is the complete path to the root of the component
@@ -215,22 +276,17 @@ func (cr *ComponentRepository) Name() string {
 
 // Registry returns the name of the component
 func (cr *ComponentRepository) Registry() string {
-	return cr.repository.RegistryStr()
+	return cr.defaultRegistry
 }
 
 // URL returns the complete registry, namespace, repository and the default tag
 // of the image
 func (cr *ComponentRepository) URL() string {
-	return path.Join(cr.repository.RegistryStr(), cr.Repo()) + ":" + cr.Tag()
+	return cr.defaultURL
 }
 
 // URLs returns all the component image URLs, not just the one tagged with the
 // default tag
 func (cr *ComponentRepository) URLs() []string {
-	urls := []string{cr.URL()}
-	for _, tag := range cr.extraTags {
-		urls = append(urls, path.Join(cr.repository.RegistryStr(), cr.Repo())+":"+tag)
-	}
-
-	return urls
+	return cr.extraURLs
 }
