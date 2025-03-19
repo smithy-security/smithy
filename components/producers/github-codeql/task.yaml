@@ -16,7 +16,7 @@ spec:
   steps:
   - name: run-code-ql
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql-go:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql/runner:{{ .Chart.AppVersion }}'
     command:
       - /build/codeql-runner
     args:
@@ -25,7 +25,7 @@ spec:
 
   - name: produce-issues
     imagePullPolicy: IfNotPresent
-    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql-go:{{ .Chart.AppVersion }}'
+    image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql:{{ .Chart.AppVersion }}'
     script: |
       for lang in $(ls $(workspaces.scratch.path)/*.sarif.json ); do
         /app/components/producers/github-codeql-go/github-codeql-go-parser \
