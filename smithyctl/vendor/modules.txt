@@ -294,6 +294,9 @@ golang.org/x/tools/internal/versions
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# k8s.io/apimachinery v0.29.0
+## explicit; go 1.21
+k8s.io/apimachinery/pkg/util/sets
 # oras.land/oras-go/v2 v2.5.0
 ## explicit; go 1.21
 oras.land/oras-go/v2
