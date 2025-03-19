@@ -134,10 +134,10 @@ github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
 github.com/smithy-security/pkg/env v0.0.1 h1:uwLTMLdNN/dv3x4zat75JahEBQDpdBeldjEE8El4OiM=
 github.com/smithy-security/pkg/env v0.0.1/go.mod h1:VIJfDqeAbQQcmohaXcZI6grjeJC9Y8CmqR4ITpdngZE=
-github.com/smithy-security/pkg/sarif v0.0.2-0.20250223164400-d826a844c8e3 h1:BYcqQnLLzEoUjq88t+4mxTF+TaPKkphKf6VFFyc4kak=
-github.com/smithy-security/pkg/sarif v0.0.2-0.20250223164400-d826a844c8e3/go.mod h1:ZI2MtI7MZL38F++QovaXYXuyy1kLhOlWIWTY+Jib1jw=
-github.com/smithy-security/smithy/sdk v0.0.4-alpha h1:2SRgY1TBp68utOHSu4O4RdzBsxWqUeGI9Hx9tK55R7o=
-github.com/smithy-security/smithy/sdk v0.0.4-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
+github.com/smithy-security/pkg/sarif v0.0.2-0.20250225103845-bfa21e86aa9b h1:f6zJrHsbSHgcmR9q3k5eZHF4vOtA6EQf42WUZEuwVmI=
+github.com/smithy-security/pkg/sarif v0.0.2-0.20250225103845-bfa21e86aa9b/go.mod h1:ZI2MtI7MZL38F++QovaXYXuyy1kLhOlWIWTY+Jib1jw=
+github.com/smithy-security/smithy/sdk v0.0.6-alpha h1:uX4/q7qK123FvPk95JrRacBCmixNUKPCcGjQ9QQjEJM=
+github.com/smithy-security/smithy/sdk v0.0.6-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
 github.com/spf13/cast v1.3.1 h1:nFm6S0SMdyzrzcmThSipiEubIDy8WEXKNZ0UOgiRpng=
 github.com/spf13/cast v1.3.1/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
 github.com/sqlc-dev/sqlc v1.27.0 h1:wWc+401GLh0whLa30WmDkkl11lMBZuqvDvgu5OsaDiQ=

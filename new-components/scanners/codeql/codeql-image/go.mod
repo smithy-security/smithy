@@ -4,7 +4,7 @@ go 1.23.3
 
 require (
 	github.com/go-errors/errors v1.5.1
-	github.com/smithy-security/pkg/detect-repo-languages v0.0.0-20250224152126-1825c2dd709a
+	github.com/smithy-security/pkg/detect-repo-languages v0.0.1
 )
 
 require (

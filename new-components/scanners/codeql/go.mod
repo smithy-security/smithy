@@ -6,9 +6,8 @@ require (
 	github.com/go-errors/errors v1.5.1
 	github.com/jonboulle/clockwork v0.5.0
 	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/pkg/sarif v0.0.2-0.20250223164400-d826a844c8e3
-	github.com/smithy-security/smithy v0.63.0
-	github.com/smithy-security/smithy/sdk v0.0.5-alpha
+	github.com/smithy-security/pkg/sarif v0.0.2-0.20250225103845-bfa21e86aa9b
+	github.com/smithy-security/smithy/sdk v0.0.6-alpha
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.5
 )
@@ -22,7 +21,7 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
-	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/golang/mock v1.6.0 // indirect
@@ -43,7 +42,6 @@ require (
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
-	github.com/owenrumney/go-sarif/v2 v2.1.2 // indirect
 	github.com/package-url/packageurl-go v0.1.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect

@@ -9,7 +9,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/pkg/env"
-	sarif "github.com/smithy-security/pkg/sarif"
+	"github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 
 	"github.com/smithy-security/smithy/sdk/component"
