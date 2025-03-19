@@ -2,10 +2,12 @@ package component
 
 import (
 	"context"
+	"os"
 
 	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 
 	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
 	"github.com/smithy-security/smithy/smithyctl/internal/images"
@@ -17,7 +19,6 @@ var packageCmdFlags packageFlags
 
 type (
 	packageFlags struct {
-		specPath               string
 		packageVersion         string
 		sdkVersion             string
 		registryURL            string
@@ -28,6 +29,7 @@ type (
 		imageRegistryURL       string
 		imageNamespace         string
 		imageTag               string
+		dryRun                 bool
 	}
 )
 
@@ -37,21 +39,17 @@ func NewPackageCommand() *cobra.Command {
 		Use:   "package",
 		Short: "Packages a component's configuration",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := packageComponent(cmd.Context(), packageCmdFlags); err != nil {
+			if len(args) != 1 {
+				return errors.New("you need to provide exactly one positional argument with a path to a component YAML spec")
+			}
+
+			if err := packageComponent(cmd.Context(), packageCmdFlags, args[0]); err != nil {
 				return errors.Errorf("unexpected failure: %w", err)
 			}
 			return nil
 		},
 	}
 
-	cmd.
-		Flags().
-		StringVar(
-			&packageCmdFlags.specPath,
-			"spec-path",
-			".",
-			"the location of the component spec file",
-		)
 	cmd.
 		Flags().
 		StringVar(
@@ -134,14 +132,22 @@ func NewPackageCommand() *cobra.Command {
 			images.DefaultTag,
 			"the container tag used for the component images",
 		)
+	cmd.
+		Flags().
+		BoolVar(
+			&packageCmdFlags.dryRun,
+			"dry-run",
+			false,
+			"output rendered component YAML to stderr",
+		)
 
 	return cmd
 }
 
-func packageComponent(ctx context.Context, flags packageFlags) error {
+func packageComponent(ctx context.Context, flags packageFlags, componentPath string) error {
 	componentSpec, err := component.
 		NewSpecParser().
-		Parse(flags.specPath)
+		Parse(componentPath)
 	if err != nil {
 		return err
 	}
@@ -175,7 +181,7 @@ func packageComponent(ctx context.Context, flags packageFlags) error {
 	}
 
 	imageResolver, err := dockerimages.NewResolverBuilder(
-		ctx, dockerClient, flags.specPath, true,
+		ctx, dockerClient, componentPath, true,
 	)
 	if err != nil {
 		return errors.Errorf("could not bootstrap image resolver: %w", err)
@@ -189,6 +195,10 @@ func packageComponent(ctx context.Context, flags packageFlags) error {
 
 		step.Image = renderedImage
 		componentSpec.Steps[stepIndex] = step
+	}
+
+	if flags.dryRun {
+		return yaml.NewEncoder(os.Stdout).Encode(componentSpec)
 	}
 
 	if err := reg.Package(ctx, registry.PackageRequest{
