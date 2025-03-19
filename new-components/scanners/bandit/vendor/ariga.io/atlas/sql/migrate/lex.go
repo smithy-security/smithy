@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -96,6 +97,9 @@ type (
 		width      int      // size of latest rune
 		delim      string   // configured delimiter
 		comments   []string // collected comments
+		// internal option to indicate if the
+		// END word is parsed as a terminator.
+		endterm *regexp.Regexp
 	}
 
 	// ScannerOptions controls the behavior of the scanner.
@@ -104,6 +108,8 @@ type (
 		MatchBegin bool
 		// MatchBeginAtomic enables matching for BEGIN ATOMIC ... END statements block.
 		MatchBeginAtomic bool
+		// MatchBeginCatch enables matching for BEGIN TRY/CATCH ... END TRY/CATCH statements block.
+		MatchBeginTryCatch bool
 		// MatchDollarQuote enables the PostgreSQL dollar-quoted string syntax.
 		MatchDollarQuote bool
 		// BackslashEscapes enables backslash-escaped strings. By default, only MySQL/MariaDB uses backslash as
@@ -114,6 +120,11 @@ type (
 		EscapedStringExt bool
 		// HashComments enables MySQL/MariaDB hash-like (#) comments.
 		HashComments bool
+		// Enable the "GO" command as a delimiter.
+		GoCommand bool
+		// BeginEndTerminator is a T-SQL specific option that allows
+		// the scanner to terminate BEGIN/END blocks with a semicolon.
+		BeginEndTerminator bool
 	}
 )
 
@@ -164,8 +175,11 @@ var (
 	reDollarQuote = regexp.MustCompile(`^\$([A-Za-zÈ-ÿ_][\wÈ-ÿ]*)*\$`)
 	// The 'BEGIN ATOMIC' syntax as specified in the SQL 2003 standard.
 	reBeginAtomic = regexp.MustCompile(`(?i)^\s*BEGIN\s+ATOMIC\s+`)
+	reBeginTry    = regexp.MustCompile(`(?i)^\s*BEGIN\s+TRY\s+`)
 	reBegin       = regexp.MustCompile(`(?i)^\s*BEGIN\s+`)
 	reEnd         = regexp.MustCompile(`(?i)^\s*END\s*`)
+	reEndCatch    = regexp.MustCompile(`(?i)^\s*END\s*CATCH\s*`)
+	reGoCmd       = regexp.MustCompile(`(?i)^GO(?:\s+|$)`)
 )
 
 func (s *Scanner) stmt() (*Stmt, error) {
@@ -209,6 +223,19 @@ Scan:
 				return nil, err
 			}
 			s.skipSpaces()
+		// GO command takes over the delimiter '\nGO'
+		// in cases it can't parse the statements correctly.
+		case s.GoCommand && r == '\n' && reGoCmd.MatchString(s.input[s.pos:]):
+			s.next() // skip '\n'
+			fallthrough
+		case s.GoCommand && (s.pos == 1 || s.pos > 1 && s.input[s.pos-2] == '\n') && reGoCmd.MatchString(s.input[s.pos-1:]):
+			text = s.input[:s.pos-1]
+			s.next() // skip 'O'
+			if err := s.skipGoCount(); err != nil {
+				return nil, err
+			}
+			s.skipSpaces()
+			break Scan
 		// Delimiters take precedence over comments.
 		case depth == 0 && strings.HasPrefix(s.input[s.pos-s.width:], s.delim):
 			s.addPos(len(s.delim) - s.width)
@@ -226,12 +253,21 @@ Scan:
 		case r == '/' && s.pick() == '*':
 			s.next()
 			s.comment("/*", "*/")
+		case s.endterm != nil && s.endterm.MatchString(s.input[:s.pos]):
+			text = s.input[:s.pos]
+			break Scan
 		case s.delim == delimiter && s.MatchBeginAtomic && reBeginAtomic.MatchString(s.input[s.pos-1:]):
 			if err := s.skipBeginAtomic(); err == nil {
 				text = s.input[:s.pos]
 				break Scan
 			}
 			// Not a "BEGIN ATOMIC" block.
+		case s.delim == delimiter && s.MatchBeginTryCatch && reBeginTry.MatchString(s.input[s.pos-1:]):
+			if err := s.skipBeginTryCatch(); err == nil {
+				text = s.input[:s.pos]
+				break Scan
+			}
+			// Not a "BEGIN TRY ... END CATCH" block.
 		case s.delim == delimiter && s.MatchBegin &&
 			// Either the current scanned statement starts with BEGIN, or we inside a statement and expects at least one ~space before).
 			(s.pos == 1 && reBegin.MatchString(s.input[s.pos-1:]) || s.pos > 1 && reBegin.MatchString(s.input[s.pos-2:])):
@@ -331,6 +367,41 @@ func (s *Scanner) skipBeginAtomic() error {
 	return nil
 }
 
+func (s *Scanner) skipBeginTryCatch() error {
+	m := reBeginTry.FindString(s.input[s.pos-1:])
+	if m == "" {
+		return s.error(s.pos, "unexpected missing BEGIN TRY block")
+	}
+	s.addPos(len(m) - 1)
+	body := &Scanner{ScannerOptions: s.ScannerOptions}
+	if err := body.init(s.input[s.pos:]); err != nil {
+		return err
+	}
+	for {
+		stmt, err := body.stmt()
+		if err == io.EOF {
+			return s.error(s.pos, "unexpected eof when scanning sql body")
+		}
+		if err != nil {
+			return s.error(s.pos, "scan sql body: %v", err)
+		}
+		if end := reEndCatch.FindString(stmt.Text); end != "" {
+			// In case "END CATCH" is not followed by a semicolon (\n instead),
+			// backup the extra consumed statement (it might be END;) and exit.
+			if !strings.HasSuffix(strings.TrimSpace(end), ";") {
+				s.addPos(-(len(stmt.Text) - len(end)))
+			}
+			break
+		}
+	}
+	s.addPos(body.total)
+	return nil
+}
+
+var (
+	reEndTerm = regexp.MustCompile(`(?i)\s*END\s*$`)
+)
+
 func (s *Scanner) skipBegin() error {
 	m := reBegin.FindString(s.input[s.pos-1:])
 	if m == "" {
@@ -338,10 +409,14 @@ func (s *Scanner) skipBegin() error {
 	}
 	s.addPos(len(m) - 1)
 	group := &Scanner{ScannerOptions: s.ScannerOptions}
+	if s.BeginEndTerminator {
+		group.endterm = reEndTerm
+	}
 	if err := group.init(s.input[s.pos:]); err != nil {
 		return err
 	}
-	for depth := 1; depth > 0; {
+Loop:
+	for {
 		switch stmt, err := group.stmt(); {
 		case err == io.EOF:
 			return s.error(s.pos, "unexpected eof when scanning compound statements")
@@ -349,8 +424,10 @@ func (s *Scanner) skipBegin() error {
 			return s.error(s.pos, "scan compound statements: %v", err)
 		case reEnd.MatchString(stmt.Text):
 			if m := reEnd.FindString(stmt.Text); len(m) == len(stmt.Text) || strings.TrimPrefix(stmt.Text, m) == s.delim {
-				depth--
+				break Loop
 			}
+		case s.BeginEndTerminator && reEndTerm.MatchString(stmt.Text):
+			break Loop
 		}
 	}
 	s.addPos(group.total)
@@ -420,6 +497,24 @@ func (s *Scanner) delimCmd() error {
 	}
 	// Skip all we saw until now.
 	s.emit(s.input[:s.pos])
+	return nil
+}
+
+// skipGoCount checks if the scanned "GO"
+func (s *Scanner) skipGoCount() (err error) {
+	// GO [count]\n
+	if s.pick() == ' ' {
+		c := s.pos
+		// Scan [count]\n
+		for r := s.pick(); r != eos && r != '\n'; {
+			r = s.next()
+		}
+		_, err := strconv.Atoi(strings.TrimSpace(s.input[c:s.pos]))
+		if err != nil {
+			return fmt.Errorf("sql/migrate: invalid GO command, expect digits got %q: %w",
+				s.input[c:s.pos], err)
+		}
+	}
 	return nil
 }
 

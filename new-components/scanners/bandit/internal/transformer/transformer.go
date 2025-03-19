@@ -134,8 +134,8 @@ func BanditRawOutFileContents(contents []byte) BanditTransformerOption {
 func New(opts ...BanditTransformerOption) (*BanditTransformer, error) {
 	rawOutFilePath, err := env.GetOrDefault(
 		"BANDIT_RAW_OUT_FILE_PATH",
-		"bandit.json",
-		env.WithDefaultOnError(true),
+		"",
+		env.WithDefaultOnError(false),
 	)
 	if err != nil {
 		return nil, err
@@ -161,14 +161,6 @@ func New(opts ...BanditTransformerOption) (*BanditTransformer, error) {
 			return nil, errors.Errorf("failed to apply option: %w", err)
 		}
 	}
-
-	switch {
-	case t.rawOutFilePath == "":
-		return nil, errors.New("invalid empty raw output file")
-	case t.targetType == ocsffindinginfo.DataSource_TARGET_TYPE_UNSPECIFIED:
-		return nil, ErrBadTargetType
-	}
-
 	return &t, nil
 }
 
