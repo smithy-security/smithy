@@ -19,6 +19,7 @@ require (
 	go.uber.org/mock v0.5.0
 	golang.org/x/sync v0.11.0
 	gopkg.in/yaml.v3 v3.0.1
+	k8s.io/apimachinery v0.29.0
 	oras.land/oras-go/v2 v2.5.0
 )
 
