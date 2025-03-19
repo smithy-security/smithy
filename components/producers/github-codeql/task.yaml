@@ -26,9 +26,12 @@ spec:
   - name: produce-issues
     imagePullPolicy: IfNotPresent
     image: '{{ default "ghcr.io/smithy-security/smithy" .Values.image.registry }}/components/producers/github-codeql:{{ .Chart.AppVersion }}'
+    env:
+    - name: WRITE_PATH
+      value: $(workspaces.scratch.path)
     script: |
       for lang in $(ls $(workspaces.scratch.path)/*.sarif.json ); do
-        /app/components/producers/github-codeql-go/github-codeql-go-parser \
+        /app/components/producers/github-codeql/github-codeql-parser \
         -in=$lang
         -out=$lang.pb
       done
