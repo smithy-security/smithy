@@ -1,0 +1,12 @@
+
+image:
+  registry: kind-registry:5000
+
+database:
+  auth:
+    username: smithy
+    password: smithy
+    database: smithy
+    postgresPassword: smithy
+    querystringargs: "sslmode=disable"
+  host: smithy-postgresql:5432

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: deduplication-db-migrations
+description: |
+  A Helm chart for Kubernetes containing the smithy migrations needed for the deduplication component to run.
+  Please check the documentation for more information here: https://github.com/smithy-security/smithy/blob/main/docs/migrations.md
+type: application
+version: 0.34.0
+appVersion: v0.34.0
