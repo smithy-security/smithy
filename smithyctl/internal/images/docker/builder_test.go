@@ -245,7 +245,7 @@ func TestBuilder(t *testing.T) {
 				EXPECT().
 				ImagePush(
 					testCtx,
-					"ghcr.io/smithy-security/smithy/testdata/scanners/gosec:latest",
+					"ghcr.io/smithy-security/images/testdata/scanners/gosec:latest",
 					dockerimagetypes.PushOptions{
 						RegistryAuth: authConfigEncoded,
 					},

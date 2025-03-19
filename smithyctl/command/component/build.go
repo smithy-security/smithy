@@ -118,7 +118,7 @@ func NewBuildCommand() *cobra.Command {
 		StringSliceVar(
 			&buildCmdFlags.tags,
 			"tag",
-			[]string{images.DefaultTag},
+			[]string{"latest"},
 			"tags to use for images, can be multiple",
 		)
 	cmd.
@@ -240,10 +240,7 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 		imageResolutionOpts = append(imageResolutionOpts, images.WithNamespace(flags.namespace))
 	}
 
-	imageResolutionOpts = append(imageResolutionOpts, images.WithDefaultTag(flags.tags[0]))
-	if len(flags.tags) > 1 {
-		imageResolutionOpts = append(imageResolutionOpts, images.WithExtraTags(flags.tags[1:]...))
-	}
+	imageResolutionOpts = append(imageResolutionOpts, images.WithTags(flags.tags...))
 
 	if flags.registry != "" {
 		imageResolutionOpts = append(imageResolutionOpts, images.WithRegistry(flags.registry))

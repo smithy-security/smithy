@@ -177,6 +177,7 @@ type errorDetail struct {
 	Message string `json:"message"`
 }
 
+// Build is invoked to build an image for a component. The component should
 func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (string, error) {
 	// check first if there is an image make target that we can use to build
 	// the image. if the command runs successfully, then we execute the target
@@ -186,20 +187,20 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 	)
 	if err == nil {
 		b.report.CustomImages = append(b.report.CustomImages, images.CustomImageReport{
-			Tags:          []string{cr.URL()},
+			Tags:          cr.URLs(),
 			ContextPath:   cr.Directory(),
 			ComponentPath: cr.Directory(),
 		})
 
 		if b.dryRun {
-			return cr.URL(), nil
+			return cr.URLs()[0], nil
 		}
 
-		return cr.URL(), executeSubprocess(
+		return cr.URLs()[0], executeSubprocess(
 			ctx,
 			"/bin/sh", "-c", fmt.Sprintf(
 				"make -C %s --quiet image BUILD_ARCHITECTURE=%s COMPONENT_REGISTRY=%s COMPONENT_REPOSITORY=%s COMPONENT_TAG=%s",
-				cr.Directory(), b.opts.platform, cr.Registry(), cr.Repo(), cr.Tag(),
+				cr.Directory(), b.opts.platform, cr.Registry(), cr.Repo(), cr.Tags(),
 			),
 		)
 	}
@@ -218,10 +219,10 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 	})
 
 	if b.dryRun {
-		return cr.URL(), nil
+		return cr.URLs()[0], nil
 	}
 
-	fmt.Fprintf(os.Stderr, "building docker image %s\n", cr.URL())
+	fmt.Fprintf(os.Stderr, "building docker image for component %s with tags %q\n", cr.Directory(), cr.URLs())
 	buildCtx, err := b.prepareTar(b.opts.baseDockerfilePath, cr.Directory())
 	if err != nil {
 		return "", errors.Errorf("could not create tar for Docker image build context: %w", err)
@@ -259,7 +260,7 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 		},
 	)
 	if err != nil {
-		return "", errors.Errorf("%s: could not build component image: %w", cr.URL(), err)
+		return "", errors.Errorf("%s: could not build image for component: %w", cr.Directory(), err)
 	}
 	defer buildResp.Body.Close()
 
@@ -281,11 +282,11 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 	errLine := &errorLine{}
 	err = json.Unmarshal([]byte(lastLine), errLine)
 	if err != nil || errLine.Error == "" {
-		return cr.URL(), b.push(ctx, cr)
+		return cr.URLs()[0], b.push(ctx, cr)
 	}
 
 	return "", errors.Errorf("%s: there was an error while building component image: %w, %w",
-		cr.URL(), errors.New(errLine.Error), errors.New(errLine.ErrorDetail.Message),
+		cr.URLs(), errors.New(errLine.Error), errors.New(errLine.ErrorDetail.Message),
 	)
 }
 
