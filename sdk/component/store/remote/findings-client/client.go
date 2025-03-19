@@ -172,6 +172,13 @@ func (c *client) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.Vulnerab
 		return nil, errors.Errorf("could not get findings: %w", c.checkErr(err))
 	}
 
+	switch {
+	case resp == nil:
+		return nil, errors.New("unexpected nil response")
+	case len(resp.Findings) == 0:
+		return nil, store.ErrNoFindingsFound
+	}
+
 	findings := make([]*vf.VulnerabilityFinding, 0, len(resp.Findings))
 	for _, finding := range resp.Findings {
 		findings = append(
