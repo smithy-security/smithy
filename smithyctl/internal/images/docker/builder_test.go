@@ -87,6 +87,7 @@ func TestBuilder(t *testing.T) {
 			testCtx,
 			dockerBuilderMock,
 			"components/scanners/test/component.yaml",
+			false,
 			WithBaseDockerfilePath("testdata/Dockerfile"),
 			WithSDKVersion("1.0.0"),
 		)
@@ -162,6 +163,7 @@ func TestBuilder(t *testing.T) {
 			testCtx,
 			dockerBuilderMock,
 			"components/scanners/test/component.yaml",
+			false,
 			WithBaseDockerfilePath("testdata/Dockerfile"),
 		)
 		require.NoError(t, err)
@@ -258,6 +260,7 @@ func TestBuilder(t *testing.T) {
 			testCtx,
 			dockerBuilderMock,
 			"components/scanners/test/component.yaml",
+			false,
 			WithBaseDockerfilePath("testdata/Dockerfile"),
 			WithUsernamePassword("user", "pass"),
 			PushImages(),

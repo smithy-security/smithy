@@ -120,6 +120,8 @@ type Builder struct {
 	client        dockerBuilder
 	componentPath string
 	opts          builderOptions
+	dryRun        bool
+	report        images.Report
 	prepareTar    func(baseDockerfilePath, path string, extraPaths ...string) (io.ReadCloser, error)
 }
 
@@ -128,6 +130,7 @@ func NewBuilder(
 	ctx context.Context,
 	client dockerBuilder,
 	componentPath string,
+	dryRun bool,
 	opts ...BuilderOptionFn,
 ) (*Builder, error) {
 	if utils.IsNil(client) {
@@ -143,6 +146,10 @@ func NewBuilder(
 		client:        client,
 		componentPath: componentPath,
 		opts:          buildOpts,
+		dryRun:        dryRun,
+		report: images.Report{
+			CustomImages: []images.CustomImageReport{},
+		},
 		prepareTar: func(baseDockerfilePath, path string, extraPaths ...string) (io.ReadCloser, error) {
 			return archive.TarWithOptions(
 				".",
@@ -178,6 +185,16 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 		"/bin/bash", "-c", fmt.Sprintf("make -C %s --dry-run --quiet image", cr.Directory()),
 	)
 	if err == nil {
+		b.report.CustomImages = append(b.report.CustomImages, images.CustomImageReport{
+			Tags:          []string{cr.URL()},
+			ContextPath:   cr.Directory(),
+			ComponentPath: cr.Directory(),
+		})
+
+		if b.dryRun {
+			return cr.URL(), nil
+		}
+
 		return cr.URL(), executeSubprocess(
 			ctx,
 			"/bin/sh", "-c", fmt.Sprintf(
@@ -185,6 +202,23 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 				cr.Directory(), b.opts.platform, cr.Registry(), cr.Repo(), cr.Tag(),
 			),
 		)
+	}
+
+	b.report.CustomImages = append(b.report.CustomImages, images.CustomImageReport{
+		Tags:   cr.URLs(),
+		Labels: b.opts.labels,
+		BuildArgs: map[string]string{
+			"COMPONENT_PATH": cr.Directory(),
+			"SDK_VERSION":    b.opts.sdkVersion,
+		},
+		Platform:      b.opts.platform,
+		ContextPath:   cr.Directory(),
+		ComponentPath: cr.Directory(),
+		Dockerfile:    b.opts.baseDockerfilePath,
+	})
+
+	if b.dryRun {
+		return cr.URL(), nil
 	}
 
 	fmt.Fprintf(os.Stderr, "building docker image %s\n", cr.URL())
@@ -361,4 +395,11 @@ func executeSubprocess(ctx context.Context, executable string, args ...string) e
 	}
 
 	return nil
+}
+
+// Report returns a report of all the images built and how they were built
+func (b *Builder) Report() images.Report {
+	return images.Report{
+		CustomImages: b.report.CustomImages[:],
+	}
 }

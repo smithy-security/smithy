@@ -87,12 +87,16 @@ func (c *Component) IsInitialised() bool {
 	return c.pkgComponent != nil
 }
 
-func NewDockerImageResolver(buildComponentImages bool, dockerClient *dockerclient.Client, opts ...dockerimages.BuilderOptionFn) (ComponentImageResolver, error) {
+func NewDockerImageResolver(
+	buildComponentImages bool,
+	dockerClient *dockerclient.Client,
+	opts ...dockerimages.BuilderOptionFn,
+) (ComponentImageResolver, error) {
 	if utils.IsNil(dockerClient) {
 		return nil, errors.Errorf("nil docker client provided")
 	}
 
-	remoteComponentImageResolver, err := dockerimages.NewResolver(dockerClient)
+	remoteComponentImageResolver, err := dockerimages.NewResolver(dockerClient, false)
 	if err != nil {
 		return nil, errors.Errorf("could not initialise docker image resolver: %w", err)
 	}
@@ -109,7 +113,7 @@ func NewDockerImageResolver(buildComponentImages bool, dockerClient *dockerclien
 			componentPath string,
 		) (images.Resolver, error) {
 			return dockerimages.NewResolverBuilder(
-				ctx, dockerClient, componentPath, opts...,
+				ctx, dockerClient, componentPath, false, opts...,
 			)
 		}
 	} else {

@@ -40,6 +40,20 @@ func (m *MockResolver) EXPECT() *MockResolverMockRecorder {
 	return m.recorder
 }
 
+// Report mocks base method.
+func (m *MockResolver) Report() Report {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Report")
+	ret0, _ := ret[0].(Report)
+	return ret0
+}
+
+// Report indicates an expected call of Report.
+func (mr *MockResolverMockRecorder) Report() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Report", reflect.TypeOf((*MockResolver)(nil).Report))
+}
+
 // Resolve mocks base method.
 func (m *MockResolver) Resolve(ctx context.Context, imageRef string, options ...ResolutionOptionFn) (string, error) {
 	m.ctrl.T.Helper()
@@ -97,4 +111,56 @@ func (m *MockBuilder) Build(ctx context.Context, cr *ComponentRepository) (strin
 func (mr *MockBuilderMockRecorder) Build(ctx, cr any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Build", reflect.TypeOf((*MockBuilder)(nil).Build), ctx, cr)
+}
+
+// Report mocks base method.
+func (m *MockBuilder) Report() Report {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Report")
+	ret0, _ := ret[0].(Report)
+	return ret0
+}
+
+// Report indicates an expected call of Report.
+func (mr *MockBuilderMockRecorder) Report() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Report", reflect.TypeOf((*MockBuilder)(nil).Report))
+}
+
+// MockImageRepoProcessor is a mock of ImageRepoProcessor interface.
+type MockImageRepoProcessor struct {
+	ctrl     *gomock.Controller
+	recorder *MockImageRepoProcessorMockRecorder
+	isgomock struct{}
+}
+
+// MockImageRepoProcessorMockRecorder is the mock recorder for MockImageRepoProcessor.
+type MockImageRepoProcessorMockRecorder struct {
+	mock *MockImageRepoProcessor
+}
+
+// NewMockImageRepoProcessor creates a new mock instance.
+func NewMockImageRepoProcessor(ctrl *gomock.Controller) *MockImageRepoProcessor {
+	mock := &MockImageRepoProcessor{ctrl: ctrl}
+	mock.recorder = &MockImageRepoProcessorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockImageRepoProcessor) EXPECT() *MockImageRepoProcessorMockRecorder {
+	return m.recorder
+}
+
+// Process mocks base method.
+func (m *MockImageRepoProcessor) Process(repo string) string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Process", repo)
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// Process indicates an expected call of Process.
+func (mr *MockImageRepoProcessorMockRecorder) Process(repo any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Process", reflect.TypeOf((*MockImageRepoProcessor)(nil).Process), repo)
 }
