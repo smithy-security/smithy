@@ -184,10 +184,10 @@ github.com/sirupsen/logrus
 # github.com/smithy-security/pkg/utils v0.0.0-20250303173049-831c449c6361
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/utils
-# github.com/smithy-security/smithy v0.65.0
-## explicit; go 1.23.2
+# github.com/smithy-security/smithy v0.71.0
+## explicit; go 1.23.3
 github.com/smithy-security/smithy/pkg/types/v1
-# github.com/smithy-security/smithy/sdk v0.0.5-alpha
+# github.com/smithy-security/smithy/sdk v0.0.6-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk/component/uuid
 # github.com/spf13/cobra v1.9.1

@@ -1,6 +1,8 @@
 module github.com/smithy-security/smithy/smithyctl
 
-go 1.23.2
+go 1.23.3
+
+toolchain go1.24.0
 
 require (
 	github.com/distribution/reference v0.6.0
@@ -10,8 +12,8 @@ require (
 	github.com/opencontainers/image-spec v1.1.1
 	github.com/ory/dockertest/v3 v3.11.0
 	github.com/smithy-security/pkg/utils v0.0.0-20250303173049-831c449c6361
-	github.com/smithy-security/smithy v0.65.0
-	github.com/smithy-security/smithy/sdk v0.0.5-alpha
+	github.com/smithy-security/smithy v0.71.0
+	github.com/smithy-security/smithy/sdk v0.0.6-alpha
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/mock v0.5.0
