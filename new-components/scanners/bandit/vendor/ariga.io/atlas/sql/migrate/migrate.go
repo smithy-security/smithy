@@ -34,6 +34,13 @@ type (
 
 		// Changes defines the list of changeset in the plan.
 		Changes []*Change
+
+		// Delimiter to use for separating statements.
+		Delimiter string
+
+		// Directives to add to the file (not associated with any statements) besides the delimiter.
+		// For example, atlas:txtar, atlas:txmode, etc.
+		Directives []string
 	}
 
 	// A Change of migration.
@@ -55,6 +62,13 @@ type (
 		Source schema.Change
 	}
 )
+
+// AddDirectiveOnce adds the given directive to the plan if it does not exist.
+func (p *Plan) AddDirectiveOnce(d string) {
+	if !slices.Contains(p.Directives, d) {
+		p.Directives = append(p.Directives, d)
+	}
+}
 
 // ReverseStmts returns the reverse statements of a Change, if any.
 func (c *Change) ReverseStmts() (cmd []string, err error) {
@@ -80,7 +94,10 @@ type (
 		schema.Differ
 		schema.ExecQuerier
 		schema.Inspector
+		schema.Locker
 		PlanApplier
+		Snapshoter
+		CleanChecker
 	}
 
 	// PlanApplier wraps the methods for planning and applying changes
@@ -549,10 +566,6 @@ func (p *Planner) writeSum() error {
 var (
 	// ErrNoPendingFiles is returned if there are no pending migration files to execute on the managed database.
 	ErrNoPendingFiles = errors.New("sql/migrate: no pending migration files")
-	// ErrSnapshotUnsupported is returned if there is no Snapshoter given.
-	ErrSnapshotUnsupported = errors.New("sql/migrate: driver does not support taking a database snapshot")
-	// ErrCleanCheckerUnsupported is returned if there is no CleanChecker given.
-	ErrCleanCheckerUnsupported = errors.New("sql/migrate: driver does not support checking if database is clean")
 	// ErrRevisionNotExist is returned if the requested revision is not found in the storage.
 	ErrRevisionNotExist = errors.New("sql/migrate: revision not found")
 )
@@ -588,12 +601,6 @@ func NewExecutor(drv Driver, dir Dir, rrw RevisionReadWriter, opts ...ExecutorOp
 	}
 	if ex.log == nil {
 		ex.log = NopLogger{}
-	}
-	if _, ok := drv.(Snapshoter); !ok {
-		return nil, ErrSnapshotUnsupported
-	}
-	if _, ok := drv.(CleanChecker); !ok {
-		return nil, ErrCleanCheckerUnsupported
 	}
 	if ex.baselineVer != "" && ex.allowDirty {
 		return nil, errors.New("sql/migrate: baseline and allow-dirty are mutually exclusive")
@@ -684,7 +691,7 @@ func (e *Executor) Pending(ctx context.Context) ([]File, error) {
 	// If it is the first time we run.
 	case len(revs) == 0:
 		var cerr *NotCleanError
-		if err = e.drv.(CleanChecker).CheckClean(ctx, e.rrw.Ident()); err != nil && !errors.As(err, &cerr) {
+		if err = e.drv.CheckClean(ctx, e.rrw.Ident()); err != nil && !errors.As(err, &cerr) {
 			return nil, err
 		}
 		// In case the workspace is not clean one of the flags is required.
@@ -830,12 +837,15 @@ func (e *Executor) Execute(ctx context.Context, m File) (err error) {
 	}
 	// Save once to mark as started in the database.
 	if err = e.writeRevision(ctx, r); err != nil {
+		e.log.Log(LogError{Error: err})
 		return err
 	}
-	// Make sure to store the Revision information.
+	// Make sure to store the Revision information, if it did not fail before.
 	defer func(ctx context.Context, e *Executor, r *Revision) {
-		if err2 := e.writeRevision(ctx, r); err2 != nil {
-			err = errors.Join(err, err2)
+		if !errors.As(err, new(*WriteRevisionError)) {
+			if err2 := e.writeRevision(ctx, r); err2 != nil {
+				err = errors.Join(err, err2)
+			}
 		}
 	}(ctx, e, r)
 	if r.Applied > 0 {
@@ -867,10 +877,19 @@ func (e *Executor) Execute(ctx context.Context, m File) (err error) {
 		}
 		r.PartialHashes = append(r.PartialHashes, "h1:"+sums[r.Applied])
 		r.Applied++
+		// In case retry attempts succeeded,
+		// clean up the error from the table.
+		if r.Error != "" {
+			r.Error = ""
+			r.ErrorStmt = ""
+		}
 		if err = e.writeRevision(ctx, r); err != nil {
+			e.log.Log(LogError{Error: err})
 			return err
 		}
 	}
+	// In case the file was applied successfully, clean out the partial revisions.
+	r.PartialHashes = nil
 	r.done()
 	return
 }
@@ -879,9 +898,24 @@ func (e *Executor) writeRevision(ctx context.Context, r *Revision) error {
 	r.ExecutedAt = time.Now()
 	r.OperatorVersion = e.operator
 	if err := e.rrw.WriteRevision(ctx, r); err != nil {
-		return fmt.Errorf("sql/migrate: write revision: %w", err)
+		return &WriteRevisionError{Err: err, Revision: r}
 	}
 	return nil
+}
+
+// WriteRevisionError is reported when writing a
+// revision to the RevisionReadWriter fails.
+type WriteRevisionError struct {
+	Err      error
+	Revision *Revision
+}
+
+func (e WriteRevisionError) Error() string {
+	return "sql/migrate: write revision: " + e.Err.Error()
+}
+
+func (e WriteRevisionError) Unwrap() error {
+	return e.Err
 }
 
 // HistoryChangedError is returned if between two execution attempts already applied statements of a file have changed.
@@ -1026,7 +1060,7 @@ func (e *Executor) Replay(ctx context.Context, r StateReader, opts ...ReplayOpti
 		opt(c)
 	}
 	// Clean up after ourselves.
-	restore, err := e.drv.(Snapshoter).Snapshot(ctx)
+	restore, err := e.drv.Snapshot(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("sql/migrate: taking database snapshot: %w", err)
 	}
