@@ -127,6 +127,21 @@ func TestRunScanner(t *testing.T) {
 		require.ErrorIs(t, runScannerHelper(t, ctx, instanceID, mockScanner, mockStore), errTransform)
 	})
 
+	t.Run("it should return early when no findings were found", func(t *testing.T) {
+		gomock.InOrder(
+			mockScanner.
+				EXPECT().
+				Transform(mockCtx).
+				Return(make([]*ocsf.VulnerabilityFinding, 0), nil),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
+
+		require.NoError(t, runScannerHelper(t, ctx, instanceID, mockScanner, mockStore))
+	})
+
 	t.Run("it should return early when validation errors", func(t *testing.T) {
 		var errValidate = errors.New("validate-is-sad")
 

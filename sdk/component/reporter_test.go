@@ -10,6 +10,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
+	"github.com/smithy-security/smithy/sdk/component/store"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
@@ -40,7 +41,7 @@ func TestRunReporter(t *testing.T) {
 		mockCtx      = gomock.AssignableToTypeOf(ctx)
 		mockStore    = mocks.NewMockStorer(ctrl)
 		mockReporter = mocks.NewMockReporter(ctrl)
-		vulns        = make([]*vf.VulnerabilityFinding, 0)
+		vulns        = make([]*vf.VulnerabilityFinding, 2)
 	)
 
 	t.Run("it should run a reporter correctly", func(t *testing.T) {
@@ -104,6 +105,36 @@ func TestRunReporter(t *testing.T) {
 		)
 
 		require.ErrorIs(t, runReporterHelper(t, ctx, instanceID, mockReporter, mockStore), errRead)
+	})
+
+	t.Run("it should return early when the store errors with no findings were found error", func(t *testing.T) {
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx, instanceID).
+				Return(nil, store.ErrNoFindingsFound),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
+
+		require.NoError(t, runReporterHelper(t, ctx, instanceID, mockReporter, mockStore))
+	})
+
+	t.Run("it should return early when no findings were found", func(t *testing.T) {
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx, instanceID).
+				Return(make([]*vf.VulnerabilityFinding, 0), nil),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
+
+		require.NoError(t, runReporterHelper(t, ctx, instanceID, mockReporter, mockStore))
 	})
 
 	t.Run("it should return early when reporting errors", func(t *testing.T) {

@@ -11,6 +11,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
+	"github.com/smithy-security/smithy/sdk/component/store"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
@@ -41,8 +42,8 @@ func TestRunEnricher(t *testing.T) {
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockEnricher  = mocks.NewMockEnricher(ctrl)
-		vulns         = make([]*vf.VulnerabilityFinding, 0, 2)
-		enrichedVulns = make([]*vf.VulnerabilityFinding, 0, 2)
+		vulns         = make([]*vf.VulnerabilityFinding, 2)
+		enrichedVulns = make([]*vf.VulnerabilityFinding, 2)
 	)
 
 	t.Run("it should run a enricher correctly and enrich out one finding", func(t *testing.T) {
@@ -122,6 +123,36 @@ func TestRunEnricher(t *testing.T) {
 		err := runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore)
 		require.Error(t, err)
 		assert.ErrorIs(t, err, errRead)
+	})
+
+	t.Run("it should return early when the store errors with no findings were found error", func(t *testing.T) {
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx, instanceID).
+				Return(nil, store.ErrNoFindingsFound),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
+
+		require.NoError(t, runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore))
+	})
+
+	t.Run("it should return early when no findings were found", func(t *testing.T) {
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx, instanceID).
+				Return(make([]*vf.VulnerabilityFinding, 0), nil),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
+
+		require.NoError(t, runEnricherHelper(t, ctx, instanceID, mockEnricher, mockStore))
 	})
 
 	t.Run("it should return early when annotating errors", func(t *testing.T) {

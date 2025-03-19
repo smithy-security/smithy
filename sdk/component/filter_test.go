@@ -10,6 +10,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
+	"github.com/smithy-security/smithy/sdk/component/store"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
@@ -40,8 +41,8 @@ func TestRunFilter(t *testing.T) {
 		mockCtx       = gomock.AssignableToTypeOf(ctx)
 		mockStore     = mocks.NewMockStorer(ctrl)
 		mockFilter    = mocks.NewMockFilter(ctrl)
-		vulns         = make([]*vf.VulnerabilityFinding, 0, 2)
-		filteredVulns = make([]*vf.VulnerabilityFinding, 0, 1)
+		vulns         = make([]*vf.VulnerabilityFinding, 2)
+		filteredVulns = make([]*vf.VulnerabilityFinding, 1)
 	)
 
 	t.Run("it should run a filter correctly and filter out one finding", func(t *testing.T) {
@@ -137,6 +138,36 @@ func TestRunFilter(t *testing.T) {
 		)
 
 		require.ErrorIs(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore), errRead)
+	})
+
+	t.Run("it should return early when the store errors with no findings were found error", func(t *testing.T) {
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx, instanceID).
+				Return(nil, store.ErrNoFindingsFound),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
+
+		require.NoError(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore))
+	})
+
+	t.Run("it should return early when no findings were found", func(t *testing.T) {
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx, instanceID).
+				Return(make([]*vf.VulnerabilityFinding, 0), nil),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
+
+		require.NoError(t, runFilterHelper(t, ctx, instanceID, mockFilter, mockStore))
 	})
 
 	t.Run("it should return early when filtering errors", func(t *testing.T) {
