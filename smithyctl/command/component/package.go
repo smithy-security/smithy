@@ -3,10 +3,13 @@ package component
 import (
 	"context"
 
+	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
+	"github.com/smithy-security/smithy/smithyctl/internal/images"
+	dockerimages "github.com/smithy-security/smithy/smithyctl/internal/images/docker"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
@@ -22,6 +25,9 @@ type (
 		registryAuthEnabled    bool
 		registryAuthUsername   string
 		registryAuthPassword   string
+		imageRegistryURL       string
+		imageNamespace         string
+		imageTag               string
 	}
 )
 
@@ -69,7 +75,7 @@ func NewPackageCommand() *cobra.Command {
 		StringVar(
 			&packageCmdFlags.registryURL,
 			"registry-url",
-			"ghcr.io",
+			images.DefaultRegistry,
 			"the reference to the OCI compliant registry",
 		)
 	cmd.
@@ -104,12 +110,38 @@ func NewPackageCommand() *cobra.Command {
 			"",
 			"the password used for authentication for the registry",
 		)
+	cmd.
+		Flags().
+		StringVar(
+			&packageCmdFlags.imageRegistryURL,
+			"image-registry-url",
+			images.DefaultRegistry,
+			"the registry used for component images",
+		)
+	cmd.
+		Flags().
+		StringVar(
+			&packageCmdFlags.imageNamespace,
+			"image-namespace",
+			images.DefaultNamespace,
+			"the namespace used for component images",
+		)
+	cmd.
+		Flags().
+		StringVar(
+			&packageCmdFlags.imageTag,
+			"image-tag",
+			images.DefaultTag,
+			"the container tag used for the component images",
+		)
 
 	return cmd
 }
 
 func packageComponent(ctx context.Context, flags packageFlags) error {
-	c, err := component.NewSpecParser().Parse(flags.specPath)
+	componentSpec, err := component.
+		NewSpecParser().
+		Parse(flags.specPath)
 	if err != nil {
 		return err
 	}
@@ -125,8 +157,42 @@ func packageComponent(ctx context.Context, flags packageFlags) error {
 		return errors.Errorf("failed to initialize registry: %w", err)
 	}
 
+	dockerClient, err := dockerclient.NewClientWithOpts(
+		dockerclient.FromEnv,
+		dockerclient.WithAPIVersionNegotiation(),
+	)
+	if err != nil {
+		return errors.Errorf("failed to bootstrap docker client: %w", err)
+	}
+
+	imageResolutionOptions := []images.ResolutionOptionFn{}
+	if packageCmdFlags.imageRegistryURL != "" {
+		imageResolutionOptions = append(imageResolutionOptions, images.WithRegistry(packageCmdFlags.registryURL))
+	}
+
+	if packageCmdFlags.imageNamespace != "" {
+		imageResolutionOptions = append(imageResolutionOptions, images.WithNamespace(packageCmdFlags.imageNamespace))
+	}
+
+	imageResolver, err := dockerimages.NewResolverBuilder(
+		ctx, dockerClient, flags.specPath, true,
+	)
+	if err != nil {
+		return errors.Errorf("could not bootstrap image resolver: %w", err)
+	}
+
+	for stepIndex, step := range componentSpec.Steps {
+		renderedImage, err := imageResolver.Resolve(ctx, step.Image, imageResolutionOptions...)
+		if err != nil {
+			return errors.Errorf("could not resolve component's image: %w", err)
+		}
+
+		step.Image = renderedImage
+		componentSpec.Steps[stepIndex] = step
+	}
+
 	if err := reg.Package(ctx, registry.PackageRequest{
-		Component:        c,
+		Component:        componentSpec,
 		SDKVersion:       flags.sdkVersion,
 		ComponentVersion: flags.packageVersion,
 	}); err != nil {
