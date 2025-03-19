@@ -10,6 +10,7 @@ import (
 	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 
 	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
 	"github.com/smithy-security/smithy/smithyctl/internal/images"
@@ -27,6 +28,7 @@ type (
 		baseComponentDockerfile string
 		labels                  []string
 		labelsMap               map[string]string
+		dryRun                  bool
 		push                    bool
 		platform                string
 		tags                    []string
@@ -127,6 +129,14 @@ func NewBuildCommand() *cobra.Command {
 			"",
 			"sdk-version passed to build components",
 		)
+	cmd.
+		Flags().
+		BoolVar(
+			&buildCmdFlags.dryRun,
+			"dry-run",
+			false,
+			"don't build the images but show a report of what the system would execute",
+		)
 
 	return cmd
 }
@@ -208,7 +218,13 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 		return errors.Errorf("failed to bootstrap docker client: %w", err)
 	}
 
-	dockerBuilder, err := dockerimages.NewBuilder(ctx, dockerClient, componentPath, buildOpts...)
+	dockerResolverBuilder, err := dockerimages.NewResolverBuilder(
+		ctx,
+		dockerClient,
+		componentPath,
+		flags.dryRun,
+		buildOpts...,
+	)
 	if err != nil {
 		return errors.Errorf("could not bootstrap docker builder: %w", err)
 	}
@@ -234,20 +250,16 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 	}
 
 	for _, step := range component.Steps {
-		cr, parsedRef, err := images.ParseComponentRepository(componentPath, step.Image, imageResolutionOpts...)
-		if errors.Is(err, images.ErrNotAComponentRepo) {
-			fmt.Fprintf(os.Stderr, "skipping external image: %s\n", parsedRef.String())
-			continue
-		} else if err != nil {
-			return errors.Errorf("%s, %s: could not parse image reference: %w", step.Name, step.Image, err)
-		}
-
-		resolvedImage, err := dockerBuilder.Build(ctx, cr)
+		resolvedImage, err := dockerResolverBuilder.Resolve(ctx, step.Image, imageResolutionOpts...)
 		if err != nil {
 			return errors.Errorf("%s, %s: %w", step.Name, step.Image, err)
 		}
 
 		fmt.Fprintf(os.Stderr, "finalised building of image %s\n", resolvedImage)
+	}
+
+	if flags.dryRun {
+		return yaml.NewEncoder(os.Stderr).Encode(dockerResolverBuilder.Report())
 	}
 
 	return nil

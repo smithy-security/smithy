@@ -8,6 +8,7 @@ import (
 
 	dockerimage "github.com/docker/docker/api/types/image"
 	"github.com/go-errors/errors"
+	"k8s.io/apimachinery/pkg/util/sets"
 
 	"github.com/smithy-security/pkg/utils"
 
@@ -21,22 +22,35 @@ type dockerPuller interface {
 // Resolver uses the docker client to pull an image
 type Resolver struct {
 	client dockerPuller
+	report images.Report
+	dryRun bool
 }
 
 // NewResolver returns a bootstrapped instance of the resolver based on a
 // Docker client
-func NewResolver(client dockerPuller) (*Resolver, error) {
+func NewResolver(client dockerPuller, dryRun bool) (*Resolver, error) {
 	if utils.IsNil(client) {
 		return nil, ErrNoDockerClient
 	}
-	return &Resolver{client: client}, nil
+	return &Resolver{
+		client: client,
+		dryRun: dryRun,
+		report: images.Report{
+			ExternalImages: sets.Set[string]{},
+		},
+	}, nil
 }
 
 // Resolve fetches an image from a container registry
-func (s *Resolver) Resolve(ctx context.Context, imageRef string, _ ...images.ResolutionOptionFn) (string, error) {
+func (r *Resolver) Resolve(ctx context.Context, imageRef string, _ ...images.ResolutionOptionFn) (string, error) {
+	r.report.ExternalImages.Insert(imageRef)
+	if r.dryRun {
+		return imageRef, nil
+	}
+
 	// if the image does not refer to a smithy component or is not tagged as
 	// the latest version of the image we just try to pull it
-	readCloser, err := s.client.ImagePull(ctx, imageRef, dockerimage.PullOptions{})
+	readCloser, err := r.client.ImagePull(ctx, imageRef, dockerimage.PullOptions{})
 	if err != nil {
 		return "", errors.Errorf("%s: could not pull image; %w", imageRef, err)
 	}
@@ -52,4 +66,12 @@ func (s *Resolver) Resolve(ctx context.Context, imageRef string, _ ...images.Res
 	}
 
 	return imageRef, nil
+}
+
+// Report returns a report of all the images that the resolver pulled
+func (r *Resolver) Report() images.Report {
+	return images.Report{
+		CustomImages:   r.report.CustomImages[:],
+		ExternalImages: r.report.ExternalImages.Clone(),
+	}
 }

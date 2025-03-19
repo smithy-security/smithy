@@ -9,6 +9,7 @@ import (
 	dockerimagetypes "github.com/docker/docker/api/types/image"
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/utils"
+	"k8s.io/apimachinery/pkg/util/sets"
 
 	"github.com/smithy-security/smithy/smithyctl/internal/images"
 )
@@ -22,8 +23,10 @@ type Client interface {
 // the component image in a standardised way. If the image is not one of the
 // component images, it will be pulled
 type ResolverBuilder struct {
-	*Resolver
-	*Builder
+	resolver *Resolver
+	builder  *Builder
+	report   images.Report
+	dryRun   bool
 }
 
 // NewResolverBuilder returns an instance of the ResolverBuilder which will
@@ -33,23 +36,32 @@ func NewResolverBuilder(
 	ctx context.Context,
 	client Client,
 	componentPath string,
+	dryRun bool,
 	opts ...BuilderOptionFn,
 ) (*ResolverBuilder, error) {
 	if utils.IsNil(client) {
 		return nil, ErrNoDockerClient
 	}
 
-	builder, err := NewBuilder(ctx, client, componentPath, opts...)
+	builder, err := NewBuilder(ctx, client, componentPath, dryRun, opts...)
 	if err != nil {
 		return nil, errors.Errorf("could not bootstrap builder: %w", err)
 	}
 
-	resolver, err := NewResolver(client)
+	resolver, err := NewResolver(client, dryRun)
 	if err != nil {
 		return nil, errors.Errorf("could not bootstrap resolver: %w", err)
 	}
 
-	return &ResolverBuilder{resolver, builder}, nil
+	return &ResolverBuilder{
+		resolver: resolver,
+		builder:  builder,
+		report: images.Report{
+			CustomImages:   []images.CustomImageReport{},
+			ExternalImages: sets.New[string](),
+		},
+		dryRun: dryRun,
+	}, nil
 }
 
 // Resolve will attempt to pull an image unless it refers to a Smithy component
@@ -59,20 +71,30 @@ func (r *ResolverBuilder) Resolve(
 	imageRef string,
 	options ...images.ResolutionOptionFn,
 ) (string, error) {
-	cr, parsedRef, err := images.ParseComponentRepository(r.Builder.componentPath, imageRef, options...)
+	cr, parsedRef, err := images.ParseComponentRepository(r.builder.componentPath, imageRef, options...)
 	if errors.Is(err, images.ErrNotAComponentRepo) {
-		return r.Resolver.Resolve(ctx, parsedRef.String())
+		return r.resolver.Resolve(ctx, parsedRef.String())
 	} else if cr != nil && cr.Tag() != images.DefaultTag {
 		fmt.Fprintf(
 			os.Stderr,
 			"image %s is a reference to a component image but the tag is not the default one (%s =/= %s). pulling\n",
 			cr.URL(), cr.Tag(), images.DefaultTag,
 		)
-		return r.Resolver.Resolve(ctx, cr.URL())
+		return r.resolver.Resolve(ctx, cr.URL())
 	} else if err != nil {
 		return "", err
 	}
 
 	fmt.Fprintf(os.Stderr, "image %s is a reference to a component. building\n", imageRef)
-	return r.Build(ctx, cr)
+	return r.builder.Build(ctx, cr)
+}
+
+// Report returns a report of all the images that have been resolved or built
+func (r *ResolverBuilder) Report() images.Report {
+	resolverReport := r.resolver.Report()
+	customImages := r.builder.Report()
+	return images.Report{
+		CustomImages:   customImages.CustomImages[:],
+		ExternalImages: resolverReport.ExternalImages,
+	}
 }
