@@ -29,7 +29,7 @@
 // AWS product, you can find the product's technical documentation at http://aws.amazon.com/documentation/
 // (http://aws.amazon.com/documentation/).
 //
-// # Endpoints
+// Endpoints
 //
 // The AWS Security Token Service (STS) has a default endpoint of https://sts.amazonaws.com
 // that maps to the US East (N. Virginia) region. Additional regions are available
@@ -40,7 +40,7 @@
 // For information about STS endpoints, see Regions and Endpoints (http://docs.aws.amazon.com/general/latest/gr/rande.html#sts_region)
 // in the AWS General Reference.
 //
-// # Recording API requests
+// Recording API requests
 //
 // STS supports AWS CloudTrail, which is a service that records AWS calls for
 // your AWS account and delivers log files to an Amazon S3 bucket. By using
@@ -54,7 +54,7 @@
 // See sts package documentation for more information.
 // https://docs.aws.amazon.com/sdk-for-go/api/service/sts/
 //
-// # Using the Client
+// Using the Client
 //
 // To contact AWS Security Token Service with the SDK use the New function to create
 // a new service client. With that client you can make API requests to the service.

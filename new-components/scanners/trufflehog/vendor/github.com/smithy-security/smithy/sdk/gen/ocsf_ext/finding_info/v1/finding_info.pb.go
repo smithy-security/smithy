@@ -121,6 +121,55 @@ func (DataSource_URISchema) EnumDescriptor() ([]byte, []int) {
 	return file_ocsf_ext_finding_info_v1_finding_info_proto_rawDescGZIP(), []int{0, 1}
 }
 
+type Enrichment_EnrichmentType int32
+
+const (
+	Enrichment_ENRICHMENT_TYPE_UNSPECIFIED Enrichment_EnrichmentType = 0
+	Enrichment_ENRICHMENT_TYPE_CORRELATION Enrichment_EnrichmentType = 1
+	Enrichment_ENRICHMENT_TYPE_DUPLICATION Enrichment_EnrichmentType = 2
+)
+
+// Enum value maps for Enrichment_EnrichmentType.
+var (
+	Enrichment_EnrichmentType_name = map[int32]string{
+		0: "ENRICHMENT_TYPE_UNSPECIFIED",
+		1: "ENRICHMENT_TYPE_CORRELATION",
+		2: "ENRICHMENT_TYPE_DUPLICATION",
+	}
+	Enrichment_EnrichmentType_value = map[string]int32{
+		"ENRICHMENT_TYPE_UNSPECIFIED": 0,
+		"ENRICHMENT_TYPE_CORRELATION": 1,
+		"ENRICHMENT_TYPE_DUPLICATION": 2,
+	}
+)
+
+func (x Enrichment_EnrichmentType) Enum() *Enrichment_EnrichmentType {
+	p := new(Enrichment_EnrichmentType)
+	*p = x
+	return p
+}
+
+func (x Enrichment_EnrichmentType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Enrichment_EnrichmentType) Descriptor() protoreflect.EnumDescriptor {
+	return file_ocsf_ext_finding_info_v1_finding_info_proto_enumTypes[2].Descriptor()
+}
+
+func (Enrichment_EnrichmentType) Type() protoreflect.EnumType {
+	return &file_ocsf_ext_finding_info_v1_finding_info_proto_enumTypes[2]
+}
+
+func (x Enrichment_EnrichmentType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Enrichment_EnrichmentType.Descriptor instead.
+func (Enrichment_EnrichmentType) EnumDescriptor() ([]byte, []int) {
+	return file_ocsf_ext_finding_info_v1_finding_info_proto_rawDescGZIP(), []int{1, 0}
+}
+
 // DataSource is used to define Data Sources described on https://schema.ocsf.io/1.3.0/objects/finding_info.
 type DataSource struct {
 	state         protoimpl.MessageState
@@ -221,6 +270,96 @@ func (*DataSource_FileFindingLocationData_) isDataSource_LocationData() {}
 
 func (*DataSource_PurlFindingLocationData_) isDataSource_LocationData() {}
 
+// annotations created by the DataEnricher
+type Enrichment struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EnrichmentType Enrichment_EnrichmentType `protobuf:"varint,1,opt,name=enrichment_type,json=enrichmentType,proto3,enum=finding_info.v1.Enrichment_EnrichmentType" json:"enrichment_type,omitempty"`
+	// Types that are assignable to Enrichment:
+	//
+	//	*Enrichment_Duplicate
+	//	*Enrichment_Correlations
+	Enrichment isEnrichment_Enrichment `protobuf_oneof:"enrichment"`
+}
+
+func (x *Enrichment) Reset() {
+	*x = Enrichment{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Enrichment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Enrichment) ProtoMessage() {}
+
+func (x *Enrichment) ProtoReflect() protoreflect.Message {
+	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Enrichment.ProtoReflect.Descriptor instead.
+func (*Enrichment) Descriptor() ([]byte, []int) {
+	return file_ocsf_ext_finding_info_v1_finding_info_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Enrichment) GetEnrichmentType() Enrichment_EnrichmentType {
+	if x != nil {
+		return x.EnrichmentType
+	}
+	return Enrichment_ENRICHMENT_TYPE_UNSPECIFIED
+}
+
+func (m *Enrichment) GetEnrichment() isEnrichment_Enrichment {
+	if m != nil {
+		return m.Enrichment
+	}
+	return nil
+}
+
+func (x *Enrichment) GetDuplicate() *Enrichment_DuplicateEnrichment {
+	if x, ok := x.GetEnrichment().(*Enrichment_Duplicate); ok {
+		return x.Duplicate
+	}
+	return nil
+}
+
+func (x *Enrichment) GetCorrelations() *Enrichment_CorrelationEnrichment {
+	if x, ok := x.GetEnrichment().(*Enrichment_Correlations); ok {
+		return x.Correlations
+	}
+	return nil
+}
+
+type isEnrichment_Enrichment interface {
+	isEnrichment_Enrichment()
+}
+
+type Enrichment_Duplicate struct {
+	Duplicate *Enrichment_DuplicateEnrichment `protobuf:"bytes,2,opt,name=duplicate,proto3,oneof"`
+}
+
+type Enrichment_Correlations struct {
+	Correlations *Enrichment_CorrelationEnrichment `protobuf:"bytes,3,opt,name=correlations,proto3,oneof"`
+}
+
+func (*Enrichment_Duplicate) isEnrichment_Enrichment() {}
+
+func (*Enrichment_Correlations) isEnrichment_Enrichment() {}
+
 // URI specifies uri content.
 type DataSource_URI struct {
 	state         protoimpl.MessageState
@@ -234,7 +373,7 @@ type DataSource_URI struct {
 func (x *DataSource_URI) Reset() {
 	*x = DataSource_URI{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[1]
+		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -247,7 +386,7 @@ func (x *DataSource_URI) String() string {
 func (*DataSource_URI) ProtoMessage() {}
 
 func (x *DataSource_URI) ProtoReflect() protoreflect.Message {
-	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[1]
+	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -292,7 +431,7 @@ type DataSource_FileFindingLocationData struct {
 func (x *DataSource_FileFindingLocationData) Reset() {
 	*x = DataSource_FileFindingLocationData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[2]
+		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -305,7 +444,7 @@ func (x *DataSource_FileFindingLocationData) String() string {
 func (*DataSource_FileFindingLocationData) ProtoMessage() {}
 
 func (x *DataSource_FileFindingLocationData) ProtoReflect() protoreflect.Message {
-	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[2]
+	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -359,7 +498,7 @@ type DataSource_PurlFindingLocationData struct {
 func (x *DataSource_PurlFindingLocationData) Reset() {
 	*x = DataSource_PurlFindingLocationData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[3]
+		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -372,7 +511,7 @@ func (x *DataSource_PurlFindingLocationData) String() string {
 func (*DataSource_PurlFindingLocationData) ProtoMessage() {}
 
 func (x *DataSource_PurlFindingLocationData) ProtoReflect() protoreflect.Message {
-	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[3]
+	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -386,6 +525,93 @@ func (x *DataSource_PurlFindingLocationData) ProtoReflect() protoreflect.Message
 // Deprecated: Use DataSource_PurlFindingLocationData.ProtoReflect.Descriptor instead.
 func (*DataSource_PurlFindingLocationData) Descriptor() ([]byte, []int) {
 	return file_ocsf_ext_finding_info_v1_finding_info_proto_rawDescGZIP(), []int{0, 2}
+}
+
+// if it has this enrichment at all, the finding is a duplicate
+type Enrichment_DuplicateEnrichment struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *Enrichment_DuplicateEnrichment) Reset() {
+	*x = Enrichment_DuplicateEnrichment{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Enrichment_DuplicateEnrichment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Enrichment_DuplicateEnrichment) ProtoMessage() {}
+
+func (x *Enrichment_DuplicateEnrichment) ProtoReflect() protoreflect.Message {
+	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Enrichment_DuplicateEnrichment.ProtoReflect.Descriptor instead.
+func (*Enrichment_DuplicateEnrichment) Descriptor() ([]byte, []int) {
+	return file_ocsf_ext_finding_info_v1_finding_info_proto_rawDescGZIP(), []int{1, 0}
+}
+
+// a list of finding ids, of the other findings it has been correlated to
+type Enrichment_CorrelationEnrichment struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Findings []uint64 `protobuf:"varint,1,rep,packed,name=findings,proto3" json:"findings,omitempty"`
+}
+
+func (x *Enrichment_CorrelationEnrichment) Reset() {
+	*x = Enrichment_CorrelationEnrichment{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Enrichment_CorrelationEnrichment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Enrichment_CorrelationEnrichment) ProtoMessage() {}
+
+func (x *Enrichment_CorrelationEnrichment) ProtoReflect() protoreflect.Message {
+	mi := &file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Enrichment_CorrelationEnrichment.ProtoReflect.Descriptor instead.
+func (*Enrichment_CorrelationEnrichment) Descriptor() ([]byte, []int) {
+	return file_ocsf_ext_finding_info_v1_finding_info_proto_rawDescGZIP(), []int{1, 1}
+}
+
+func (x *Enrichment_CorrelationEnrichment) GetFindings() []uint64 {
+	if x != nil {
+		return x.Findings
+	}
+	return nil
 }
 
 var File_ocsf_ext_finding_info_v1_finding_info_proto protoreflect.FileDescriptor
@@ -446,11 +672,41 @@ var file_ocsf_ext_finding_info_v1_finding_info_proto_rawDesc = []byte{
 	0x45, 0x4d, 0x41, 0x5f, 0x46, 0x49, 0x4c, 0x45, 0x10, 0x01, 0x12, 0x13, 0x0a, 0x0f, 0x55, 0x52,
 	0x49, 0x5f, 0x53, 0x43, 0x48, 0x45, 0x4d, 0x41, 0x5f, 0x50, 0x55, 0x52, 0x4c, 0x10, 0x02, 0x42,
 	0x0f, 0x0a, 0x0d, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x64, 0x61, 0x74, 0x61,
-	0x42, 0x44, 0x5a, 0x42, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x73,
-	0x6d, 0x69, 0x74, 0x68, 0x79, 0x2d, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x2f, 0x73,
-	0x6d, 0x69, 0x74, 0x68, 0x79, 0x2f, 0x73, 0x64, 0x6b, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x6f, 0x63,
-	0x73, 0x66, 0x5f, 0x65, 0x78, 0x74, 0x2f, 0x66, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x69,
-	0x6e, 0x66, 0x6f, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0xda, 0x03, 0x0a, 0x0a, 0x45, 0x6e, 0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x12,
+	0x53, 0x0a, 0x0f, 0x65, 0x6e, 0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x5f, 0x74, 0x79,
+	0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x2a, 0x2e, 0x66, 0x69, 0x6e, 0x64, 0x69,
+	0x6e, 0x67, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x6e, 0x72, 0x69, 0x63,
+	0x68, 0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x45, 0x6e, 0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74,
+	0x54, 0x79, 0x70, 0x65, 0x52, 0x0e, 0x65, 0x6e, 0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74,
+	0x54, 0x79, 0x70, 0x65, 0x12, 0x4f, 0x0a, 0x09, 0x64, 0x75, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x66, 0x69, 0x6e, 0x64, 0x69, 0x6e,
+	0x67, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x6e, 0x72, 0x69, 0x63, 0x68,
+	0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x44, 0x75, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x65, 0x45, 0x6e,
+	0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x48, 0x00, 0x52, 0x09, 0x64, 0x75, 0x70, 0x6c,
+	0x69, 0x63, 0x61, 0x74, 0x65, 0x12, 0x57, 0x0a, 0x0c, 0x63, 0x6f, 0x72, 0x72, 0x65, 0x6c, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x31, 0x2e, 0x66, 0x69,
+	0x6e, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x6e,
+	0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x43, 0x6f, 0x72, 0x72, 0x65, 0x6c, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x45, 0x6e, 0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x48, 0x00,
+	0x52, 0x0c, 0x63, 0x6f, 0x72, 0x72, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x1a, 0x15,
+	0x0a, 0x13, 0x44, 0x75, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x72, 0x69, 0x63,
+	0x68, 0x6d, 0x65, 0x6e, 0x74, 0x1a, 0x33, 0x0a, 0x15, 0x43, 0x6f, 0x72, 0x72, 0x65, 0x6c, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x45, 0x6e, 0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x1a,
+	0x0a, 0x08, 0x66, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x04,
+	0x52, 0x08, 0x66, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x73, 0x22, 0x73, 0x0a, 0x0e, 0x45, 0x6e,
+	0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1f, 0x0a, 0x1b,
+	0x45, 0x4e, 0x52, 0x49, 0x43, 0x48, 0x4d, 0x45, 0x4e, 0x54, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f,
+	0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1f, 0x0a,
+	0x1b, 0x45, 0x4e, 0x52, 0x49, 0x43, 0x48, 0x4d, 0x45, 0x4e, 0x54, 0x5f, 0x54, 0x59, 0x50, 0x45,
+	0x5f, 0x43, 0x4f, 0x52, 0x52, 0x45, 0x4c, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x10, 0x01, 0x12, 0x1f,
+	0x0a, 0x1b, 0x45, 0x4e, 0x52, 0x49, 0x43, 0x48, 0x4d, 0x45, 0x4e, 0x54, 0x5f, 0x54, 0x59, 0x50,
+	0x45, 0x5f, 0x44, 0x55, 0x50, 0x4c, 0x49, 0x43, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x10, 0x02, 0x42,
+	0x0c, 0x0a, 0x0a, 0x65, 0x6e, 0x72, 0x69, 0x63, 0x68, 0x6d, 0x65, 0x6e, 0x74, 0x42, 0x44, 0x5a,
+	0x42, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x73, 0x6d, 0x69, 0x74,
+	0x68, 0x79, 0x2d, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x2f, 0x73, 0x6d, 0x69, 0x74,
+	0x68, 0x79, 0x2f, 0x73, 0x64, 0x6b, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x6f, 0x63, 0x73, 0x66, 0x5f,
+	0x65, 0x78, 0x74, 0x2f, 0x66, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x5f, 0x69, 0x6e, 0x66, 0x6f,
+	0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -465,27 +721,34 @@ func file_ocsf_ext_finding_info_v1_finding_info_proto_rawDescGZIP() []byte {
 	return file_ocsf_ext_finding_info_v1_finding_info_proto_rawDescData
 }
 
-var file_ocsf_ext_finding_info_v1_finding_info_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_ocsf_ext_finding_info_v1_finding_info_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_ocsf_ext_finding_info_v1_finding_info_proto_goTypes = []interface{}{
 	(DataSource_TargetType)(0),                 // 0: finding_info.v1.DataSource.TargetType
 	(DataSource_URISchema)(0),                  // 1: finding_info.v1.DataSource.URISchema
-	(*DataSource)(nil),                         // 2: finding_info.v1.DataSource
-	(*DataSource_URI)(nil),                     // 3: finding_info.v1.DataSource.URI
-	(*DataSource_FileFindingLocationData)(nil), // 4: finding_info.v1.DataSource.FileFindingLocationData
-	(*DataSource_PurlFindingLocationData)(nil), // 5: finding_info.v1.DataSource.PurlFindingLocationData
+	(Enrichment_EnrichmentType)(0),             // 2: finding_info.v1.Enrichment.EnrichmentType
+	(*DataSource)(nil),                         // 3: finding_info.v1.DataSource
+	(*Enrichment)(nil),                         // 4: finding_info.v1.Enrichment
+	(*DataSource_URI)(nil),                     // 5: finding_info.v1.DataSource.URI
+	(*DataSource_FileFindingLocationData)(nil), // 6: finding_info.v1.DataSource.FileFindingLocationData
+	(*DataSource_PurlFindingLocationData)(nil), // 7: finding_info.v1.DataSource.PurlFindingLocationData
+	(*Enrichment_DuplicateEnrichment)(nil),     // 8: finding_info.v1.Enrichment.DuplicateEnrichment
+	(*Enrichment_CorrelationEnrichment)(nil),   // 9: finding_info.v1.Enrichment.CorrelationEnrichment
 }
 var file_ocsf_ext_finding_info_v1_finding_info_proto_depIdxs = []int32{
 	0, // 0: finding_info.v1.DataSource.target_type:type_name -> finding_info.v1.DataSource.TargetType
-	3, // 1: finding_info.v1.DataSource.uri:type_name -> finding_info.v1.DataSource.URI
-	4, // 2: finding_info.v1.DataSource.file_finding_location_data:type_name -> finding_info.v1.DataSource.FileFindingLocationData
-	5, // 3: finding_info.v1.DataSource.purl_finding_location_data:type_name -> finding_info.v1.DataSource.PurlFindingLocationData
-	1, // 4: finding_info.v1.DataSource.URI.uri_schema:type_name -> finding_info.v1.DataSource.URISchema
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	5, // 1: finding_info.v1.DataSource.uri:type_name -> finding_info.v1.DataSource.URI
+	6, // 2: finding_info.v1.DataSource.file_finding_location_data:type_name -> finding_info.v1.DataSource.FileFindingLocationData
+	7, // 3: finding_info.v1.DataSource.purl_finding_location_data:type_name -> finding_info.v1.DataSource.PurlFindingLocationData
+	2, // 4: finding_info.v1.Enrichment.enrichment_type:type_name -> finding_info.v1.Enrichment.EnrichmentType
+	8, // 5: finding_info.v1.Enrichment.duplicate:type_name -> finding_info.v1.Enrichment.DuplicateEnrichment
+	9, // 6: finding_info.v1.Enrichment.correlations:type_name -> finding_info.v1.Enrichment.CorrelationEnrichment
+	1, // 7: finding_info.v1.DataSource.URI.uri_schema:type_name -> finding_info.v1.DataSource.URISchema
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_ocsf_ext_finding_info_v1_finding_info_proto_init() }
@@ -507,7 +770,7 @@ func file_ocsf_ext_finding_info_v1_finding_info_proto_init() {
 			}
 		}
 		file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataSource_URI); i {
+			switch v := v.(*Enrichment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -519,7 +782,7 @@ func file_ocsf_ext_finding_info_v1_finding_info_proto_init() {
 			}
 		}
 		file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DataSource_FileFindingLocationData); i {
+			switch v := v.(*DataSource_URI); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -531,7 +794,43 @@ func file_ocsf_ext_finding_info_v1_finding_info_proto_init() {
 			}
 		}
 		file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DataSource_FileFindingLocationData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DataSource_PurlFindingLocationData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Enrichment_DuplicateEnrichment); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Enrichment_CorrelationEnrichment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -547,13 +846,17 @@ func file_ocsf_ext_finding_info_v1_finding_info_proto_init() {
 		(*DataSource_FileFindingLocationData_)(nil),
 		(*DataSource_PurlFindingLocationData_)(nil),
 	}
+	file_ocsf_ext_finding_info_v1_finding_info_proto_msgTypes[1].OneofWrappers = []interface{}{
+		(*Enrichment_Duplicate)(nil),
+		(*Enrichment_Correlations)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_ocsf_ext_finding_info_v1_finding_info_proto_rawDesc,
-			NumEnums:      2,
-			NumMessages:   4,
+			NumEnums:      3,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -30,7 +30,7 @@ github.com/apparentlymart/go-textseg/v15/textseg
 # github.com/bmatcuk/doublestar v1.3.4
 ## explicit; go 1.12
 github.com/bmatcuk/doublestar
-# github.com/cpuguy83/go-md2man/v2 v2.0.3
+# github.com/cpuguy83/go-md2man/v2 v2.0.4
 ## explicit; go 1.11
 github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
@@ -120,9 +120,6 @@ github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
-# github.com/owenrumney/go-sarif/v2 v2.1.2
-## explicit; go 1.16
-github.com/owenrumney/go-sarif/v2/sarif
 # github.com/package-url/packageurl-go v0.1.3
 ## explicit; go 1.18
 github.com/package-url/packageurl-go
@@ -138,19 +135,12 @@ github.com/shopspring/decimal
 # github.com/smithy-security/pkg/env v0.0.1
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/pkg/sarif v0.0.2-0.20250223164400-d826a844c8e3
+# github.com/smithy-security/pkg/sarif v0.0.2-0.20250225103845-bfa21e86aa9b
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/sarif
 github.com/smithy-security/pkg/sarif/internal/ptr
 github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0
-# github.com/smithy-security/smithy v0.63.0
-## explicit; go 1.23.2
-github.com/smithy-security/smithy/api/proto/v1
-github.com/smithy-security/smithy/components
-github.com/smithy-security/smithy/components/producers
-github.com/smithy-security/smithy/pkg/putil
-github.com/smithy-security/smithy/pkg/sarif
-# github.com/smithy-security/smithy/sdk v0.0.5-alpha
+# github.com/smithy-security/smithy/sdk v0.0.6-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component

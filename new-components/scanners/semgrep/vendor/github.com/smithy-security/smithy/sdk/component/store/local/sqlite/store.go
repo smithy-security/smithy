@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 
 	"ariga.io/atlas/sql/migrate"
 	"ariga.io/atlas/sql/sqlclient"
@@ -76,12 +77,17 @@ func NewManager(ctx context.Context, opts ...managerOption) (*manager, error) {
 
 	// Create sqlite database file if not exists.
 	if _, err := os.Stat(mgr.dsn); err != nil {
-		if !os.IsNotExist(err) {
+		if os.IsNotExist(err) {
+			if err := os.MkdirAll(filepath.Dir(mgr.dsn), 0755); err != nil {
+				return nil, errors.Errorf("could not create directory: %w", err)
+			}
 			f, err := os.Create(mgr.dsn)
 			if err != nil {
-				return nil, errors.Errorf("could not create sqlite db: %w", err)
+				return nil, errors.Errorf("could not create sqlite db file: %w", err)
 			}
 			_ = f.Close()
+		} else {
+			return nil, errors.Errorf("unexpected stat error: %w", err)
 		}
 	}
 
@@ -238,7 +244,7 @@ func (m *manager) Close(ctx context.Context) error {
 
 // RemoveDatabase removes the underlying sqlite database file.
 func (m *manager) RemoveDatabase() error {
-	return os.Remove(m.dsn)
+	return os.RemoveAll(m.dsn)
 }
 
 //go:embed sqlc/migrations/*

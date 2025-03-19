@@ -1,4 +1,3 @@
-//go:build !appengine && !plan9
 // +build !appengine,!plan9
 
 package request

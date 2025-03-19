@@ -27,11 +27,15 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 			logger.Debug("preparing to execute transform step...")
 
 			rawFindings, err := scanner.Transform(ctx)
-			if err != nil {
+			switch {
+			case err != nil:
 				logger.
 					With(logKeyError, err.Error()).
 					Debug("could not execute transform step")
 				return errors.Errorf("could not transform raw findings: %w", err)
+			case len(rawFindings) == 0:
+				logger.Debug("no raw findings found, skipping persisting step...")
+				return nil
 			}
 
 			logger = logger.

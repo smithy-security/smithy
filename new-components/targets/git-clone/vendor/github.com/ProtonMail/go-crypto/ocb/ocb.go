@@ -18,9 +18,8 @@ import (
 	"crypto/cipher"
 	"crypto/subtle"
 	"errors"
-	"math/bits"
-
 	"github.com/ProtonMail/go-crypto/internal/byteutil"
+	"math/bits"
 )
 
 type ocb struct {

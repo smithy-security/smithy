@@ -39,6 +39,7 @@ type (
 		clock             clockwork.Clock
 		uUIDProvider      UUIDProvider
 		sarifResult       sarif.SchemaJson
+		cveRegExp         *regexp.Regexp
 		ruleToTools       map[string]sarif.ReportingDescriptor
 		taxasByCWEID      map[string]sarif.ReportingDescriptor
 	}
@@ -70,6 +71,13 @@ func NewTransformer(scanResult *sarif.SchemaJson,
 	if scanResult == nil {
 		return nil, errors.Errorf("method 'NewTransformer called with nil scanResult")
 	}
+	if clock == nil {
+		clock = clockwork.NewRealClock()
+	}
+	if idProvider == nil {
+		idProvider = RealUUIDProvider{}
+	}
+
 	return &SarifTransformer{
 		clock:             clock,
 		sarifResult:       *scanResult,
@@ -78,6 +86,7 @@ func NewTransformer(scanResult *sarif.SchemaJson,
 		uUIDProvider:      idProvider,
 		ruleToTools:       make(map[string]sarif.ReportingDescriptor),
 		taxasByCWEID:      make(map[string]sarif.ReportingDescriptor),
+		cveRegExp:         regexp.MustCompile(`(?i)(?:^|[^A-Za-z0-9-])(CVE-\d{4}-\d{4,7})(?:[^A-Za-z0-9-]|$)`),
 	}, nil
 }
 
@@ -136,6 +145,7 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 		severityID       = s.mapSeverity(res.Level)
 		title, desc      = s.mapTitleDesc(res, s.ruleToTools)
 		occurrencesCount *int32
+		now              = s.clock.Now()
 	)
 	dataSource, err := s.mapDataSource(res.Locations)
 	if err != nil {
@@ -169,27 +179,27 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 			firstSeenTimeDT = timestamppb.New(*res.Provenance.FirstDetectionTimeUtc)
 			firstSeenTime = ptr.Ptr(res.Provenance.FirstDetectionTimeUtc.Unix())
 		} else {
-			firstSeenTime = ptr.Ptr(s.clock.Now().Unix())
-			firstSeenTimeDT = timestamppb.New(s.clock.Now())
+			firstSeenTime = ptr.Ptr(now.Unix())
+			firstSeenTimeDT = timestamppb.New(now)
 		}
 
 		if res.Provenance.LastDetectionTimeUtc != nil {
 			lastSeenTimeDT = timestamppb.New(*res.Provenance.LastDetectionTimeUtc)
 			lastSeenTime = ptr.Ptr(res.Provenance.LastDetectionTimeUtc.Unix())
 		} else {
-			lastSeenTime = ptr.Ptr(s.clock.Now().Unix())
-			lastSeenTimeDT = timestamppb.New(s.clock.Now())
+			lastSeenTime = ptr.Ptr(now.Unix())
+			lastSeenTimeDT = timestamppb.New(now)
 		}
 
-		modifiedTime = ptr.Ptr(s.clock.Now().Unix())
-		modifiedTimeDT = timestamppb.New(s.clock.Now())
+		modifiedTime = ptr.Ptr(now.Unix())
+		modifiedTimeDT = timestamppb.New(now)
 	} else {
-		firstSeenTime = ptr.Ptr(s.clock.Now().Unix())
-		firstSeenTimeDT = timestamppb.New(s.clock.Now())
-		lastSeenTime = ptr.Ptr(s.clock.Now().Unix())
-		lastSeenTimeDT = timestamppb.New(s.clock.Now())
-		modifiedTime = ptr.Ptr(s.clock.Now().Unix())
-		modifiedTimeDT = timestamppb.New(s.clock.Now())
+		firstSeenTime = ptr.Ptr(now.Unix())
+		firstSeenTimeDT = timestamppb.New(now)
+		lastSeenTime = ptr.Ptr(now.Unix())
+		lastSeenTimeDT = timestamppb.New(now)
+		modifiedTime = ptr.Ptr(now.Unix())
+		modifiedTimeDT = timestamppb.New(now)
 	}
 
 	rule := s.ruleToTools[*ruleID]
@@ -210,10 +220,8 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 	}
 
 	// Location
-	var fixAvailable *bool
-	if len(res.Fixes) > 0 {
-		fixAvailable = ptr.Ptr(true)
-	}
+	var fixAvailable = ptr.Ptr(len(res.Fixes) > 0)
+
 	activityID := ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE
 	classID := ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING
 	return &ocsf.VulnerabilityFinding{
@@ -227,8 +235,8 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 		ConfidenceId: ptr.Ptr(confidence),
 		Count:        occurrencesCount,
 		FindingInfo: &ocsf.FindingInfo{
-			CreatedTime:   ptr.Ptr(s.clock.Now().Unix()),
-			CreatedTimeDt: timestamppb.New(s.clock.Now()),
+			CreatedTime:   ptr.Ptr(now.Unix()),
+			CreatedTimeDt: timestamppb.New(now),
 			DataSources: []string{
 				dataSource,
 			},
@@ -256,11 +264,11 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 
 		Severity:   ptr.Ptr(severityID.String()),
 		SeverityId: severityID,
-		StartTime:  ptr.Ptr(s.clock.Now().Unix()),
+		StartTime:  ptr.Ptr(now.Unix()),
 		Status:     ptr.Ptr(s.mapResultKind(res.Kind).String()),
 		StatusId:   ptr.Ptr(s.mapResultKind(res.Kind)),
-		Time:       s.clock.Now().Unix(),
-		TimeDt:     timestamppb.New(s.clock.Now()),
+		Time:       now.Unix(),
+		TimeDt:     timestamppb.New(now),
 		TypeName:   ptr.Ptr(typeName[int64(classID)*100+int64(activityID)]),
 		TypeUid:    int64(classID)*100 + int64(activityID),
 		Vulnerabilities: []*ocsf.Vulnerability{
@@ -289,14 +297,15 @@ func (s *SarifTransformer) mapProperties(props *sarif.PropertyBag) ([]string, er
 		return nil, nil
 	}
 	res := props.Tags
-	if props.AdditionalProperties != nil {
-		extra, err := json.Marshal(props.AdditionalProperties)
-		if err != nil {
-			return nil, err
-		}
-
-		res = append(res, string(extra))
+	if props.AdditionalProperties == nil {
+		return res, nil
 	}
+	extra, err := json.Marshal(props.AdditionalProperties)
+	if err != nil {
+		return nil, err
+	}
+
+	res = append(res, string(extra))
 	return res, nil
 }
 
@@ -318,8 +327,7 @@ func (s *SarifTransformer) mapResultKind(kind sarif.ResultKind) ocsf.Vulnerabili
 }
 
 func (s *SarifTransformer) extractCVE(text string) string {
-	re := regexp.MustCompile(`(?i)(?:^|[^A-Za-z0-9-])(CVE-\d{4}-\d{4,7})(?:[^A-Za-z0-9-]|$)`)
-	match := re.FindStringSubmatch(text)
+	match := s.cveRegExp.FindStringSubmatch(text)
 	if len(match) > 1 {
 		return match[1]
 	}

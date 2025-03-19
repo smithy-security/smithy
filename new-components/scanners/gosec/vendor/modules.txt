@@ -90,8 +90,8 @@ github.com/jackc/pgx/v5/pgconn/ctxwatch
 github.com/jackc/pgx/v5/pgconn/internal/bgreader
 github.com/jackc/pgx/v5/pgproto3
 github.com/jackc/pgx/v5/pgtype
-# github.com/jonboulle/clockwork v0.4.0
-## explicit; go 1.15
+# github.com/jonboulle/clockwork v0.5.0
+## explicit; go 1.21
 github.com/jonboulle/clockwork
 # github.com/labstack/gommon v0.4.2
 ## explicit; go 1.18
@@ -132,10 +132,10 @@ github.com/shopspring/decimal
 # github.com/smithy-security/pkg/env v0.0.1
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/pkg/sarif v0.0.1
+# github.com/smithy-security/pkg/sarif v0.0.2-0.20250225103845-bfa21e86aa9b
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0
-# github.com/smithy-security/smithy/sdk v0.0.4-alpha.0.20250206150110-bea6298b73f0
+# github.com/smithy-security/smithy/sdk v0.0.6-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component
@@ -159,9 +159,10 @@ github.com/spf13/cast
 # github.com/sqlc-dev/sqlc v1.28.0
 ## explicit; go 1.22.9
 github.com/sqlc-dev/sqlc
-# github.com/stretchr/testify v1.9.0
+# github.com/stretchr/testify v1.10.0
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
+github.com/stretchr/testify/assert/yaml
 github.com/stretchr/testify/require
 # github.com/urfave/cli/v2 v2.27.5
 ## explicit; go 1.18
@@ -318,7 +319,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.36.3
+# google.golang.org/protobuf v1.36.5
 ## explicit; go 1.21
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
