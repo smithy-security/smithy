@@ -2,7 +2,7 @@
 # The following variables are used to define the developer environment
 # e.g. what are the test packages, or the latest tag, these are used by make targets that build things
 component_binaries=$(shell find ./components -name main.go | xargs -I'{}' sh -c 'echo $$(dirname {})/bin')
-component_containers=$(shell find ./components -name main.go | xargs -I'{}' sh -c 'echo $$(dirname {})/docker')
+component_containers=$(shell find ./components -name main.go | xargs -I'{}' sh -c 'echo $$(dirname {})/docker' | grep -v github-codeql/runner)
 component_containers_publish=$(component_containers:docker=publish)
 protos=$(shell find . -not -path './vendor/*' -name '*.proto')
 go_protos=$(protos:.proto=.pb.go)

@@ -6,13 +6,13 @@ BUILD_ARCHITECTURE=
 DOCKER=docker
 
 extras:
-	$(MAKE) -C ./codeql-image container \
+	$(MAKE) -C ./runner container \
 		BUILD_ARCHITECTURE=$(BUILD_ARCHITECTURE) \
 		CONTAINER_REPO=$(CONTAINER_REPO) \
 		SMITHY_VERSION=$(SMITHY_VERSION)
 	
 publish-extras:
-	$(MAKE) -C ./codeql-image publish 	\
+	$(MAKE) -C ./runner publish 	\
 		BUILD_ARCHITECTURE=$(BUILD_ARCHITECTURE) \
 		CONTAINER_REPO=$(CONTAINER_REPO) \
 		SMITHY_VERSION=$(SMITHY_VERSION)
