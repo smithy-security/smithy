@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/components/producers/codeql/codeql-runner
+module github.com/smithy-security/smithy/components/producers/github-codeql/codeql-image
 
 go 1.23.3
 
