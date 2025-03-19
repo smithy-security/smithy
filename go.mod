@@ -1,6 +1,8 @@
 module github.com/smithy-security/smithy
 
-go 1.23.2
+go 1.23.3
+
+toolchain go1.23.7
 
 require (
 	cloud.google.com/go/bigquery v1.57.1
@@ -80,6 +82,8 @@ require (
 	github.com/evanphx/json-patch v5.7.0+incompatible // indirect
 	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
+	github.com/go-enry/go-enry/v2 v2.9.2 // indirect
+	github.com/go-enry/go-oniguruma v1.2.1 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.3 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
@@ -150,6 +154,7 @@ require (
 	github.com/prometheus/statsd_exporter v0.21.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
+	github.com/smithy-security/pkg/detect-repo-languages v0.0.1 // indirect
 	github.com/sqlc-dev/sqlc v1.27.0 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/urfave/cli/v2 v2.26.0 // indirect
