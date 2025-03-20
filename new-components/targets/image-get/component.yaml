@@ -1,0 +1,23 @@
+name: image-get
+description: "Downloads an image and saves it as `image.tar.gz` in the {{ sourceCodeWorkspace}} "
+type: target
+parameters:
+  - name: image
+    type: string
+    value: ""
+  - name: username
+    type: string
+    value: ""
+  - name: password
+    type: string
+    value: ""
+steps:
+  - name: download-image
+    image: new-components/targets/image-get/skopeo-getter
+    executable: /entrypoint.sh
+    args:
+      - "{{.parameters.image}}"
+      - "{{ sourceCodeWorkspace }}/image.tar"
+      - "{{ .parameters.username }}"
+      - "{{.parameters.password}}"      
+
