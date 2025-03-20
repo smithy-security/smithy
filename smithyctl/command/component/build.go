@@ -23,6 +23,7 @@ type (
 	buildFlags struct {
 		registry                string
 		username                string
+		authEnabled             bool
 		password                string
 		namespace               string
 		baseComponentDockerfile string
@@ -53,7 +54,7 @@ func NewBuildCommand() *cobra.Command {
 		Flags().
 		StringVar(
 			&buildCmdFlags.registry,
-			"registry",
+			"registry-url",
 			images.DefaultRegistry,
 			"registry to use for the images",
 		)
@@ -72,6 +73,14 @@ func NewBuildCommand() *cobra.Command {
 			"base-component-dockerfile",
 			"new-components/Dockerfile",
 			"base Dockerfile to use to build all the images",
+		)
+	cmd.
+		Flags().
+		BoolVar(
+			&buildCmdFlags.authEnabled,
+			"registry-auth-enabled",
+			false,
+			"use username and password to authenticate to the OCI registry",
 		)
 	cmd.
 		Flags().
@@ -153,10 +162,10 @@ func parseFlagsAndBuildImages(ctx context.Context, flags buildFlags, args []stri
 		return errors.Errorf("path should be pointing to a component YAML spec: %s", componentPath)
 	}
 
-	if buildCmdFlags.password != "" && buildCmdFlags.username == "" {
-		return errors.New("if you set the registry auth password you also need to set the username")
-	} else if buildCmdFlags.password == "" && buildCmdFlags.username != "" {
-		return errors.New("if you set the registry auth username you also need to set the password")
+	if buildCmdFlags.authEnabled {
+		if buildCmdFlags.password == "" || buildCmdFlags.username == "" {
+			return errors.New("you need to set both the registry username and password")
+		}
 	}
 
 	baseDockerfilePath := buildCmdFlags.baseComponentDockerfile
@@ -202,7 +211,7 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 		buildOpts = append(buildOpts, dockerimages.WithPlatform(flags.platform))
 	}
 
-	if flags.username != "" {
+	if flags.authEnabled {
 		buildOpts = append(buildOpts, dockerimages.WithUsernamePassword(flags.username, flags.password))
 	}
 
