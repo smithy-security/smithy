@@ -199,7 +199,16 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 		b.opts.platform,
 		cr.URLs(),
 	)
-	componentDirectory := cr.Directory()
+
+	var (
+		sdkVersion         = "unset"
+		componentDirectory = cr.Directory()
+	)
+
+	if b.opts.sdkVersion != "" {
+		sdkVersion = b.opts.sdkVersion
+	}
+
 	buildResp, err := b.client.ImageBuild(
 		ctx,
 		buildCtx,
@@ -207,7 +216,7 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 			Tags: cr.URLs(),
 			BuildArgs: map[string]*string{
 				"COMPONENT_PATH": &componentDirectory,
-				"SDK_VERSION":    &b.opts.sdkVersion,
+				"SDK_VERSION":    &sdkVersion,
 			},
 			PullParent: true,
 			Platform:   b.opts.platform,
