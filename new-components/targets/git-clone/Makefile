@@ -4,6 +4,7 @@ BUILD_ARCHITECTURE=
 COMPONENT_REGISTRY=localhost:5000
 COMPONENT_REPOSITORY=smithy-security/smithy/components/targets/git-clone
 COMPONENT_TAG=latest
+SDK_VERSION=unset
 
 run:
 	docker-compose up --build --force-recreate --remove-orphans gitea target
@@ -23,7 +24,7 @@ build-target:
 	# Makes memory exploitation harder.
     # Add a small overhead at compile time.
 	GOFLAGS="-buildmode=pie" \
-		go build -ldflags "-s -w" -trimpath -o target ./cmd/git-clone/main.go
+		go build -ldflags "-X github.com/smithy-security/smithy/sdk.Version=$(SDK_VERSION) -s -w" -trimpath -o target ./cmd/git-clone/main.go
 
 image:
 	docker build $$([ "${BUILD_ARCHITECTURE}" != "" ] && echo "--platform=${BUILD_ARCHITECTURE}" ) \
