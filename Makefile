@@ -1,18 +1,17 @@
 # Developer vars
 # The following variables are used to define the developer environment
 # e.g. what are the test packages, or the latest tag, these are used by make targets that build things
-component_binaries=$(shell find ./components -name main.go | xargs -I'{}' sh -c 'echo $$(dirname {})/bin')
-component_containers=$(shell find ./components -name main.go | xargs -I'{}' sh -c 'echo $$(dirname {})/docker' | grep -v github-codeql/runner)
-component_containers_publish=$(component_containers:docker=publish)
-protos=$(shell find . -not -path './vendor/*' -name '*.proto')
-go_protos=$(protos:.proto=.pb.go)
 latest_tag=$(shell git tag --list --sort="-version:refname" | head -n 1)
 commits_since_latest_tag=$(shell git log --oneline $(latest_tag)..HEAD | wc -l)
 # /components/producers/golang-nancy/examples is ignored as it's an example of a vulnerable go.mod.
-GO_TEST_PACKAGES=$(shell find . -path './components/producers/golang-nancy/examples' -prune -o -name 'go.mod' -exec dirname {} \; | sort -u)
+go_mod_paths=$(shell find . -not -path './deprecated-components/*' -name 'go.mod' | sort -u)
+go_test_paths=$(go_mod_paths:go.mod=go-tests)
+go_fmt_paths=$(go_mod_paths:go.mod=go-fmt)
+go_component_mod_paths=$(shell find ./components -not -path './deprecated-components/*' -name 'go.mod' | sort -u)
+go_sdk_lib_update=$(go_component_mod_paths:go.mod=go-sdk-update)
 VENDOR_DIRS=$(shell find . -type d -name "vendor")
 EXCLUDE_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "--exclude-path \""$$i"\""}' | tr '\n' ' ')
-GO_TEST_OUT_DIR_PATH=$(shell pwd)/tests/output
+go_test_out_dir=$(shell pwd)/tests/output
 
 # Deployment vars
 # The following variables are used to define the deployment environment
@@ -22,59 +21,16 @@ SOURCE_CODE_REPO=https://github.com/smithy-security/smithy
 SMITHY_DEV_VERSION=$(shell echo $(latest_tag)$$([ $(commits_since_latest_tag) -eq 0 ] || echo "-$$(git log -n 1 --pretty='format:%h')" )$$([ -z "$$(git status --porcelain=v1 2>/dev/null)" ] || echo "-dirty" ))
 SMITHY_VERSION=$(shell (echo $(CONTAINER_REPO) | grep -q '^ghcr' && echo $(latest_tag)) || echo $(SMITHY_DEV_VERSION) )
 SMITHY_OSS_COMPONENTS_NAME=smithy-security-oss-components
-SMITHY_OSS_COMPONENTS_PACKAGE_URL=oci://ghcr.io/smithy-security/smithy/charts/$(SMITHY_OSS_COMPONENTS_NAME)
 
-DOCKER=docker
+CTR_CLI=docker
 BUF_CONTAINER=buf:local
 
 export
 
 ########################################
-############# BUILD TARGETS ############
-########################################
-.PHONY: components component-binaries cmd/smithyctl/bin protos build publish-component-containers publish-containers smithyctl-image smithyctl-image-publish clean-protos clean
-
-$(component_binaries):
-	./scripts/build_component_binary.sh $@
-
-component-binaries: $(component_binaries)
-
-$(component_containers): %/docker: %/bin
-	$(eval GOOS:=linux)
-	$(eval GOARCH:=amd64)
-	./scripts/build_component_container.sh $@
-
-components: $(component_containers)
-
-cmd/smithyctl/bin:
-	$(eval GOOS:=linux)
-	$(eval GOARCH:=amd64)
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/cmd/$(GOOS)/$(GOARCH)/smithyctl cmd/smithyctl/main.go
-
-smithyctl-image: cmd/smithyctl/bin
-	$(eval GOOS:=linux)
-	$(eval GOARCH:=amd64)
-	$(DOCKER) build -t "${CONTAINER_REPO}/smithyctl:${SMITHY_VERSION}" \
-		--build-arg GOOS=$(GOOS) \
-		--build-arg GOARCH=$(GOARCH) \
-		$$([ "${SOURCE_CODE_REPO}" != "" ] && echo "--label=org.opencontainers.image.source=${SOURCE_CODE_REPO}" ) \
-		-f containers/Dockerfile.smithyctl . \
-		--platform "$(GOOS)/$(GOARCH)"
-
-smithyctl-image-publish: smithyctl-image
-	$(DOCKER) push "${CONTAINER_REPO}/smithyctl:${SMITHY_VERSION}"
-
-$(component_containers_publish): %/publish: %/docker
-	./scripts/publish_component_container.sh $@
-
-publish-component-containers: $(component_containers_publish)
-
-publish-containers: publish-component-containers smithyctl-image-publish
-
-########################################
 ######### CODE QUALITY TARGETS #########
 ########################################
-.PHONY: lint install-lint-tools tests go-tests fmt fmt-proto fmt-go install-go-fmt-tools
+.PHONY: lint install-lint-tools tests test-go fmt fmt-proto fmt-go install-go-fmt-tools
 
 lint:
 # we need to redirect stderr to stdout because Github actions don't capture the stderr lolz
@@ -94,29 +50,28 @@ install-lint-tools:
 install-go-test-tools:
 	@go install gotest.tools/gotestsum@latest
 
-go-tests:
+$(go_test_paths):
 	@mkdir -p tests/output
-	@for package in $(GO_TEST_PACKAGES); do \
-		LISTED_PACKAGES=./...; \
-		if [ "$$package" = "." ]; then \
-			LISTED_PACKAGES=$$(go list ./... | grep -v "^$$package$$"); \
-		fi; \
-		(cd $$package && gotestsum --junitfile $(GO_TEST_OUT_DIR_PATH)/unit-tests.xml -- -race -coverprofile $(GO_TEST_OUT_DIR_PATH)/cover.out $$LISTED_PACKAGES) || exit 1; \
-	done
+	@echo "============== running go tests for package $$(dirname $@) =============="
+	@cd $$(dirname $@) && gotestsum --junitfile $(go_test_out_dir)/unit-tests.xml -- -race -coverprofile $(go_test_out_dir)/cover.out ./...
+
+test-go: $(go_test_paths)
 
 go-cover: go-tests
 	@go tool cover -html=tests/output/cover.out -o=tests/output/cover.html && open tests/output/cover.html
 
-test: go-tests
+tests: test-go
 
 install-go-fmt-tools:
 	@go install github.com/bufbuild/buf/cmd/buf@v1.28.1
-	@go install golang.org/x/tools/cmd/goimports@latest
+	@go install golang.org/x/tools/cmd/goimports@v0.31.0
 
-fmt-go:
-	echo "Tidying up Go files"
-	$(shell find . -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*_mock_test.go" | xargs gofmt -w)
-	$(shell find . -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*_mock_test.go" -exec goimports -local github.com/smithy-security/smithy -w {} \;)
+$(go_fmt_paths):
+	@echo "============== Tidying up Go files for package $$(dirname $@) =============="
+	@find $$(dirname $@) -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*_mock_test.go" | xargs gofmt -w
+	@find $$(dirname $@) -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*_mock_test.go" -exec goimports -local github.com/smithy-security/smithy/$$(dirname $@) -w {} \;
+
+fmt-go: $(go_fmt_paths)
 
 install-md-fmt-tools:
 	@npm ci
@@ -128,12 +83,12 @@ fmt-md:
 fmt: fmt-go fmt-proto fmt-md
 
 build-buf-container:
-	$(DOCKER) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf
+	$(CTR_CLI) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf
 
 run-buf: build-buf-container
 	$(eval BUF_TMP_DP_FOLDER:=buf-tmp)
 	@if [ ! -d "$(BUF_TMP_DP_FOLDER)" ]; then mkdir $(BUF_TMP_DP_FOLDER); fi
-	$(DOCKER) run \
+	$(CTR_CLI) run \
 		--volume "$(shell pwd):/workspace" \
 		--volume $(BUF_TMP_DP_FOLDER):/tmp \
 		--workdir /workspace \
@@ -213,24 +168,19 @@ component-sdk-version:
 	fi
 	@grep 'github.com/smithy-security/smithy/sdk' $(COMPONENT_DIR)/go.mod | awk '{print $$2}'
 
-# Bumps the SDK to a specified version and skips
-# the github.com/smithy-security/smithy/sdk module as well as the root one.
-bump-sdk-version:
+$(go_sdk_lib_update):
 	@if [ -z "$(SDK_VERSION)" ]; then \
 		echo "Error: SDK_VERSION is not set. Use SDK_VERSION=vX.X.X make bump-sdk-version"; \
-		exit 1; \
+		false; \
 	fi
-	@echo "Searching for go.mod files with smithy/sdk dependency to be bumped to $(SDK_VERSION)..."
-	@find . -name "go.mod" -type f | grep -v "^./go.mod$$" | xargs grep -l "github.com/smithy-security/smithy/sdk" | while read -r file; do \
-		dir=$$(dirname "$$file"); \
-		if ! grep -q "^module github.com/smithy-security/smithy/sdk" "$$file"; then \
-			echo "Updating SDK version in $$dir"; \
-			cd "$$dir" && \
-			sed -E 's|(github.com/smithy-security/smithy/sdk)[[:space:]]+v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+)?|\1 $(SDK_VERSION)|g' go.mod > go.mod.tmp && \
-			mv go.mod.tmp go.mod && \
-			go mod tidy && \
-			go mod vendor && \
-			cd - > /dev/null; \
-		fi; \
-	done
-	@echo "SDK version update complete"
+	@echo "============== Updating SDK library for $@ to $(SDK_VERSION) =============="
+	@if ! $$(grep "github.com/smithy-security/smithy/sdk" $$(dirname $@)/go.mod > /dev/null); then \
+		echo "component $$(dirname $@) doesn't have a dependency on the Smithy SDK"; \
+	else \
+		cd $$(dirname $@) && go get github.com/smithy-security/smithy/sdk@$(SDK_VERSION) && go mod vendor; \
+	fi
+
+# Bumps the SDK to a specified version and skips
+# the github.com/smithy-security/smithy/sdk module as well as the root one.
+bump-sdk-version: $(go_sdk_lib_update)
+	@echo "============== SDK version update complete =============="
