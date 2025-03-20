@@ -12,6 +12,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 
 	"github.com/smithy-security/pkg/utils"
+
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 )
 

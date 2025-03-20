@@ -1,4 +1,4 @@
-name: "git-clone"
+name: "valid"
 description: "Clones a repository"
 type: "target"
 parameters:

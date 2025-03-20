@@ -102,7 +102,7 @@ func TestSpecParser_Parse(t *testing.T) {
 				gomock.InOrder(
 					mockLocalImageresolver.
 						EXPECT().
-						Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
+						Resolve(ctx, "components/targets/git-clone").
 						Return("localhost:5000/components/targets/git-clone:latest", nil),
 
 					mockFetcher.
@@ -138,7 +138,7 @@ func TestSpecParser_Parse(t *testing.T) {
 					ctx context.Context,
 					componentPath string,
 				) (images.Resolver, error) {
-					require.Equal(t, "testdata/run/valid/component.yaml", componentPath)
+					require.Equal(t, "testdata/targets/git-clone/component.yaml", componentPath)
 					return mockLocalImageresolver, nil
 				}
 			},
@@ -159,7 +159,7 @@ func TestSpecParser_Parse(t *testing.T) {
 
 					mockLocalImageResolver.
 						EXPECT().
-						Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
+						Resolve(ctx, "components/targets/git-clone").
 						Return("localhost:5000/components/targets/git-clone:latest", nil),
 
 					mockRemoteImageResolver.
@@ -176,7 +176,7 @@ func TestSpecParser_Parse(t *testing.T) {
 					ctx context.Context,
 					componentPath string,
 				) (images.Resolver, error) {
-					require.Equal(t, "testdata/run/valid/component.yaml", componentPath)
+					require.Equal(t, "testdata/targets/git-clone/component.yaml", componentPath)
 					return mockLocalImageResolver, nil
 				}
 			},

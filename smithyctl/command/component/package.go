@@ -3,6 +3,7 @@ package component
 import (
 	"context"
 	"os"
+	"path"
 
 	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
@@ -19,17 +20,17 @@ var packageCmdFlags packageFlags
 
 type (
 	packageFlags struct {
-		packageVersion         string
-		sdkVersion             string
-		registryURL            string
-		registryBaseRepository string
-		registryAuthEnabled    bool
-		registryAuthUsername   string
-		registryAuthPassword   string
-		imageRegistryURL       string
-		imageNamespace         string
-		imageTag               string
-		dryRun                 bool
+		packageVersion       string
+		sdkVersion           string
+		registryURL          string
+		namespace            string
+		registryAuthEnabled  bool
+		registryAuthUsername string
+		registryAuthPassword string
+		imageRegistryURL     string
+		imageNamespace       string
+		imageTag             string
+		dryRun               bool
 	}
 )
 
@@ -79,10 +80,10 @@ func NewPackageCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&packageCmdFlags.registryBaseRepository,
-			"registry-base-repository",
-			"smithy-security/manifests/components",
-			"the repository where to push manifests to",
+			&packageCmdFlags.namespace,
+			"namespace",
+			"smithy-security/manifests",
+			"the namespace of the repository where to push manifests to",
 		)
 	cmd.
 		Flags().
@@ -129,7 +130,7 @@ func NewPackageCommand() *cobra.Command {
 		StringVar(
 			&packageCmdFlags.imageTag,
 			"image-tag",
-			images.DefaultTag,
+			"",
 			"the container tag used for the component images",
 		)
 	cmd.
@@ -154,7 +155,7 @@ func packageComponent(ctx context.Context, flags packageFlags, componentPath str
 
 	reg, err := registry.New(
 		flags.registryURL,
-		flags.registryBaseRepository,
+		flags.namespace,
 		flags.registryAuthEnabled,
 		flags.registryAuthUsername,
 		flags.registryAuthPassword,
@@ -180,6 +181,12 @@ func packageComponent(ctx context.Context, flags packageFlags, componentPath str
 		imageResolutionOptions = append(imageResolutionOptions, images.WithNamespace(packageCmdFlags.imageNamespace))
 	}
 
+	if packageCmdFlags.imageTag != "" {
+		imageResolutionOptions = append(imageResolutionOptions, images.WithTags(packageCmdFlags.imageTag))
+	} else {
+		imageResolutionOptions = append(imageResolutionOptions, images.WithTags(packageCmdFlags.packageVersion))
+	}
+
 	imageResolver, err := dockerimages.NewResolverBuilder(
 		ctx, dockerClient, componentPath, true,
 	)
@@ -202,6 +209,7 @@ func packageComponent(ctx context.Context, flags packageFlags, componentPath str
 	}
 
 	if err := reg.Package(ctx, registry.PackageRequest{
+		ComponentPath:    path.Dir(componentPath),
 		Component:        componentSpec,
 		SDKVersion:       flags.sdkVersion,
 		ComponentVersion: flags.packageVersion,
