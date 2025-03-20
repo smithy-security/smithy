@@ -198,7 +198,7 @@ new-major-release-tag: check-branch check-tag-message
 	)
 
 # new targets for components and smithyctl
-.PHONY: smithyctl/bin component-sdk-version
+.PHONY: smithyctl/bin component-sdk-version bump-sdk-version
 
 smithyctl/bin:
 	$(eval GOOS:=linux)
@@ -216,3 +216,25 @@ component-sdk-version:
 		exit 1; \
 	fi
 	@grep 'github.com/smithy-security/smithy/sdk' new-components/$(COMPONENT_TYPE)/$(COMPONENT_NAME)/go.mod | awk '{print $$2}'
+
+# Bumps the SDK to a specified version and skips
+# the github.com/smithy-security/smithy/sdk module as well as the root one.
+bump-sdk-version:
+	@if [ -z "$(SDK_VERSION)" ]; then \
+		echo "Error: SDK_VERSION is not set. Use SDK_VERSION=vX.X.X make bump-sdk-version"; \
+		exit 1; \
+	fi
+	@echo "Searching for go.mod files with smithy/sdk dependency to be bumped to $(SDK_VERSION)..."
+	@find . -name "go.mod" -type f | grep -v "^./go.mod$$" | xargs grep -l "github.com/smithy-security/smithy/sdk" | while read -r file; do \
+		dir=$$(dirname "$$file"); \
+		if ! grep -q "^module github.com/smithy-security/smithy/sdk" "$$file"; then \
+			echo "Updating SDK version in $$dir"; \
+			cd "$$dir" && \
+			sed -E 's|(github.com/smithy-security/smithy/sdk)[[:space:]]+v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+)?|\1 $(SDK_VERSION)|g' go.mod > go.mod.tmp && \
+			mv go.mod.tmp go.mod && \
+			go mod tidy && \
+			go mod vendor && \
+			cd - > /dev/null; \
+		fi; \
+	done
+	@echo "SDK version update complete"
