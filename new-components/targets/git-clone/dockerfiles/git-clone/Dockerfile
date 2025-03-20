@@ -1,6 +1,7 @@
 # Used only to build Go binaries.
 FROM golang:1.23.3 AS builder
 
+ARG SDK_VERSION=unset
 WORKDIR /wrk
 
 # Copy only go related files.

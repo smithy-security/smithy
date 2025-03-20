@@ -17,7 +17,12 @@ RUN CGO_CPPFLAGS="-D_FORTIFY_SOURCE=2 -fstack-protector-all" \
     # Makes memory exploitation harder.
     # Add a small overhead at compile time.
     GOFLAGS="-buildmode=pie" \
-      go build -ldflags "-s -w" -trimpath -o app ${COMPONENT_BINARY_SOURCE_PATH}
+      go build \
+        -ldflags "-X github.com/smithy-security/smithy/sdk.Version=${SDK_VERSION} -s -w" \
+        -trimpath \
+        -o \
+        app \
+        ${COMPONENT_BINARY_SOURCE_PATH}
 
 # Create a workspace to clone repos to.
 RUN mkdir -p /workspace
