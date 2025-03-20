@@ -1,4 +1,4 @@
-name: bandit-parser
+name: bandit
 description: "Parses bandit findings into OCSF format"
 type: scanner
 steps:

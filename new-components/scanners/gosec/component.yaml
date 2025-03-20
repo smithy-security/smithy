@@ -1,4 +1,4 @@
-name: gosec-parser
+name: gosec
 description: "Parses gosec findings into OCSF format"
 type: scanner
 parameters:

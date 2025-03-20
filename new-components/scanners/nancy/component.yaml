@@ -1,4 +1,4 @@
-name: nancy-parser
+name: nancy
 description: "Parses nancy findings into OCSF format"
 type: scanner
 steps:
