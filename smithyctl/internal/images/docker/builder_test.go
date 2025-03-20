@@ -43,6 +43,7 @@ func TestBuilder(t *testing.T) {
 		tarReadCloser := io.NopCloser(strings.NewReader("bla"))
 
 		componentDirectory := "testdata/scanners/gosec"
+		sdkVersion := "1.0.0"
 
 		gomock.InOrder(
 			dockerBuilderMock.
@@ -67,6 +68,7 @@ func TestBuilder(t *testing.T) {
 						Platform:   "minix/x68",
 						BuildArgs: map[string]*string{
 							"COMPONENT_PATH": &componentDirectory,
+							"SDK_VERSION":    &sdkVersion,
 						},
 						Labels:     images.DefaultLabels,
 						Dockerfile: "testdata/Dockerfile",
@@ -86,6 +88,7 @@ func TestBuilder(t *testing.T) {
 			dockerBuilderMock,
 			"components/scanners/test/component.yaml",
 			WithBaseDockerfilePath("testdata/Dockerfile"),
+			WithSDKVersion("1.0.0"),
 		)
 		require.NoError(t, err)
 
@@ -115,6 +118,7 @@ func TestBuilder(t *testing.T) {
 		tarReadCloser := io.NopCloser(strings.NewReader("bla"))
 
 		componentDirectory := "testdata/scanners/gosec"
+		sdkVersion := "unset"
 
 		gomock.InOrder(
 			dockerBuilderMock.
@@ -139,6 +143,7 @@ func TestBuilder(t *testing.T) {
 						Platform:   "minix/x68",
 						BuildArgs: map[string]*string{
 							"COMPONENT_PATH": &componentDirectory,
+							"SDK_VERSION":    &sdkVersion,
 						},
 						Labels:     images.DefaultLabels,
 						Dockerfile: "testdata/Dockerfile",
@@ -188,6 +193,7 @@ func TestBuilder(t *testing.T) {
 		pushReadCloser := io.NopCloser(strings.NewReader("{\"status\":\"Layer already exists\",\"progressDetail\":{},\"id\":\"a80545a98dcd\"}"))
 
 		componentDirectory := "testdata/scanners/gosec"
+		sdkVersion := "unset"
 
 		authConfigBytes, err := json.Marshal(dockerregistrytypes.AuthConfig{
 			Username: "user",
@@ -219,6 +225,7 @@ func TestBuilder(t *testing.T) {
 						Platform:   "minix/x68",
 						BuildArgs: map[string]*string{
 							"COMPONENT_PATH": &componentDirectory,
+							"SDK_VERSION":    &sdkVersion,
 						},
 						Labels:     images.DefaultLabels,
 						Dockerfile: "testdata/Dockerfile",

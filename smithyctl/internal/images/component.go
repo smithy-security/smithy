@@ -73,7 +73,7 @@ func WithDefaultTag(t string) ResolutionOptionFn {
 	}
 }
 
-// WithDefaultTag changes the tag that will be set by default to all the
+// WithExtraTags changes the tag that will be set by default to all the
 // component images
 func WithExtraTags(tags ...string) ResolutionOptionFn {
 	return func(o *resolutionOptions) error {

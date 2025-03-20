@@ -1,6 +1,7 @@
 # Used only to build Go binaries.
 FROM golang:1.23.3 AS builder
 
+ARG SDK_VERSION=unset
 ARG COMPONENT_PATH=.
 ARG COMPONENT_BINARY_SOURCE_PATH=cmd/main.go
 
@@ -19,7 +20,12 @@ RUN CGO_CPPFLAGS="-D_FORTIFY_SOURCE=2 -fstack-protector-all" \
     GOFLAGS="-buildmode=pie" \
     GOOS="linux" \
     GOARCH="amd64" \
-      go build -ldflags "-s -w" -trimpath -o app ${COMPONENT_BINARY_SOURCE_PATH}
+      go build \
+        -ldflags "-X github.com/smithy-security/smithy/sdk.Version=${SDK_VERSION} -s -w" \
+        -trimpath \
+        -o \
+        app \
+        ${COMPONENT_BINARY_SOURCE_PATH}
 
 # Create a workspace to clone repos to.
 RUN mkdir -p /workspace

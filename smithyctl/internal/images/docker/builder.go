@@ -31,6 +31,7 @@ type builderOptions struct {
 	push               bool
 	username, password string
 	labels             map[string]string
+	sdkVersion         string
 }
 
 // BuilderOptionFn is used to modify the options passed to the builder
@@ -76,6 +77,13 @@ func WithUsernamePassword(username, password string) BuilderOptionFn {
 	}
 }
 
+// WithSDKVersion customises the sdk version.
+func WithSDKVersion(version string) BuilderOptionFn {
+	return func(o *builderOptions) {
+		o.sdkVersion = version
+	}
+}
+
 func makeOptions(ctx context.Context, daemon dockerBuilder, opts ...BuilderOptionFn) (builderOptions, error) {
 	daemonVersion, err := daemon.ServerVersion(ctx)
 	if err != nil {
@@ -89,6 +97,7 @@ func makeOptions(ctx context.Context, daemon dockerBuilder, opts ...BuilderOptio
 		labels:             images.DefaultLabels,
 		baseDockerfilePath: "./new-components/Dockerfile",
 		platform:           daemonVersion.Os + "/" + daemonVersion.Arch,
+		sdkVersion:         "unset",
 	}
 
 	for _, opt := range opts {
@@ -198,6 +207,7 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 			Tags: cr.URLs(),
 			BuildArgs: map[string]*string{
 				"COMPONENT_PATH": &componentDirectory,
+				"SDK_VERSION":    &b.opts.sdkVersion,
 			},
 			PullParent: true,
 			Platform:   b.opts.platform,
