@@ -29,12 +29,13 @@ const componentMediaType = "application/vnd.custom.smithy-component+yaml"
 
 type (
 	orasRegistry struct {
-		baseRepository string
-		registry       registry.Registry
+		namespace string
+		registry  registry.Registry
 	}
 
 	// PackageRequest represents a Package request.
 	PackageRequest struct {
+		ComponentPath    string
 		Component        *v1.Component
 		SDKVersion       string
 		ComponentVersion string
@@ -50,7 +51,7 @@ type (
 // New returns a new registry implementation with an underlying oras-go client.
 func New(
 	registryHost string,
-	baseRepository string,
+	namespace string,
 	registryAuthEnabled bool,
 	registryAuthUsername string,
 	registryAuthPassword string,
@@ -58,8 +59,8 @@ func New(
 	switch {
 	case registryHost == "":
 		return nil, errors.New("registry host is required")
-	case baseRepository == "":
-		return nil, errors.New("registry base repository is required")
+	case namespace == "":
+		return nil, errors.New("registry namespace is required")
 	case registryAuthEnabled && registryAuthUsername == "":
 		return nil, errors.New("registry auth username is required")
 	case registryAuthEnabled && registryAuthPassword == "":
@@ -91,8 +92,8 @@ func New(
 	reg.Client = regAuthClient
 
 	return &orasRegistry{
-		baseRepository: baseRepository,
-		registry:       reg,
+		namespace: namespace,
+		registry:  reg,
 	}, nil
 }
 
@@ -112,7 +113,7 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 		componentVersion = "latest"
 		sdkVersion       = req.SDKVersion
 		logger           = logging.FromContext(ctx)
-		dest             = path.Join(r.baseRepository, component.Type.String(), component.Name)
+		dest             = path.Join(r.namespace, req.ComponentPath)
 	)
 
 	if req.ComponentVersion != "" {

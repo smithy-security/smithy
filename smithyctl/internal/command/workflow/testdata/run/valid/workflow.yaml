@@ -1,7 +1,7 @@
 description: "GoSec sample pipeline"
 name: "gosec-pipeline"
 components:
-  - component: "file://testdata/run/valid/component.yaml"
+  - component: "file://testdata/targets/git-clone/component.yaml"
   - component: "localhost:5000/components/enrichers/enricher:latest"
   - component:
       name: json-logger

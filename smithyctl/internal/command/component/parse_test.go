@@ -24,22 +24,22 @@ func TestParseComponentSpec(t *testing.T) {
 		},
 		{
 			testCase:          "it should return an error because the yaml spec is invalid",
-			componentSpecPath: "testdata/package/invalid/component.yaml",
+			componentSpecPath: "testdata/package/targets/invalid/component.yaml",
 			isValid:           false,
 		},
 		{
 			testCase:          "it should return an error because the yml spec is invalid",
-			componentSpecPath: "testdata/package/invalid/component.yml",
+			componentSpecPath: "testdata/package/targets/invalid/component.yml",
 			isValid:           false,
 		},
 		{
 			testCase:          "it should correctly parse the yaml spec",
-			componentSpecPath: "testdata/package/valid/component.yaml",
+			componentSpecPath: "testdata/package/targets/valid/component.yaml",
 			isValid:           true,
 		},
 		{
 			testCase:          "it should correctly parse the yml spec",
-			componentSpecPath: "testdata/package/valid/component.yml",
+			componentSpecPath: "testdata/package/targets/valid/component.yml",
 			isValid:           true,
 		},
 	} {

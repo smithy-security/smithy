@@ -19,6 +19,7 @@ import (
 
 	"github.com/smithy-security/smithy/smithyctl/annotation"
 	"github.com/smithy-security/smithy/smithyctl/registry"
+	"github.com/smithy-security/smithy/smithyctl/utils"
 )
 
 type (
@@ -51,6 +52,7 @@ func (suite *RegistryTestSuite) SetupSuite() {
 		Repository: "registry",
 		Tag:        "2",
 	}, func(config *docker.HostConfig) {})
+	require.NoError(suite.T(), err)
 
 	require.NoError(suite.T(), suite.pool.Retry(func() error {
 		var (
@@ -120,6 +122,7 @@ func (suite *RegistryTestSuite) TestPackageAndFetch() {
 		r.Package(
 			ctx,
 			registry.PackageRequest{
+				ComponentPath:    "scanners/trufflehog",
 				Component:        component,
 				SDKVersion:       sdkVersion,
 				ComponentVersion: componentVersion,
@@ -131,7 +134,7 @@ func (suite *RegistryTestSuite) TestPackageAndFetch() {
 		path.Join(
 			registryHost,
 			registryDestination,
-			component.Type.String(),
+			utils.PluraliseComponentType(component.Type),
 			component.Name+":"+componentVersion,
 		),
 	)

@@ -12,7 +12,7 @@ components:
             GIT_CLONE_REFERENCE: master
             GIT_CLONE_PATH: repos/govwa
           image: "localhost:5000/components/targets/git-clone:latest"
-  - component: "file://testdata/run/valid/component.yaml"
+  - component: "file://testdata/targets/git-clone/component.yaml"
   - component:
       name: json-logger
       description: "Logs findings"
