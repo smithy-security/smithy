@@ -30,6 +30,7 @@ type (
 		push                    bool
 		platform                string
 		tags                    []string
+		sdkVersion              string
 	}
 )
 
@@ -118,6 +119,14 @@ func NewBuildCommand() *cobra.Command {
 			[]string{images.DefaultTag},
 			"tags to use for images, can be multiple",
 		)
+	cmd.
+		Flags().
+		StringVar(
+			&buildCmdFlags.sdkVersion,
+			"sdk-version",
+			"",
+			"sdk-version passed to build components",
+		)
 
 	return cmd
 }
@@ -185,6 +194,10 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 
 	if flags.username != "" {
 		buildOpts = append(buildOpts, dockerimages.WithUsernamePassword(flags.username, flags.password))
+	}
+
+	if flags.sdkVersion != "" {
+		buildOpts = append(buildOpts, dockerimages.WithSDKVersion(flags.sdkVersion))
 	}
 
 	dockerClient, err := dockerclient.NewClientWithOpts(
