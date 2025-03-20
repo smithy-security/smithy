@@ -1,6 +1,7 @@
 # Used only to build Go binaries.
 FROM golang:1.23.3 AS builder
 
+ARG SDK_VERSION=unset
 ARG COMPONENT_PATH=.
 ARG COMPONENT_BINARY_SOURCE_PATH=cmd/main.go
 
