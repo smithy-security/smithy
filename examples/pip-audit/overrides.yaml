@@ -1,0 +1,4 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: "https://github.com/fportantier/vulpy"
