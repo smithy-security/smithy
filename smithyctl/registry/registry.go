@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"maps"
 	"path"
 
 	"github.com/distribution/reference"
@@ -39,6 +40,7 @@ type (
 		Component        *v1.Component
 		SDKVersion       string
 		ComponentVersion string
+		Annotations      map[string]string
 	}
 
 	// FetchPackageResponse wraps the FetchPackage response.
@@ -128,6 +130,26 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 		slog.String("destination", dest),
 	)
 
+	manifestAnnotations := map[string]string{
+		"org.opencontainers.image.title":  component.Name,
+		annotation.SmithySDKVersion:       sdkVersion,
+		annotation.SmithyComponentDescr:   component.Description,
+		annotation.SmithyComponentName:    component.Name,
+		annotation.SmithyComponentType:    component.Type.String(),
+		annotation.SmithyComponentVersion: componentVersion,
+		annotation.SmithyComponentSource: fmt.Sprintf(
+			"new-components/%s/%s",
+			component.Type,
+			component.Name,
+		),
+		annotation.SmithyComponentURL: fmt.Sprintf(
+			"https://github.com/smithy-security/smithy/tree/main/new-components/%s/%s",
+			component.Type,
+			component.Name,
+		),
+	}
+	maps.Copy(manifestAnnotations, req.Annotations)
+
 	logger.Debug("preparing to marshal component as a blob...")
 
 	blob, err := yaml.Marshal(component)
@@ -165,24 +187,8 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 		oras.PackManifestVersion1_1,
 		artifactType,
 		oras.PackManifestOptions{
-			Layers: []ocispec.Descriptor{blobDescriptor},
-			ManifestAnnotations: map[string]string{
-				annotation.SmithySDKVersion:       sdkVersion,
-				annotation.SmithyComponentDescr:   component.Description,
-				annotation.SmithyComponentName:    component.Name,
-				annotation.SmithyComponentType:    component.Type.String(),
-				annotation.SmithyComponentVersion: componentVersion,
-				annotation.SmithyComponentSource: fmt.Sprintf(
-					"new-components/%s/%s",
-					component.Type,
-					component.Name,
-				),
-				annotation.SmithyComponentURL: fmt.Sprintf(
-					"https://github.com/smithy-security/smithy/tree/main/new-components/%s/%s",
-					component.Type,
-					component.Name,
-				),
-			},
+			Layers:              []ocispec.Descriptor{blobDescriptor},
+			ManifestAnnotations: manifestAnnotations,
 		},
 	)
 	if err != nil {

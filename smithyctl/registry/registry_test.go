@@ -126,6 +126,7 @@ func (suite *RegistryTestSuite) TestPackageAndFetch() {
 				Component:        component,
 				SDKVersion:       sdkVersion,
 				ComponentVersion: componentVersion,
+				Annotations:      map[string]string{"foo": "bar"},
 			},
 		),
 	)
@@ -145,6 +146,7 @@ func (suite *RegistryTestSuite) TestPackageAndFetch() {
 	require.NotNil(suite.T(), resp)
 	assert.Equal(suite.T(), component, &resp.Component)
 	assert.NotEmpty(suite.T(), resp.Annotations)
+	assert.Contains(suite.T(), resp.Annotations, "foo")
 	assert.Contains(
 		suite.T(),
 		resp.Annotations,

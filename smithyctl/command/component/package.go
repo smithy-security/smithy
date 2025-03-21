@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path"
+	"strings"
 
 	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
@@ -24,6 +25,7 @@ type (
 		sdkVersion           string
 		registryURL          string
 		namespace            string
+		annotations          []string
 		registryAuthEnabled  bool
 		registryAuthUsername string
 		registryAuthPassword string
@@ -141,6 +143,14 @@ func NewPackageCommand() *cobra.Command {
 			false,
 			"output rendered component YAML to stderr",
 		)
+	cmd.
+		Flags().
+		StringSliceVar(
+			&packageCmdFlags.annotations,
+			"annotation",
+			[]string{"org.opencontainers.image.source=https://github.com/smithy-security/smithy"},
+			"annotation to add to the package. It must be of the form key=value",
+		)
 
 	return cmd
 }
@@ -208,11 +218,21 @@ func packageComponent(ctx context.Context, flags packageFlags, componentPath str
 		return yaml.NewEncoder(os.Stdout).Encode(componentSpec)
 	}
 
+	annotations := map[string]string{}
+	for _, annotation := range flags.annotations {
+		annotationSubString := strings.SplitN(annotation, "=", 2)
+		if len(annotationSubString) != 2 {
+			return errors.Errorf("could not process %s into a key=value form", annotation)
+		}
+		annotations[annotationSubString[0]] = annotationSubString[1]
+	}
+
 	if err := reg.Package(ctx, registry.PackageRequest{
 		ComponentPath:    path.Dir(componentPath),
 		Component:        componentSpec,
 		SDKVersion:       flags.sdkVersion,
 		ComponentVersion: flags.packageVersion,
+		Annotations:      annotations,
 	}); err != nil {
 		return errors.Errorf("failed to package component: %w", err)
 	}
