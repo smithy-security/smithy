@@ -43,26 +43,9 @@ smithyctl workflow run --spec-path=examples/golang/workflow.yaml --build-compone
 
 Check the findings in the logs.
 
-### Building a component
+## Developing and publishing a component
 
-If you want to build a component's images and share the manifest with other users you can do
-so using the following commands:
-
-```bash
-smithyctl --debug-enabled component build --sdk-version v1.0.0 \
-                                            --tag v0.0.9 \
-                                            --registry-url <some-registry> \
-                                            components/scanners/<your-component-name>/component.yaml
-
-smithyctl --debug-enabled component package --sdk-version v1.0.0 \
-                                            --version v0.0.9 \
-                                            --registry-url <some-registry> \
-                                            components/scanners/<your-component-name>/component.yaml
-```
-
-The first command will build any images required by the component and the second will resolve
-all the image references in the component and will then push the rendered component manifest to the
-registry.
+Please check the docs over [here](./docs/developing-components/README.md)
 
 ## Contacts
 
