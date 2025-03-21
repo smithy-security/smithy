@@ -207,15 +207,11 @@ smithyctl/bin:
 		GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl main.go
 
 component-sdk-version:
-	@if [ -z "$(COMPONENT_TYPE)" ]; then \
-		echo "Error: COMPONENT_TYPE is not set"; \
+	@if [ -z "$(COMPONENT_DIR)" ]; then \
+		echo "Error: COMPONENT_DIR is not set"; \
 		exit 1; \
 	fi
-	@if [ -z "$(COMPONENT_NAME)" ]; then \
-		echo "Error: COMPONENT_NAME is not set"; \
-		exit 1; \
-	fi
-	@grep 'github.com/smithy-security/smithy/sdk' new-components/$(COMPONENT_TYPE)/$(COMPONENT_NAME)/go.mod | awk '{print $$2}'
+	@grep 'github.com/smithy-security/smithy/sdk' $(COMPONENT_DIR)/go.mod | awk '{print $$2}'
 
 # Bumps the SDK to a specified version and skips
 # the github.com/smithy-security/smithy/sdk module as well as the root one.
