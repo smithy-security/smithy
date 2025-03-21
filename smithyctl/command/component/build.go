@@ -261,7 +261,7 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 			return errors.Errorf("%s, %s: %w", step.Name, step.Image, err)
 		}
 
-		fmt.Fprintf(os.Stderr, "finalised building of image %s\n", resolvedImage)
+		fmt.Fprintf(os.Stderr, "finished resolving image %s\n", resolvedImage)
 	}
 
 	if flags.dryRun {
