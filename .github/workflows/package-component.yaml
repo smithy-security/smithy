@@ -22,18 +22,20 @@ jobs:
           TAG=${GITHUB_REF#refs/tags/}
           COMPONENT_TYPE=$(echo $TAG | cut -d/ -f1)
           COMPONENT_NAME=$(echo $TAG | cut -d/ -f2)
+          COMPONENT_DIR=$(dirname ${TAG})
           VERSION=$(echo $TAG | cut -d/ -f3)
           
-          echo "component_type=$COMPONENT_TYPE" >> $GITHUB_OUTPUT
-          echo "component_name=$COMPONENT_NAME" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "component_type=${COMPONENT_TYPE}" >> ${GITHUB_OUTPUT}
+          echo "component_name=${COMPONENT_NAME}" >> ${GITHUB_OUTPUT}
+          echo "version=${VERSION}" >> ${GITHUB_OUTPUT}
+          echo "tag=${TAG}" >> ${GITHUB_OUTPUT}
+          echo "component_dir=${COMPONENT_DIR}" >> ${GITHUB_OUTPUT}
 
       - name: Extract SDK Version
         id: sdk_version
         run: |
-          SDK_VERSION=$(make COMPONENT_TYPE=${{ steps.tag_info.outputs.component_type }} COMPONENT_NAME=${{ steps.tag_info.outputs.component_name }} component-sdk-version)
-          echo "sdk_version=$SDK_VERSION" >> $GITHUB_OUTPUT
+          SDK_VERSION=$(make COMPONENT_DIR=${{ steps.tag_info.outputs.component_dir }} component-sdk-version)
+          echo "sdk_version=${SDK_VERSION}" >> ${GITHUB_OUTPUT}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -62,7 +64,7 @@ jobs:
                 --registry-url=ghcr.io \
                 --sdk-version=${{ steps.sdk_version.outputs.sdk_version }} \
                 --tag=${{ steps.tag_info.outputs.version }} \
-                "$(dirname ${GITHUB_REF#refs/tags/})/component.yaml"
+                "${{ steps.tag_info.outputs.component_dir }}/component.yaml"
 
           ./bin/smithyctl/cmd/linux/amd64/smithyctl \
             --debug-enabled=true \
@@ -75,7 +77,7 @@ jobs:
                 --registry-url=ghcr.io \
                 --sdk-version=${{ steps.sdk_version.outputs.sdk_version }} \
                 --version=${{ steps.tag_info.outputs.version }} \
-                "$(dirname ${GITHUB_REF#refs/tags/})/component.yaml"
+                "${{ steps.tag_info.outputs.component_dir }}/component.yaml"
 
       - name: Trigger repackaging event in SAAS
         uses: peter-evans/repository-dispatch@v2
