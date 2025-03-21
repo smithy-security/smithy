@@ -62,7 +62,7 @@ jobs:
                 --registry-url=ghcr.io \
                 --sdk-version=${{ steps.sdk_version.outputs.sdk_version }} \
                 --tag=${{ steps.tag_info.outputs.version }} \
-                ${GITHUB_REF#refs/tags/}/component.yaml
+                "$(dirname ${GITHUB_REF#refs/tags/})/component.yaml"
 
           ./bin/smithyctl/cmd/linux/amd64/smithyctl \
             --debug-enabled=true \
@@ -75,7 +75,7 @@ jobs:
                 --registry-url=ghcr.io \
                 --sdk-version=${{ steps.sdk_version.outputs.sdk_version }} \
                 --version=${{ steps.tag_info.outputs.version }} \
-                ${GITHUB_REF#refs/tags/}/component.yaml
+                "$(dirname ${GITHUB_REF#refs/tags/})/component.yaml"
 
       - name: Trigger repackaging event in SAAS
         uses: peter-evans/repository-dispatch@v2
