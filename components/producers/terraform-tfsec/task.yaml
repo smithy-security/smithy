@@ -5,6 +5,7 @@ metadata:
   name: producer-terraform-tfsec
   labels:
     v1.smithy.smithy-security.com/component: producer
+    v1.smithy.smithy.security/component/maturity: experimental
 spec:
   description: Generate a Terraform-Tfsec report from source code.
   params:
