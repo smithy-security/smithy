@@ -1,4 +1,0 @@
-trivy:
-- name: image
-  type: string
-  value: ubuntu:latest

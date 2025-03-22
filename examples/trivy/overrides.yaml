@@ -1,0 +1,10 @@
+trivy:
+- name: image
+  type: string
+  value: "ubuntu:latest"
+- name: trivy_username
+  type: string
+  value: ""
+- name: trivy_password
+  type: string
+  value: ""

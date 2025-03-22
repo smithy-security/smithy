@@ -1,0 +1,10 @@
+image-get:
+  - name: image
+    type: string
+    value: "ubuntu:latest"
+  - name: username
+    type: string
+    value: ""
+  - name: password
+    type: string
+    value: ""
