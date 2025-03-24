@@ -265,7 +265,7 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 	}
 
 	if flags.dryRun {
-		return yaml.NewEncoder(os.Stderr).Encode(dockerResolverBuilder.Report())
+		return yaml.NewEncoder(os.Stdout).Encode(dockerResolverBuilder.Report())
 	}
 
 	return nil
