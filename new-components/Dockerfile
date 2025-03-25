@@ -1,5 +1,5 @@
 # Used only to build Go binaries.
-FROM golang:1.23.3 AS builder
+FROM golang:1.24 AS builder
 
 ARG COMPONENT_PATH=.
 ARG COMPONENT_BINARY_SOURCE_PATH=cmd/main.go
