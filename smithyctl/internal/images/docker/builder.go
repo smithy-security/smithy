@@ -201,8 +201,8 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 			buildErr := executeSubprocess(
 				ctx,
 				"/bin/sh", "-c", fmt.Sprintf(
-					"make -C %s --quiet image BUILD_ARCHITECTURE=%s COMPONENT_REGISTRY=%s COMPONENT_REPOSITORY=%s COMPONENT_TAG=%s",
-					cr.Directory(), b.opts.platform, cr.Registry(), cr.Repo(), tag,
+					"make -C %s --quiet image PUSH=%v BUILD_ARCHITECTURE=%s COMPONENT_REGISTRY=%s COMPONENT_REPOSITORY=%s COMPONENT_TAG=%s",
+					cr.Directory(), b.opts.push, b.opts.platform, cr.Registry(), cr.Repo(), tag,
 				),
 			)
 			if buildErr != nil {
