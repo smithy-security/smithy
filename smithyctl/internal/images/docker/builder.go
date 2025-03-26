@@ -196,13 +196,21 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 			return cr.URLs()[0], nil
 		}
 
+		labels := ""
+		for key, val := range b.opts.labels {
+			if labels != "" {
+				labels += ","
+			}
+			labels += "\"" + key + "\"=\"" + val + "\""
+		}
+
 		var buildErrs error
 		for _, tag := range cr.Tags() {
 			buildErr := executeSubprocess(
 				ctx,
 				"/bin/sh", "-c", fmt.Sprintf(
-					"make -C %s --quiet image BUILD_ARCHITECTURE=%s COMPONENT_REGISTRY=%s COMPONENT_REPOSITORY=%s COMPONENT_TAG=%s",
-					cr.Directory(), b.opts.platform, cr.Registry(), cr.Repo(), tag,
+					"make -C %s --quiet image BUILD_ARCHITECTURE=%s COMPONENT_REGISTRY=%s COMPONENT_REPOSITORY=%s BUILD_LABELS=%s COMPONENT_TAG=%s",
+					cr.Directory(), b.opts.platform, cr.Registry(), cr.Repo(), labels, tag,
 				),
 			)
 			if buildErr != nil {
