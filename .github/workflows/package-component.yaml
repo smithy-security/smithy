@@ -20,10 +20,10 @@ jobs:
         id: tag_info
         run: |
           TAG=${GITHUB_REF#refs/tags/}
-          COMPONENT_TYPE=$(echo $TAG | cut -d/ -f1)
-          COMPONENT_NAME=$(echo $TAG | cut -d/ -f2)
+          COMPONENT_TYPE=$(echo ${TAG} | cut -d/ -f1)
+          COMPONENT_NAME=$(echo ${TAG} | cut -d/ -f2)
           COMPONENT_DIR=$(dirname ${TAG})
-          VERSION=$(echo $TAG | cut -d/ -f3)
+          VERSION=$(echo ${TAG} | cut -d/ -f3)
           
           echo "component_type=${COMPONENT_TYPE}" >> ${GITHUB_OUTPUT}
           echo "component_name=${COMPONENT_NAME}" >> ${GITHUB_OUTPUT}
