@@ -146,9 +146,9 @@ the current version of the gosec component is the following:
 ...
 custom_images:
     - tags:
-        - ghcr.io/smithy-security/images/new-components/scanners/gosec:v0.0.9
-        - ghcr.io/smithy-security/images/new-components/scanners/gosec:latest
-        - ghcr.io/smithy-security/images/new-components/scanners/gosec:current-staging
+        - ghcr.io/smithy-security/smithy/images/new-components/scanners/gosec:v0.0.9
+        - ghcr.io/smithy-security/smithy/images/new-components/scanners/gosec:latest
+        - ghcr.io/smithy-security/smithy/images/new-components/scanners/gosec:current-staging
       labels:
         org.opencontainers.image.source: https://github.com/smithy-security/smithy
       build_args:

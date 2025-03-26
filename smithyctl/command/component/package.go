@@ -84,7 +84,7 @@ func NewPackageCommand() *cobra.Command {
 		StringVar(
 			&packageCmdFlags.namespace,
 			"namespace",
-			"smithy-security/manifests",
+			"smithy-security/smithy/manifests",
 			"the namespace of the repository where to push manifests to",
 		)
 	cmd.

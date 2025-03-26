@@ -3,7 +3,7 @@ package images
 const (
 	// DefaultNamespace is the context path under which all component images
 	// will be available in the container registry
-	DefaultNamespace = "smithy-security/images"
+	DefaultNamespace = "smithy-security/smithy/images"
 	// DefaultRegistry is registry to be used for all the images built by the
 	// system
 	DefaultRegistry = "ghcr.io"

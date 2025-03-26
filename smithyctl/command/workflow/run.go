@@ -78,7 +78,7 @@ func NewRunCommand() *cobra.Command {
 		StringVar(
 			&runCmdFlags.registryBaseRepository,
 			"registry-base-repository",
-			"smithy-security/manifests/components",
+			"smithy-security/smithy/manifests/components",
 			"the repository where to push manifests to",
 		)
 	cmd.

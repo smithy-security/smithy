@@ -14,16 +14,16 @@ smithyctl component package
 
 ## Flags
 
-| Flag                   | Description                                                  | Default                                |
-|------------------------|--------------------------------------------------------------|----------------------------------------|
-| `spec-path`              | is the path to the component's `component.yaml` file. | -                                      |
-| `registry-url`           | the base URL of the OCI registry                             | `localhost:5000`                       |
-| `registry-auth-enabled`  | enables authentication to push artifact to an OCI registry.  | `false`                                |
-| `registry-auth-username` | the username for authenticating to the OCI registry.         | `""`                                   |
-| `registry-auth-password` | the password for authenticating to the OCI registry.         | `""`                                   |
-| `registry-base-repository` | where to upload packaged manifests to                        | `smithy-security/manifests/components` |
-| `sdk-version`            | specifies the sdk version used to package the component.     | `latest`                               |
-| `version`                | is the version used to package the component.                | `latest`                               |
+| Flag                     | Description                                                 | Default                            |
+|--------------------------|-------------------------------------------------------------|------------------------------------|
+| `spec-path`              | is the path to the component's `component.yaml` file.       | -                                  |
+| `registry-url`           | the base URL of the OCI registry                            | `localhost:5000`                   |
+| `registry-auth-enabled`  | enables authentication to push artifact to an OCI registry. | `false`                            |
+| `registry-auth-username` | the username for authenticating to the OCI registry.        | `""`                               |
+| `registry-auth-password` | the password for authenticating to the OCI registry.        | `""`                               |
+| `namespace`              | repository context path                                     | `smithy-security/smithy/manifests` |
+| `sdk-version`            | specifies the sdk version used to package the component.    | `latest`                           |
+| `version`                | is the version used to package the component.               | `latest`                           |
 
 ## Example
 
@@ -34,12 +34,12 @@ smithyctl \
   component \
     package \
         --registry-auth-enabled=true \
-        --registry-auth-username=$USER \
-        --registry-auth-password=$PASSWORD \
+        --registry-auth-username=${USER} \
+        --registry-auth-password=${PASSWORD} \
         --registry-url=ghcr.io \
         --sdk-version=v1.0.0 \
-        --spec-path=new-components/scanners/bandit/component.yaml \
-        --version=v3.2.1
+        --version=v3.2.1 \
+        new-components/scanners/bandit/component.yaml
 ```
 
 ### Local registry - docker
@@ -58,6 +58,6 @@ smithyctl \
     package \
         --registry-url=127.0.0.1:5000 \
         --sdk-version=v1.0.0 \
-        --spec-path=new-components/scanners/bandit/component.yaml \
-        --version=v3.2.1
+        --version=v3.2.1 \
+        new-components/scanners/bandit/component.yaml
 ```
