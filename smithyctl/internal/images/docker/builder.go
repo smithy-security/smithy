@@ -196,13 +196,20 @@ func (b *Builder) Build(ctx context.Context, cr *images.ComponentRepository) (st
 			return cr.URLs()[0], nil
 		}
 
-		return cr.URLs()[0], executeSubprocess(
-			ctx,
-			"/bin/sh", "-c", fmt.Sprintf(
-				"make -C %s --quiet image BUILD_ARCHITECTURE=%s COMPONENT_REGISTRY=%s COMPONENT_REPOSITORY=%s COMPONENT_TAG=%s",
-				cr.Directory(), b.opts.platform, cr.Registry(), cr.Repo(), cr.Tags(),
-			),
-		)
+		var buildErrs error
+		for _, tag := range cr.Tags() {
+			buildErr := executeSubprocess(
+				ctx,
+				"/bin/sh", "-c", fmt.Sprintf(
+					"make -C %s --quiet image BUILD_ARCHITECTURE=%s COMPONENT_REGISTRY=%s COMPONENT_REPOSITORY=%s COMPONENT_TAG=%s",
+					cr.Directory(), b.opts.platform, cr.Registry(), cr.Repo(), tag,
+				),
+			)
+			if buildErr != nil {
+				buildErrs = errors.Join(buildErrs, buildErr)
+			}
+		}
+		return cr.URLs()[0], buildErrs
 	}
 
 	b.report.CustomImages = append(b.report.CustomImages, images.CustomImageReport{
