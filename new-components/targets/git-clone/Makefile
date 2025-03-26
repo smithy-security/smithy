@@ -1,6 +1,5 @@
 .PHONY: run run-with-seeder shutdown build-target
 
-PUSH=false
 BUILD_ARCHITECTURE=
 COMPONENT_REGISTRY=localhost:5000
 COMPONENT_REPOSITORY=smithy-security/smithy/components/targets/git-clone
@@ -30,5 +29,4 @@ build-target:
 image:
 	docker build $$([ "${BUILD_ARCHITECTURE}" != "" ] && echo "--platform=${BUILD_ARCHITECTURE}" ) \
 				 --tag $(COMPONENT_REGISTRY)/$(COMPONENT_REPOSITORY):$(COMPONENT_TAG) \
-				 $$([ "${PUSH}" = "true" ] && echo "--push" ) \
 				 --file dockerfiles/git-clone/Dockerfile .
