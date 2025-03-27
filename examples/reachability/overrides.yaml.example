@@ -1,0 +1,8 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: "https://github.com/fportantier/vulpy.git"
+reachability:
+- name: "programming_language"
+  type: "string"
+  value: "python"
