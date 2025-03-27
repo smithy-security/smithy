@@ -83,11 +83,12 @@ jobs:
       - name: Trigger repackaging event in SAAS
         uses: peter-evans/repository-dispatch@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SAAS_TRIGGER_PAT }}
           repository: smithy-security/saas
           event-type: package_published
           client-payload: |- 
             {
-              "repo_name": "${{ github.repository }}", 
+              "registry": "ghcr.io",
+              "repo_namespace": "smithy-security/smithy/manifests",
               "component_tag": "${{ steps.tag_info.outputs.tag }}"
             }
