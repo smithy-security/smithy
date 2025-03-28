@@ -29,25 +29,3 @@ jobs:
         run: |
           make -j 16 publish-containers
           make smithyctl-image-publish SMITHY_VERSION=latest
-
-      - name: Publish component Helm package
-        run: |
-          set -e
-          SMITHY_VERSION_SEMVER=$(sed 's/v//' <<< ${{ github.ref_name }})
-
-          # Package and Publish Migrations
-          # this must be the first step, because the migrations are a dependency of the components
-          # it is not set explicitly yet as a dependency, but it will be set soon
-          helm package --dependency-update \
-                       --app-version ${{ github.ref_name }} \
-                       --version ${SMITHY_VERSION_SEMVER} \
-                       ./deploy/deduplication-db-migrations/chart
-          helm push deduplication-db-migrations-${SMITHY_VERSION_SEMVER}.tgz oci://ghcr.io/smithy-security/smithy/charts
-
-          make cmd/smithyctl/bin
-          # Package and Publish Components
-          bin/cmd/linux/amd64/smithyctl components package --version ${{ github.ref_name }} \
-                                               --chart-version ${SMITHY_VERSION_SEMVER} \
-                                               --name smithy-security-oss-components \
-                                               ./components
-          helm push smithy-security-oss-components-${SMITHY_VERSION_SEMVER}.tgz oci://ghcr.io/smithy-security/smithy/charts
