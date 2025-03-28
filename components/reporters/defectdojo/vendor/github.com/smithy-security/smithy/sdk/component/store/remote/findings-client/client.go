@@ -2,6 +2,7 @@ package findingsclient
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
@@ -17,10 +18,40 @@ import (
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
-type client struct {
-	rpcConn           *grpc.ClientConn
-	findingsSvcClient v1.FindingsServiceClient
-}
+const (
+	defaultClientMaxAttempts           = 10
+	defaultClientInitialBackoffSeconds = "5s"
+	defaultClientMaxBackoffSeconds     = "60s"
+	defaultClientBackoffMultiplier     = 1.5
+)
+
+type (
+	client struct {
+		rpcConn           *grpc.ClientConn
+		findingsSvcClient v1.FindingsServiceClient
+	}
+
+	clientRetry struct {
+		MethodConfig []clientMethodConf `json:"methodConfig"`
+	}
+
+	clientMethodConf struct {
+		Name        []clientRetryMethod `json:"name"`
+		RetryPolicy clientRetryPolicy   `json:"retryPolicy"`
+	}
+
+	clientRetryMethod struct {
+		Service string `json:"service"`
+	}
+
+	clientRetryPolicy struct {
+		MaxAttempts          int      `json:"maxAttempts"`
+		InitialBackoff       string   `json:"initialBackoff"`
+		MaxBackoff           string   `json:"maxBackoff"`
+		BackoffMultiplier    float64  `json:"backoffMultiplier"`
+		RetryableStatusCodes []string `json:"retryableStatusCodes"`
+	}
+)
 
 // New it returns a new findings' client.
 func New() (*client, error) {
@@ -33,9 +64,15 @@ func New() (*client, error) {
 		return nil, err
 	}
 
+	retryStr, err := newClientRetryStr()
+	if err != nil {
+		return nil, err
+	}
+
 	conn, err := grpc.NewClient(
 		findingsSvcAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultServiceConfig(retryStr),
 	)
 	if err != nil {
 		return nil, errors.Errorf("could not create findings client connection: %v", err)
@@ -45,6 +82,73 @@ func New() (*client, error) {
 		rpcConn:           conn,
 		findingsSvcClient: v1.NewFindingsServiceClient(conn),
 	}, nil
+}
+
+// newClientRetryStr returns gRPC retry config per https://grpc.io/docs/guides/retry/.
+func newClientRetryStr() (string, error) {
+	clientMaxAttempts, err := env.GetOrDefault(
+		"SMITHY_REMOTE_CLIENT_MAX_ATTEMPTS",
+		defaultClientMaxAttempts,
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	clientInitialBackoffSeconds, err := env.GetOrDefault(
+		"SMITHY_REMOTE_CLIENT_INITIAL_BACKOFF_SECONDS",
+		defaultClientInitialBackoffSeconds,
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	clientMaxBackoffSeconds, err := env.GetOrDefault(
+		"SMITHY_REMOTE_CLIENT_MAX_BACKOFF_SECONDS",
+		defaultClientMaxBackoffSeconds,
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	clientBackoffMultiplier, err := env.GetOrDefault(
+		"SMITHY_REMOTE_CLIENT_BACKOFF_MULTIPLIER",
+		defaultClientBackoffMultiplier,
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return "", err
+	}
+
+	var retry = clientRetry{
+		MethodConfig: []clientMethodConf{
+			{
+				Name: []clientRetryMethod{
+					{
+						Service: "findings_service.v1.FindingsService",
+					},
+				},
+				RetryPolicy: clientRetryPolicy{
+					MaxAttempts:       clientMaxAttempts,
+					InitialBackoff:    clientInitialBackoffSeconds,
+					MaxBackoff:        clientMaxBackoffSeconds,
+					BackoffMultiplier: clientBackoffMultiplier,
+					RetryableStatusCodes: []string{
+						"UNAVAILABLE",
+					},
+				},
+			},
+		},
+	}
+
+	srvRetryBytes, err := json.Marshal(retry)
+	if err != nil {
+		return "", errors.Errorf("failed to marshal default client retry conf: %w", err)
+	}
+
+	return string(srvRetryBytes), nil
 }
 
 // Close closes the underlying connection to the findings' client.
@@ -66,6 +170,13 @@ func (c *client) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.Vulnerab
 	resp, err := c.findingsSvcClient.GetFindings(ctx, &v1.GetFindingsRequest{Id: instanceID.String()})
 	if err != nil {
 		return nil, errors.Errorf("could not get findings: %w", c.checkErr(err))
+	}
+
+	switch {
+	case resp == nil:
+		return nil, errors.New("unexpected nil response")
+	case len(resp.Findings) == 0:
+		return nil, store.ErrNoFindingsFound
 	}
 
 	findings := make([]*vf.VulnerabilityFinding, 0, len(resp.Findings))

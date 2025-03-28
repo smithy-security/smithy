@@ -138,6 +138,8 @@ github.com/smithy-security/pkg/sarif v0.0.2-0.20250223164400-d826a844c8e3 h1:BYc
 github.com/smithy-security/pkg/sarif v0.0.2-0.20250223164400-d826a844c8e3/go.mod h1:ZI2MtI7MZL38F++QovaXYXuyy1kLhOlWIWTY+Jib1jw=
 github.com/smithy-security/smithy/sdk v0.0.4-alpha h1:2SRgY1TBp68utOHSu4O4RdzBsxWqUeGI9Hx9tK55R7o=
 github.com/smithy-security/smithy/sdk v0.0.4-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
+github.com/smithy-security/smithy/sdk v0.0.7-alpha h1:gqvovQlJhc+qcJgUYlROJjPY5F6yhhjFDdMD+7bvBRs=
+github.com/smithy-security/smithy/sdk v0.0.7-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
 github.com/spf13/cast v1.3.1 h1:nFm6S0SMdyzrzcmThSipiEubIDy8WEXKNZ0UOgiRpng=
 github.com/spf13/cast v1.3.1/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
 github.com/sqlc-dev/sqlc v1.27.0 h1:wWc+401GLh0whLa30WmDkkl11lMBZuqvDvgu5OsaDiQ=
