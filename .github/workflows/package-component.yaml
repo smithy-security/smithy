@@ -15,8 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-tags: true
 
       - name: Extract tag details
         id: tag_info
@@ -37,6 +35,7 @@ jobs:
         id: sdk_version
         run: |
           set -ex
+          git tag -l | sort -Vr | head -n 30
           SDK_VERSION=$(make COMPONENT_DIR=${{ steps.tag_info.outputs.component_dir }} component-sdk-version)
           echo "sdk_version=${SDK_VERSION}" >> ${GITHUB_OUTPUT}
 
