@@ -1,5 +1,5 @@
 name: Build component image and package
-run-name: Build component image and package ${{ github.ref_name }}
+run-name: Build ${{ github.ref_name }}
 
 on:
   push:
