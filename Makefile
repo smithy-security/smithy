@@ -164,9 +164,13 @@ smithyctl/bin:
 component-sdk-version:
 	@if [ -z "$(COMPONENT_DIR)" ]; then \
 		echo "Error: COMPONENT_DIR is not set"; \
-		exit 1; \
+		false; \
 	fi
-	@grep 'github.com/smithy-security/smithy/sdk' $(COMPONENT_DIR)/go.mod | awk '{print $$2}'
+	@if [ -f  $(COMPONENT_DIR)/go.mod ]; then \
+		grep 'github.com/smithy-security/smithy/sdk' $(COMPONENT_DIR)/go.mod | awk '{print $$2}'; \
+	else \
+		git tag -l | grep sdk | sort -r | head -n 1 | sed 's/sdk\///'; \
+	fi
 
 $(go_sdk_lib_update):
 	@if [ -z "$(SDK_VERSION)" ]; then \
