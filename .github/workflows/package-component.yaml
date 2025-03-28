@@ -1,4 +1,5 @@
-name: Package on Tag
+name: Build component image and package
+run-name: Build component image and package ${{ github.ref_name }}
 
 on:
   push:
