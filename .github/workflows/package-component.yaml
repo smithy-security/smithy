@@ -35,7 +35,7 @@ jobs:
         id: sdk_version
         run: |
           set -ex
-          git fetch --tags
+          git fetch --depth=1 --tags
           git tag -l | sort -Vr | head -n 30
           SDK_VERSION=$(make COMPONENT_DIR=${{ steps.tag_info.outputs.component_dir }} component-sdk-version)
           echo "sdk_version=${SDK_VERSION}" >> ${GITHUB_OUTPUT}
