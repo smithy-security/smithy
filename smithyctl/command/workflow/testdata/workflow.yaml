@@ -3,5 +3,5 @@ name: "gosec-pipeline"
 components:
   - component: "127.0.0.1/smithy-security/smithy/manifests/components/target/git-clone:v1.0.0"
   - component: "127.0.0.1/smithy-security/smithy/manifests/components/scanner/gosec-parser:v1.0.0"
-  - component: "file://new-components/enrichers/custom-annotation/component.yaml"
+  - component: "file://components/enrichers/custom-annotation/component.yaml"
   - component: "127.0.0.1/smithy-security/smithy/manifests/components/reporter/json-logger:v1.0.0"

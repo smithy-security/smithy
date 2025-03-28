@@ -1,0 +1,25 @@
+name: pip-audit
+description: "Parses nancy findings into OCSF format"
+type: scanner
+parameters:
+  - name: dependencies_file_name
+    type: string
+    value: requirements.txt
+  - name: pyproject_file_name
+    type: string
+    value: pyproject.toml
+steps:
+  - name: scanner
+    image: components/scanners/pip-audit/scanner
+    executable: /bin/bash
+    args:
+      - -c
+      - /entrypoint.sh "{{ sourceCodeWorkspace }}" "{{ scratchWorkspace }}" "{{ .parameters.dependencies_file_name }}" "{{ .parameters.pyproject_file_name }}"
+  - name: parser
+    image: components/scanners/pip-audit
+    env_vars:
+      PIP_AUDIT_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/pipaudit.out.json"
+      PIP_AUDIT_SCANNED_PROJECT_ROOT: "{{ sourceCodeWorkspace }}"
+      REQUIREMENTS_FILE_NAME: "{{ .patameters.dependencies_file_name}}"
+      PYPROJECT_FILE_NAME: "{{ .patameters.pyproject_file_name}}"
+    executable: /bin/app

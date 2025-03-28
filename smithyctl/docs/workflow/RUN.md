@@ -20,20 +20,20 @@ smithyctl workflow run
 
 ## Flags
 
-| Flag                       | Description                                                    | Default                                |
-|----------------------------|----------------------------------------------------------------|----------------------------------------|
-| `spec-path`                | is the path to the component's `workflow.yaml` file.           | -                                      |
-| `overrides-path`           | is the path to workflow overrides.                             | -                                      |
-| `registry-url`             | the base URL of the OCI registry                               | `localhost:5000`                       |
-| `registry-auth-enabled`    | enables authentication to push artifact to an OCI registry.    | `false`                                |
-| `registry-auth-username`   | the username for authenticating to the OCI registry.           | `""`                                   |
-| `registry-auth-password`   | the password for authenticating to the OCI registry.           | `""`                                   |
-| `registry-base-repository` | where to upload packaged manifests to                          | `smithy-security/manifests/components` |
-| `clean-run`                | if 'true' the findings db will be emptied out                  | `false`                                |
-| `build-component-images`                | if 'true' components' images will be automatically built on run | `true`                                 |
-| `image-registry`                | registry to use for the images | local                                  |
-| `image-namespace`                | namespace that will be added to all the images built by the system | smithy-security/smithy                                  |
-| `base-component-dockerfile`                | base Dockerfile to use to build all the images | new-components/Dockerfile                                  |
+| Flag                        | Description                                                        | Default                                |
+|-----------------------------|--------------------------------------------------------------------|----------------------------------------|
+| `spec-path`                 | is the path to the component's `workflow.yaml` file.               | -                                      |
+| `overrides-path`            | is the path to workflow overrides.                                 | -                                      |
+| `registry-url`              | the base URL of the OCI registry                                   | `localhost:5000`                       |
+| `registry-auth-enabled`     | enables authentication to push artifact to an OCI registry.        | `false`                                |
+| `registry-auth-username`    | the username for authenticating to the OCI registry.               | `""`                                   |
+| `registry-auth-password`    | the password for authenticating to the OCI registry.               | `""`                                   |
+| `registry-base-repository`  | where to upload packaged manifests to                              | `smithy-security/manifests/components` |
+| `clean-run`                 | if 'true' the findings db will be emptied out                      | `false`                                |
+| `build-component-images`    | if 'true' components' images will be automatically built on run    | `true`                                 |
+| `image-registry`            | registry to use for the images | local                             |                                        |
+| `image-namespace`           | namespace that will be added to all the images built by the system | smithy-security/smithy                 |
+| `base-component-dockerfile` | base Dockerfile to use to build all the images                     | components/Dockerfile                  |
 
 ## Example
 

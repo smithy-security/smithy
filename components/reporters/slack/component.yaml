@@ -1,0 +1,12 @@
+name: slack
+description: "Logs findings to slack"
+type: reporter
+parameters:
+  - name: slack_webhook
+    type: string
+    value: ""
+steps:
+  - name:
+    image: components/reporters/slack
+    env_vars:
+      - SLACK_WEBHOOK: {{ .parameters.slack_webhook }}

@@ -1,0 +1,7 @@
+name: json-logger
+description: "Logs findings"
+type: reporter
+steps:
+  - name: json-reporter
+    image: components/reporters/json-logger
+    executable: /bin/app

@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
+
 	"github.com/smithy-security/smithy/smithyctl/utils"
 )
 

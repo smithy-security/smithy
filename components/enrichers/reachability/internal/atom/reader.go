@@ -3,20 +3,22 @@ package atom
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strings"
 
-	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
-	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/logging"
+	"github.com/go-errors/errors"
+
+	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom/purl"
+	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/logging"
 )
 
 type (
 	// Reader is responsible for managing how to read atom files and understand their contents.
 	Reader struct {
-		atomFilePath string
+		atomFileGlob string
 		purlParser   *purl.Parser
 	}
 
@@ -59,35 +61,63 @@ type (
 )
 
 // NewReader returns a new atom file reader.
-func NewReader(atomFilePath string, purlParser *purl.Parser) (*Reader, error) {
+func NewReader(atomFileGlob string, purlParser *purl.Parser) (*Reader, error) {
 	switch {
-	case atomFilePath == "":
-		return nil, errors.New("invalid empty atom file path")
+	case atomFileGlob == "":
+		return nil, errors.New("invalid empty atom file glob")
 	case purlParser == nil:
 		return nil, errors.New("invalid nil purl parser")
 	}
 
 	return &Reader{
-		atomFilePath: atomFilePath,
+		atomFileGlob: atomFileGlob,
 		purlParser:   purlParser,
 	}, nil
 }
 
 // Read deserialises the json content of the provided atom file into Reachables format.
-func (r *Reader) Read(ctx context.Context) (*Response, error) {
-	b, err := os.ReadFile(r.atomFilePath)
+func (r *Reader) Read(ctx context.Context) ([]*Response, error) {
+	var responses []*Response
+
+	matches, err := filepath.Glob(r.atomFileGlob)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read atom file: %w", err)
+		return nil, err
+	}
+	var fileNames []string
+	for _, match := range matches {
+		_, err := os.Stat(match)
+		if err != nil {
+			return nil, err
+		}
+		fileNames = append(fileNames, match)
 	}
 
-	logging.FromContext(ctx).Debug("sample atom file contents", slog.String("payload", string(b)))
-
-	var res Response
-	if err := json.Unmarshal(b, &res); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal atom response: %w", err)
+	if len(fileNames) == 0 {
+		return nil, errors.Errorf("glob %s, matched no files", r.atomFileGlob)
 	}
 
-	return &res, nil
+	logger := logging.FromContext(ctx)
+
+	for _, file := range fileNames {
+		logger.Info("processing atom file", slog.String("filename", file))
+
+		b, err := os.ReadFile(file)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil, errors.Errorf("atom output file '%s' not found", file)
+			}
+			return nil, errors.Errorf("failed to read atom output file '%s': %w", file, err)
+		}
+
+		logger.Debug("response read from filesystem", slog.String("response", string(b)))
+
+		var res Response
+		if err := json.Unmarshal(b, &res); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal atom response: %w", err)
+		}
+		responses = append(responses, &res)
+	}
+	return responses, nil
 }
 
 // ReachablePurls finds all the reachable purls presents in the atom reachability result.

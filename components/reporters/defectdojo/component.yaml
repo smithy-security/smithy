@@ -1,0 +1,26 @@
+name: defectdojo
+description: "Logs findings to remote defectdojo"
+type: reporter
+parameters:
+  - name: dojo_user
+    type: string
+    value: ""
+  - name: dojo_api_key
+    type: string
+    value: ""
+  - name: dojo_api_url
+    type: string
+    value: ""
+  - name: dojo_product_id
+    type: string
+    value: ""
+steps:
+  - name:
+    image: components/reporters/defectdojo
+    executable: /bin/app
+    env_vars:
+      - DOJO_USER: {{ .parameters.dojo_user }}
+      - DOJO_API_KEY: {{ .parameters.dojo_api_key }}
+      - DOJO_API_URL: {{ .parameters.dojo_api_url }}
+      - DOJO_PRODUCT_ID: {{ .parameters.dojo_product_id }}
+

@@ -7,20 +7,15 @@ import (
 
 const (
 	// Environment variables names.
-	producerResultsPathEnvVarName = "READ_PATH"
-	enrichedResultsPathEnvVarName = "WRITE_PATH"
-	atomFilePathEnvVarName        = "ATOM_FILE_PATH"
+	atomFileGlobEnvVarName = "ATOM_FILE_GLOB"
 )
 
 type (
 	// Conf contains the application's configuration.
 	Conf struct {
-		// ProducerResultsPath advertises where to find producer results.
-		ProducerResultsPath string
-		// EnrichedResultsPath advertises where to put enriched result.
-		EnrichedResultsPath string
+
 		// ATOMFilePath advertises the location of the atom slice file.
-		ATOMFilePath string
+		ATOMFileGlob string
 	}
 )
 
@@ -33,19 +28,9 @@ func New() (*Conf, error) {
 		dest       *string
 	}{
 		{
-			envVarName: producerResultsPathEnvVarName,
+			envVarName: atomFileGlobEnvVarName,
 			required:   true,
-			dest:       &conf.ProducerResultsPath,
-		},
-		{
-			envVarName: enrichedResultsPathEnvVarName,
-			required:   true,
-			dest:       &conf.EnrichedResultsPath,
-		},
-		{
-			envVarName: atomFilePathEnvVarName,
-			required:   true,
-			dest:       &conf.ATOMFilePath,
+			dest:       &conf.ATOMFileGlob,
 		},
 	} {
 		var ok bool

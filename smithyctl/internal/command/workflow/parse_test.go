@@ -11,6 +11,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
+
 	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
 	"github.com/smithy-security/smithy/smithyctl/internal/images"
 	"github.com/smithy-security/smithy/smithyctl/registry"

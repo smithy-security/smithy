@@ -39,7 +39,7 @@ smithyctl \
         --registry-url=ghcr.io \
         --sdk-version=v1.0.0 \
         --version=v3.2.1 \
-        new-components/scanners/bandit/component.yaml
+        components/scanners/bandit/component.yaml
 ```
 
 ### Local registry - docker
@@ -59,5 +59,5 @@ smithyctl \
         --registry-url=127.0.0.1:5000 \
         --sdk-version=v1.0.0 \
         --version=v3.2.1 \
-        new-components/scanners/bandit/component.yaml
+        components/scanners/bandit/component.yaml
 ```

@@ -14,7 +14,7 @@ import (
 	"github.com/package-url/packageurl-go"
 
 	v1 "github.com/smithy-security/smithy/api/proto/v1"
-	"github.com/smithy-security/smithy/components/producers"
+	"github.com/smithy-security/smithy/deprecated-components/producers"
 )
 
 const (

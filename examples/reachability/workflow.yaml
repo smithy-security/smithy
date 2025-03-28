@@ -1,7 +1,7 @@
 description: Reachability based workflow
 name: nancy
 components:
-- component: file://new-components/targets/git-clone/component.yaml
-- component: file://new-components/scanners/bandit/component.yaml
-- component: file://new-components/enrichers/reachability/component.yaml
-- component: file://new-components/reporters/json-logger/component.yaml
+- component: file://components/targets/git-clone/component.yaml
+- component: file://components/scanners/bandit/component.yaml
+- component: file://components/enrichers/reachability/component.yaml
+- component: file://components/reporters/json-logger/component.yaml
