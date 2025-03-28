@@ -1,4 +1,4 @@
-name: pip-audit-parser
+name: pip-audit
 description: "Parses nancy findings into OCSF format"
 type: scanner
 parameters:
@@ -17,7 +17,6 @@ steps:
       - "{{ scratchWorkspace }}"
       - "{{ .parameters.dependencies_file_name }}"
       - "{{ .parameters.pyproject_file_name }}"
-
   - name: parser
     image: "new-components/scanners/pip-audit"
     env_vars:
