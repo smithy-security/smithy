@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom"
 )
 
 // Searcher is responsible for finding reachable purls in the supplied reachability report.
@@ -19,13 +19,6 @@ type Searcher struct {
 
 // NewSearcher returns a new searcher.
 func NewSearcher(reachables atom.Reachables, reachablePurls atom.ReachablePurls) (*Searcher, error) {
-	switch {
-	case len(reachables) == 0:
-		return nil, errors.New("invalid empty reachables")
-	case len(reachablePurls) == 0:
-		return nil, errors.New("invalid empty reachable purls")
-	}
-
 	matcherFileLine, err := regexp.Compile(`(?P<file>[^/]+):(?P<line>[\d-]+)`)
 	if err != nil {
 		return nil, fmt.Errorf("failed to compile matcher file line regex: %w", err)
@@ -45,7 +38,7 @@ func (s *Searcher) Search(search string) (bool, error) {
 	}
 
 	// If the search term is for a purl and there's a match, return early.
-	if s.reachablePurls.IsPurlReachable(search) {
+	if len(s.reachablePurls) > 0 && s.reachablePurls.IsPurlReachable(search) {
 		return true, nil
 	}
 

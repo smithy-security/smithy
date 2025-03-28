@@ -95,7 +95,7 @@ func makeOptions(ctx context.Context, daemon dockerBuilder, opts ...BuilderOptio
 		username:           "username",
 		password:           "password",
 		labels:             images.DefaultLabels,
-		baseDockerfilePath: "./new-components/Dockerfile",
+		baseDockerfilePath: "./components/Dockerfile",
 		platform:           daemonVersion.Os + "/" + daemonVersion.Arch,
 		sdkVersion:         "unset",
 	}

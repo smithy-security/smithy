@@ -138,12 +138,12 @@ func (r *orasRegistry) Package(ctx context.Context, req PackageRequest) error {
 		annotation.SmithyComponentType:    component.Type.String(),
 		annotation.SmithyComponentVersion: componentVersion,
 		annotation.SmithyComponentSource: fmt.Sprintf(
-			"new-components/%s/%s",
+			"components/%s/%s",
 			component.Type,
 			component.Name,
 		),
 		annotation.SmithyComponentURL: fmt.Sprintf(
-			"https://github.com/smithy-security/smithy/tree/main/new-components/%s/%s",
+			"https://github.com/smithy-security/smithy/tree/main/components/%s/%s",
 			component.Type,
 			component.Name,
 		),

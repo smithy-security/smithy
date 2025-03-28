@@ -34,7 +34,7 @@ var (
 		"|",
 	)
 	// componentRepositoryRegex matches component directories such as
-	// 1. new-components/bla/scanners/gosec
+	// 1. components/bla/scanners/gosec
 	// 2. components/scanners/component
 	// 3. scanners/bla
 	// 4. components/scanners/some-scanner/helper

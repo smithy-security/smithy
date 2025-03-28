@@ -71,7 +71,7 @@ func NewBuildCommand() *cobra.Command {
 		StringVar(
 			&buildCmdFlags.baseComponentDockerfile,
 			"base-component-dockerfile",
-			"new-components/Dockerfile",
+			"components/Dockerfile",
 			"base Dockerfile to use to build all the images",
 		)
 	cmd.

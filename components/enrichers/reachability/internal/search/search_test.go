@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
-	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/search"
+	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/search"
 )
 
 func TestNewSearcher(t *testing.T) {
@@ -23,18 +23,6 @@ func TestNewSearcher(t *testing.T) {
 		reachables     atom.Reachables
 		expectsErr     bool
 	}{
-		{
-			testCase:       "it returns an error because the supplied reachable purls are empty",
-			reachablePurls: atom.ReachablePurls{},
-			reachables:     reachables,
-			expectsErr:     true,
-		},
-		{
-			testCase:       "it returns an error because the supplied reachables are empty",
-			reachablePurls: reachablePurls,
-			reachables:     atom.Reachables{},
-			expectsErr:     true,
-		},
 		{
 			testCase:       "it returns a new searcher",
 			reachablePurls: reachablePurls,

@@ -142,7 +142,7 @@ func NewRunCommand() *cobra.Command {
 		StringVar(
 			&runCmdFlags.baseComponentDockerfile,
 			"base-component-dockerfile",
-			"new-components/Dockerfile",
+			"components/Dockerfile",
 			"base Dockerfile to use to build all the images",
 		)
 

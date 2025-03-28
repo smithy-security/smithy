@@ -18,10 +18,10 @@ func TestComponentResolutionFromReference(t *testing.T) {
 		OrchestrationType: OrchestrationTypeExternalHelm,
 	}, dereferencedComponent)
 
-	dereferencedComponent, err = FromReference(context.Background(), "../../components/producers/golang-gosec")
+	dereferencedComponent, err = FromReference(context.Background(), "../../deprecated-components/producers/golang-gosec")
 	require.NoError(t, err)
 	require.Equal(t, "producer-golang-gosec", dereferencedComponent.Name)
-	require.Equal(t, "../../components/producers/golang-gosec", dereferencedComponent.Reference)
+	require.Equal(t, "../../deprecated-components/producers/golang-gosec", dereferencedComponent.Reference)
 	require.Equal(t, OrchestrationTypeNaive, dereferencedComponent.OrchestrationType)
 	require.Equal(t, Producer, dereferencedComponent.Type)
 	require.Equal(t, true, dereferencedComponent.Resolved)

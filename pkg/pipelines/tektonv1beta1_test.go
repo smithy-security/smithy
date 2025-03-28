@@ -19,7 +19,7 @@ func TestResolveKustomizationResourceBase(t *testing.T) {
 	testCtx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 
-	basePipelineFromFile, err := manifests.LoadTektonV1Beta1Pipeline(testCtx, ".", "../../components/base")
+	basePipelineFromFile, err := manifests.LoadTektonV1Beta1Pipeline(testCtx, ".", "../../deprecated-components/base")
 	require.NoError(t, err)
 
 	BasePipeline.Labels = map[string]string{"TestResolveKustomizationResourceBases": "bla"}
@@ -47,7 +47,7 @@ func TestResolveKustomizationResourceBase(t *testing.T) {
 			kustomization: &kustomizetypes.Kustomization{
 				NameSuffix: "-cyberdyne-card-processing",
 				Resources: []string{
-					"../../components/base/pipeline.yaml",
+					"../../deprecated-components/base/pipeline.yaml",
 				},
 			},
 			expectedPipeline: basePipelineFromFile,
@@ -119,7 +119,7 @@ func TestComponentPrepareChecks(t *testing.T) {
 	componentList = []components.Component{
 		{
 			Name:              "producer-golang-gosec",
-			Reference:         "../../components/producers/golang-gosec",
+			Reference:         "../../deprecated-components/producers/golang-gosec",
 			OrchestrationType: components.OrchestrationTypeNaive,
 			Resolved:          true,
 			Manifest:          componentList[0].Manifest,

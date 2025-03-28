@@ -1,0 +1,16 @@
+name: codeql
+description: Run CodeQL against the provided code and print the results
+type: scanner
+steps:
+  - name: run-codeql
+    imagePullPolicy: IfNotPresent
+    image: components/scanners/codeql/codeql-image
+    executable: /build/codeql-runner
+    args:
+      - -scratch-location={{ scratchWorkspace }}
+      - -source-location={{ sourceCodeWorkspace }}
+  - name: parser
+    image: components/scanners/codeql
+    env_vars:
+      CODEQL_RAW_OUT_FILE_GLOB: "{{ scratchWorkspace }}/*.sarif.json"
+    executable: /bin/app

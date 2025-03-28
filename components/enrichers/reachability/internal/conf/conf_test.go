@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/conf"
+	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/conf"
 )
 
 func TestNew(t *testing.T) {
@@ -15,76 +15,37 @@ func TestNew(t *testing.T) {
 		testCase              string
 		inProducerResultPath  string
 		inEnrichedResultsPath string
-		inATOMFilePath        string
+		inATOMFileGlob        string
 		inEnricherAnnotation  string
 		shouldErr             bool
 		expectedConf          *conf.Conf
 	}{
+
 		{
-			testCase:              "it should return an error because the producer result path is not set",
-			inProducerResultPath:  "",
-			inEnrichedResultsPath: "/enriched-results",
-			inATOMFilePath:        "/atom-files",
-			inEnricherAnnotation:  "SmithyIsCool",
-			shouldErr:             true,
-		},
-		{
-			testCase:              "it should return an error because the enriched result path is not set",
-			inProducerResultPath:  "/producer-results",
-			inEnrichedResultsPath: "",
-			inATOMFilePath:        "/atom-files",
-			inEnricherAnnotation:  "SmithyIsCool",
-			shouldErr:             true,
-		},
-		{
-			testCase:              "it should return an error because the atom file path is not set",
-			inProducerResultPath:  "/producer-results",
-			inEnrichedResultsPath: "/enriched-results",
-			inATOMFilePath:        "",
-			inEnricherAnnotation:  "SmithyIsCool",
-			shouldErr:             true,
-		},
-		{
-			testCase:              "it should return the expected configuration with a non empty enricher annotation as all the expected environment variables are set",
-			inProducerResultPath:  "/producer-results",
-			inEnrichedResultsPath: "/enriched-results",
-			inATOMFilePath:        "/atom-files",
-			inEnricherAnnotation:  "",
-			shouldErr:             false,
+			testCase:       "it should return the expected configuration with a non empty enricher annotation as all the expected environment variables are set",
+			inATOMFileGlob: "/atom-files/*.json",
+			shouldErr:      false,
 			expectedConf: &conf.Conf{
-				ProducerResultsPath: "/producer-results",
-				EnrichedResultsPath: "/enriched-results",
-				ATOMFilePath:        "/atom-files",
+				ATOMFileGlob: "/atom-files/*.json",
 			},
 		},
 		{
-			testCase:              "it should return the expected configuration as all the expected environment variables are set",
-			inProducerResultPath:  "/producer-results",
-			inEnrichedResultsPath: "/enriched-results",
-			inATOMFilePath:        "/atom-files",
-			inEnricherAnnotation:  "SmithyIsCool",
-			shouldErr:             false,
-			expectedConf: &conf.Conf{
-				ProducerResultsPath: "/producer-results",
-				EnrichedResultsPath: "/enriched-results",
-				ATOMFilePath:        "/atom-files",
-			},
+			testCase:       "it should return and error when atom file path not set",
+			inATOMFileGlob: "",
+			shouldErr:      true,
+			expectedConf:   nil,
 		},
 	} {
 		t.Run(tt.testCase, func(t *testing.T) {
 			require.NoError(
 				t,
-				os.Setenv(conf.ProducerResultsPathEnvVarName, tt.inProducerResultPath),
-				os.Setenv(conf.EnrichedResultsPathEnvVarName, tt.inEnrichedResultsPath),
-				os.Setenv(conf.AtomFilePathEnvVarName, tt.inATOMFilePath),
+				os.Setenv(conf.AtomFileGlobEnvVarName, tt.inATOMFileGlob),
 			)
 
 			t.Cleanup(func() {
 				require.NoError(
 					t,
-					os.Unsetenv(conf.ProducerResultsPathEnvVarName),
-					os.Unsetenv(conf.EnrichedResultsPathEnvVarName),
-					os.Unsetenv(conf.AtomFilePathEnvVarName),
+					os.Unsetenv(conf.AtomFileGlobEnvVarName),
 				)
 			})
 

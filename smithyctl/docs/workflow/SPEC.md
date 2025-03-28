@@ -10,10 +10,10 @@ An example `workflow.yaml` looks like:
 description: GoSec based workflow
 name: gosec
 components:
-  - component: file://new-components/targets/git-clone/component.yaml
-  - component: file://new-components/scanners/gosec/component.yaml
-  - component: file://new-components/enrichers/custom-annotation/component.yaml
-  - component: file://new-components/reporters/json-logger/component.yaml
+  - component: file://components/targets/git-clone/component.yaml
+  - component: file://components/scanners/gosec/component.yaml
+  - component: file://components/enrichers/custom-annotation/component.yaml
+  - component: file://components/reporters/json-logger/component.yaml
 ```
 
 Component references can be:

@@ -1,30 +1,29 @@
-# Reachability
+# custom-annotation
 
-This enricher performs reachability analysis
-using [atom](https://github.com/AppThreat/atom).
-
-It enriches the raw results in input, for example
-`bandit.tagged.pb` with a reachability tag.
-
-The enricher requires `enricher-reachability-programming-language`
-to be set as the mechanism to generate the
-reports are different based on programming language.
+This component implements an [enricher](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
+This enricher performs reachability analysis using [atom](https://github.com/AppThreat/atom).
 
 ## Environment variables
 
-* `READ_PATH`: specifies the location from where to look for raw reports.
-* `WRITE_PATH`: specifies the location where to write enriched results.
-* `ATOM_FILE_PATH`: specifies the location where to find
-  the atom file with a reachability report.
+The component uses environment variables for configuration.
 
-## Limitations
+It requires the component
+environment variables defined [here](https://github.com/smithy-security/smithy/blob/main/sdk/README.md#component) as well as the following:
 
-* Right now the enricher requires a file called `bom.json`
-  to be produced by [cdxgen](https://github.com/CycloneDX/cdxgen)
-  to be present in the directory where the cloned repository
-  is located.
+| Environment Variable       | Type   | Required | Default | Description                                                             |
+|----------------------------|--------|----------|---------|-------------------------------------------------------------------------|
+| ATOM\_FILE\_PATH    | string | yes      | -       | Path to the file where atom has produced reachable slices.                     |
 
-## Examples
+## How to run
 
-Please check out [this example](../../../examples/pipelines/reachability-project)
-to see the component in action!
+Execute:
+
+```shell
+docker-compose up --build --force-recreate --remove-orphans
+```
+
+Then shutdown with:
+
+```shell
+docker-compose down --rmi all
+```
