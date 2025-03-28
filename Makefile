@@ -9,6 +9,10 @@ go_test_paths=$(go_mod_paths:go.mod=go-tests)
 go_fmt_paths=$(go_mod_paths:go.mod=go-fmt)
 go_component_mod_paths=$(shell find ./components -not -path './deprecated-components/*' -name 'go.mod' | sort -u)
 go_sdk_lib_update=$(go_component_mod_paths:go.mod=go-sdk-update)
+component_root_directories=$(shell find ./components -type d -regextype posix-extended -regex "./components/(targets|scanners|enrichers|filters|reporters)/[a-z-]+")
+component_patch_tags=$(component_root_directories:=/patch-tag)
+component_minor_tags=$(component_root_directories:=/minor-tag)
+component_major_tags=$(component_root_directories:=/major-tag)
 VENDOR_DIRS=$(shell find . -type d -name "vendor")
 EXCLUDE_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "--exclude-path \""$$i"\""}' | tr '\n' ' ')
 go_test_out_dir=$(shell pwd)/tests/output
@@ -131,25 +135,34 @@ check-tag-message:
 		false; \
 	fi
 
-new-patch-release-tag: SHELL:=/bin/bash
-new-patch-release-tag: check-branch check-tag-message
+$(component_patch_tags): SHELL:=/bin/bash
+$(component_patch_tags): check-branch check-tag-message
 	$(shell \
-		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
-		git tag "v$${number[0]}.$${number[1]}.$$(($${number[2]}+1))" -m "${TAG_MESSAGE}"; \
+		component_dir=$$(dirname $@); \
+		read -a number <<< $$(git tag -l | grep -E "^$${component_dir}" | sort -Vr | head -n 1 | sed -E "s@^$${component_dir}/v([0-9]+)\.([0-9]+)\.([0-9]+)@\1 \2 \3@"); \
+		commit_tag="$${component_dir}/v$${number[0]}.$${number[1]}.$$(($${number[2]}+1))"; \
+		echo "tagging commit with $${commit_tag}" > /dev/stderr; \
+		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
 
-new-minor-release-tag: SHELL:=/bin/bash
-new-minor-release-tag: check-branch check-tag-message
+$(component_minor_tags): SHELL:=/bin/bash
+$(component_minor_tags): check-branch check-tag-message
 	$(shell \
-		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
-		git tag "v$${number[0]}.$$(($${number[1]}+1)).0" -m "${TAG_MESSAGE}"; \
+		component_dir=$$(dirname $@); \
+		read -a number <<< $$(git tag -l | grep -E "^$${component_dir}" | sort -Vr | head -n 1 | sed -E "s@^$${component_dir}/v([0-9]+)\.([0-9]+)\.([0-9]+)@\1 \2 \3@"); \
+		commit_tag="$${component_dir}/v$${number[0]}.$$(($${number[1]}+1)).0"; \
+		echo "tagging commit with $${commit_tag}" > /dev/stderr; \
+		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
 
-new-major-release-tag: SHELL:=/bin/bash
-new-major-release-tag: check-branch check-tag-message
+$(component_major_tags): SHELL:=/bin/bash
+$(component_major_tags): check-branch check-tag-message
 	$(shell \
-		read -a number <<< $$(git tag -l | sort -Vr | head -n 1 | sed -E 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)/\1 \2 \3/'); \
-		git tag "v$$(($${number[0]}+1)).0.0" -m "${TAG_MESSAGE}"; \
+		component_dir=$$(dirname $@); \
+		read -a number <<< $$(git tag -l | grep -E "^$${component_dir}" | sort -Vr | head -n 1 | sed -E "s@^$${component_dir}/v([0-9]+)\.([0-9]+)\.([0-9]+)@\1 \2 \3@"); \
+		commit_tag="$${component_dir}/v$$(($${number[0]}+1)).0.0"; \
+		echo "tagging commit with $${commit_tag}" > /dev/stderr; \
+		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
 
 # new targets for components and smithyctl
