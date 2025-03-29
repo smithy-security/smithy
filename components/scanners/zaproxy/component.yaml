@@ -1,4 +1,4 @@
-name: zap
+name: zaproxy
 description: "Runs zaproxy then parses findings into the OCSF format"
 type: scanner
 parameters:
@@ -28,6 +28,7 @@ parameters:
     value: "10"
   - name: api_key
     type: string
+    value: "changeme"
 steps:
   - name: run-authenticated-zap-scan
     image: components/scanners/zaproxy/zap-authenticated-scan
@@ -36,16 +37,16 @@ steps:
     - -c 
     - /workdir/entrypoint.sh "${API_KEY}"
     env_vars:
-      LOGIN_URL: "{{.parameters.login_url}}"
-      LOGIN_INDICATOR: "{{.parameters.login_regexp}}"
-      LOGOUT_INDICATOR: "{{.parameters.logout_regexp}}"
-      LOGOUT_URL: "{{.parameters.logout_url}}"
-      USERNAME: "{{.parameters.username}}"
-      PASSWORD: "{{.parameters.password}}"
-      TARGET: "{{.parameters.target}}"
-      REPORT_DIR: "{{scratchWorkspace}}"
+      LOGIN_URL: "{{ .parameters.login_url }}"
+      LOGIN_INDICATOR: "{{ .parameters.login_regexp }}"
+      LOGOUT_INDICATOR: "{{ .parameters.logout_regexp }}"
+      LOGOUT_URL: "{{ .parameters.logout_url }}"
+      USERNAME: "{{ .parameters.username }}"
+      PASSWORD: "{{ .parameters.password }}"
+      TARGET: "{{ .parameters.target }}"
+      REPORT_DIR: "{{ scratchWorkspace }}"
       REPORT_FILENAME: zap-report.json"
-      SCAN_DURATION_MINS: "{{.parameters.scan_duration_mins}}"
+      SCAN_DURATION_MINS: "{{ .parameters.scan_duration_mins }}"
       API_KEY: "{{ .parameters.api_key }}"
   - name: parser
     image: components/scanners/zaproxy
