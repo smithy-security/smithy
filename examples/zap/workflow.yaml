@@ -1,0 +1,6 @@
+description: ZAP based workflow
+name: zaproxy
+components:
+- component: file://components/scanners/zaproxy/component.yaml
+- component: file://components/enrichers/custom-annotation/component.yaml
+- component: file://components/reporters/json-logger/component.yaml

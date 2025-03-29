@@ -1,0 +1,26 @@
+zaproxy:
+  - name: target
+    type: string
+    value: ""
+  - name: scan_duration_mins
+    type: string
+    value: "11"
+  - name: login_url
+    type: string
+    value: ""
+  - name: login_regexp
+    type: string
+    value: "Logout"
+  - name: logout_regexp
+    type: string
+    value: "Login"
+  - name: logout_url
+    type: string
+    value: ""
+  - name: username
+    type: string
+    value: ""
+  - name: password
+    type: string
+    value: ""
+

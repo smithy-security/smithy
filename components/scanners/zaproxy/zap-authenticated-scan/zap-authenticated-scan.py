@@ -13,7 +13,7 @@ class ZapInvalidTargetError(Exception):
     """Custom exception for invalid target URLs."""
 
     def __init__(self, target, message="Invalid target URL provided"):
-        self.message = f"{message}: {target}"
+        self.message = f"{message}: '{target}'"
         super().__init__(self.message)
 
 
@@ -47,18 +47,19 @@ class ZapRunner:
         self.request_proxies = {"http": self.zap_api_url, "https": self.zap_api_url}
         self.zap = ZAPv2(apikey=api_key, proxies=self.request_proxies)
         version = self.zap.core.version
+
         if not version:
             raise RuntimeError(f"could not connect to remote zap at {self.zap_api_url}")
         print(f"connected to remote zap version {version}")
         self.create_context()
 
     def create_context(self):
-        self.context_id=self.zap.context.new_context(self.context_name)
+        self.context_id = self.zap.context.new_context(self.context_name)
         print(f"context is {self.zap.context.context(self.context_name)}")
 
-    def set_include_in_context(self, logout_url: str, target_url: str):
+    def set_include_in_context(self, target_url: str, logout_url: str = ""):
         exclude_url = logout_url
-        include_url = f"{target_url}.*"  # 'http://localhost:8090/bodgeit.*'
+        include_url = f"{target_url}.*"
         self.zap.context.include_in_context(self.context_name, include_url)
         self.excluded_regexp = f"^(?=.*\b{include_url}\b)(?!.*\b{exclude_url}\b).*$"
         self.zap.context.exclude_from_context(self.context_name, self.excluded_regexp)
@@ -103,11 +104,16 @@ class ZapRunner:
         print(f"User Auth Configured for user {user} with username {username}")
         return self.user_id
 
-    def start_spider(self, user_id):
+    def start_authenticated_spider(self, user_id):
         scan_id = self.zap.spider.scan_as_user(
             self.context_id, user_id, self.target_url, recurse="true"
         )
         print(f"Started Spidering with Authentication for zap userid: {user_id}")
+        return scan_id
+
+    def start_spider(self):
+        scan_id = self.zap.spider.scan(url=self.target_url, recurse=False,subtreeonly=True)
+        print(f"Started Spidering")
         return scan_id
 
     def get_spider_status(self, scanID):
@@ -122,6 +128,18 @@ class ZapRunner:
             url=self.target_url,
             contextid=self.context_id,
             userid=self.user_id,
+            recurse=False,
+            apikey=self.api_key,
+        )
+
+    def active_scan(self, scan_duration):
+        self.zap.ascan.set_option_max_scan_duration_in_mins(scan_duration)
+        self.zap.ascan.exclude_from_scan(
+            regex=self.excluded_regexp, apikey=self.api_key
+        )
+        return self.zap.ascan.scan(
+            url=self.target_url,
+            contextid=self.context_id,
             recurse=False,
             apikey=self.api_key,
         )
@@ -230,7 +248,16 @@ def main():
     )
 
     args = parser.parse_args()
+    if args.username and args.password:
+        run_zap_authenticated_scan(args)
+    else:
+        run_zap_baseline_scan(args)
 
+
+def run_zap_authenticated_scan(args):
+    print(
+        f"received a username and a password, running an authenticated scan for target: '{args.target}'"
+    )
     sub_target_list = args.sub_targets.split(",") if args.sub_targets else []
 
     runner = ZapRunner(api_key=args.api_key, target_url=args.target)
@@ -240,7 +267,7 @@ def main():
     )
     runner.set_include_in_context(logout_url=args.logout_url, target_url=args.target)
     runner.set_logged_in_indicator(logged_in_regexp=args.login_indicator)
-    spider_id = runner.start_spider(user_id=user_id_response)
+    spider_id = runner.start_authenticated_spider(user_id=user_id_response)
 
     spider_status = runner.get_spider_status(spider_id)
     while "100" not in spider_status:
@@ -259,6 +286,32 @@ def main():
         f"report stored successfully at: {runner.get_report(report_dir=args.report_dir,filename=args.report_name)}"
     )
 
+
+def run_zap_baseline_scan(args):
+    print(
+        f"did not receive a username and a password, running an unauthenticated baseline scan for target '{args.target}'"
+    )
+    runner = ZapRunner(api_key=args.api_key, target_url=args.target)
+    runner.set_include_in_context(target_url=args.target)
+    spider_id = runner.start_spider()
+    spider_status = runner.get_spider_status(spider_id)
+    while "100" not in spider_status:
+        print(f"spider scan status: {spider_status}%")
+        time.sleep(10)
+        spider_status = runner.get_spider_status(spider_id)
+    print("finished spidering")
+    
+    print("running active scan")
+    scan_id = runner.active_scan(args.max_scan_duration)
+    scan_status = runner.get_scan_status(scanID=scan_id)
+    while "100" not in scan_status:
+        print(f"active scan status: {scan_status}%")
+        time.sleep(10)
+        scan_status = runner.get_scan_status(scanID=scan_id)
+    print("finished active scan")
+    print(
+        f"report stored successfully at: {runner.get_report(report_dir=args.report_dir,filename=args.report_name)}"
+    )
 
 if __name__ == "__main__":
     main()
