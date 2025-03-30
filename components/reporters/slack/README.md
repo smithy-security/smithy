@@ -14,17 +14,3 @@ as well as the following:
 | Environment Variable       | Type   | Required | Default | Description                                                             |
 |----------------------------|--------|----------|---------|-------------------------------------------------------------------------|
 | SLACK\_WEBHOOK     | string | yes      | -       | The slack webhook to POST results to|
-
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```
