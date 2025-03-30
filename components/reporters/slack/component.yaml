@@ -4,9 +4,9 @@ type: reporter
 parameters:
   - name: slack_webhook
     type: string
-    value: ""
 steps:
   - name: slack
     image: components/reporters/slack
+    executable: /bin/app
     env_vars:
-      - SLACK_WEBHOOK: {{ .parameters.slack_webhook }}
+      SLACK_WEBHOOK: {{ .parameters.slack_webhook }}
