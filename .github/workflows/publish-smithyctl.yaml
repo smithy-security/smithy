@@ -9,7 +9,7 @@ on:
 
 permissions:
   # Grant the ability to checkout the repository
-  contents: read
+  contents: write
 
 jobs:
   release:
@@ -36,7 +36,10 @@ jobs:
         cd bin/smithyctl/cmd/linux/amd64/
         tar --create --file smithyctl-linux-amd64-${{ steps.tag_info.outputs.version }}.tar.gz --verbose --gzip smithyctl
 
-    - uses: actions/upload-artifact@v4
+    - uses: softprops/action-gh-release@v2
       with:
-        name: smithyctl-linux-amd64-${{ steps.tag_info.outputs.version }}
-        path: bin/smithyctl/cmd/linux/amd64/smithyctl-linux-amd64-${{ steps.tag_info.outputs.version }}.tar.gz
+        repository: smithy-security/smithy
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: "Smithyctl Binary for Linux Amd64 ${{ steps.tag_info.outputs.version }}"
+        name: smithyctl-${{ steps.tag_info.outputs.version }}
+        files: bin/smithyctl/cmd/linux/amd64/smithyctl-linux-amd64-${{ steps.tag_info.outputs.version }}.tar.gz
