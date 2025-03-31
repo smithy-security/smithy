@@ -1,0 +1,42 @@
+---
+name: Publish Smithyctl
+run-name: Build ${{ github.ref_name }}
+
+on:
+  push:
+    tags:
+    - 'smithyctl/v[0-9].[0-9].[0-9]*'
+
+permissions:
+  # Grant the ability to checkout the repository
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: smithyctl/go.mod
+
+    - name: Extract tag details
+      id: tag_info
+      run: |
+        TAG=${GITHUB_REF#refs/tags/}
+        VERSION=$(echo ${TAG} | cut -d/ -f2)
+        echo "version=${VERSION}" >> ${GITHUB_OUTPUT}
+    
+    - name: Build Smithyctl
+      run: |
+        make smithyctl/bin
+        cd bin/smithyctl/cmd/linux/amd64/
+        tar --create --file smithyctl-linux-amd64-${{ steps.tag_info.outputs.version }}.tar.gz --verbose --gzip smithyctl
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: smithyctl-linux-amd64-${{ steps.tag_info.outputs.version }}
+        path: bin/smithyctl/cmd/linux/amd64/smithyctl-linux-amd64-${{ steps.tag_info.outputs.version }}.tar.gz
