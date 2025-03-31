@@ -4,7 +4,7 @@ run-name: Build ${{ github.ref_name }}
 on:
   push:
     tags:
-      # Matches: new-components/scanners/gosec/v1.0.0 or new-components/scanners/gosec/v1.0.0-alpha3 for example.
+      # Matches: components/scanners/gosec/v1.0.0 or components/scanners/gosec/v1.0.0-alpha3 for example.
       - 'components/targets/*/v[0-9].[0-9].[0-9]*'
       - 'components/scanners/*/v[0-9].[0-9].[0-9]*'
       - 'components/enrichers/*/v[0-9].[0-9].[0-9]*'
