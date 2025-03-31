@@ -11,6 +11,10 @@ on:
       - 'components/filters/*/v[0-9].[0-9].[0-9]*'
       - 'components/reporters/*/v[0-9].[0-9].[0-9]*'
 
+permissions:
+  # Grant the ability to checkout the repository
+  contents: read
+
 jobs:
   package:
     runs-on: ubuntu-latest
