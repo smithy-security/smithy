@@ -6,7 +6,7 @@ parameters:
     type: string
     value: ""
 steps:
-  - name:
+  - name: slack
     image: components/reporters/slack
     env_vars:
       - SLACK_WEBHOOK: {{ .parameters.slack_webhook }}

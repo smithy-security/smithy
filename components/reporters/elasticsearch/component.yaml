@@ -12,7 +12,7 @@ parameters:
     type: string
     value: ""
 steps:
-  - name:
+  - name: elasticsearch
     image: components/reporters/elasticsearch
     executable: /bin/app
     env_vars:

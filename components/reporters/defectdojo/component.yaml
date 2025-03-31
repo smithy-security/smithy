@@ -15,7 +15,7 @@ parameters:
     type: string
     value: ""
 steps:
-  - name:
+  - name: defectdojo
     image: components/reporters/defectdojo
     executable: /bin/app
     env_vars:
