@@ -32,10 +32,9 @@ parameters:
 steps:
   - name: run-authenticated-zap-scan
     image: components/scanners/zaproxy/zap-authenticated-scan
-    executable: /bin/bash
+    executable: /workdir/venv/bin/python3
     args:
-    - -c 
-    - /workdir/entrypoint.sh "${API_KEY}"
+    - /workdir/zap-authenticated-scan.py
     env_vars:
       LOGIN_URL: "{{ .parameters.login_url }}"
       LOGIN_INDICATOR: "{{ .parameters.login_regexp }}"
