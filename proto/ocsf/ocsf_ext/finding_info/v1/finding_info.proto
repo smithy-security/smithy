@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package finding_info.v1;
 
+import "ocsf_schema/v1/ocsf_schema.proto";
+
 option go_package = "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1";
 
 // DataSource is used to define Data Sources described on https://schema.ocsf.io/1.3.0/objects/finding_info.
@@ -54,6 +56,7 @@ message Enrichment {
     ENRICHMENT_TYPE_UNSPECIFIED = 0;
     ENRICHMENT_TYPE_CORRELATION = 1;
     ENRICHMENT_TYPE_DUPLICATION = 2;
+    ENRICHMENT_INVESTIGATION = 3;
   }
 
   // if it has this enrichment at all, the finding is a duplicate
@@ -66,8 +69,14 @@ message Enrichment {
 
   EnrichmentType enrichment_type = 1;
 
+  // status of the finding after a user investigation
+  message InvestigationEnrichment {
+    ocsf_schema.v1.IncidentFinding.VerdictId status = 1;
+  }
+
   oneof enrichment {
     DuplicateEnrichment duplicate = 2;
     CorrelationEnrichment correlations = 3;
+    InvestigationEnrichment investigations = 4;
   }
 }
