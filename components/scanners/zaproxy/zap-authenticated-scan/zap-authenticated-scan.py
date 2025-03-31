@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-
+import sys
+import signal
+import subprocess
 import argparse
 import os
 import time
@@ -30,6 +32,7 @@ class ZapRunner:
     context_name: str = "Default Context"
     zap: ZAPv2
     zap_api_url: str
+    zap_process:None
 
     def __init__(
         self, api_key: str, target_url: str, host: str = "localhost", port: int = 8090
@@ -46,13 +49,44 @@ class ZapRunner:
         self.zap_api_url = f"http://{host}:{port}"
         self.request_proxies = {"http": self.zap_api_url, "https": self.zap_api_url}
         self.zap = ZAPv2(apikey=api_key, proxies=self.request_proxies)
+        
+        self.start_zap()
+        self.wait_for_zap_to_start()
+        self.check_connection()
+        self.create_context()
+
+    def wait_for_zap_to_start(self):
+        print('Sleeping 15 seconds to let zap init')
+        time.sleep(15)
+        
+    def start_zap(self):
+        print(f"initializing zap, listening on localhost:8090")
+        self.zap_process = subprocess.Popen(["/zap/zap.sh",
+                                             "-daemon",
+                                             "-silent",
+                                             "-notel",
+                                             "-config", 
+                                            f"api.key={self.api_key}",
+                                             "-host",
+                                             "localhost",
+                                             "-port",
+                                             "8090"],
+                                             stdout=sys.stdout, stderr=sys.stderr, text=True)
+        print(f"initializing zap, subprocess success")
+        
+    def stop_zap(self):
+        print(f"shutting down zap, {self.zap.core.shutdown(apikey=self.api_key)}") # stop zap
+        time.sleep(10)
+        os.killpg(os.getpgid(self.zap_process.pid), signal.SIGTERM) # politely
+
+
+    def check_connection(self):
         version = self.zap.core.version
 
         if not version:
             raise RuntimeError(f"could not connect to remote zap at {self.zap_api_url}")
         print(f"connected to remote zap version {version}")
-        self.create_context()
-
+    
     def create_context(self):
         self.context_id = self.zap.context.new_context(self.context_name)
         print(f"context is {self.zap.context.context(self.context_name)}")
@@ -248,19 +282,22 @@ def main():
     )
 
     args = parser.parse_args()
-    if args.username and args.password:
-        run_zap_authenticated_scan(args)
-    else:
-        run_zap_baseline_scan(args)
+    runner = ZapRunner(api_key=args.api_key, target_url=args.target)
+    try:
+        if args.username and args.password:
+            run_zap_authenticated_scan(args,runner)
+        else:
+            run_zap_baseline_scan(args,runner)
+    finally:
+        runner.stop_zap()
 
 
-def run_zap_authenticated_scan(args):
+def run_zap_authenticated_scan(args,runner:ZapRunner):
     print(
         f"received a username and a password, running an authenticated scan for target: '{args.target}'"
     )
     sub_target_list = args.sub_targets.split(",") if args.sub_targets else []
 
-    runner = ZapRunner(api_key=args.api_key, target_url=args.target)
     runner.set_form_based_auth(login_url=args.login_url)
     user_id_response = runner.set_user_auth_config(
         user=args.username, username=args.username, password=args.password
@@ -287,11 +324,11 @@ def run_zap_authenticated_scan(args):
     )
 
 
-def run_zap_baseline_scan(args):
+def run_zap_baseline_scan(args, runner:ZapRunner):
     print(
         f"did not receive a username and a password, running an unauthenticated baseline scan for target '{args.target}'"
     )
-    runner = ZapRunner(api_key=args.api_key, target_url=args.target)
+
     runner.set_include_in_context(target_url=args.target)
     spider_id = runner.start_spider()
     spider_status = runner.get_spider_status(spider_id)
@@ -313,5 +350,7 @@ def run_zap_baseline_scan(args):
         f"report stored successfully at: {runner.get_report(report_dir=args.report_dir,filename=args.report_name)}"
     )
 
+
+    
 if __name__ == "__main__":
     main()

@@ -4,7 +4,6 @@ FROM zaproxy/zap-stable:latest
 # zap has python so we can just copy a script here
 COPY zap-authenticated-scan.py /workdir/zap-authenticated-scan.py
 COPY requirements.txt /workdir/requirements.txt
-COPY entrypoint.sh /workdir/entrypoint.sh
 WORKDIR /workdir
 
 USER root
@@ -17,6 +16,8 @@ USER zap
 RUN virtualenv venv && \
     . venv/bin/activate && \
     pip install -r requirements.txt && \
-    chmod +x entrypoint.sh
+    chmod +x zap-authenticated-scan.py
 
-ENTRYPOINT [ "/workdir/entrypoint.sh" ]
+ENV HTTP_PROXY='http://localhost:8090'
+ENV HTTPS_PROXY='http://localhost:8090'
+ENTRYPOINT ["./venv/bin/python3", "/workdir/zap-authenticated-scan.py" ]
