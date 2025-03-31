@@ -67,7 +67,7 @@ cover-go: test-go
 tests: test-go
 
 install-go-fmt-tools:
-	@go install github.com/bufbuild/buf/cmd/buf@v1.28.1
+	@go install github.com/bufbuild/buf/cmd/buf@v1.45.0
 	@go install golang.org/x/tools/cmd/goimports@v0.31.0
 
 $(go_fmt_paths):
