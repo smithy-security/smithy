@@ -15,15 +15,14 @@ Run will:
   * `reporter`
 
 ```shell
-smithyctl workflow run
+smithyctl workflow run [FLAGS] SPEC_PATH
 ```
 
 ## Flags
 
 | Flag                        | Description                                                        | Default                                |
 |-----------------------------|--------------------------------------------------------------------|----------------------------------------|
-| `spec-path`                 | is the path to the component's `workflow.yaml` file.               | -                                      |
-| `overrides-path`            | is the path to workflow overrides.                                 | -                                      |
+| `overrides`                 | is the path to workflow overrides.                                 | -                                      |
 | `registry-url`              | the base URL of the OCI registry                                   | `localhost:5000`                       |
 | `registry-auth-enabled`     | enables authentication to push artifact to an OCI registry.        | `false`                                |
 | `registry-auth-username`    | the username for authenticating to the OCI registry.               | `""`                                   |
@@ -35,6 +34,8 @@ smithyctl workflow run
 | `image-namespace`           | namespace that will be added to all the images built by the system | smithy-security/smithy                 |
 | `base-component-dockerfile` | base Dockerfile to use to build all the images                     | components/Dockerfile                  |
 
+SPEC\_PATH: the path to the workflow YAML listing all the components that should be used
+
 ## Example
 
 ### With remote packages - ghcr.io
@@ -43,11 +44,11 @@ smithyctl workflow run
 smithyctl \
   workflow \
     run \
-      --spec-path=path/to/workflow.yaml \
       --registry-auth-enabled=true \
       --registry-auth-username=$USERNAME \ 
       --registry-auth-password=$PASSWORD \
-      --registry-url=ghcr.io
+      --registry-url=ghcr.io \
+      path/to/workflow.yaml
 ```
 
 ### With local components - docker or local references
@@ -56,6 +57,6 @@ smithyctl \
 smithyctl \
   workflow \
     run \
-      --spec-path=path/to/workflow.yaml \
-      --build-component-images=true
+      --build-component-images=true \
+      path/to/workflow.yaml
 ```
