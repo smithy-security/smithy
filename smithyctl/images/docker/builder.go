@@ -20,7 +20,7 @@ import (
 
 	"github.com/smithy-security/pkg/utils"
 
-	"github.com/smithy-security/smithy/smithyctl/pkg/images"
+	"github.com/smithy-security/smithy/smithyctl/images"
 )
 
 // builderOptions is a struct that defines common properties and behaviour of all the

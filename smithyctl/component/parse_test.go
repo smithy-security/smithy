@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
+	"github.com/smithy-security/smithy/smithyctl/component"
 )
 
 func TestParseComponentSpec(t *testing.T) {

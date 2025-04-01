@@ -12,9 +12,9 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
-	"github.com/smithy-security/smithy/smithyctl/pkg/images"
-	dockerimages "github.com/smithy-security/smithy/smithyctl/pkg/images/docker"
+	"github.com/smithy-security/smithy/smithyctl/component"
+	"github.com/smithy-security/smithy/smithyctl/images"
+	dockerimages "github.com/smithy-security/smithy/smithyctl/images/docker"
 )
 
 var buildCmdFlags buildFlags

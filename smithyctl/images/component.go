@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"regexp"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -33,12 +33,6 @@ var (
 		),
 		"|",
 	)
-	// componentRepositoryRegex matches component directories such as
-	// 1. components/bla/scanners/gosec
-	// 2. components/scanners/component
-	// 3. scanners/bla
-	// 4. components/scanners/some-scanner/helper
-	componentRepositoryRegex = regexp.MustCompile(fmt.Sprintf("^([a-z-_]+/)*(%s)/[a-z-_]+(/[a-z-_]+)?$", componentPluralisedTypeChoice))
 )
 
 // resolutionOptions is a struct that defines common properties of all the
@@ -92,7 +86,8 @@ func WithImageReplacements(imageReplacements map[string]string) ResolutionOption
 	}
 }
 
-// WithImageProcessor adds a processor that will modify
+// WithImageProcessor adds a processor that will modify the image in an
+// arbitrary way
 func WithImageProcessor(processor ImageRepoProcessor) ResolutionOptionFn {
 	return func(o *resolutionOptions) error {
 		if utils.IsNil(processor) {
@@ -136,7 +131,14 @@ type ComponentRepository struct {
 }
 
 func replaceImageURL(replacements map[string]string, ref *name.Tag) (*name.Tag, error) {
-	if replacement, exists := replacements[ref.Name()]; exists {
+	// there might be a replacement for the complete image URL:tag or there
+	// might be a replacement for just the repository
+	replacement, exists := replacements[ref.Name()]
+	if !exists {
+		replacement, exists = replacements[ref.RepositoryStr()]
+	}
+
+	if exists {
 		parsedReplacement, err := name.NewTag(replacement)
 		if err != nil {
 			return nil, errors.Errorf("%s => %s: could not parse image replacement image: %w", ref.Name(), replacement, err)
@@ -145,7 +147,7 @@ func replaceImageURL(replacements map[string]string, ref *name.Tag) (*name.Tag, 
 		return &parsedReplacement, nil
 	}
 
-	return ref, nil
+	return nil, nil
 }
 
 // ParseComponentRepository parses the component image repository and verifies
@@ -165,38 +167,18 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 	}
 
 	replacedRef, replacementErr := replaceImageURL(opts.replacements, &parsedRef)
-
-	// a Smithy component image reference should be of the form
-	// some-folder/scanners/gosec and in order for us to be able to recognise
-	// it, it should be included in a component residing in the directory
-	// some-folder/scanners/gosec. if this is not the case, it's not recognised
-	// as a Smithy component image reference and we will just return the parsed
-	// image reference.
-	if !strings.HasPrefix(imageRef, componentDirectory) {
+	if replacedRef != nil {
 		return nil, replacedRef, replacementErr
+	} else if !filepath.IsLocal(imageRef) {
+		return nil, &parsedRef, nil
 	}
 
-	// a Smithy component image and its directory should be of the form
-	// some-folder/[one of our component types]/component-name
-	if !componentRepositoryRegex.MatchString(imageRef) {
-		return nil, replacedRef, replacementErr
+	fileInfo, err := os.Stat(imageRef)
+	if err != nil || !fileInfo.IsDir() {
+		return nil, &parsedRef, nil
 	}
 
 	// get the component type from the path
-	componentDirectoryParts := strings.Split(componentDirectory, "/")
-	rawComponentType := componentDirectoryParts[len(componentDirectoryParts)-2]
-	rawComponentType, exists := pluralToSingularComponentType[rawComponentType]
-	if !exists {
-		return nil, replacedRef, replacementErr
-	}
-
-	componentType, parsingErr := v1.ParseComponentType(rawComponentType)
-	if parsingErr != nil {
-		// could not parse the component type, return the final component type
-		// no need to bother the caller with the error
-		return nil, replacedRef, replacementErr
-	}
-
 	componentRepository := opts.imageRefProcessor.Process(
 		path.Join(
 			opts.namespace,
@@ -205,7 +187,6 @@ func ParseComponentRepository(componentPath, imageRef string, options ...Resolut
 	)
 
 	cr := &ComponentRepository{
-		componentType:      componentType,
 		componentNamespace: opts.namespace,
 		componentName: strings.TrimLeft(
 			strings.Replace(
@@ -242,16 +223,6 @@ func (cr *ComponentRepository) Tags() []string {
 // It is relative to the root of the repository
 func (cr *ComponentRepository) Directory() string {
 	return cr.directory
-}
-
-// Type returns the component type of the component
-func (cr *ComponentRepository) Type() v1.ComponentType {
-	return cr.componentType
-}
-
-// Name returns the name of the component
-func (cr *ComponentRepository) Name() string {
-	return cr.componentName
 }
 
 // Registry returns the name of the component

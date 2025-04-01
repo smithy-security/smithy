@@ -12,7 +12,7 @@ import (
 
 	"github.com/smithy-security/pkg/utils"
 
-	"github.com/smithy-security/smithy/smithyctl/pkg/images"
+	"github.com/smithy-security/smithy/smithyctl/images"
 )
 
 type dockerPuller interface {
