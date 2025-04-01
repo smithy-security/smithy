@@ -11,8 +11,8 @@ import (
 	"github.com/smithy-security/smithy/smithyctl/internal/command/workflow"
 	"github.com/smithy-security/smithy/smithyctl/internal/engine"
 	dockerexecutor "github.com/smithy-security/smithy/smithyctl/internal/engine/docker"
-	"github.com/smithy-security/smithy/smithyctl/internal/images"
-	dockerimages "github.com/smithy-security/smithy/smithyctl/internal/images/docker"
+	"github.com/smithy-security/smithy/smithyctl/pkg/images"
+	dockerimages "github.com/smithy-security/smithy/smithyctl/pkg/images/docker"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
