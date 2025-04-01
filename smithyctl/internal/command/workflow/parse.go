@@ -434,6 +434,9 @@ func renderComponents(components []*v1.Component) error {
 				"sourceCodeWorkspace": func() string {
 					return "{{ sourceCodeWorkspace }}"
 				},
+				"targetMetadataWorkspace": func() string {
+					return "{{ targetMetadataWorkspace }}"
+				},
 			},
 		)
 
