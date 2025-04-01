@@ -2,6 +2,7 @@ package workflow
 
 import (
 	"context"
+	"os"
 
 	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
@@ -19,7 +20,6 @@ import (
 var runCmdFlags runFlags
 
 type runFlags struct {
-	specPath      string
 	overridesPath string
 
 	registryURL            string
@@ -42,7 +42,7 @@ func NewRunCommand() *cobra.Command {
 		Use:   "run",
 		Short: "Allows running workflows",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := runWorkflow(cmd.Context(), runCmdFlags); err != nil {
+			if err := runWorkflow(cmd.Context(), runCmdFlags, args); err != nil {
 				return errors.Errorf("unexpected failure: %w", err)
 			}
 			return nil
@@ -52,16 +52,8 @@ func NewRunCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&runCmdFlags.specPath,
-			"spec-path",
-			".",
-			"the location of the workflow spec file",
-		)
-	cmd.
-		Flags().
-		StringVar(
 			&runCmdFlags.overridesPath,
-			"overrides-path",
+			"overrides",
 			"",
 			"the location of the workflow overrides file",
 		)
@@ -149,7 +141,18 @@ func NewRunCommand() *cobra.Command {
 	return cmd
 }
 
-func runWorkflow(ctx context.Context, flags runFlags) error {
+func runWorkflow(ctx context.Context, flags runFlags, args []string) error {
+	if len(args) != 1 {
+		return errors.New("you need to set exactly one positional argument with the path to the workflow spec")
+	}
+
+	workflowPath := args[0]
+	if info, err := os.Stat(workflowPath); err != nil {
+		return errors.Errorf("%s: could not find component YAML spec: %w", workflowPath, err)
+	} else if info.IsDir() || !info.Mode().IsRegular() {
+		return errors.Errorf("path should be pointing to a component YAML spec: %s", workflowPath)
+	}
+
 	reg, err := registry.New(
 		flags.registryURL,
 		flags.registryBaseRepository,
@@ -196,7 +199,7 @@ func runWorkflow(ctx context.Context, flags runFlags) error {
 	wf, err := parser.Parse(
 		ctx,
 		workflow.ParserConfig{
-			SpecPath:       flags.specPath,
+			SpecPath:       workflowPath,
 			OverridesPath:  flags.overridesPath,
 			ResolutionOpts: imageResolutionOptions,
 		},
