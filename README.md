@@ -38,7 +38,7 @@ Clone this repository `git clone https://github.com/smithy-security/smithy.git` 
 following command from within it:
 
 ```shell
-smithyctl workflow run --spec-path=examples/golang/workflow.yaml --build-component-images=true
+smithyctl workflow run --build-component-images=true examples/golang/workflow.yaml
 ```
 
 Check the findings in the logs.
