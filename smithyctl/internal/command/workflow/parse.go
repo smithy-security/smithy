@@ -19,8 +19,8 @@ import (
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
-	"github.com/smithy-security/smithy/smithyctl/pkg/images"
-	dockerimages "github.com/smithy-security/smithy/smithyctl/pkg/images/docker"
+	"github.com/smithy-security/smithy/smithyctl/images"
+	dockerimages "github.com/smithy-security/smithy/smithyctl/images/docker"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 

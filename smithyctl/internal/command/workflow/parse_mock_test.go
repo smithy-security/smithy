@@ -15,7 +15,7 @@ import (
 
 	"github.com/distribution/reference"
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
-	"github.com/smithy-security/smithy/smithyctl/pkg/images"
+	"github.com/smithy-security/smithy/smithyctl/images"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 	"go.uber.org/mock/gomock"
 )

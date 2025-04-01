@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 
-	"github.com/smithy-security/smithy/smithyctl/pkg/images"
+	"github.com/smithy-security/smithy/smithyctl/images"
 )
 
 func TestBuilder(t *testing.T) {
