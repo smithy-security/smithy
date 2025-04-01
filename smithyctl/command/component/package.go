@@ -12,8 +12,8 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/smithy-security/smithy/smithyctl/internal/command/component"
-	"github.com/smithy-security/smithy/smithyctl/internal/images"
-	dockerimages "github.com/smithy-security/smithy/smithyctl/internal/images/docker"
+	"github.com/smithy-security/smithy/smithyctl/pkg/images"
+	dockerimages "github.com/smithy-security/smithy/smithyctl/pkg/images/docker"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 

@@ -11,7 +11,7 @@ import (
 	"github.com/smithy-security/pkg/utils"
 	"k8s.io/apimachinery/pkg/util/sets"
 
-	"github.com/smithy-security/smithy/smithyctl/internal/images"
+	"github.com/smithy-security/smithy/smithyctl/pkg/images"
 )
 
 type Client interface {
