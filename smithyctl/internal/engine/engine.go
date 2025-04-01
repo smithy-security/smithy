@@ -142,6 +142,25 @@ func (e *executor) renderVolumes(
 	var renderErr error
 	volumeRequests := map[string]volumeDescription{}
 
+	// this is used to create a temporary directory that will be mounted to all
+	// the containers of the execution if they request them
+	sharedTmpFolder := func(volumeReqID string) string {
+		if _, exists := e.volumeRequests[volumeReqID]; !exists {
+			tmpDir, err := e.conf.TmpFolderProvisioner(e.instanceID, volumeReqID)
+			if err != nil {
+				renderErr = errors.Join(renderErr, err)
+			}
+
+			e.volumeRequests[volumeReqID] = volumeDescription{
+				mountPath: fmt.Sprintf("/workspace/%s", volumeReqID),
+				hostPath:  tmpDir,
+			}
+		}
+
+		volumeRequests[volumeReqID] = e.volumeRequests[volumeReqID]
+		return e.volumeRequests[volumeReqID].mountPath
+	}
+
 	funcMaps := template.FuncMap{
 		"scratchWorkspace": func() string {
 			// this should be unique per component
@@ -161,21 +180,10 @@ func (e *executor) renderVolumes(
 			return volumeRequests["scratch"].mountPath
 		},
 		"sourceCodeWorkspace": func() string {
-			// this should be unique per execution
-			if _, exists := e.volumeRequests["source-code"]; !exists {
-				tmpDir, err := e.conf.TmpFolderProvisioner(e.instanceID, "source-code")
-				if err != nil {
-					renderErr = errors.Join(renderErr, err)
-				}
-
-				e.volumeRequests["source-code"] = volumeDescription{
-					mountPath: "/workspace/source-code",
-					hostPath:  tmpDir,
-				}
-			}
-
-			volumeRequests["source-code"] = e.volumeRequests["source-code"]
-			return e.volumeRequests["source-code"].mountPath
+			return sharedTmpFolder("source-code")
+		},
+		"targetMetadataWorkspace": func() string {
+			return sharedTmpFolder("target-metadata")
 		},
 	}
 
