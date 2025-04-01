@@ -61,7 +61,7 @@ $(go_test_paths):
 
 test-go: $(go_test_paths)
 
-go-cover: go-tests
+cover-go: test-go
 	@go tool cover -html=tests/output/cover.out -o=tests/output/cover.html && open tests/output/cover.html
 
 tests: test-go
