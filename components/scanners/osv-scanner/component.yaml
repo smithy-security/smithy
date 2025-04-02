@@ -1,0 +1,18 @@
+name: osv-scanner
+description: "Scans projects with google's osv-scanner, parses sarif findings into OCSF format"
+type: scanner
+steps:
+  - name: scanner
+    image: components/scanners/osv-scanner/scanner
+    executable: /bin/bash
+    env_vars: 
+      RAW_OUT_FILE: "{{ scratchWorkspace }}/output.json"
+    args:
+      - -c
+      - /entrypoint.sh scan source -r --format=sarif --call-analysis=true {{ sourceCodeWorkspace }}
+  - name: parser
+    image: components/scanners/osv-scanner
+    env_vars:
+      RAW_OUT_FILE: "{{ scratchWorkspace }}/output.json"
+      SCANNED_PROJECT_ROOT: "{{ sourceCodeWorkspace }}"
+    executable: /bin/app
