@@ -24,7 +24,6 @@ CONTAINER_REPO=ghcr.io/smithy-security/smithy
 SOURCE_CODE_REPO=https://github.com/smithy-security/smithy
 SMITHY_DEV_VERSION=$(shell echo $(latest_tag)$$([ $(commits_since_latest_tag) -eq 0 ] || echo "-$$(git log -n 1 --pretty='format:%h')" )$$([ -z "$$(git status --porcelain=v1 2>/dev/null)" ] || echo "-dirty" ))
 SMITHY_VERSION=$(shell (echo $(CONTAINER_REPO) | grep -q '^ghcr' && echo $(latest_tag)) || echo $(SMITHY_DEV_VERSION) )
-SMITHY_OSS_COMPONENTS_NAME=smithy-security-oss-components
 
 CTR_CLI=docker
 BUF_CONTAINER=buf:local
@@ -119,7 +118,7 @@ dep-update-proto: build-buf-container
 ########################################
 ########### RELEASE UTILITIES ##########
 ########################################
-.PHONY: check-branch check-tag-message patch-release-tag new-minor-release-tag new-major-release-tag
+.PHONY: check-branch check-tag-message
 
 check-branch:
 	@if [ $$(git branch --show-current | tr -d '\n') != "main" ]; \
@@ -165,6 +164,9 @@ $(component_major_tags): check-branch check-tag-message
 		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
 
+########################################
+############## SDK HELPERS #############
+########################################
 # new targets for components and smithyctl
 .PHONY: smithyctl/bin component-sdk-version bump-sdk-version
 
