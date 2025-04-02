@@ -1,0 +1,7 @@
+description: OSV-Scanner based workflow
+name: osv-scanner
+components:
+- component: file://components/targets/git-clone/component.yaml
+- component: file://components/scanners/osv-scanner/component.yaml
+- component: file://components/enrichers/custom-annotation/component.yaml
+- component: file://components/reporters/json-logger/component.yaml
