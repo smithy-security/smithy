@@ -1,0 +1,17 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: ""
+cdxgen:
+- name: "backend_server_url"
+  type: "string"
+  value: ""
+- name: "api_key"
+  type: "string"
+  value: ""
+- name: "project_name"
+  type: "string"
+  value: ""
+- name: "project_version"
+  type: "string"
+  value: ""

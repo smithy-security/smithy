@@ -1,0 +1,5 @@
+description: CodeQL based workflow
+name: codeql
+components:
+- component: file://components/targets/git-clone/component.yaml
+- component: file://components/scanners/cdxgen/component.yaml
