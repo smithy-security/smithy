@@ -1,0 +1,17 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: "https://github.com/sqreen/go-dvwa"
+cdxgen:
+- name: "backend_server_url"
+  type: "string"
+  value: "http://192.168.12.30:8081"
+- name: "api_key"
+  type: "string"
+  value: "odt_G5ylgJShgLMNXHV4Y8JsxDkRkRESfGhs"
+- name: "project_name"
+  type: "string"
+  value: "asdf"
+- name: "project_version"
+  type: "string"
+  value: ""

@@ -1,0 +1,33 @@
+name: cdxgen
+description: "Creates an SBOM then sends it to a remote Dependency Track"
+type: scanner
+parameters:
+  - name: backend_server_url
+    type: string
+    value: ""
+  - name: api_key
+    type: string
+    value: ""
+  - name: project_name
+    type: string
+    value: ""
+  - name: project_version
+    type: string
+    value: ""
+steps:
+  - name: run-cdxgen
+    image: ghcr.io/cyclonedx/cdxgen:latest
+
+    executable: "/bin/bash"
+    args:
+     - -c
+     - >-
+      node
+      "/opt/cdxgen/bin/cdxgen.js"
+      --server-url='{{.parameters.backend_server_url}}'
+      --skip-dt-tls-check=true
+      --api-key='{{.parameters.api_key}}'
+      --project-name='{{.parameters.project_name}}'
+      --project-version='{{.parameters.project_version}}'
+      --output={{scratchWorkspace}}/sbom.cyclonedx.json
+      '{{sourceCodeWorkspace}}'
