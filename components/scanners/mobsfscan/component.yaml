@@ -1,0 +1,17 @@
+name: mobsfscan
+description: "Runs MobSF Scan then parses findings into the OCSF format"
+type: scanner
+steps:
+  - name: run-mobsfscan
+    image: opensecurity/mobsfscan:latest
+    executable: /usr/local/bin/mobsfscan
+    args:
+    - --sarif
+    - --no-fail
+    - --output={{ scratchWorkspace }}/mobsfscan.json
+    - "{{ sourceCodeWorkspace }}"
+  - name: parser
+    image: components/scanners/mobsfscan
+    env_vars:
+      MOBSF_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/mobsfscan.json"
+    executable: /bin/app
