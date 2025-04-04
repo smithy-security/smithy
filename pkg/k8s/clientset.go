@@ -2,6 +2,12 @@ package k8s
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
+	"log/slog"
+	"strings"
+
+	"k8s.io/cli-runtime/pkg/printers"
 
 	"github.com/go-errors/errors"
 	tektonv1beta1client "github.com/tektoncd/pipeline/pkg/client/clientset/versioned/typed/pipeline/v1beta1"
@@ -89,6 +95,8 @@ func (c clientSet) Apply(ctx context.Context, obj runtime.Object, namespace stri
 		return errors.Errorf("%s/%s: could not convert runtime object into unstructured data: %w", namespace, name, err)
 	}
 
+	slog.Debug("applying object", "namespace", namespace, "forceConflicts", forceConflicts, "object", lazyObjectLogValue{obj})
+
 	_, err = c.dynamicClient.
 		Resource(gvr.Resource).
 		Namespace(namespace).
@@ -112,4 +120,24 @@ func (c clientSet) Apply(ctx context.Context, obj runtime.Object, namespace stri
 // RESTMapper returns an instance of properly configured RESTMapper
 func (c clientSet) RESTMapper() meta.RESTMapper {
 	return c.restMapper
+}
+
+type lazyObjectLogValue struct {
+	obj runtime.Object
+}
+
+// LogValue implements the slog.LogValuer interface.
+func (l lazyObjectLogValue) LogValue() slog.Value {
+	sb := strings.Builder{}
+	yamlPrinter := printers.YAMLPrinter{}
+
+	err := yamlPrinter.PrintObj(l.obj, &sb)
+	if err != nil {
+		return slog.StringValue(fmt.Sprintf("(failed to print object: %v)", err))
+	}
+
+	// Base64-encode the YAML to maintain indentation etc.
+	b64 := base64.StdEncoding.EncodeToString([]byte(sb.String()))
+
+	return slog.StringValue(b64)
 }
