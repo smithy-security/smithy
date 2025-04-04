@@ -1,0 +1,1563 @@
+{
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "mobsfscan",
+          "rules": [
+            {
+              "id": "hardcoded_password",
+              "name": "HardcodedPassword",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-798"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+            },
+            {
+              "id": "hardcoded_api_key",
+              "name": "HardcodedApiKey",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-798"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+            },
+            {
+              "id": "hardcoded_username",
+              "name": "HardcodedUsername",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-798"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+            },
+            {
+              "id": "hardcoded_secret",
+              "name": "HardcodedSecret",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-798"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+            },
+            {
+              "id": "android_logging",
+              "name": "AndroidLogging",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-532"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#logs"
+            },
+            {
+              "id": "android_manifest_allow_backup",
+              "name": "AndroidManifestAllowBackup",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-921"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#static-analysis-7"
+            },
+            {
+              "id": "android_manifest_usescleartext",
+              "name": "AndroidManifestUsescleartext",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-319"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05g-Testing-Network-Communication.md#testing-for-cleartext-traffic"
+            },
+            {
+              "id": "android_manifest_well_known_assetlinks",
+              "name": "AndroidManifestWellKnownAssetlinks",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-284"
+                ]
+              },
+              "helpUri": "https://github.com/OWASP/owasp-mastg/blob/master/Document/0x05a-Platform-Overview.md"
+            },
+            {
+              "id": "android_task_hijacking2",
+              "name": "AndroidTaskHijacking2",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-1021"
+                ]
+              },
+              "helpUri": "https://github.com/OWASP/owasp-mastg/blob/master/Document/0x05a-Platform-Overview.md"
+            },
+            {
+              "id": "android_manifest_base_config_cleartext",
+              "name": "AndroidManifestBaseConfigCleartext",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-319"
+                ]
+              },
+              "helpUri": "https://github.com/OWASP/owasp-mastg/blob/master/Document/0x05g-Testing-Network-Communication.md#testing-for-cleartext-traffic"
+            },
+            {
+              "id": "android_manifest_base_config_trust_user_certs",
+              "name": "AndroidManifestBaseConfigTrustUserCerts",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-295"
+                ]
+              },
+              "helpUri": "https://github.com/OWASP/owasp-mastg/blob/master/Document/0x05g-Testing-Network-Communication.md#analyzing-custom-trust-anchors"
+            },
+            {
+              "id": "android_prevent_screenshot",
+              "name": "AndroidPreventScreenshot",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-200"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#finding-sensitive-information-in-auto-generated-screenshots-mstg-storage-9"
+            },
+            {
+              "id": "android_certificate_pinning",
+              "name": "AndroidCertificatePinning",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-295"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05g-Testing-Network-Communication.md#testing-custom-certificate-stores-and-certificate-pinning-mstg-network-4"
+            },
+            {
+              "id": "android_certificate_transparency",
+              "name": "AndroidCertificateTransparency",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-295"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05g-Testing-Network-Communication.md#testing-custom-certificate-stores-and-certificate-pinning-mstg-network-4"
+            },
+            {
+              "id": "android_safetynet_api",
+              "name": "AndroidSafetynetApi",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-353"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05j-Testing-Resiliency-Against-Reverse-Engineering.md#testing-root-detection-mstg-resilience-1"
+            },
+            {
+              "id": "android_detect_tapjacking",
+              "name": "AndroidDetectTapjacking",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-200"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05h-Testing-Platform-Interaction.md#testing-for-overlay-attacks-mstg-platform-9"
+            },
+            {
+              "id": "android_root_detection",
+              "name": "AndroidRootDetection",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-919"
+                ]
+              },
+              "helpUri": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05j-Testing-Resiliency-Against-Reverse-Engineering.md#testing-root-detection-mstg-resilience-1"
+            }
+          ],
+          "version": "0.4.5",
+          "informationUri": "https://github.com/MobSF/mobsfscan",
+          "semanticVersion": "0.4.5"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "endTimeUtc": "2025-04-04T11:30:45Z"
+        }
+      ],
+      "results": [
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                        Toast.makeText(AddPasswordActivity.this, \"Failed to add user\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 115,
+                  "endLine": 50,
+                  "startColumn": 25,
+                  "startLine": 50
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/AddPasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                    Toast.makeText(AddPasswordActivity.this, \"Username and password are required\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 127,
+                  "endLine": 53,
+                  "startColumn": 21,
+                  "startLine": 53
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/AddPasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String KEY_PASSWORD = \"registeredPassword\";"
+                  },
+                  "endColumn": 68,
+                  "endLine": 29,
+                  "startColumn": 5,
+                  "startLine": 29
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                        Toast.makeText(ChangePasswordActivity.this, \"Failed to validate token\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 124,
+                  "endLine": 97,
+                  "startColumn": 25,
+                  "startLine": 97
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                            Toast.makeText(ChangePasswordActivity.this, \"Token is valid. Allowing password reset.\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 144,
+                  "endLine": 106,
+                  "startColumn": 29,
+                  "startLine": 106
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                            Toast.makeText(ChangePasswordActivity.this, \"Invalid token. Password reset failed.\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 141,
+                  "endLine": 111,
+                  "startColumn": 29,
+                  "startLine": 111
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                    Toast.makeText(ChangePasswordActivity.this, \"Password changed successfully\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 125,
+                  "endLine": 148,
+                  "startColumn": 21,
+                  "startLine": 148
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                    Toast.makeText(ChangePasswordActivity.this, \"Invalid existing password\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 121,
+                  "endLine": 151,
+                  "startColumn": 21,
+                  "startLine": 151
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String KEY_PASSWORD = \"registeredPassword\";"
+                  },
+                  "endColumn": 68,
+                  "endLine": 14,
+                  "startColumn": 5,
+                  "startLine": 14
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordReceiver.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    public static final String CHANGE_PASSWORD_ACTION = \"com.zin.dvac.CHANGE_PASSWORD_ACTION\";"
+                  },
+                  "endColumn": 94,
+                  "endLine": 15,
+                  "startColumn": 5,
+                  "startLine": 15
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordReceiver.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    public static final String TABLE_PASSWORDS = \"passwords\";"
+                  },
+                  "endColumn": 61,
+                  "endLine": 23,
+                  "startColumn": 5,
+                  "startLine": 23
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String COLUMN_PASSWORD = \"password\";"
+                  },
+                  "endColumn": 61,
+                  "endLine": 26,
+                  "startColumn": 5,
+                  "startLine": 26
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String CREATE_TABLE_PASSWORDS = \"CREATE TABLE \" + TABLE_PASSWORDS + \" (\" +\n            COLUMN_ID + \" INTEGER PRIMARY KEY AUTOINCREMENT,\" +\n            COLUMN_USERNAME + \" TEXT,\" +\n            COLUMN_PASSWORD + \" TEXT,\" +\n            COLUMN_DESCRIPTION + \" TEXT\" +\n            \")\";"
+                  },
+                  "endColumn": 16,
+                  "endLine": 40,
+                  "startColumn": 5,
+                  "startLine": 35
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "        db.delete(TABLE_PASSWORDS, COLUMN_ID + \" = ?\", new String[]{String.valueOf(id)});"
+                  },
+                  "endColumn": 90,
+                  "endLine": 170,
+                  "startColumn": 9,
+                  "startLine": 170
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                Toast.makeText(PasswordDetailActivity.this, \"Password deleted\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 108,
+                  "endLine": 64,
+                  "startColumn": 17,
+                  "startLine": 64
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordDetailActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded password in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                Toast.makeText(PasswordManagerActivity.this, \"Password deleted\", Toast.LENGTH_SHORT).show();"
+                  },
+                  "endColumn": 109,
+                  "endLine": 397,
+                  "startColumn": 17,
+                  "startLine": 397
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordManagerActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_password",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "A hardcoded Key is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String KEY_PASSWORD = \"registeredPassword\";"
+                  },
+                  "endColumn": 68,
+                  "endLine": 29,
+                  "startColumn": 5,
+                  "startLine": 29
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_api_key",
+          "ruleIndex": 1
+        },
+        {
+          "message": {
+            "text": "A hardcoded Key is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String KEY_PASSWORD = \"registeredPassword\";"
+                  },
+                  "endColumn": 68,
+                  "endLine": 14,
+                  "startColumn": 5,
+                  "startLine": 14
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/ChangePasswordReceiver.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_api_key",
+          "ruleIndex": 1
+        },
+        {
+          "message": {
+            "text": "A hardcoded username in plain text is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String COLUMN_USERNAME = \"username\";"
+                  },
+                  "endColumn": 61,
+                  "endLine": 25,
+                  "startColumn": 5,
+                  "startLine": 25
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_username",
+          "ruleIndex": 2
+        },
+        {
+          "message": {
+            "text": "A hardcoded secret is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String TABLE_SECRET = \"secret\";"
+                  },
+                  "endColumn": 56,
+                  "endLine": 42,
+                  "startColumn": 5,
+                  "startLine": 42
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_secret",
+          "ruleIndex": 3
+        },
+        {
+          "message": {
+            "text": "A hardcoded secret is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String COL_SECRET_ID = \"id\";"
+                  },
+                  "endColumn": 53,
+                  "endLine": 43,
+                  "startColumn": 5,
+                  "startLine": 43
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_secret",
+          "ruleIndex": 3
+        },
+        {
+          "message": {
+            "text": "A hardcoded secret is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String COL_SECRET_FLAG = \"flag\";"
+                  },
+                  "endColumn": 57,
+                  "endLine": 44,
+                  "startColumn": 5,
+                  "startLine": 44
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_secret",
+          "ruleIndex": 3
+        },
+        {
+          "message": {
+            "text": "A hardcoded secret is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String CREATE_TABLE_SECRET = \"CREATE TABLE \" + TABLE_SECRET + \"(\"\n            + COL_SECRET_ID + \" INTEGER PRIMARY KEY AUTOINCREMENT,\"\n            + COL_SECRET_FLAG + \" TEXT)\";"
+                  },
+                  "endColumn": 41,
+                  "endLine": 48,
+                  "startColumn": 5,
+                  "startLine": 46
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/DatabaseHelper.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_secret",
+          "ruleIndex": 3
+        },
+        {
+          "message": {
+            "text": "A hardcoded secret is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    private static final String SECRET_FILE_NAME = \"secret.txt\";"
+                  },
+                  "endColumn": 64,
+                  "endLine": 51,
+                  "startColumn": 5,
+                  "startLine": 51
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordManagerActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_secret",
+          "ruleIndex": 3
+        },
+        {
+          "message": {
+            "text": "A hardcoded secret is identified."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "        copyRawResourceToDataDir(R.raw.secret, SECRET_FILE_NAME);"
+                  },
+                  "endColumn": 66,
+                  "endLine": 90,
+                  "startColumn": 9,
+                  "startLine": 90
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordManagerActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M9: Reverse Engineering",
+            "masvs": "MSTG-STORAGE-14",
+            "cwe": "CWE-798: Use of Hard-coded Credentials",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#storing-a-key---example"
+          },
+          "ruleId": "hardcoded_secret",
+          "ruleIndex": 3
+        },
+        {
+          "message": {
+            "text": "The App logs information. Please ensure that sensitive information is never logged."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                        Log.e(TAG, \"Error: unrecognized command: \" + msg.what);"
+                  },
+                  "endColumn": 80,
+                  "endLine": 85,
+                  "startColumn": 25,
+                  "startLine": 85
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordExportService.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M1: Improper Platform Usage",
+            "masvs": "MSTG-STORAGE-3",
+            "cwe": "CWE-532: Insertion of Sensitive Information into Log File",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#logs"
+          },
+          "ruleId": "android_logging",
+          "ruleIndex": 4
+        },
+        {
+          "message": {
+            "text": "The App logs information. Please ensure that sensitive information is never logged."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                Log.e(TAG, \"Unable to send message: \" + command);"
+                  },
+                  "endColumn": 66,
+                  "endLine": 118,
+                  "startColumn": 17,
+                  "startLine": 118
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordExportService.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M1: Improper Platform Usage",
+            "masvs": "MSTG-STORAGE-3",
+            "cwe": "CWE-532: Insertion of Sensitive Information into Log File",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#logs"
+          },
+          "ruleId": "android_logging",
+          "ruleIndex": 4
+        },
+        {
+          "message": {
+            "text": "The App logs information. Please ensure that sensitive information is never logged."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));\n                String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));\n\n                // Do something with the contact information (e.g., display it, store it, etc.)\n                Log.d(\"Contact\", \"Name: \" + name + \", Phone Number: \" + phoneNumber);"
+                  },
+                  "endColumn": 86,
+                  "endLine": 249,
+                  "startColumn": 17,
+                  "startLine": 245
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordManagerActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M1: Improper Platform Usage",
+            "masvs": "MSTG-STORAGE-3",
+            "cwe": "CWE-532: Insertion of Sensitive Information into Log File",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#logs"
+          },
+          "ruleId": "android_logging",
+          "ruleIndex": 4
+        },
+        {
+          "message": {
+            "text": "The App logs information. Please ensure that sensitive information is never logged."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));\n\n                // Do something with the contact information (e.g., display it, store it, etc.)\n                Log.d(\"Contact\", \"Name: \" + name + \", Phone Number: \" + phoneNumber);"
+                  },
+                  "endColumn": 86,
+                  "endLine": 249,
+                  "startColumn": 17,
+                  "startLine": 246
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordManagerActivity.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M1: Improper Platform Usage",
+            "masvs": "MSTG-STORAGE-3",
+            "cwe": "CWE-532: Insertion of Sensitive Information into Log File",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#logs"
+          },
+          "ruleId": "android_logging",
+          "ruleIndex": 4
+        },
+        {
+          "message": {
+            "text": "The App logs information. Please ensure that sensitive information is never logged."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                        Socket clientSocket = serverSocket.accept();\n                        Log.d(TAG, \"Connection accepted from \" + clientSocket.getInetAddress().getHostAddress());"
+                  },
+                  "endColumn": 114,
+                  "endLine": 38,
+                  "startColumn": 25,
+                  "startLine": 37
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordSocketService.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M1: Improper Platform Usage",
+            "masvs": "MSTG-STORAGE-3",
+            "cwe": "CWE-532: Insertion of Sensitive Information into Log File",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#logs"
+          },
+          "ruleId": "android_logging",
+          "ruleIndex": 4
+        },
+        {
+          "message": {
+            "text": "The App logs information. Please ensure that sensitive information is never logged."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "                        Log.d(TAG, \"Connection accepted from \" + clientSocket.getInetAddress().getHostAddress());"
+                  },
+                  "endColumn": 114,
+                  "endLine": 38,
+                  "startColumn": 25,
+                  "startLine": 38
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/java/com/zin/dvac/PasswordSocketService.java"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M1: Improper Platform Usage",
+            "masvs": "MSTG-STORAGE-3",
+            "cwe": "CWE-532: Insertion of Sensitive Information into Log File",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#logs"
+          },
+          "ruleId": "android_logging",
+          "ruleIndex": 4
+        },
+        {
+          "message": {
+            "text": "This flag allows anyone to backup your application data via adb. It allows users who have enabled USB debugging to copy application data off of the device."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "android:allowBackup=true"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/AndroidManifest.xml"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "m1",
+            "masvs": "storage-8",
+            "cwe": "cwe-921",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#static-analysis-7"
+          },
+          "ruleId": "android_manifest_allow_backup",
+          "ruleIndex": 5
+        },
+        {
+          "message": {
+            "text": "The app intends to use cleartext network traffic, such as cleartext HTTP, FTP stacks, DownloadManager, and MediaPlayer. The default value for apps that target API level 27 or lower is \"true\". Apps that target API level 28 or higher default to \"false\". The key reason for avoiding cleartext traffic is the lack of confidentiality, authenticity, and protections against tampering; a network attacker can eavesdrop on transmitted data and also modify it without being detected."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "android:usesCleartextTraffic=true"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/AndroidManifest.xml"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "m3",
+            "masvs": "network-1",
+            "cwe": "cwe-319",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05g-Testing-Network-Communication.md#testing-for-cleartext-traffic"
+          },
+          "ruleId": "android_manifest_usescleartext",
+          "ruleIndex": 6
+        },
+        {
+          "message": {
+            "text": "App Link asset verification URL (https://zinja-coder.github.io/.well-known/assetlinks.json) not found or configured incorrectly. (Status code: 404). App Links allow users to redirect from a web URL/email to the mobile app. If this file is missing or incorrectly configured for the App Link host/domain, a malicious app can hijack such URLs. This may lead to phishing attacks, leak sensitive data in the URI, such as PII, OAuth tokens, magic link/password reset tokens and more. You must verify the App Link domain by hosting the assetlinks.json file and enabling verification via [android:autoVerify=\"true\"] in the Activity intent-filter."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "assetlinks.json file not found for android:host"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/AndroidManifest.xml"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "m1",
+            "masvs": "platform-1",
+            "cwe": "cwe-284",
+            "reference": "https://github.com/OWASP/owasp-mastg/blob/master/Document/0x05a-Platform-Overview.md"
+          },
+          "ruleId": "android_manifest_well_known_assetlinks",
+          "ruleIndex": 7
+        },
+        {
+          "message": {
+            "text": "Activity is found to be vulnerable to StrandHogg 2.0 task hijacking vulnerability. When vulnerable, it is possible for other applications to place a malicious activity on top of the activity stack of the vulnerable application. This makes the application an easy target for phishing attacks. The vulnerability can be remediated by setting the launch mode attribute to \"singleInstance\" and by setting an empty taskAffinity (taskAffinity=\"\"). You can also update the target SDK version (26) of the app to 29 or higher to fix this issue at platform level."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "Activity exported, targetSdk<29 and launchMode != singleInstance or taskAffinity is not empty"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/AndroidManifest.xml"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "m1",
+            "masvs": "platform-1",
+            "cwe": "cwe-1021",
+            "reference": "https://github.com/OWASP/owasp-mastg/blob/master/Document/0x05a-Platform-Overview.md"
+          },
+          "ruleId": "android_task_hijacking2",
+          "ruleIndex": 8
+        },
+        {
+          "message": {
+            "text": "App allows clear text HTTP communication. Disable this for production endpoints."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "base_config: cleartextTrafficPermitted=true"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/res/xml/network_security_config.xml"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "m3",
+            "masvs": "network-1",
+            "cwe": "cwe-319",
+            "reference": "https://github.com/OWASP/owasp-mastg/blob/master/Document/0x05g-Testing-Network-Communication.md#testing-for-cleartext-traffic"
+          },
+          "ruleId": "android_manifest_base_config_cleartext",
+          "ruleIndex": 9
+        },
+        {
+          "message": {
+            "text": "The network security base configuration trusts any certificate installed by the user. This can help increase the risk of MITM attacks."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "base_config: certificate src=user"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "file:///code/Damn-Vulnerable-Android-Components/app/src/main/res/xml/network_security_config.xml"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "m3",
+            "masvs": "network-3",
+            "cwe": "cwe-295",
+            "reference": "https://github.com/OWASP/owasp-mastg/blob/master/Document/0x05g-Testing-Network-Communication.md#analyzing-custom-trust-anchors"
+          },
+          "ruleId": "android_manifest_base_config_trust_user_certs",
+          "ruleIndex": 10
+        },
+        {
+          "message": {
+            "text": "This app does not have capabilities to prevent against Screenshots from Recent Task History/ Now On Tap etc."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "Missing Best Practice"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "/code/Damn-Vulnerable-Android-Components"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M2: Insecure Data Storage",
+            "masvs": "MSTG-STORAGE-9",
+            "cwe": "CWE-200: Information Exposure",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05d-Testing-Data-Storage.md#finding-sensitive-information-in-auto-generated-screenshots-mstg-storage-9"
+          },
+          "ruleId": "android_prevent_screenshot",
+          "ruleIndex": 11
+        },
+        {
+          "message": {
+            "text": "This app does not use a TLS/SSL certificate or public key pinning in code to detect or prevent MITM attacks in secure communication channel. Please verify if pinning is enabled in `network_security_config.xml`."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "Missing Best Practice"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "/code/Damn-Vulnerable-Android-Components"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M3: Insecure Communication",
+            "masvs": "MSTG-NETWORK-4",
+            "cwe": "CWE-295: Improper Certificate Validation",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05g-Testing-Network-Communication.md#testing-custom-certificate-stores-and-certificate-pinning-mstg-network-4"
+          },
+          "ruleId": "android_certificate_pinning",
+          "ruleIndex": 12
+        },
+        {
+          "message": {
+            "text": "This app does not enforce TLS Certificate Transparency that helps to detect SSL certificates that have been mistakenly issued by a certificate authority or maliciously acquired from an otherwise unimpeachable certificate authority."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "Missing Best Practice"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "/code/Damn-Vulnerable-Android-Components"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M3: Insecure Communication",
+            "masvs": "MSTG-NETWORK-4",
+            "cwe": "CWE-295: Improper Certificate Validation",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05g-Testing-Network-Communication.md#testing-custom-certificate-stores-and-certificate-pinning-mstg-network-4"
+          },
+          "ruleId": "android_certificate_transparency",
+          "ruleIndex": 13
+        },
+        {
+          "message": {
+            "text": "This app does not uses SafetyNet Attestation API that provides cryptographically-signed attestation, assessing the device's integrity. This check helps to ensure that the servers are interacting with the genuine app running on a genuine Android device. "
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "Missing Best Practice"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "/code/Damn-Vulnerable-Android-Components"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M8: Code Tampering",
+            "masvs": "MSTG-RESILIENCE-1",
+            "cwe": "CWE-353: Missing Support for Integrity Check",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05j-Testing-Resiliency-Against-Reverse-Engineering.md#testing-root-detection-mstg-resilience-1"
+          },
+          "ruleId": "android_safetynet_api",
+          "ruleIndex": 14
+        },
+        {
+          "message": {
+            "text": "This app does not have capabilities to prevent tapjacking attacks. An attacker can hijack the user's taps and tricks him into performing some critical operations that he did not intend to."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "Missing Best Practice"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "/code/Damn-Vulnerable-Android-Components"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M1: Improper Platform Usage",
+            "masvs": "MSTG-PLATFORM-9",
+            "cwe": "CWE-200: Information Exposure",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05h-Testing-Platform-Interaction.md#testing-for-overlay-attacks-mstg-platform-9"
+          },
+          "ruleId": "android_detect_tapjacking",
+          "ruleIndex": 15
+        },
+        {
+          "message": {
+            "text": "This app does not have root detection capabilities. Running a sensitive application on a rooted device questions the device integrity and affects users data."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "Missing Best Practice"
+                  },
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                },
+                "artifactLocation": {
+                  "uri": "/code/Damn-Vulnerable-Android-Components"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "owasp-mobile": "M8: Code Tampering",
+            "masvs": "MSTG-RESILIENCE-1",
+            "cwe": "CWE-919: Weaknesses in Mobile Applications",
+            "reference": "https://github.com/MobSF/owasp-mstg/blob/master/Document/0x05j-Testing-Resiliency-Against-Reverse-Engineering.md#testing-root-detection-mstg-resilience-1"
+          },
+          "ruleId": "android_root_detection",
+          "ruleIndex": 16
+        }
+      ]
+    }
+  ],
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"
+}
