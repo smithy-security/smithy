@@ -1,0 +1,11 @@
+/.idea/
+__pycache__
+.DS_Store
+.*.swp
+
+# Devenv
+.envrc
+.direnv
+.devenv*
+devenv.local.nix
+
