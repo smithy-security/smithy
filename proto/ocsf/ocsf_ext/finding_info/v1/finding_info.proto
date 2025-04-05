@@ -57,10 +57,14 @@ message Enrichment {
     ENRICHMENT_TYPE_CORRELATION = 1;
     ENRICHMENT_TYPE_DUPLICATION = 2;
     ENRICHMENT_INVESTIGATION = 3;
+    ENRICHMENT_FILTER=4;
   }
 
   // if it has this enrichment at all, the finding is a duplicate
   message DuplicateEnrichment {}
+
+  // if an issue has this enrichment at all, the finding should not be shown
+  message FilterEnrichment {}
 
   // a list of finding ids, of the other findings it has been correlated to
   message CorrelationEnrichment {
@@ -78,5 +82,6 @@ message Enrichment {
     DuplicateEnrichment duplicate = 2;
     CorrelationEnrichment correlations = 3;
     InvestigationEnrichment investigations = 4;
+    FilterEnrichment filter=5;
   }
 }
