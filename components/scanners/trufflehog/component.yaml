@@ -1,6 +1,6 @@
 name: "trufflehog"
 description: "Runs trufflehog against a target"
-type: "trufflehog"
+type: "scanner"
 parameters:
   - name: "target_type"
     type: "string"
