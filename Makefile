@@ -87,7 +87,7 @@ fmt-md:
 fmt: fmt-go fmt-proto fmt-md
 
 build-buf-container:
-	$(CTR_CLI) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf
+	@if [ ! -z "$($(CTR_CLI) images -q $(BUF_CONTAINER) 2> /dev/null)" ]; then $(CTR_CLI) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf; fi
 
 run-buf: build-buf-container
 	$(eval BUF_TMP_DP_FOLDER:=buf-tmp)
