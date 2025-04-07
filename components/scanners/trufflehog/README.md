@@ -19,26 +19,8 @@ as the following:
 |--------------------------|--------|----------|------------|---------------------------------------------------------|
 | TRUFFLEHOG\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the trufflehog report                 |
 | TRUFFLEHOG\_TARGET\_TYPE         | string | false    | repository | The type of target that was used to generate the report |
+| RAW\_OUT\_FILE  | string | yes | "{{ scratchWorkspace }}/trufflehog.json" | The path where to put the trufflehog report
 
 ## Test data
 
 The `trufflehog.json` file used in tests was generated with the following steps:
-
-* Cloning:
-
-```shell
-git clone https://github.com/smithy-security/e2e-monorepo
-```
-
-* Running trufflehog
-
-```shell
-docker run \
-    --rm -it -v "$PWD:/pwd" \
-     trufflesecurity/trufflehog:latest \
-     filesystem --json \
-     --no-fail \
-     --no-update \
-     --log-level=-1 \
-     --directory="/pwd"
-```

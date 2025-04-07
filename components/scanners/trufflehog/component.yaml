@@ -6,6 +6,15 @@ parameters:
     type: "string"
     value: "TARGET_TYPE_REPOSITORY"
 steps:
+  - name: "run-trufflehog"
+    image:  ghcr.io/trufflesecurity/trufflehog:3.88.23
+    executable: /bin/bash
+    args:
+      - -c
+      - >-
+        echo "Running trufflehog and sending output to {{ scratchWorkspace }}/trufflehog.json"  &&
+        /etc/entrypoint.sh filesystem --json --no-fail --directory="{{sourceCodeWorkspace}}"  |
+        tee {{ scratchWorkspace }}/trufflehog.json
   - name: "secret-scanner"
     image: "components/scanners/trufflehog"
     executable: "/bin/app"
