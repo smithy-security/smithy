@@ -1,5 +1,5 @@
 name: json-logger
-description: "Logs findings"
+description: "Logs findings in JSON format"
 type: reporter
 steps:
   - name: json-reporter

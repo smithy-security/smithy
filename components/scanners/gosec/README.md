@@ -15,21 +15,6 @@ as the following:
 | Environment Variable     | Type   | Required | Default    | Description                                             |
 |--------------------------|--------|----------|------------|---------------------------------------------------------|
 | GOSEC\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the gosec report                 |
-| GOSEC\_TARGET\_TYPE         | string | false    | repository | The type of target that was used to generate the report |
-
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```
 
 ## Test data
 

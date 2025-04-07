@@ -23,17 +23,3 @@ as the following:
 
 On AWS, you will need a new IAM user with programmatic access and
 with write permissions for your S3 bucket.
-
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```

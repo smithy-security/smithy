@@ -17,17 +17,3 @@ It also requires the following environment variables
 | DOJO\_API\_KEY | string | yes | -       | An API key for defectdojo |
 | DOJO\_API\_URL | string | yes | -       | The url for the remote defectdojo api, it needs to end in '/api/v2/' |
 | DOJO\_PRODUCT\_ID | string | yes | -       | The ID of the product in DefectDojo for which engagements and tests will be created |
-
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```

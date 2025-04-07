@@ -16,17 +16,3 @@ as well as the following:
 |----------------------------|--------|----------|---------|-------------------------------------------------------------------------|
 | CUSTOM\_ANNOTATION\_NAME     | string | yes      | -       | The name of the annotation to be added.                                 |
 | CUSTOM\_ANNOTATION\_VALUES   | string | no       | {}      | Json annotations to be added as annotation. For example '{"foo":"bar"}' |
-
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```

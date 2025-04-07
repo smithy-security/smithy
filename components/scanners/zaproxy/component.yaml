@@ -44,7 +44,7 @@ steps:
       PASSWORD: "{{ .parameters.password }}"
       TARGET: "{{ .parameters.target }}"
       REPORT_DIR: "{{ scratchWorkspace }}"
-      REPORT_FILENAME: zap-report.json"
+      REPORT_FILENAME: "zap-report.json"
       SCAN_DURATION_MINS: "{{ .parameters.scan_duration_mins }}"
       API_KEY: "{{ .parameters.api_key }}"
   - name: parser

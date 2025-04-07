@@ -14,22 +14,7 @@ as the following:
 | Environment Variable     | Type   | Required | Default    | Description                                             |
 |--------------------------|--------|----------|------------|---------------------------------------------------------|
 | NANCY\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the gosec report                 |
-| NANCY\_TARGET\_TYPE         | string | false    | repository | The type of target that was used to generate the report |
 | NANCY\_SCANNED\_PROJECT\_ROOT         | string | false    |  | The root of the project being scanned, used to find go.mod files and point at lines where fixes are needed |
-
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```
 
 ## Test data
 

@@ -16,20 +16,6 @@ as the following:
 | BANDIT\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the gosec report                 |
 | BANDIT\_TARGET\_TYPE         | string | false    | repository | The type of target that was used to generate the report |
 
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```
-
 ## Test data
 
 The `bandit.json` file used in tests was generated with the following steps:

@@ -12,18 +12,4 @@ environment variables defined [here](https://github.com/smithy-security/smithy/b
 
 | Environment Variable       | Type   | Required | Default | Description                                                             |
 |----------------------------|--------|----------|---------|-------------------------------------------------------------------------|
-| ATOM\_FILE\_PATH    | string | yes      | -       | Path to the file where atom has produced reachable slices.                     |
-
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```
+| ATOM\_FILE\_GLOB    | string | yes      | -       | Path to the file where atom has produced reachable slices.                     |
