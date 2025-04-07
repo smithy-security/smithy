@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"log/slog"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/smithy-security/smithy/sdk/component"
@@ -11,17 +14,31 @@ import (
 	v1 "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
-type SeverityFilter struct{}
+type SeverityFilter struct {
+	minimumSeverity v1.VulnerabilityFinding_SeverityId
+}
+
+func NewSeverityFilter() (*SeverityFilter, error) {
+	severityStr := os.Getenv("MINIMUM_SEVERITY")
+	if severityStr == "" {
+		severityStr = "MEDIUM" // Default to MEDIUM if not specified
+	}
+	severityStr = strings.ToUpper(severityStr)
+	severityId, ok := v1.VulnerabilityFinding_SeverityId_value["SEVERITY_ID_"+severityStr]
+	if !ok {
+		return nil, fmt.Errorf("invalid MINIMUM_SEVERITY value: %s. Must be one of: UNKNOWN, INFORMATIONAL, LOW, MEDIUM, HIGH, CRITICAL", severityStr)
+	}
+
+	return &SeverityFilter{
+		minimumSeverity: v1.VulnerabilityFinding_SeverityId(severityId),
+	}, nil
+}
 
 func (s SeverityFilter) Filter(ctx context.Context, findings []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, bool, error) {
 	component.LoggerFromContext(ctx).Info("Running Severity Filter")
 	findings_filtered := 0
 	for _, f := range findings {
-		switch f.Finding.SeverityId {
-		case v1.VulnerabilityFinding_SEVERITY_ID_UNKNOWN:
-		case v1.VulnerabilityFinding_SEVERITY_ID_INFORMATIONAL:
-		case v1.VulnerabilityFinding_SEVERITY_ID_LOW:
-		case v1.VulnerabilityFinding_SEVERITY_ID_MEDIUM:
+		if f.Finding.SeverityId >= s.minimumSeverity {
 			f.Finding.Enrichments = append(f.Finding.Enrichments, &v1.Enrichment{})
 			findings_filtered++
 		}
@@ -34,7 +51,12 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	if err := component.RunFilter(ctx, SeverityFilter{}); err != nil {
+	filter, err := NewSeverityFilter()
+	if err != nil {
+		log.Fatalf("failed to create severity filter: %v", err)
+	}
+
+	if err := component.RunFilter(ctx, *filter); err != nil {
 		log.Fatalf("unexpected run error: %v", err)
 	}
 }

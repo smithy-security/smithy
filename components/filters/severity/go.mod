@@ -2,7 +2,7 @@ module github.com/smithy-security/smithy/components/filters/severity
 
 go 1.23.7
 
-require github.com/smithy-security/smithy/sdk v0.0.7-alpha
+require github.com/smithy-security/smithy/sdk v0.0.7-alpha.0.20250407140010-7c059b0c7b96
 
 require (
 	ariga.io/atlas v0.29.0 // indirect
@@ -53,5 +53,5 @@ require (
 	golang.org/x/tools/cmd/cover v0.1.0-deprecated // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
 	google.golang.org/grpc v1.65.0 // indirect
-	google.golang.org/protobuf v1.35.1 // indirect
+	google.golang.org/protobuf v1.36.6 // indirect
 )

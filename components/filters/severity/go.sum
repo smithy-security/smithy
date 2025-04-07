@@ -132,8 +132,8 @@ github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
 github.com/smithy-security/pkg/env v0.0.1 h1:uwLTMLdNN/dv3x4zat75JahEBQDpdBeldjEE8El4OiM=
 github.com/smithy-security/pkg/env v0.0.1/go.mod h1:VIJfDqeAbQQcmohaXcZI6grjeJC9Y8CmqR4ITpdngZE=
-github.com/smithy-security/smithy/sdk v0.0.7-alpha h1:gqvovQlJhc+qcJgUYlROJjPY5F6yhhjFDdMD+7bvBRs=
-github.com/smithy-security/smithy/sdk v0.0.7-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
+github.com/smithy-security/smithy/sdk v0.0.7-alpha.0.20250407140010-7c059b0c7b96 h1:kkJvlXKGsp1S/5k4KyqWzEefmuUYYtD0e8Hs5YH8fVM=
+github.com/smithy-security/smithy/sdk v0.0.7-alpha.0.20250407140010-7c059b0c7b96/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
 github.com/spf13/cast v1.3.1 h1:nFm6S0SMdyzrzcmThSipiEubIDy8WEXKNZ0UOgiRpng=
 github.com/spf13/cast v1.3.1/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
 github.com/sqlc-dev/sqlc v1.27.0 h1:wWc+401GLh0whLa30WmDkkl11lMBZuqvDvgu5OsaDiQ=
@@ -234,8 +234,8 @@ google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 h1:
 google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157/go.mod h1:EfXuqaE1J41VCDicxHzUDm+8rk+7ZdXzHV0IhO/I6s0=
 google.golang.org/grpc v1.65.0 h1:bs/cUb4lp1G5iImFFd3u5ixQzweKizoZJAwBNLR42lc=
 google.golang.org/grpc v1.65.0/go.mod h1:WgYC2ypjlB0EiQi6wdKixMqukr6lBc0Vo+oOgjrM5ZQ=
-google.golang.org/protobuf v1.35.1 h1:m3LfL6/Ca+fqnjnlqQXNpFPABW1UD7mjh8KO2mKFytA=
-google.golang.org/protobuf v1.35.1/go.mod h1:9fA7Ob0pmnwhb644+1+CVWFRbNajQ6iRojtC/QF5bRE=
+google.golang.org/protobuf v1.36.6 h1:z1NpPI8ku2WgiWnf+t9wTPsn6eP1L7ksHUlkfLvd9xY=
+google.golang.org/protobuf v1.36.6/go.mod h1:jduwjTPXsFjZGTmRluh+L6NjiWu7pchiJ2/5YcXBHnY=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.3.0/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
