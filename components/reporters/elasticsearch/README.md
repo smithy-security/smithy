@@ -2,8 +2,9 @@
 
 This component implements a [reporter](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
 that sends vulnerabilities to elasticsearch.
+
 It supports authenticating to elasticsearch using an API key.
-The API key requires read of cluster information in order for the  component to
+The API key requires reading cluster's information in order for the  component to
 validate connectivity and write to any indexes you plan on using this component
 with.
 
@@ -20,17 +21,3 @@ as well as the following:
 | ELASTICSEARCH\_URL     | string | yes      | -       | The remote instance to connect to.                                 |
 | ELASTICSEARCH\_INDEX   | string | yes       | -      | The index to write results to |
 | ELASTICSEARCH\_API\_KEY   | string | yes       | -      | The api key to use to write results. |
-
-## How to run
-
-Execute:
-
-```shell
-docker-compose up --build --force-recreate --remove-orphans
-```
-
-Then shutdown with:
-
-```shell
-docker-compose down --rmi all
-```

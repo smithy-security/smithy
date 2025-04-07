@@ -20,6 +20,6 @@ steps:
     env_vars:
       PIP_AUDIT_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/pipaudit.out.json"
       PIP_AUDIT_SCANNED_PROJECT_ROOT: "{{ sourceCodeWorkspace }}"
-      REQUIREMENTS_FILE_NAME: "{{ .patameters.dependencies_file_name}}"
-      PYPROJECT_FILE_NAME: "{{ .patameters.pyproject_file_name}}"
+      REQUIREMENTS_FILE_NAME: "{{ .parameters.dependencies_file_name }}"
+      PYPROJECT_FILE_NAME: "{{ .parameters.pyproject_file_name }}"
     executable: /bin/app

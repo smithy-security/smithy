@@ -1,0 +1,14 @@
+name: "trufflehog"
+description: "Runs trufflehog against a target"
+type: "trufflehog"
+parameters:
+  - name: "target_type"
+    type: "string"
+    value: "TARGET_TYPE_REPOSITORY"
+steps:
+  - name: "secret-scanner"
+    image: "components/scanners/trufflehog"
+    executable: "/bin/app"
+    env_vars:
+      TRUFFLEHOG_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/trufflehog.json"
+      TRUFFLEHOG_TARGET_TYPE: "{{ .parameters.target_type }}"

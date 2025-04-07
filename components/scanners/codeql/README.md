@@ -1,9 +1,17 @@
-# Producer: GitHub CodeQL Scanning
+# GitHub CodeQL
 
-<!--lint disable maximum-line-length-->
+This component implements a [scanner](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
+the GitHub CodeQL binary against a repository to produce SAST findings
+and parses them to [ocsf](https://github.com/ocsf) format.
 
-This producer runs the Github CodeQL binary against a repository to produce SAST findings.
+## Environment variables
 
-**This component is for demonstration and opensource repositories ONLY! If you want to use against a private repo, please purchase a Github Advanced Security License**
+The component uses environment variables for configuration.
 
-<!--lint enable maximum-line-length-->
+It requires the component
+environment variables defined [here](https://github.com/smithy-security/smithy/blob/main/sdk/README.md#component) as well
+as the following:
+
+| Environment Variable     | Type   | Required | Default    | Description                          |
+|--------------------------|--------|----------|------------|--------------------------------------|
+| CODEQL\_RAW\_OUT\_FILE\_GLOB  | string | yes      | -          | The path where to output findings to |

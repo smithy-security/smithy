@@ -15,6 +15,8 @@ as the following:
 |--------------------------|--------|----------|------------|---------------------------------------------------------|
 | PIP\_AUDIT\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the gosec report                 |
 | PIP\_AUDIT\_TARGET\_TYPE         | string | false    | repository | The type of target that was used to generate the report |
+| REQUIREMENTS\_FILE\_NAME         | string | false    | requirements.txt | The name of the dependencies file                       |
+| PYPROJECT\_FILE\_NAME         | string | false    | pyproject.toml | The name of the PyProject file                          |
 
 ## Test data
 

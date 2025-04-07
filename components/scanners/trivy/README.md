@@ -12,6 +12,8 @@ It requires the component
 environment variables defined [here](https://github.com/smithy-security/smithy/blob/main/sdk/README.md#component) as well
 as the following:
 
-| Environment Variable     | Type   | Required | Default    | Description                                             |
-|--------------------------|--------|----------|------------|---------------------------------------------------------|
-| TRIVY\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the trivy sarif report   |
+| Environment Variable        | Type   | Required | Default    | Description                                   |
+|-----------------------------|--------|----------|------------|-----------------------------------------------|
+| TRIVY\_RAW\_OUT\_FILE\_PATH | string | yes      | -          | The path where to find the trivy sarif report |
+| TRIVY\_USERNAME              | string | yes      | -          | Trivy's username                              |
+| TRIVY\_PASSWORD              | string | yes      | -          | Trivy's password                              |
