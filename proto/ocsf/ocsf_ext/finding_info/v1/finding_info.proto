@@ -57,7 +57,7 @@ message Enrichment {
     ENRICHMENT_TYPE_CORRELATION = 1;
     ENRICHMENT_TYPE_DUPLICATION = 2;
     ENRICHMENT_INVESTIGATION = 3;
-    ENRICHMENT_FILTER=4;
+    ENRICHMENT_TYPE_FILTER = 4;
   }
 
   // if it has this enrichment at all, the finding is a duplicate
@@ -82,6 +82,6 @@ message Enrichment {
     DuplicateEnrichment duplicate = 2;
     CorrelationEnrichment correlations = 3;
     InvestigationEnrichment investigations = 4;
-    FilterEnrichment filter=5;
+    FilterEnrichment filter = 5;
   }
 }
