@@ -1,0 +1,13 @@
+name: severity
+description: "Tags all findings below a certain severity as 'Filtered Out'"
+type: filter
+parameters:
+  - name: minimum_severity
+    type: string
+    value: "High"
+steps:
+  - name: filters
+    image: components/filters/severity
+    env_vars:
+      MINIMUM_SEVERITY: "{{.parameters.minimum_severity}}"
+    executable: /bin/app
