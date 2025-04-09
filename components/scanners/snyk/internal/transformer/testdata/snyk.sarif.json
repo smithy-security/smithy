@@ -1,0 +1,496 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Snyk Open Source",
+          "semanticVersion": "1.1294.0",
+          "version": "1.1294.0",
+          "informationUri": "https://docs.snyk.io/",
+          "properties": {},
+          "rules": [
+            {
+              "id": "SNYK-JS-COOKIE-8163060",
+              "shortDescription": {
+                "text": "Medium severity - Cross-site Scripting (XSS) vulnerability in cookie"
+              },
+              "fullDescription": {
+                "text": "(CVE-2024-47764) cookie@0.3.1"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: cookie\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › engine.io@1.8.5 › cookie@0.3.1\n# Overview\n\nAffected versions of this package are vulnerable to Cross-site Scripting (XSS) via the cookie `name`, `path`, or `domain`, which can be used to set unexpected values to other cookie fields.\r\n\r\n# Workaround\r\nUsers who are not able to upgrade to the fixed version should avoid passing untrusted or arbitrary values for the cookie fields and ensure they are set by the application instead of user input.\n# Details\n\nA cross-site scripting attack occurs when the attacker tricks a legitimate web-based application or site to accept a request as originating from a trusted source.\n\nThis is done by escaping the context of the web application; the web application then delivers that data to its users along with other trusted dynamic content, without validating it. The browser unknowingly executes malicious script on the client side (through client-side languages; usually JavaScript or HTML)  in order to perform actions that are otherwise typically blocked by the browser’s Same Origin Policy.\n\nInjecting malicious code is the most prevalent manner by which XSS is exploited; for this reason, escaping characters in order to prevent this manipulation is the top method for securing code against this vulnerability.\n\nEscaping means that the application is coded to mark key characters, and particularly key characters included in user input, to prevent those characters from being interpreted in a dangerous context. For example, in HTML, `<` can be coded as  `&lt`; and `>` can be coded as `&gt`; in order to be interpreted and displayed as themselves in text, while within the code itself, they are used for HTML tags. If malicious content is injected into an application that escapes special characters and that malicious content uses `<` and `>` as HTML tags, those characters are nonetheless not interpreted as HTML tags by the browser if they’ve been correctly escaped in the application code and in this way the attempted attack is diverted.\n \nThe most prominent use of XSS is to steal cookies (source: OWASP HttpOnly) and hijack user sessions, but XSS exploits have been used to expose sensitive information, enable access to privileged services and functionality and deliver malware. \n\n## Types of attacks\nThere are a few methods by which XSS can be manipulated:\n\n|Type|Origin|Description|\n|--|--|--|\n|**Stored**|Server|The malicious code is inserted in the application (usually as a link) by the attacker. The code is activated every time a user clicks the link.|\n|**Reflected**|Server|The attacker delivers a malicious link externally from the vulnerable web site application to a user. When clicked, malicious code is sent to the vulnerable web site, which reflects the attack back to the user’s browser.| \n|**DOM-based**|Client|The attacker forces the user’s browser to render a malicious page. The data in the page itself delivers the cross-site scripting data.|\n|**Mutated**| |The attacker injects code that appears safe, but is then rewritten and modified by the browser, while parsing the markup. An example is rebalancing unclosed quotation marks or even adding quotation marks to unquoted parameters.|\n\n## Affected environments\nThe following environments are susceptible to an XSS attack:\n\n* Web servers\n* Application servers\n* Web application environments\n\n## How to prevent\nThis section describes the top best practices designed to specifically protect your code: \n\n* Sanitize data input in an HTTP request before reflecting it back, ensuring all data is validated, filtered or escaped before echoing anything back to the user, such as the values of query parameters during searches. \n* Convert special characters such as `?`, `&`, `/`, `<`, `>` and spaces to their respective HTML or URL encoded equivalents. \n* Give users the option to disable client-side scripts.\n* Redirect invalid requests.\n* Detect simultaneous logins, including those from two separate IP addresses, and invalidate those sessions.\n* Use and enforce a Content Security Policy (source: Wikipedia) to disable any features that might be manipulated for an XSS attack.\n* Read the documentation for any of the libraries referenced in your code to understand which elements allow for embedded HTML.\n\n# Remediation\nUpgrade `cookie` to version 0.7.0 or higher.\n# References\n- [GitHub Commit](https://github.com/jshttp/cookie/commit/e10042845354fea83bd8f34af72475eed1dadf5c)\n- [GitHub PR](https://github.com/jshttp/cookie/pull/167)\n- [Red Hat Bugzilla Bug](https://bugzilla.redhat.com/show_bug.cgi?id=2316549)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-79",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 6.3,
+                "security-severity": "6.3"
+              }
+            },
+            {
+              "id": "SNYK-JS-ENGINEIO-1056749",
+              "shortDescription": {
+                "text": "High severity - Denial of Service (DoS) vulnerability in engine.io"
+              },
+              "fullDescription": {
+                "text": "(CVE-2020-36048) engine.io@1.8.5"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: engine.io\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › engine.io@1.8.5\n# Overview\n[engine.io](https://github.com/socketio/engine.io) is a realtime engine behind Socket.IO. It provides the foundation of a bidirectional connection between client and server\n\nAffected versions of this package are vulnerable to Denial of Service (DoS) via a POST request to the long polling transport.\n\n# Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its intended and legitimate users.\n\nUnlike other vulnerabilities, DoS attacks usually do not aim at breaching security. Rather, they are focused on making websites and services unavailable to genuine users resulting in downtime.\n\nOne popular Denial of Service vulnerability is DDoS (a Distributed Denial of Service), an attack that attempts to clog network pipes to the system by generating a large volume of traffic from many machines.\n\nWhen it comes to open source libraries, DoS vulnerabilities allow attackers to trigger such a crash or crippling of the service by using a flaw either in the application code or from the use of open source libraries.\n\nTwo common types of DoS vulnerabilities:\n\n* High CPU/Memory Consumption- An attacker sending crafted requests that could cause the system to take a disproportionate amount of time to process. For example, [commons-fileupload:commons-fileupload](https://security.snyk.io/vuln/SNYK-JAVA-COMMONSFILEUPLOAD-30082).\n\n* Crash - An attacker sending crafted requests that could cause the system to crash. For Example,  [npm `ws` package](https://snyk.io/vuln/npm:ws:20171108)\n\n# Remediation\nUpgrade `engine.io` to version 3.6.0 or higher.\n# References\n- [GitHub Commit](https://github.com/socketio/engine.io/commit/58e274c437e9cbcf69fd913c813aad8fbd253703)\n- [GitHub Commit](https://github.com/socketio/engine.io/commit/734f9d1268840722c41219e69eb58318e0b2ac6b)\n- [GitHub Tags](https://github.com/socketio/engine.io/releases/tag/3.6.0)\n- [PoC](https://github.com/bcaller/kill-engine-io)\n- [Research Blogpost](https://blog.caller.xyz/socketio-engineio-dos/)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 7.5,
+                "security-severity": "7.5"
+              }
+            },
+            {
+              "id": "SNYK-JS-ENGINEIO-3136336",
+              "shortDescription": {
+                "text": "High severity - Denial of Service (DoS) vulnerability in engine.io"
+              },
+              "fullDescription": {
+                "text": "(CVE-2022-41940) engine.io@1.8.5"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: engine.io\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › engine.io@1.8.5\n# Overview\n[engine.io](https://github.com/socketio/engine.io) is a realtime engine behind Socket.IO. It provides the foundation of a bidirectional connection between client and server\n\nAffected versions of this package are vulnerable to Denial of Service (DoS). A malicious client could send a specially crafted HTTP request, triggering an uncaught exception and killing the `Node.js` process.\n\n# Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its intended and legitimate users.\n\nUnlike other vulnerabilities, DoS attacks usually do not aim at breaching security. Rather, they are focused on making websites and services unavailable to genuine users resulting in downtime.\n\nOne popular Denial of Service vulnerability is DDoS (a Distributed Denial of Service), an attack that attempts to clog network pipes to the system by generating a large volume of traffic from many machines.\n\nWhen it comes to open source libraries, DoS vulnerabilities allow attackers to trigger such a crash or crippling of the service by using a flaw either in the application code or from the use of open source libraries.\n\nTwo common types of DoS vulnerabilities:\n\n* High CPU/Memory Consumption- An attacker sending crafted requests that could cause the system to take a disproportionate amount of time to process. For example, [commons-fileupload:commons-fileupload](https://security.snyk.io/vuln/SNYK-JAVA-COMMONSFILEUPLOAD-30082).\n\n* Crash - An attacker sending crafted requests that could cause the system to crash. For Example,  [npm `ws` package](https://snyk.io/vuln/npm:ws:20171108)\n\n# Remediation\nUpgrade `engine.io` to version 3.6.1, 6.2.1 or higher.\n# References\n- [GitHub Commit](https://github.com/socketio/engine.io/commit/425e833ab13373edf1dd5a0706f07100db14e3c6)\n- [GitHub Commit](https://github.com/socketio/engine.io/commit/83c4071af871fc188298d7d591e95670bf9f9085)\n- [GitHub PR](https://github.com/socketio/engine.io/pull/658)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 7.5,
+                "security-severity": "7.5"
+              }
+            },
+            {
+              "id": "SNYK-JS-SOCKETIO-1024859",
+              "shortDescription": {
+                "text": "Medium severity - Insecure Defaults vulnerability in socket.io"
+              },
+              "fullDescription": {
+                "text": "(CVE-2020-28481) socket.io@1.7.4"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: socket.io\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 and socket.io@1.7.4\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4\n# Overview\n[socket.io](https://github.com/socketio/socket.io) is a node.js realtime framework server.\n\nAffected versions of this package are vulnerable to Insecure Defaults due to CORS Misconfiguration. All domains are whitelisted by default.\n# Remediation\nUpgrade `socket.io` to version 2.4.0 or higher.\n# References\n- [GitHub Issue](https://github.com/socketio/socket.io/issues/3671)\n- [HackerOne Report](https://hackerone.com/reports/931197)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-453",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 5.3,
+                "security-severity": "5.3"
+              }
+            },
+            {
+              "id": "SNYK-JS-SOCKETIOPARSER-1056752",
+              "shortDescription": {
+                "text": "High severity - Denial of Service (DoS) vulnerability in socket.io-parser"
+              },
+              "fullDescription": {
+                "text": "(CVE-2020-36049) socket.io-parser@2.3.1"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: socket.io-parser\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-parser@2.3.1\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-adapter@0.5.0 › socket.io-parser@2.3.1\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › socket.io-parser@2.3.1\n# Overview\n[socket.io-parser](https://www.npmjs.org/package/socket.io-parser) is a socket.io protocol parser\n\nAffected versions of this package are vulnerable to Denial of Service (DoS) via a large packet because a concatenation approach is used.\n\n# Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its intended and legitimate users.\n\nUnlike other vulnerabilities, DoS attacks usually do not aim at breaching security. Rather, they are focused on making websites and services unavailable to genuine users resulting in downtime.\n\nOne popular Denial of Service vulnerability is DDoS (a Distributed Denial of Service), an attack that attempts to clog network pipes to the system by generating a large volume of traffic from many machines.\n\nWhen it comes to open source libraries, DoS vulnerabilities allow attackers to trigger such a crash or crippling of the service by using a flaw either in the application code or from the use of open source libraries.\n\nTwo common types of DoS vulnerabilities:\n\n* High CPU/Memory Consumption- An attacker sending crafted requests that could cause the system to take a disproportionate amount of time to process. For example, [commons-fileupload:commons-fileupload](https://security.snyk.io/vuln/SNYK-JAVA-COMMONSFILEUPLOAD-30082).\n\n* Crash - An attacker sending crafted requests that could cause the system to crash. For Example,  [npm `ws` package](https://snyk.io/vuln/npm:ws:20171108)\n\n# Remediation\nUpgrade `socket.io-parser` to version 3.3.2, 3.4.1 or higher.\n# References\n- [GitHub Commit](https://github.com/socketio/socket.io-parser/commit/dcb942d24db97162ad16a67c2a0cf30875342d55)\n- [PoC](https://github.com/bcaller/kill-engine-io)\n- [Research Blogpost](https://blog.caller.xyz/socketio-engineio-dos/)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 7.5,
+                "security-severity": "7.5"
+              }
+            },
+            {
+              "id": "SNYK-JS-SOCKETIOPARSER-3091012",
+              "shortDescription": {
+                "text": "Critical severity - Improper Input Validation vulnerability in socket.io-parser"
+              },
+              "fullDescription": {
+                "text": "(CVE-2022-2421) socket.io-parser@2.3.1"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: socket.io-parser\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-parser@2.3.1\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-adapter@0.5.0 › socket.io-parser@2.3.1\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › socket.io-parser@2.3.1\n# Overview\n\n[socket.io-parser](https://www.npmjs.org/package/socket.io-parser) is a socket.io protocol parser\n\n\nAffected versions of this package are vulnerable to Improper Input Validation.\nwhen parsing attachments containing untrusted user input. Attackers can overwrite the `_placeholder` object to place references to functions in query objects.\r\n\r\n# PoC\r\n\r\n```js\r\nconst decoder = new Decoder();\r\n\r\ndecoder.on(\"decoded\", (packet) => {\r\n  console.log(packet.data); // prints [ 'hello', [Function: splice] ]\r\n})\r\n\r\ndecoder.add('51-[\"hello\",{\"_placeholder\":true,\"num\":\"splice\"}]');\r\ndecoder.add(Buffer.from(\"world\"));\r\n```\n\n# Remediation\n\nUpgrade `socket.io-parser` to version 3.3.3, 3.4.2, 4.0.5, 4.2.1 or higher.\n\n\n# References\n\n- [GitHub Commit](https://github.com/socketio/socket.io-parser/commit/b559f050ee02bd90bd853b9823f8de7fa94a80d4)\n\n- [GitHub Commit](https://github.com/socketio/socket.io-parser/commit/b5d0cb7dc56a0601a09b056beaeeb0e43b160050)\n\n- [Vulnerability Report](https://csirt.divd.nl/cases/DIVD-2022-00045)\n\n- [Vulnerability Report](https://csirt.divd.nl/cves/CVE-2022-2421)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-89",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 9.8,
+                "security-severity": "9.8"
+              }
+            },
+            {
+              "id": "SNYK-JS-UGLIFYJS-1727251",
+              "shortDescription": {
+                "text": "Medium severity - Regular Expression Denial of Service (ReDoS) vulnerability in uglify-js"
+              },
+              "fullDescription": {
+                "text": "uglify-js@2.2.5"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: uglify-js\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, jade@1.11.0 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › jade@1.11.0 › transformers@2.1.0 › uglify-js@2.2.5\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › jade@1.11.0 › uglify-js@2.8.29\n# Overview\n[uglify-js](http://npmjs.com/package/uglify-js) is a JavaScript parser, minifier, compressor and beautifier toolkit.\n\nAffected versions of this package are vulnerable to Regular Expression Denial of Service (ReDoS) via the `string_template` and the `decode_template` functions.\n\n# Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its original and legitimate users. There are many types of DoS attacks, ranging from trying to clog the network pipes to the system by generating a large volume of traffic from many machines (a Distributed Denial of Service - DDoS - attack) to sending crafted requests that cause a system to crash or take a disproportional amount of time to process.\n\nThe Regular expression Denial of Service (ReDoS) is a type of Denial of Service attack. Regular expressions are incredibly powerful, but they aren't very intuitive and can ultimately end up making it easy for attackers to take your site down.\n\nLet’s take the following regular expression as an example:\n```js\nregex = /A(B|C+)+D/\n```\n\nThis regular expression accomplishes the following:\n- `A` The string must start with the letter 'A'\n- `(B|C+)+` The string must then follow the letter A with either the letter 'B' or some number of occurrences of the letter 'C' (the `+` matches one or more times). The `+` at the end of this section states that we can look for one or more matches of this section.\n- `D` Finally, we ensure this section of the string ends with a 'D'\n\nThe expression would match inputs such as `ABBD`, `ABCCCCD`, `ABCBCCCD` and `ACCCCCD`\n\nIt most cases, it doesn't take very long for a regex engine to find a match:\n\n```bash\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCD\")'\n0.04s user 0.01s system 95% cpu 0.052 total\n\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX\")'\n1.79s user 0.02s system 99% cpu 1.812 total\n```\n\nThe entire process of testing it against a 30 characters long string takes around ~52ms. But when given an invalid string, it takes nearly two seconds to complete the test, over ten times as long as it took to test a valid string. The dramatic difference is due to the way regular expressions get evaluated.\n\nMost Regex engines will work very similarly (with minor differences). The engine will match the first possible way to accept the current character and proceed to the next one. If it then fails to match the next one, it will backtrack and see if there was another way to digest the previous character. If it goes too far down the rabbit hole only to find out the string doesn’t match in the end, and if many characters have multiple valid regex paths, the number of backtracking steps can become very large, resulting in what is known as _catastrophic backtracking_.\n\nLet's look at how our expression runs into this problem, using a shorter string: \"ACCCX\". While it seems fairly straightforward, there are still four different ways that the engine could match those three C's:\n1. CCC\n2. CC+C\n3. C+CC\n4. C+C+C.\n\nThe engine has to try each of those combinations to see if any of them potentially match against the expression. When you combine that with the other steps the engine must take, we can use [RegEx 101 debugger](https://regex101.com/debugger) to see the engine has to take a total of 38 steps before it can determine the string doesn't match.\n\nFrom there, the number of steps the engine must use to validate a string just continues to grow.\n\n| String | Number of C's | Number of steps |\n| -------|-------------:| -----:|\n| ACCCX | 3 | 38\n| ACCCCX | 4 | 71\n| ACCCCCX | 5 | 136\n| ACCCCCCCCCCCCCCX | 14 | 65,553\n\n\nBy the time the string includes 14 C's, the engine has to take over 65,000 steps just to see if the string is valid. These extreme situations can cause them to work very slowly (exponentially related to input size, as shown above), allowing an attacker to exploit this and can cause the service to excessively consume CPU, resulting in a Denial of Service.\n\n# Remediation\nUpgrade `uglify-js` to version 3.14.3 or higher.\n# References\n- [GitHub Commit](https://github.com/mishoo/UglifyJS/commit/157521066fc43cff2feab7ffc1ecea603617606b)\n- [GitHub Issue](https://github.com/mishoo/UglifyJS/issues/5133)\n- [GitHub PR](https://github.com/mishoo/UglifyJS/pull/5134)\n- [GitHub PR](https://github.com/mishoo/UglifyJS/pull/5135)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-1333",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 5.3,
+                "security-severity": "5.3"
+              }
+            },
+            {
+              "id": "SNYK-JS-WS-1296835",
+              "shortDescription": {
+                "text": "Medium severity - Regular Expression Denial of Service (ReDoS) vulnerability in ws"
+              },
+              "fullDescription": {
+                "text": "(CVE-2021-32640) ws@1.1.5"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: ws\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › engine.io@1.8.5 › ws@1.1.5\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › engine.io-client@1.8.6 › ws@1.1.5\n# Overview\n[ws](https://www.npmjs.com/package/ws) is a simple to use websocket client, server and console for node.js.\n\nAffected versions of this package are vulnerable to Regular Expression Denial of Service (ReDoS). A specially crafted value of the `Sec-Websocket-Protocol` header can be used to significantly slow down a `ws` server.\r\n\r\n##PoC\r\n```\r\nfor (const length of [1000, 2000, 4000, 8000, 16000, 32000]) {\r\n  const value = 'b' + ' '.repeat(length) + 'x';\r\n  const start = process.hrtime.bigint();\r\n\r\n  value.trim().split(/ *, */);\r\n\r\n  const end = process.hrtime.bigint();\r\n\r\n  console.log('length = %d, time = %f ns', length, end - start);\r\n}\r\n```\n\n# Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its original and legitimate users. There are many types of DoS attacks, ranging from trying to clog the network pipes to the system by generating a large volume of traffic from many machines (a Distributed Denial of Service - DDoS - attack) to sending crafted requests that cause a system to crash or take a disproportional amount of time to process.\n\nThe Regular expression Denial of Service (ReDoS) is a type of Denial of Service attack. Regular expressions are incredibly powerful, but they aren't very intuitive and can ultimately end up making it easy for attackers to take your site down.\n\nLet’s take the following regular expression as an example:\n```js\nregex = /A(B|C+)+D/\n```\n\nThis regular expression accomplishes the following:\n- `A` The string must start with the letter 'A'\n- `(B|C+)+` The string must then follow the letter A with either the letter 'B' or some number of occurrences of the letter 'C' (the `+` matches one or more times). The `+` at the end of this section states that we can look for one or more matches of this section.\n- `D` Finally, we ensure this section of the string ends with a 'D'\n\nThe expression would match inputs such as `ABBD`, `ABCCCCD`, `ABCBCCCD` and `ACCCCCD`\n\nIt most cases, it doesn't take very long for a regex engine to find a match:\n\n```bash\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCD\")'\n0.04s user 0.01s system 95% cpu 0.052 total\n\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX\")'\n1.79s user 0.02s system 99% cpu 1.812 total\n```\n\nThe entire process of testing it against a 30 characters long string takes around ~52ms. But when given an invalid string, it takes nearly two seconds to complete the test, over ten times as long as it took to test a valid string. The dramatic difference is due to the way regular expressions get evaluated.\n\nMost Regex engines will work very similarly (with minor differences). The engine will match the first possible way to accept the current character and proceed to the next one. If it then fails to match the next one, it will backtrack and see if there was another way to digest the previous character. If it goes too far down the rabbit hole only to find out the string doesn’t match in the end, and if many characters have multiple valid regex paths, the number of backtracking steps can become very large, resulting in what is known as _catastrophic backtracking_.\n\nLet's look at how our expression runs into this problem, using a shorter string: \"ACCCX\". While it seems fairly straightforward, there are still four different ways that the engine could match those three C's:\n1. CCC\n2. CC+C\n3. C+CC\n4. C+C+C.\n\nThe engine has to try each of those combinations to see if any of them potentially match against the expression. When you combine that with the other steps the engine must take, we can use [RegEx 101 debugger](https://regex101.com/debugger) to see the engine has to take a total of 38 steps before it can determine the string doesn't match.\n\nFrom there, the number of steps the engine must use to validate a string just continues to grow.\n\n| String | Number of C's | Number of steps |\n| -------|-------------:| -----:|\n| ACCCX | 3 | 38\n| ACCCCX | 4 | 71\n| ACCCCCX | 5 | 136\n| ACCCCCCCCCCCCCCX | 14 | 65,553\n\n\nBy the time the string includes 14 C's, the engine has to take over 65,000 steps just to see if the string is valid. These extreme situations can cause them to work very slowly (exponentially related to input size, as shown above), allowing an attacker to exploit this and can cause the service to excessively consume CPU, resulting in a Denial of Service.\n\n# Remediation\nUpgrade `ws` to version 7.4.6, 6.2.2, 5.2.3 or higher.\n# References\n- [GitHub Commit](https://github.com/websockets/ws/commit/00c425ec77993773d823f018f64a5c44e17023ff)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 5.3,
+                "security-severity": "5.3"
+              }
+            },
+            {
+              "id": "npm:clean-css:20180306",
+              "shortDescription": {
+                "text": "Low severity - Regular Expression Denial of Service (ReDoS) vulnerability in clean-css"
+              },
+              "fullDescription": {
+                "text": "clean-css@3.4.28"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: clean-css\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, jade@1.11.0 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › jade@1.11.0 › clean-css@3.4.28\n# Overview\n\n[clean-css](https://www.npmjs.com/package/clean-css) is a fast and efficient CSS optimizer for Node.js platform and any modern browser.\n\n\nAffected versions of this package are vulnerable to Regular Expression Denial of Service (ReDoS).\nattacks. This can cause an impact of about 10 seconds matching time for data 70k characters long.\n\n# Disclosure Timeline\n* Feb 15th, 2018 - Initial Disclosure to package owner\n* Feb 20th, 2018 - Initial Response from package owner\n* Mar 6th, 2018 - Fix issued\n* Mar 7th, 2018 - Vulnerability published\n\n# Details\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its original and legitimate users. There are many types of DoS attacks, ranging from trying to clog the network pipes to the system by generating a large volume of traffic from many machines (a Distributed Denial of Service - DDoS - attack) to sending crafted requests that cause a system to crash or take a disproportional amount of time to process.\r\n\r\nThe Regular expression Denial of Service (ReDoS) is a type of Denial of Service attack. Regular expressions are incredibly powerful, but they aren't very intuitive and can ultimately end up making it easy for attackers to take your site down.\r\n\r\nLet’s take the following regular expression as an example:\r\n```js\r\nregex = /A(B|C+)+D/\r\n```\r\n\r\nThis regular expression accomplishes the following:\r\n- `A` The string must start with the letter 'A'\r\n- `(B|C+)+` The string must then follow the letter A with either the letter 'B' or some number of occurrences of the letter 'C' (the `+` matches one or more times). The `+` at the end of this section states that we can look for one or more matches of this section.\r\n- `D` Finally, we ensure this section of the string ends with a 'D'\r\n\r\nThe expression would match inputs such as `ABBD`, `ABCCCCD`, `ABCBCCCD` and `ACCCCCD`\r\n\r\nIt most cases, it doesn't take very long for a regex engine to find a match:\r\n\r\n```bash\r\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCD\")'\r\n0.04s user 0.01s system 95% cpu 0.052 total\r\n\r\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX\")'\r\n1.79s user 0.02s system 99% cpu 1.812 total\r\n```\r\n\r\nThe entire process of testing it against a 30 characters long string takes around ~52ms. But when given an invalid string, it takes nearly two seconds to complete the test, over ten times as long as it took to test a valid string. The dramatic difference is due to the way regular expressions get evaluated.\r\n\r\nMost Regex engines will work very similarly (with minor differences). The engine will match the first possible way to accept the current character and proceed to the next one. If it then fails to match the next one, it will backtrack and see if there was another way to digest the previous character. If it goes too far down the rabbit hole only to find out the string doesn’t match in the end, and if many characters have multiple valid regex paths, the number of backtracking steps can become very large, resulting in what is known as _catastrophic backtracking_.\r\n\r\nLet's look at how our expression runs into this problem, using a shorter string: \"ACCCX\". While it seems fairly straightforward, there are still four different ways that the engine could match those three C's:\r\n1. CCC\r\n2. CC+C\r\n3. C+CC\r\n4. C+C+C.\r\n\r\nThe engine has to try each of those combinations to see if any of them potentially match against the expression. When you combine that with the other steps the engine must take, we can use [RegEx 101 debugger](https://regex101.com/debugger) to see the engine has to take a total of 38 steps before it can determine the string doesn't match.\r\n\r\nFrom there, the number of steps the engine must use to validate a string just continues to grow.\r\n\r\n| String | Number of C's | Number of steps |\r\n| -------|-------------:| -----:|\r\n| ACCCX | 3 | 38\r\n| ACCCCX | 4 | 71\r\n| ACCCCCX | 5 | 136\r\n| ACCCCCCCCCCCCCCX | 14 | 65,553\r\n\r\n\r\nBy the time the string includes 14 C's, the engine has to take over 65,000 steps just to see if the string is valid. These extreme situations can cause them to work very slowly (exponentially related to input size, as shown above), allowing an attacker to exploit this and can cause the service to excessively consume CPU, resulting in a Denial of Service.\n\n# Remediation\n\nUpgrade `clean-css` to version 4.1.11 or higher.\n\n\n# References\n\n- [GitHub Advisory](https://github.com/advisories/GHSA-wxhq-pm8v-cw75)\n\n- [GitHub Commit](https://github.com/jakubpawlowicz/clean-css/commit/2929bafbf8cdf7dccb24e0949c70833764fa87e3)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-185",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 3.7,
+                "security-severity": "3.7"
+              }
+            },
+            {
+              "id": "npm:constantinople:20180421",
+              "shortDescription": {
+                "text": "Critical severity - Sandbox Bypass vulnerability in constantinople"
+              },
+              "fullDescription": {
+                "text": "constantinople@3.0.2"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: constantinople\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, jade@1.11.0 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › jade@1.11.0 › constantinople@3.0.2\n# Overview\n[constantinople](https://github.com/ForbesLindesay/constantinople) is a Determine whether a JavaScript expression evaluates to a constant (using acorn)\n\nAffected versions of this package are vulnerable to Sandbox Bypass which can lead to arbitrary code execution.\n# Remediation\nUpgrade `constantinople` to version 3.1.1 or higher.\n# References\n- [GitHub Commit](https://github.com/pugjs/constantinople/commit/01d409c0d081dfd65223e6b7767c244156d35f7f)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-264",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 10,
+                "security-severity": "10"
+              }
+            },
+            {
+              "id": "npm:debug:20170905",
+              "shortDescription": {
+                "text": "Low severity - Regular Expression Denial of Service (ReDoS) vulnerability in debug"
+              },
+              "fullDescription": {
+                "text": "(CVE-2017-16137) debug@2.3.3"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: debug\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › debug@2.3.3\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › engine.io@1.8.5 › debug@2.3.3\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-adapter@0.5.0 › debug@2.3.3\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › debug@2.3.3\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › engine.io-client@1.8.6 › debug@2.3.3\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-parser@2.3.1 › debug@2.2.0\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-adapter@0.5.0 › socket.io-parser@2.3.1 › debug@2.2.0\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › socket.io-parser@2.3.1 › debug@2.2.0\n# Overview\n[debug](https://github.com/visionmedia/debug) is a small debugging utility.\n\nAffected versions of this package are vulnerable to Regular Expression Denial of Service (ReDoS) in the function `useColors` via manipulation of the `str` argument. \r\nThe vulnerability can cause a very low impact of about 2 seconds of matching time for data 50k characters long.\r\n\r\n**Note:**\r\nCVE-2017-20165 is a duplicate of this vulnerability.\r\n\r\n# PoC\r\n\r\nUse the following regex in the `%o` formatter.\r\n```js\r\n/\\s*\\n\\s*/\r\n```\n\n# Details\n\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its original and legitimate users. There are many types of DoS attacks, ranging from trying to clog the network pipes to the system by generating a large volume of traffic from many machines (a Distributed Denial of Service - DDoS - attack) to sending crafted requests that cause a system to crash or take a disproportional amount of time to process.\n\nThe Regular expression Denial of Service (ReDoS) is a type of Denial of Service attack. Regular expressions are incredibly powerful, but they aren't very intuitive and can ultimately end up making it easy for attackers to take your site down.\n\nLet’s take the following regular expression as an example:\n```js\nregex = /A(B|C+)+D/\n```\n\nThis regular expression accomplishes the following:\n- `A` The string must start with the letter 'A'\n- `(B|C+)+` The string must then follow the letter A with either the letter 'B' or some number of occurrences of the letter 'C' (the `+` matches one or more times). The `+` at the end of this section states that we can look for one or more matches of this section.\n- `D` Finally, we ensure this section of the string ends with a 'D'\n\nThe expression would match inputs such as `ABBD`, `ABCCCCD`, `ABCBCCCD` and `ACCCCCD`\n\nIt most cases, it doesn't take very long for a regex engine to find a match:\n\n```bash\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCD\")'\n0.04s user 0.01s system 95% cpu 0.052 total\n\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX\")'\n1.79s user 0.02s system 99% cpu 1.812 total\n```\n\nThe entire process of testing it against a 30 characters long string takes around ~52ms. But when given an invalid string, it takes nearly two seconds to complete the test, over ten times as long as it took to test a valid string. The dramatic difference is due to the way regular expressions get evaluated.\n\nMost Regex engines will work very similarly (with minor differences). The engine will match the first possible way to accept the current character and proceed to the next one. If it then fails to match the next one, it will backtrack and see if there was another way to digest the previous character. If it goes too far down the rabbit hole only to find out the string doesn’t match in the end, and if many characters have multiple valid regex paths, the number of backtracking steps can become very large, resulting in what is known as _catastrophic backtracking_.\n\nLet's look at how our expression runs into this problem, using a shorter string: \"ACCCX\". While it seems fairly straightforward, there are still four different ways that the engine could match those three C's:\n1. CCC\n2. CC+C\n3. C+CC\n4. C+C+C.\n\nThe engine has to try each of those combinations to see if any of them potentially match against the expression. When you combine that with the other steps the engine must take, we can use [RegEx 101 debugger](https://regex101.com/debugger) to see the engine has to take a total of 38 steps before it can determine the string doesn't match.\n\nFrom there, the number of steps the engine must use to validate a string just continues to grow.\n\n| String | Number of C's | Number of steps |\n| -------|-------------:| -----:|\n| ACCCX | 3 | 38\n| ACCCCX | 4 | 71\n| ACCCCCX | 5 | 136\n| ACCCCCCCCCCCCCCX | 14 | 65,553\n\n\nBy the time the string includes 14 C's, the engine has to take over 65,000 steps just to see if the string is valid. These extreme situations can cause them to work very slowly (exponentially related to input size, as shown above), allowing an attacker to exploit this and can cause the service to excessively consume CPU, resulting in a Denial of Service.\n\n# Remediation\nUpgrade `debug` to version 2.6.9, 3.1.0, 3.2.7, 4.3.1 or higher.\n# References\n- [GitHub Commit](https://github.com/debug-js/debug/commit/b6d12fdbc63b483e5c969da33ea6adc09946b5ac)\n- [GitHub Commit](https://github.com/visionmedia/debug/pull/504/commits/42a6ae0737f9243c80b6d3dbb08a69a7ae2a1061)\n- [GitHub Issue](https://github.com/visionmedia/debug/issues/501)\n- [GitHub PR](https://github.com/visionmedia/debug/pull/504)\n- [GitHub Release Notes 2.6.9](https://github.com/debug-js/debug/releases/tag/2.6.9)\n- [GitHub Release Notes 3.1.0](https://github.com/debug-js/debug/releases/tag/3.1.0)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 3.7,
+                "security-severity": "3.7"
+              }
+            },
+            {
+              "id": "npm:ms:20170412",
+              "shortDescription": {
+                "text": "Low severity - Regular Expression Denial of Service (ReDoS) vulnerability in ms"
+              },
+              "fullDescription": {
+                "text": "(CVE-2017-20162) ms@0.7.2"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: ms\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › debug@2.3.3 › ms@0.7.2\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › engine.io@1.8.5 › debug@2.3.3 › ms@0.7.2\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-adapter@0.5.0 › debug@2.3.3 › ms@0.7.2\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › debug@2.3.3 › ms@0.7.2\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › engine.io-client@1.8.6 › debug@2.3.3 › ms@0.7.2\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-parser@2.3.1 › debug@2.2.0 › ms@0.7.1\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-adapter@0.5.0 › socket.io-parser@2.3.1 › debug@2.2.0 › ms@0.7.1\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › socket.io-parser@2.3.1 › debug@2.2.0 › ms@0.7.1\n# Overview\r\n[`ms`](https://www.npmjs.com/package/ms) is a tiny millisecond conversion utility.\r\n\r\nAffected versions of this package are vulnerable to Regular Expression Denial of Service (ReDoS) due to an incomplete fix for previously reported vulnerability [npm:ms:20151024](https://snyk.io/vuln/npm:ms:20151024). The fix limited the length of accepted input string to 10,000 characters, and turned to be insufficient making it possible to block the event loop for 0.3 seconds (on a typical laptop) with a specially crafted string passed to `ms()` function.\r\n\r\n*Proof of concept*\r\n```js\r\nms = require('ms');\r\nms('1'.repeat(9998) + 'Q') // Takes about ~0.3s\r\n```\r\n\r\n**Note:** Snyk's patch for this vulnerability limits input length to 100 characters. This new limit was deemed to be a breaking change by the author.\r\nBased on user feedback, we believe the risk of breakage is _very_ low, while the value to your security is much greater, and therefore opted to still capture this change in a patch for earlier versions as well.  Whenever patching security issues, we always suggest to run tests on your code to validate that nothing has been broken.\r\n\r\nFor more information on `Regular Expression Denial of Service (ReDoS)` attacks, go to our [blog](https://snyk.io/blog/redos-and-catastrophic-backtracking/).\r\n\r\n# Disclosure Timeline\r\n- Feb 9th, 2017 - Reported the issue to package owner.\r\n- Feb 11th, 2017 - Issue acknowledged by package owner.\r\n- April 12th, 2017 - Fix PR opened by Snyk Security Team.\r\n- May 15th, 2017 - Vulnerability published.\r\n- May 16th, 2017 - Issue fixed and version `2.0.0` released.\r\n- May 21th, 2017 - Patches released for versions `>=0.7.1, <=1.0.0`.\r\n\r\n# Details\r\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its original and legitimate users. There are many types of DoS attacks, ranging from trying to clog the network pipes to the system by generating a large volume of traffic from many machines (a Distributed Denial of Service - DDoS - attack) to sending crafted requests that cause a system to crash or take a disproportional amount of time to process.\r\n\r\nThe Regular expression Denial of Service (ReDoS) is a type of Denial of Service attack. Regular expressions are incredibly powerful, but they aren't very intuitive and can ultimately end up making it easy for attackers to take your site down.\r\n\r\nLet’s take the following regular expression as an example:\r\n```js\r\nregex = /A(B|C+)+D/\r\n```\r\n\r\nThis regular expression accomplishes the following:\r\n- `A` The string must start with the letter 'A'\r\n- `(B|C+)+` The string must then follow the letter A with either the letter 'B' or some number of occurrences of the letter 'C' (the `+` matches one or more times). The `+` at the end of this section states that we can look for one or more matches of this section.\r\n- `D` Finally, we ensure this section of the string ends with a 'D'\r\n\r\nThe expression would match inputs such as `ABBD`, `ABCCCCD`, `ABCBCCCD` and `ACCCCCD`\r\n\r\nIt most cases, it doesn't take very long for a regex engine to find a match:\r\n\r\n```bash\r\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCD\")'\r\n0.04s user 0.01s system 95% cpu 0.052 total\r\n\r\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX\")'\r\n1.79s user 0.02s system 99% cpu 1.812 total\r\n```\r\n\r\nThe entire process of testing it against a 30 characters long string takes around ~52ms. But when given an invalid string, it takes nearly two seconds to complete the test, over ten times as long as it took to test a valid string. The dramatic difference is due to the way regular expressions get evaluated.\r\n\r\nMost Regex engines will work very similarly (with minor differences). The engine will match the first possible way to accept the current character and proceed to the next one. If it then fails to match the next one, it will backtrack and see if there was another way to digest the previous character. If it goes too far down the rabbit hole only to find out the string doesn’t match in the end, and if many characters have multiple valid regex paths, the number of backtracking steps can become very large, resulting in what is known as _catastrophic backtracking_.\r\n\r\nLet's look at how our expression runs into this problem, using a shorter string: \"ACCCX\". While it seems fairly straightforward, there are still four different ways that the engine could match those three C's:\r\n1. CCC\r\n2. CC+C\r\n3. C+CC\r\n4. C+C+C.\r\n\r\nThe engine has to try each of those combinations to see if any of them potentially match against the expression. When you combine that with the other steps the engine must take, we can use [RegEx 101 debugger](https://regex101.com/debugger) to see the engine has to take a total of 38 steps before it can determine the string doesn't match.\r\n\r\nFrom there, the number of steps the engine must use to validate a string just continues to grow.\r\n\r\n| String | Number of C's | Number of steps |\r\n| -------|-------------:| -----:|\r\n| ACCCX | 3 | 38\r\n| ACCCCX | 4 | 71\r\n| ACCCCCX | 5 | 136\r\n| ACCCCCCCCCCCCCCX | 14 | 65,553\r\n\r\n\r\nBy the time the string includes 14 C's, the engine has to take over 65,000 steps just to see if the string is valid. These extreme situations can cause them to work very slowly (exponentially related to input size, as shown above), allowing an attacker to exploit this and can cause the service to excessively consume CPU, resulting in a Denial of Service.\r\n\r\n\r\n# Remediation\r\nUpgrade `ms` to version 2.0.0 or higher.\r\n\r\n# References\r\n- [GitHub PR](https://github.com/zeit/ms/pull/89)\r\n- [GitHub Commit](https://github.com/zeit/ms/pull/89/commits/305f2ddcd4eff7cc7c518aca6bb2b2d2daad8fef)"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 3.7,
+                "security-severity": "3.7"
+              }
+            },
+            {
+              "id": "npm:parsejson:20170908",
+              "shortDescription": {
+                "text": "High severity - Regular Expression Denial of Service (ReDoS) vulnerability in parsejson"
+              },
+              "fullDescription": {
+                "text": "(CVE-2017-16113) parsejson@0.0.3"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: parsejson\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, socket.io@1.7.4 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › socket.io@1.7.4 › socket.io-client@1.7.4 › engine.io-client@1.8.6 › parsejson@0.0.3\n# Overview\n\n[parsejson](https://www.npmjs.com/package/parsejson) is a method that parses a JSON string and returns a JSON object.\n\n\nAffected versions of this package are vulnerable to Regular Expression Denial of Service (ReDoS) attacks.\nAn attacker may pass a specially crafted JSON data, causing the server to hang.\n\n# Details\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its original and legitimate users. There are many types of DoS attacks, ranging from trying to clog the network pipes to the system by generating a large volume of traffic from many machines (a Distributed Denial of Service - DDoS - attack) to sending crafted requests that cause a system to crash or take a disproportional amount of time to process.\r\n\r\nThe Regular expression Denial of Service (ReDoS) is a type of Denial of Service attack. Regular expressions are incredibly powerful, but they aren't very intuitive and can ultimately end up making it easy for attackers to take your site down.\r\n\r\nLet’s take the following regular expression as an example:\r\n```js\r\nregex = /A(B|C+)+D/\r\n```\r\n\r\nThis regular expression accomplishes the following:\r\n- `A` The string must start with the letter 'A'\r\n- `(B|C+)+` The string must then follow the letter A with either the letter 'B' or some number of occurrences of the letter 'C' (the `+` matches one or more times). The `+` at the end of this section states that we can look for one or more matches of this section.\r\n- `D` Finally, we ensure this section of the string ends with a 'D'\r\n\r\nThe expression would match inputs such as `ABBD`, `ABCCCCD`, `ABCBCCCD` and `ACCCCCD`\r\n\r\nIt most cases, it doesn't take very long for a regex engine to find a match:\r\n\r\n```bash\r\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCD\")'\r\n0.04s user 0.01s system 95% cpu 0.052 total\r\n\r\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX\")'\r\n1.79s user 0.02s system 99% cpu 1.812 total\r\n```\r\n\r\nThe entire process of testing it against a 30 characters long string takes around ~52ms. But when given an invalid string, it takes nearly two seconds to complete the test, over ten times as long as it took to test a valid string. The dramatic difference is due to the way regular expressions get evaluated.\r\n\r\nMost Regex engines will work very similarly (with minor differences). The engine will match the first possible way to accept the current character and proceed to the next one. If it then fails to match the next one, it will backtrack and see if there was another way to digest the previous character. If it goes too far down the rabbit hole only to find out the string doesn’t match in the end, and if many characters have multiple valid regex paths, the number of backtracking steps can become very large, resulting in what is known as _catastrophic backtracking_.\r\n\r\nLet's look at how our expression runs into this problem, using a shorter string: \"ACCCX\". While it seems fairly straightforward, there are still four different ways that the engine could match those three C's:\r\n1. CCC\r\n2. CC+C\r\n3. C+CC\r\n4. C+C+C.\r\n\r\nThe engine has to try each of those combinations to see if any of them potentially match against the expression. When you combine that with the other steps the engine must take, we can use [RegEx 101 debugger](https://regex101.com/debugger) to see the engine has to take a total of 38 steps before it can determine the string doesn't match.\r\n\r\nFrom there, the number of steps the engine must use to validate a string just continues to grow.\r\n\r\n| String | Number of C's | Number of steps |\r\n| -------|-------------:| -----:|\r\n| ACCCX | 3 | 38\r\n| ACCCCX | 4 | 71\r\n| ACCCCCX | 5 | 136\r\n| ACCCCCCCCCCCCCCX | 14 | 65,553\r\n\r\n\r\nBy the time the string includes 14 C's, the engine has to take over 65,000 steps just to see if the string is valid. These extreme situations can cause them to work very slowly (exponentially related to input size, as shown above), allowing an attacker to exploit this and can cause the service to excessively consume CPU, resulting in a Denial of Service.\n\n# Remediation\n\nThere is no fixed version for `parsejson`.\n\n\n# References\n\n- [GitHub Issue](https://github.com/get/parsejson/issues/4)\n"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 7.5,
+                "security-severity": "7.5"
+              }
+            },
+            {
+              "id": "npm:uglify-js:20150824",
+              "shortDescription": {
+                "text": "High severity - Improper minification of non-boolean comparisons vulnerability in uglify-js"
+              },
+              "fullDescription": {
+                "text": "(CVE-2015-8857) uglify-js@2.2.5"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: uglify-js\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, jade@1.11.0 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › jade@1.11.0 › transformers@2.1.0 › uglify-js@2.2.5\n# Overview\r\n[`uglify-js`](http://npmjs.com/package/uglify-js) is a JavaScript parser, minifier, compressor and beautifier toolkit.\r\n\r\n[Tom MacWright](https://github.com/mishoo/UglifyJS2/issues/751) discovered that UglifyJS versions 2.4.23 and earlier are affected by a vulnerability which allows a specially crafted Javascript file to have altered functionality after minification. This bug was [demonstrated](https://zyan.scripts.mit.edu/blog/backdooring-js/) by [Yan](https://twitter.com/bcrypt) to allow potentially malicious code to be hidden within secure code, activated by minification.\r\n\r\n## Details\r\nIn Boolean algebra, DeMorgan's laws describe the relationships between conjunctions (`&&`), disjunctions (`||`) and negations (`!`).\r\nIn Javascript form, they state that:\r\n```savascript\r\n !(a && b) === (!a) || (!b)\r\n !(a || b) === (!a) && (!b)\r\n```\r\n\r\nThe law does not hold true when one of the values is not a boolean however.\r\n\r\nVulnerable versions of UglifyJS do not account for this restriction, and erroneously apply the laws to a statement if it can be reduced in length by it.\r\n\r\nConsider this authentication function:\r\n\r\n```javascript\r\nfunction isTokenValid(user) {\r\n    var timeLeft =\r\n        !!config && // config object exists\r\n        !!user.token && // user object has a token\r\n        !user.token.invalidated && // token is not explicitly invalidated\r\n        !config.uninitialized && // config is initialized\r\n        !config.ignoreTimestamps && // don't ignore timestamps\r\n        getTimeLeft(user.token.expiry); // > 0 if expiration is in the future\r\n\r\n    // The token must not be expired\r\n    return timeLeft > 0;\r\n}\r\n\r\nfunction getTimeLeft(expiry) {\r\n  return expiry - getSystemTime();\r\n}\r\n```\r\nWhen minified with a vulnerable version of UglifyJS, it will produce the following insecure output, where a token will never expire:\r\n\r\n( Formatted for readability )\r\n\r\n```javascript\r\nfunction isTokenValid(user) {\r\n    var timeLeft = !(                       // negation\r\n        !config                             // config object does not exist\r\n        || !user.token                      // user object does not have a token\r\n        || user.token.invalidated           // token is explicitly invalidated\r\n        || config.uninitialized             // config isn't initialized\r\n        || config.ignoreTimestamps          // ignore timestamps\r\n        || !getTimeLeft(user.token.expiry)  // > 0 if expiration is in the future\r\n    );\r\n    return timeLeft > 0\r\n}\r\n\r\nfunction getTimeLeft(expiry) {\r\n    return expiry - getSystemTime()\r\n}\r\n```\r\n\r\n# Remediation\r\nUpgrade UglifyJS to version `2.4.24` or higher.\r\n\r\n# References\r\n- [Blog Post](https://zyan.scripts.mit.edu/blog/backdooring-js/)\r\n- [GitHub Issue](https://github.com/mishoo/UglifyJS2/issues/751)"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-95",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 8.3,
+                "security-severity": "8.3"
+              }
+            },
+            {
+              "id": "npm:uglify-js:20151024",
+              "shortDescription": {
+                "text": "Medium severity - Regular Expression Denial of Service (ReDoS) vulnerability in uglify-js"
+              },
+              "fullDescription": {
+                "text": "(CVE-2015-8858) uglify-js@2.2.5"
+              },
+              "help": {
+                "text": "",
+                "markdown": "* Package Manager: npm\n* Vulnerable module: uglify-js\n* Introduced through: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964, jade@1.11.0 and others\n### Detailed paths\n* _Introduced through_: realtimechat@extwiii/Nodejs-Real-time-Chat-App#c2ffccab1a6ad4ade9f33eacb647997b8c2ff964 › jade@1.11.0 › transformers@2.1.0 › uglify-js@2.2.5\n# Overview\r\nThe `parse()` function in the [`uglify-js`](https://www.npmjs.com/package/uglify-js) package prior to version 2.6.0 is vulnerable to regular expression denial of service (ReDoS) attacks when long inputs of certain patterns are processed.\r\n\r\n# Details\r\nDenial of Service (DoS) describes a family of attacks, all aimed at making a system inaccessible to its original and legitimate users. There are many types of DoS attacks, ranging from trying to clog the network pipes to the system by generating a large volume of traffic from many machines (a Distributed Denial of Service - DDoS - attack) to sending crafted requests that cause a system to crash or take a disproportional amount of time to process.\r\n\r\nThe Regular expression Denial of Service (ReDoS) is a type of Denial of Service attack. Regular expressions are incredibly powerful, but they aren't very intuitive and can ultimately end up making it easy for attackers to take your site down.\r\n\r\nLet’s take the following regular expression as an example:\r\n```js\r\nregex = /A(B|C+)+D/\r\n```\r\n\r\nThis regular expression accomplishes the following:\r\n- `A` The string must start with the letter 'A'\r\n- `(B|C+)+` The string must then follow the letter A with either the letter 'B' or some number of occurrences of the letter 'C' (the `+` matches one or more times). The `+` at the end of this section states that we can look for one or more matches of this section.\r\n- `D` Finally, we ensure this section of the string ends with a 'D'\r\n\r\nThe expression would match inputs such as `ABBD`, `ABCCCCD`, `ABCBCCCD` and `ACCCCCD`\r\n\r\nIt most cases, it doesn't take very long for a regex engine to find a match:\r\n\r\n```bash\r\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCD\")'\r\n0.04s user 0.01s system 95% cpu 0.052 total\r\n\r\n$ time node -e '/A(B|C+)+D/.test(\"ACCCCCCCCCCCCCCCCCCCCCCCCCCCCX\")'\r\n1.79s user 0.02s system 99% cpu 1.812 total\r\n```\r\n\r\nThe entire process of testing it against a 30 characters long string takes around ~52ms. But when given an invalid string, it takes nearly two seconds to complete the test, over ten times as long as it took to test a valid string. The dramatic difference is due to the way regular expressions get evaluated.\r\n\r\nMost Regex engines will work very similarly (with minor differences). The engine will match the first possible way to accept the current character and proceed to the next one. If it then fails to match the next one, it will backtrack and see if there was another way to digest the previous character. If it goes too far down the rabbit hole only to find out the string doesn’t match in the end, and if many characters have multiple valid regex paths, the number of backtracking steps can become very large, resulting in what is known as _catastrophic backtracking_.\r\n\r\nLet's look at how our expression runs into this problem, using a shorter string: \"ACCCX\". While it seems fairly straightforward, there are still four different ways that the engine could match those three C's:\r\n1. CCC\r\n2. CC+C\r\n3. C+CC\r\n4. C+C+C.\r\n\r\nThe engine has to try each of those combinations to see if any of them potentially match against the expression. When you combine that with the other steps the engine must take, we can use [RegEx 101 debugger](https://regex101.com/debugger) to see the engine has to take a total of 38 steps before it can determine the string doesn't match.\r\n\r\nFrom there, the number of steps the engine must use to validate a string just continues to grow.\r\n\r\n| String | Number of C's | Number of steps |\r\n| -------|-------------:| -----:|\r\n| ACCCX | 3 | 38\r\n| ACCCCX | 4 | 71\r\n| ACCCCCX | 5 | 136\r\n| ACCCCCCCCCCCCCCX | 14 | 65,553\r\n\r\n\r\nBy the time the string includes 14 C's, the engine has to take over 65,000 steps just to see if the string is valid. These extreme situations can cause them to work very slowly (exponentially related to input size, as shown above), allowing an attacker to exploit this and can cause the service to excessively consume CPU, resulting in a Denial of Service.\r\n\r\n# Remediation\r\nUpgrade to version `2.6.0` or greater.\r\nIf a direct dependency update is not possible, use `snyk wizard` to patch this vulnerability.\r\n\r\n# References\r\n- [OWASP - ReDoS](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS)"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-400",
+                  "npm"
+                ],
+                "cvssv3_baseScore": 5.3,
+                "security-severity": "5.3"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "SNYK-JS-COOKIE-8163060",
+          "level": "warning",
+          "message": {
+            "text": "This file introduces a vulnerable cookie package with a medium severity vulnerability."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https_//github.com/extwiii/Nodejs-Real-time-Chat-App"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "cookie@0.3.1"
+                }
+              ]
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "Upgrade to socket.io@4.8.0"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "https_//github.com/extwiii/Nodejs-Real-time-Chat-App"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "startLine": 1
+                      },
+                      "insertedContent": {
+                        "text": "socket.io@4.8.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "SNYK-JS-ENGINEIO-1056749",
+          "level": "error",
+          "message": {
+            "text": "This file introduces a vulnerable engine.io package with a high severity vulnerability."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https_//github.com/extwiii/Nodejs-Real-time-Chat-App"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "engine.io@1.8.5"
+                }
+              ]
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "Upgrade to socket.io@2.5.0"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "https_//github.com/extwiii/Nodejs-Real-time-Chat-App"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "startLine": 1
+                      },
+                      "insertedContent": {
+                        "text": "socket.io@2.5.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "ruleId": "SNYK-JS-ENGINEIO-3136336",
+          "level": "error",
+          "message": {
+            "text": "This file introduces a vulnerable engine.io package with a high severity vulnerability."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https_//github.com/extwiii/Nodejs-Real-time-Chat-App"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "engine.io@1.8.5"
+                }
+              ]
+            }
+          ],
+          "fixes": [
+            {
+              "description": {
+                "text": "Upgrade to socket.io@2.5.0"
+              },
+              "artifactChanges": [
+                {
+                  "artifactLocation": {
+                    "uri": "https_//github.com/extwiii/Nodejs-Real-time-Chat-App"
+                  },
+                  "replacements": [
+                    {
+                      "deletedRegion": {
+                        "startLine": 1
+                      },
+                      "insertedContent": {
+                        "text": "socket.io@2.5.0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
