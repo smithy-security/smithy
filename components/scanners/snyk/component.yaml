@@ -1,0 +1,28 @@
+name: snyk
+description: "Runs snyk open source then parses findings into the OCSF format"
+type: scanner
+parameters:
+  - name: snyk_token
+    type: string
+    value: ""
+steps:
+  - name: run-snyk
+    image: components/scanners/snyk/scanner
+    env_vars:
+      SNYK_INTEGRATION_VERSION: docker
+      SNYK_INTEGRATION_NAME: smithy
+      SNYK_TOKEN: "{{.parameters.snyk_token}}"
+    executable: /exit_0_with_vulns.sh
+    args:
+      - /bin/snyk
+      - test
+      - --prune-repeated-subdependencies 
+      - --skip-unresolved
+      - --all-projects
+      - --sarif-file-output={{scratchWorkspace}}/snyk.out
+      - "{{sourceCodeWorkspace}}/"
+  - name: parser
+    image: "components/scanners/snyk"
+    executable: /bin/app
+    env_vars:
+      RAW_OUT_FILE_PATH: "{{scratchWorkspace}}/snyk.out"
