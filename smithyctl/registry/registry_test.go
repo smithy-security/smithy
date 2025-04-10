@@ -14,10 +14,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
 	"github.com/smithy-security/smithy/smithyctl/annotation"
+	"github.com/smithy-security/smithy/smithyctl/internal/creds"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 	"github.com/smithy-security/smithy/smithyctl/utils"
 )
@@ -107,12 +109,14 @@ func (suite *RegistryTestSuite) TestPackageAndFetch() {
 		registryHost = suite.registryResource.GetHostPort("5000/tcp")
 	)
 
+	staticCredsStore, err := creds.NewStaticStore("registryHost", "foo", "bar")
+	require.NoError(suite.T(), err)
+
 	r, err := registry.New(
 		registryHost,
 		registryDestination,
-		registryAuthEnabled,
-		"",
-		"",
+		true,
+		staticCredsStore,
 	)
 	require.NoError(suite.T(), err)
 	require.NotNil(suite.T(), r)
@@ -162,20 +166,20 @@ func (suite *RegistryTestSuite) TestPackageAndFetch() {
 
 func TestNew(t *testing.T) {
 	type newInput struct {
-		registryHost         string
-		registryDestination  string
-		registryAuthEnabled  bool
-		registryAuthUsername string
-		registryAuthPassword string
+		registryHost        string
+		registryDestination string
+		credsStore          credentials.Store
 	}
 
 	const (
 		registryHost         = "ghcr.io"
 		registryDestination  = "manifests"
-		registryAuthEnabled  = false
 		registryAuthUsername = "smithy"
 		registryAuthPassword = "smithy-secret-1234"
 	)
+
+	credsStore, err := creds.NewStaticStore(registryHost, registryAuthUsername, registryAuthPassword)
+	require.NoError(t, err)
 
 	for _, tt := range []struct {
 		testCase   string
@@ -185,66 +189,33 @@ func TestNew(t *testing.T) {
 		{
 			testCase: "it should return an error because the registry host is empty",
 			input: newInput{
-				registryHost:         "",
-				registryDestination:  registryDestination,
-				registryAuthEnabled:  registryAuthEnabled,
-				registryAuthUsername: registryAuthUsername,
-				registryAuthPassword: registryAuthPassword,
+				registryHost:        "",
+				registryDestination: registryDestination,
 			},
 			expectsErr: true,
 		},
 		{
 			testCase: "it should return an error because the registry destination is empty",
 			input: newInput{
-				registryHost:         registryHost,
-				registryDestination:  "",
-				registryAuthEnabled:  registryAuthEnabled,
-				registryAuthUsername: registryAuthUsername,
-				registryAuthPassword: registryAuthPassword,
+				registryHost:        registryHost,
+				registryDestination: "",
 			},
 			expectsErr: true,
 		},
 		{
-			testCase: "it should return an error because the auth username is empty",
+			testCase: "it should return an error because the creds store is nil",
 			input: newInput{
-				registryHost:         registryHost,
-				registryDestination:  registryDestination,
-				registryAuthEnabled:  true,
-				registryAuthUsername: "",
-				registryAuthPassword: registryAuthPassword,
+				registryHost:        registryHost,
+				registryDestination: registryDestination,
 			},
 			expectsErr: true,
 		},
 		{
-			testCase: "it should return an error because the auth password is empty",
+			testCase: "it returns a new registry because everything is in place",
 			input: newInput{
-				registryHost:         registryHost,
-				registryDestination:  registryDestination,
-				registryAuthEnabled:  true,
-				registryAuthUsername: registryAuthUsername,
-				registryAuthPassword: "",
-			},
-			expectsErr: true,
-		},
-		{
-			testCase: "it should return a registry when auth is disabled and credentials are empty",
-			input: newInput{
-				registryHost:         registryHost,
-				registryDestination:  registryDestination,
-				registryAuthEnabled:  registryAuthEnabled,
-				registryAuthUsername: "",
-				registryAuthPassword: "",
-			},
-			expectsErr: false,
-		},
-		{
-			testCase: "it should return a registry when auth is enabled and credentials are filled",
-			input: newInput{
-				registryHost:         registryHost,
-				registryDestination:  registryDestination,
-				registryAuthEnabled:  true,
-				registryAuthUsername: registryAuthUsername,
-				registryAuthPassword: registryAuthPassword,
+				registryHost:        registryHost,
+				registryDestination: registryDestination,
+				credsStore:          credsStore,
 			},
 			expectsErr: false,
 		},
@@ -253,9 +224,8 @@ func TestNew(t *testing.T) {
 			r, err := registry.New(
 				tt.input.registryHost,
 				tt.input.registryDestination,
-				tt.input.registryAuthEnabled,
-				tt.input.registryAuthUsername,
-				tt.input.registryAuthPassword,
+				false,
+				tt.input.credsStore,
 			)
 			if tt.expectsErr {
 				require.Error(t, err)
