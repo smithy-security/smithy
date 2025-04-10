@@ -10,10 +10,12 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
 	"github.com/smithy-security/smithy/smithyctl/component"
 	"github.com/smithy-security/smithy/smithyctl/images"
 	dockerimages "github.com/smithy-security/smithy/smithyctl/images/docker"
+	"github.com/smithy-security/smithy/smithyctl/internal/creds"
 	"github.com/smithy-security/smithy/smithyctl/registry"
 )
 
@@ -163,12 +165,25 @@ func packageComponent(ctx context.Context, flags packageFlags, componentPath str
 		return err
 	}
 
+	var credsStore credentials.Store
+	if flags.registryAuthEnabled {
+		credsStore, err = creds.NewStaticStore(
+			flags.registryURL, flags.registryAuthUsername, flags.registryAuthPassword,
+		)
+	} else {
+		credsStore, err = credentials.NewStoreFromDocker(credentials.StoreOptions{
+			DetectDefaultNativeStore: true,
+		})
+	}
+	if err != nil {
+		return errors.Errorf("could not initialise credential store: %w", err)
+	}
+
 	reg, err := registry.New(
 		flags.registryURL,
 		flags.namespace,
-		flags.registryAuthEnabled,
-		flags.registryAuthUsername,
-		flags.registryAuthPassword,
+		false,
+		credsStore,
 	)
 	if err != nil {
 		return errors.Errorf("failed to initialize registry: %w", err)
@@ -198,7 +213,7 @@ func packageComponent(ctx context.Context, flags packageFlags, componentPath str
 	}
 
 	imageResolver, err := dockerimages.NewResolverBuilder(
-		ctx, dockerClient, componentPath, true,
+		ctx, dockerClient, componentPath, credsStore, true,
 	)
 	if err != nil {
 		return errors.Errorf("could not bootstrap image resolver: %w", err)

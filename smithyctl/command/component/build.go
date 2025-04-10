@@ -11,10 +11,12 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
 	"github.com/smithy-security/smithy/smithyctl/component"
 	"github.com/smithy-security/smithy/smithyctl/images"
 	dockerimages "github.com/smithy-security/smithy/smithyctl/images/docker"
+	"github.com/smithy-security/smithy/smithyctl/internal/creds"
 )
 
 var buildCmdFlags buildFlags
@@ -211,8 +213,19 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 		buildOpts = append(buildOpts, dockerimages.WithPlatform(flags.platform))
 	}
 
+	var credsStore credentials.Store
+	var err error
 	if flags.authEnabled {
-		buildOpts = append(buildOpts, dockerimages.WithUsernamePassword(flags.username, flags.password))
+		credsStore, err = creds.NewStaticStore(
+			flags.registry, flags.username, flags.password,
+		)
+	} else {
+		credsStore, err = credentials.NewStoreFromDocker(credentials.StoreOptions{
+			DetectDefaultNativeStore: true,
+		})
+	}
+	if err != nil {
+		return errors.Errorf("could not initialise credential store: %w", err)
 	}
 
 	if flags.sdkVersion != "" {
@@ -231,6 +244,7 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 		ctx,
 		dockerClient,
 		componentPath,
+		credsStore,
 		flags.dryRun,
 		buildOpts...,
 	)
