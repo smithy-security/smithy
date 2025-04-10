@@ -18,8 +18,9 @@ import (
 	"oras.land/oras-go/v2/registry"
 	"oras.land/oras-go/v2/registry/remote"
 	"oras.land/oras-go/v2/registry/remote/auth"
-	"oras.land/oras-go/v2/registry/remote/retry"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
+	"github.com/smithy-security/pkg/utils"
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
 	"github.com/smithy-security/smithy/smithyctl/annotation"
@@ -50,23 +51,20 @@ type (
 	}
 )
 
-// New returns a new registry implementation with an underlying oras-go client.
+// New returns a new registry implementation with an underlying oras-go client
+// and the Docker credentials store to use for authentication
 func New(
-	registryHost string,
-	namespace string,
-	registryAuthEnabled bool,
-	registryAuthUsername string,
-	registryAuthPassword string,
+	registryHost, namespace string,
+	usePlainHTTP bool,
+	credsStore credentials.Store,
 ) (*orasRegistry, error) {
 	switch {
 	case registryHost == "":
 		return nil, errors.New("registry host is required")
 	case namespace == "":
 		return nil, errors.New("registry namespace is required")
-	case registryAuthEnabled && registryAuthUsername == "":
-		return nil, errors.New("registry auth username is required")
-	case registryAuthEnabled && registryAuthPassword == "":
-		return nil, errors.New("registry auth password is required")
+	case utils.IsNil(credsStore):
+		return nil, errors.New("credentials store provided is nil")
 	}
 
 	reg, err := remote.NewRegistry(registryHost)
@@ -74,24 +72,12 @@ func New(
 		return nil, errors.Errorf("could not create registry for host '%s': %w", registryHost, err)
 	}
 
-	var regAuthClient = &auth.Client{
-		Cache: auth.NewCache(),
+	reg.Client = &auth.Client{
+		Cache:      auth.NewCache(),
+		Credential: credsStore.Get,
 	}
 
-	if registryAuthEnabled {
-		regAuthClient.Credential = auth.StaticCredential(
-			registryHost,
-			auth.Credential{
-				Username: registryAuthUsername,
-				Password: registryAuthPassword,
-			},
-		)
-		regAuthClient.Client = retry.DefaultClient
-	} else {
-		reg.PlainHTTP = true
-	}
-
-	reg.Client = regAuthClient
+	reg.PlainHTTP = usePlainHTTP
 
 	return &orasRegistry{
 		namespace: namespace,
