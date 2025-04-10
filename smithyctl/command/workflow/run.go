@@ -7,11 +7,13 @@ import (
 	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
 	"github.com/smithy-security/smithy/smithyctl/component"
 	"github.com/smithy-security/smithy/smithyctl/images"
 	dockerimages "github.com/smithy-security/smithy/smithyctl/images/docker"
 	"github.com/smithy-security/smithy/smithyctl/internal/command/workflow"
+	"github.com/smithy-security/smithy/smithyctl/internal/creds"
 	"github.com/smithy-security/smithy/smithyctl/internal/engine"
 	dockerexecutor "github.com/smithy-security/smithy/smithyctl/internal/engine/docker"
 	"github.com/smithy-security/smithy/smithyctl/registry"
@@ -22,11 +24,10 @@ var runCmdFlags runFlags
 type runFlags struct {
 	overridesPath string
 
-	registryURL            string
-	registryBaseRepository string
-	registryAuthEnabled    bool
-	registryAuthUsername   string
-
+	registryURL             string
+	namespace               string
+	registryAuthEnabled     bool
+	registryAuthUsername    string
 	registryAuthPassword    string
 	imageRegistry           string
 	imageNamespace          string
@@ -68,10 +69,10 @@ func NewRunCommand() *cobra.Command {
 	cmd.
 		Flags().
 		StringVar(
-			&runCmdFlags.registryBaseRepository,
-			"registry-base-repository",
+			&runCmdFlags.namespace,
+			"namespace",
 			"smithy-security/smithy/manifests/components",
-			"the repository where to push manifests to",
+			"the repository namespace to push manifests to",
 		)
 	cmd.
 		Flags().
@@ -153,15 +154,29 @@ func runWorkflow(ctx context.Context, flags runFlags, args []string) error {
 		return errors.Errorf("path should be pointing to a component YAML spec: %s", workflowPath)
 	}
 
+	var credsStore credentials.Store
+	var err error
+	if flags.registryAuthEnabled {
+		credsStore, err = creds.NewStaticStore(
+			flags.registryURL, flags.registryAuthUsername, flags.registryAuthPassword,
+		)
+	} else {
+		credsStore, err = credentials.NewStoreFromDocker(credentials.StoreOptions{
+			DetectDefaultNativeStore: true,
+		})
+	}
+	if err != nil {
+		return errors.Errorf("could not initialise credential store: %w", err)
+	}
+
 	reg, err := registry.New(
 		flags.registryURL,
-		flags.registryBaseRepository,
-		flags.registryAuthEnabled,
-		flags.registryAuthUsername,
-		flags.registryAuthPassword,
+		flags.namespace,
+		false,
+		credsStore,
 	)
 	if err != nil {
-		return errors.Errorf("failed to initialize package registry: %w", err)
+		return errors.Errorf("failed to initialize registry: %w", err)
 	}
 
 	dockerClient, err := dockerclient.NewClientWithOpts(
@@ -186,7 +201,12 @@ func runWorkflow(ctx context.Context, flags runFlags, args []string) error {
 		buildOptions = append(buildOptions, dockerimages.WithBaseDockerfilePath(runCmdFlags.baseComponentDockerfile))
 	}
 
-	imageResolver, err := workflow.NewDockerImageResolver(flags.buildComponentImages, dockerClient, buildOptions...)
+	imageResolver, err := workflow.NewDockerImageResolver(
+		flags.buildComponentImages,
+		dockerClient,
+		credsStore,
+		buildOptions...,
+	)
 	if err != nil {
 		return errors.Errorf("could not bootstrap image resolver: %w", err)
 	}
