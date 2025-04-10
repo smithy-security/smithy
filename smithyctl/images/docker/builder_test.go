@@ -18,6 +18,7 @@ import (
 	"go.uber.org/mock/gomock"
 
 	"github.com/smithy-security/smithy/smithyctl/images"
+	"github.com/smithy-security/smithy/smithyctl/internal/creds"
 )
 
 func TestBuilder(t *testing.T) {
@@ -83,10 +84,14 @@ func TestBuilder(t *testing.T) {
 				),
 		)
 
+		testCreds, err := creds.NewStaticStore("bla", "username", "password")
+		require.NoError(t, err)
+
 		builder, err := NewBuilder(
 			testCtx,
 			dockerBuilderMock,
 			"components/scanners/test/component.yaml",
+			testCreds,
 			false,
 			WithBaseDockerfilePath("testdata/Dockerfile"),
 			WithSDKVersion("1.0.0"),
@@ -159,10 +164,14 @@ func TestBuilder(t *testing.T) {
 				),
 		)
 
+		testCreds, err := creds.NewStaticStore("bla", "username", "password")
+		require.NoError(t, err)
+
 		builder, err := NewBuilder(
 			testCtx,
 			dockerBuilderMock,
 			"components/scanners/test/component.yaml",
+			testCreds,
 			false,
 			WithBaseDockerfilePath("testdata/Dockerfile"),
 		)
@@ -256,13 +265,16 @@ func TestBuilder(t *testing.T) {
 				),
 		)
 
+		testCreds, err := creds.NewStaticStore("ghcr.io", "user", "pass")
+		require.NoError(t, err)
+
 		builder, err := NewBuilder(
 			testCtx,
 			dockerBuilderMock,
 			"components/scanners/test/component.yaml",
+			testCreds,
 			false,
 			WithBaseDockerfilePath("testdata/Dockerfile"),
-			WithUsernamePassword("user", "pass"),
 			PushImages(),
 		)
 		require.NoError(t, err)

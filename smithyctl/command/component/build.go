@@ -11,10 +11,12 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
 	"github.com/smithy-security/smithy/smithyctl/component"
 	"github.com/smithy-security/smithy/smithyctl/images"
 	dockerimages "github.com/smithy-security/smithy/smithyctl/images/docker"
+	"github.com/smithy-security/smithy/smithyctl/internal/creds"
 )
 
 var buildCmdFlags buildFlags
@@ -31,6 +33,7 @@ type (
 		labelsMap               map[string]string
 		dryRun                  bool
 		push                    bool
+		useDockerCreds          bool
 		platform                string
 		tags                    []string
 		sdkVersion              string
@@ -146,6 +149,14 @@ func NewBuildCommand() *cobra.Command {
 			false,
 			"don't build the images but show a report of what the system would execute",
 		)
+	cmd.
+		Flags().
+		BoolVar(
+			&buildCmdFlags.useDockerCreds,
+			"use-docker-creds",
+			false,
+			"use Docker credentials when pushing images",
+		)
 
 	return cmd
 }
@@ -211,8 +222,21 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 		buildOpts = append(buildOpts, dockerimages.WithPlatform(flags.platform))
 	}
 
-	if flags.authEnabled {
-		buildOpts = append(buildOpts, dockerimages.WithUsernamePassword(flags.username, flags.password))
+	var credsStore credentials.Store
+	var err error
+	if flags.useDockerCreds && flags.authEnabled {
+		return errors.New("you can't use both static credentials and docker credentials")
+	} else if flags.useDockerCreds {
+		credsStore, err = credentials.NewStoreFromDocker(credentials.StoreOptions{
+			DetectDefaultNativeStore: true,
+		})
+	} else if flags.authEnabled {
+		credsStore, err = creds.NewStaticStore(
+			flags.registry, flags.username, flags.password,
+		)
+	}
+	if err != nil {
+		return errors.Errorf("could not initialise credential store: %w", err)
 	}
 
 	if flags.sdkVersion != "" {
@@ -231,6 +255,7 @@ func buildComponent(ctx context.Context, flags buildFlags, componentPath string)
 		ctx,
 		dockerClient,
 		componentPath,
+		credsStore,
 		flags.dryRun,
 		buildOpts...,
 	)

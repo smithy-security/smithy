@@ -14,6 +14,7 @@ import (
 	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
 	"gopkg.in/yaml.v3"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
 	"github.com/smithy-security/pkg/utils"
 
@@ -90,13 +91,14 @@ func (c *Component) IsInitialised() bool {
 func NewDockerImageResolver(
 	buildComponentImages bool,
 	dockerClient *dockerclient.Client,
+	credsStore credentials.Store,
 	opts ...dockerimages.BuilderOptionFn,
 ) (ComponentImageResolver, error) {
 	if utils.IsNil(dockerClient) {
 		return nil, errors.Errorf("nil docker client provided")
 	}
 
-	remoteComponentImageResolver, err := dockerimages.NewResolver(dockerClient, false)
+	remoteComponentImageResolver, err := dockerimages.NewResolver(dockerClient, credsStore, false)
 	if err != nil {
 		return nil, errors.Errorf("could not initialise docker image resolver: %w", err)
 	}
@@ -113,7 +115,7 @@ func NewDockerImageResolver(
 			componentPath string,
 		) (images.Resolver, error) {
 			return dockerimages.NewResolverBuilder(
-				ctx, dockerClient, componentPath, false, opts...,
+				ctx, dockerClient, componentPath, credsStore, false, opts...,
 			)
 		}
 	} else {
