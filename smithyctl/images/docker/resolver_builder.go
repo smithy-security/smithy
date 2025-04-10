@@ -10,6 +10,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/utils"
 	"k8s.io/apimachinery/pkg/util/sets"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
 	"github.com/smithy-security/smithy/smithyctl/images"
 )
@@ -36,6 +37,7 @@ func NewResolverBuilder(
 	ctx context.Context,
 	client Client,
 	componentPath string,
+	credsStore credentials.Store,
 	dryRun bool,
 	opts ...BuilderOptionFn,
 ) (*ResolverBuilder, error) {
@@ -43,12 +45,12 @@ func NewResolverBuilder(
 		return nil, ErrNoDockerClient
 	}
 
-	builder, err := NewBuilder(ctx, client, componentPath, dryRun, opts...)
+	builder, err := NewBuilder(ctx, client, componentPath, credsStore, dryRun, opts...)
 	if err != nil {
 		return nil, errors.Errorf("could not bootstrap builder: %w", err)
 	}
 
-	resolver, err := NewResolver(client, dryRun)
+	resolver, err := NewResolver(client, credsStore, dryRun)
 	if err != nil {
 		return nil, errors.Errorf("could not bootstrap resolver: %w", err)
 	}
