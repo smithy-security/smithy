@@ -70,10 +70,6 @@ jobs:
             --debug-level=debug \
             component \
               build \
-                --registry-auth-enabled=true \
-                --registry-auth-username=${{ github.actor }} \
-                --registry-auth-password=${{ secrets.GITHUB_TOKEN }} \
-                --registry-url=ghcr.io \
                 --sdk-version=${{ steps.sdk_version.outputs.sdk_version }} \
                 --tag=${{ steps.tag_info.outputs.version }} \
                 --push \
@@ -84,10 +80,6 @@ jobs:
             --debug-level=debug \
             component \
               package \
-                --registry-auth-enabled=true \
-                --registry-auth-username=${{ github.actor }} \
-                --registry-auth-password=${{ secrets.GITHUB_TOKEN }} \
-                --registry-url=ghcr.io \
                 --sdk-version=${{ steps.sdk_version.outputs.sdk_version }} \
                 --version=${{ steps.tag_info.outputs.version }} \
                 "${{ steps.tag_info.outputs.component_dir }}/component.yaml"
