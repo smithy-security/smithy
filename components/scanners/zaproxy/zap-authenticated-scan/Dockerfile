@@ -1,6 +1,5 @@
 FROM zaproxy/zap-stable:latest
 
-
 # zap has python so we can just copy a script here
 COPY zap-authenticated-scan.py /workdir/zap-authenticated-scan.py
 COPY requirements.txt /workdir/requirements.txt

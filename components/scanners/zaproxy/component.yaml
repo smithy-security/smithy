@@ -5,15 +5,6 @@ parameters:
   - name: login_url
     type: string
     value: ""
-  - name: login_regexp
-    type: string
-    value: ""
-  - name: logout_regexp
-    type: string
-    value: ""
-  - name: logout_url
-    type: string
-    value: ""
   - name: username
     type: string
     value: ""
@@ -37,9 +28,6 @@ steps:
     - /workdir/zap-authenticated-scan.py
     env_vars:
       LOGIN_URL: "{{ .parameters.login_url }}"
-      LOGIN_INDICATOR: "{{ .parameters.login_regexp }}"
-      LOGOUT_INDICATOR: "{{ .parameters.logout_regexp }}"
-      LOGOUT_URL: "{{ .parameters.logout_url }}"
       USERNAME: "{{ .parameters.username }}"
       PASSWORD: "{{ .parameters.password }}"
       TARGET: "{{ .parameters.target }}"
