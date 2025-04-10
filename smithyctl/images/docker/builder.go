@@ -3,7 +3,6 @@ package docker
 import (
 	"bufio"
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,14 +12,15 @@ import (
 
 	dockertypes "github.com/docker/docker/api/types"
 	dockerimagetypes "github.com/docker/docker/api/types/image"
-	dockerregistrytypes "github.com/docker/docker/api/types/registry"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/go-errors/errors"
 	"golang.org/x/sync/errgroup"
+	"oras.land/oras-go/v2/registry/remote/credentials"
 
 	"github.com/smithy-security/pkg/utils"
 
 	"github.com/smithy-security/smithy/smithyctl/images"
+	"github.com/smithy-security/smithy/smithyctl/internal/creds"
 )
 
 // builderOptions is a struct that defines common properties and behaviour of all the
@@ -29,7 +29,6 @@ type builderOptions struct {
 	platform           string
 	baseDockerfilePath string
 	push               bool
-	username, password string
 	labels             map[string]string
 	sdkVersion         string
 }
@@ -68,15 +67,6 @@ func WithLabels(labelMap map[string]string) BuilderOptionFn {
 	}
 }
 
-// WithUsernamePassword overrides the default username and password used to
-// authenticate with the registry
-func WithUsernamePassword(username, password string) BuilderOptionFn {
-	return func(o *builderOptions) {
-		o.username = username
-		o.password = password
-	}
-}
-
 // WithSDKVersion customises the sdk version.
 func WithSDKVersion(version string) BuilderOptionFn {
 	return func(o *builderOptions) {
@@ -92,8 +82,6 @@ func makeOptions(ctx context.Context, daemon dockerBuilder, opts ...BuilderOptio
 
 	defaultOpts := builderOptions{
 		push:               false,
-		username:           "username",
-		password:           "password",
 		labels:             images.DefaultLabels,
 		baseDockerfilePath: "./components/Dockerfile",
 		platform:           daemonVersion.Os + "/" + daemonVersion.Arch,
@@ -121,6 +109,7 @@ type Builder struct {
 	componentPath string
 	opts          builderOptions
 	dryRun        bool
+	credsStore    credentials.Store
 	report        images.Report
 	prepareTar    func(baseDockerfilePath, path string, extraPaths ...string) (io.ReadCloser, error)
 }
@@ -130,6 +119,7 @@ func NewBuilder(
 	ctx context.Context,
 	client dockerBuilder,
 	componentPath string,
+	credsStore credentials.Store,
 	dryRun bool,
 	opts ...BuilderOptionFn,
 ) (*Builder, error) {
@@ -146,6 +136,7 @@ func NewBuilder(
 		client:        client,
 		componentPath: componentPath,
 		opts:          buildOpts,
+		credsStore:    credsStore,
 		dryRun:        dryRun,
 		report: images.Report{
 			CustomImages: []images.CustomImageReport{},
@@ -316,16 +307,6 @@ func (b *Builder) push(ctx context.Context, cr *images.ComponentRepository) (err
 		return nil
 	}
 
-	authConfigBytes, err := json.Marshal(dockerregistrytypes.AuthConfig{
-		Username: b.opts.username,
-		Password: b.opts.password,
-	})
-	if err != nil {
-		return errors.Errorf("could not marshal registry authentication configuration: %w", err)
-	}
-
-	authConfigEncoded := base64.URLEncoding.EncodeToString(authConfigBytes)
-
 	readClosers := []io.ReadCloser{}
 	defer func() {
 		for _, rd := range readClosers {
@@ -333,12 +314,17 @@ func (b *Builder) push(ctx context.Context, cr *images.ComponentRepository) (err
 		}
 	}()
 
+	bearerToken, err := creds.GetAndEncode(ctx, cr.Registry(), b.credsStore)
+	if err != nil {
+		return errors.Errorf("could not get credentials for registry %s: %w", cr.Registry(), err)
+	}
+
 	fmt.Fprintf(os.Stderr, "pushing tags %q\n", cr.URLs())
 	for _, tag := range cr.URLs() {
 		var pushResp io.ReadCloser
 		fmt.Fprintf(os.Stderr, "pushing image %s\n", tag)
 		pushResp, err = b.client.ImagePush(ctx, tag, dockerimagetypes.PushOptions{
-			RegistryAuth: authConfigEncoded,
+			RegistryAuth: bearerToken,
 		})
 		if err != nil {
 			return errors.Errorf("%s: could not push image: %w", tag, err)
