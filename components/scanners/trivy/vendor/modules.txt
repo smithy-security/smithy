@@ -132,10 +132,12 @@ github.com/russross/blackfriday/v2
 # github.com/shopspring/decimal v1.2.0
 ## explicit; go 1.13
 github.com/shopspring/decimal
+# github.com/smithy-security/pkg v0.0.0-20250409154554-64cc142807de
+## explicit
 # github.com/smithy-security/pkg/env v0.0.1
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/pkg/sarif v0.0.2-0.20250225103845-bfa21e86aa9b
+# github.com/smithy-security/pkg/sarif v0.0.2-0.20250409154554-64cc142807de
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/sarif
 github.com/smithy-security/pkg/sarif/internal/ptr

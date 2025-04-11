@@ -179,6 +179,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			vulnerability := finding.Vulnerabilities[0]
 			assert.Equalf(t, nowUnix, *vulnerability.FirstSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
 			assert.Equalf(t, nowUnix, *vulnerability.LastSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
+			assert.NotEmpty(t, vulnerability.Cve.Uid)
 			assert.Containsf(
 				t,
 				[]string{
