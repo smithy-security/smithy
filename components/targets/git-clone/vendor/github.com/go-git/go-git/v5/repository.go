@@ -1000,6 +1000,7 @@ func (r *Repository) clone(ctx context.Context, o *CloneOptions) error {
 
 const (
 	refspecTag              = "+refs/tags/%s:refs/tags/%[1]s"
+	refspecPull             = "+refs/pull/%s:refs/pull/%[1]s"
 	refspecSingleBranch     = "+refs/heads/%s:refs/remotes/%s/%[1]s"
 	refspecSingleBranchHEAD = "+HEAD:refs/remotes/%s/HEAD"
 )
@@ -1011,6 +1012,10 @@ func (r *Repository) cloneRefSpec(o *CloneOptions) []config.RefSpec {
 	case o.ReferenceName.IsTag():
 		return []config.RefSpec{
 			config.RefSpec(fmt.Sprintf(refspecTag, o.ReferenceName.Short())),
+		}
+	case o.ReferenceName.IsPRRef():
+		return []config.RefSpec{
+			config.RefSpec(fmt.Sprintf(refspecPull, o.ReferenceName.Short())),
 		}
 	case o.SingleBranch && o.ReferenceName == plumbing.HEAD:
 		return []config.RefSpec{

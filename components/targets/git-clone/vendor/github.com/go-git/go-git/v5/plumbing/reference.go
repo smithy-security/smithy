@@ -11,6 +11,7 @@ const (
 	refPrefix       = "refs/"
 	refHeadPrefix   = refPrefix + "heads/"
 	refTagPrefix    = refPrefix + "tags/"
+	refPullPrefix   = refPrefix + "pull/"
 	refRemotePrefix = refPrefix + "remotes/"
 	refNotePrefix   = refPrefix + "notes/"
 	symrefPrefix    = "ref: "
@@ -22,6 +23,7 @@ const (
 var RefRevParseRules = []string{
 	"%s",
 	"refs/%s",
+	"refs/pull/%s",
 	"refs/tags/%s",
 	"refs/heads/%s",
 	"refs/remotes/%s",
@@ -108,6 +110,11 @@ func (r ReferenceName) IsRemote() bool {
 // IsTag check if a reference is a tag
 func (r ReferenceName) IsTag() bool {
 	return strings.HasPrefix(string(r), refTagPrefix)
+}
+
+// IsPRRef check if a reference is a tag
+func (r ReferenceName) IsPRRef() bool {
+	return strings.HasPrefix(string(r), refPullPrefix)
 }
 
 func (r ReferenceName) String() string {
