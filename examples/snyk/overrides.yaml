@@ -1,0 +1,11 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: ""
+- name: "reference"
+  type: "string"
+  value: "master"
+snyk:
+- name: "snyk_token"
+  type: "string"
+  value: ""
