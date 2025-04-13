@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import json
+import yaml
 import sys
 import signal
 import subprocess
@@ -9,6 +11,101 @@ import requests
 import urllib.parse
 from zapv2 import ZAPv2
 from urllib.parse import urlparse
+
+
+plan_template="""
+{
+  "env": {
+    "contexts": [
+      {
+        "name": "Default Context",
+        "urls": [
+          "${zap_target}"
+        ],
+        "includePaths": [
+          "${zap_target}.*"
+        ],
+        "authentication": {
+          "method": "browser",
+          "parameters": {
+            "browserId": "firefox-headless",
+            "loginPageUrl": "${zap_login_path}",
+            "loginPageWait": 5
+          },
+          "verification": {
+            "method": "autodetect"
+          }
+        },
+        "sessionManagement": {
+          "method": "autodetect"
+        },
+        "technology": {},
+        "users": [
+          {
+            "name": "test-user",
+            "credentials": {
+              "username": "${zap_username}",
+              "password": "${zap_password}"
+            }
+          }
+        ]
+      }
+    ],
+    "parameters": {}
+  },
+  "jobs": [
+    {
+      "type": "passiveScan-config",
+      "parameters": {
+        "disableAllRules": true
+      },
+      "rules": [
+        {
+          "name": "Authentication Request Identified",
+          "id": 10111,
+          "threshold": "medium"
+        },
+        {
+          "name": "Session Management Response Identified",
+          "id": 10112,
+          "threshold": "medium"
+        },
+        {
+          "name": "Verification Request Identified",
+          "id": 10113,
+          "threshold": "medium"
+        }
+      ]
+    },
+    {
+      "type": "requestor",
+      "parameters": {
+        "user": "test-user"
+      },
+      "requests": [
+        {
+          "url": "${zap_target}"
+        }
+      ]
+    },
+    {
+      "type": "passiveScan-wait",
+      "parameters": {}
+    },
+    {
+      "name": "${zap_report_name}",
+      "type": "report",
+      "parameters": {
+        "template": "sarif-json",
+        "theme": null,
+        "reportDir": "${zap_report_dir}",
+        "reportFile": "${zap_report_file}",
+        "reportTitle": "${zap_report_title}"
+      }
+    }
+  ]
+}
+"""
 
 
 class ZapInvalidTargetError(Exception):
@@ -58,6 +155,8 @@ class ZapRunner:
         if start_zap:
             self.start_zap()
             self.wait_for_zap_to_start()
+        else:
+            print(f"'start_zap' set to false, assuming there is already a zap instance running on {host}:{port}")
         self.check_connection()
         self.create_context()
 
@@ -123,7 +222,7 @@ class ZapRunner:
             authmethodname="browserBasedAuthentication",
             authmethodconfigparams=browser_based_config,
         )
-        
+
         if resp != "OK":
             raise RuntimeError(
                 "could not setup authentication for login_url: {login_url}, response: {resp}"
@@ -145,8 +244,7 @@ class ZapRunner:
             self.context_id, self.user_id, user_auth_config
         )
         self.zap.users.set_user_enabled(self.context_id, self.user_id, "true")
-        self.zap.forcedUser.set_forced_user(self.context_id, self.user_id)
-        self.zap.forcedUser.set_forced_user_mode_enabled("true")
+        self.zap.authentication.get_authentication_method
         print(f"User Auth Configured for user {user} with username {username}")
         return self.user_id
 
@@ -202,6 +300,53 @@ class ZapRunner:
     def get_scan_status(self, scanID):
         return self.zap.ascan.status(scanid=scanID)
 
+    def run_automation_framework_scan(
+        self,
+        login_url:str=None,
+        username:str=None,
+        password:str=None,
+        filename: str = "zap-report.json",
+        report_name:str = "Smithy Zap Report",
+        report_title:str= "Smithy Zap Report",
+        report_dir: str = None,
+        bar:str=None
+    ):
+        automation_framework_script = json.loads(bar)
+        for context in automation_framework_script['env']['contexts']:
+            print(f"setting zap target for context {context['name']}")
+            context['urls']=[self.target_url]
+            context['includePaths']=[f"{self.target_url}.*"]
+            context['authentication']['parameters']['loginPageUrl'] = login_url
+            for user in context['users']:
+                user['credentials']['username'] = username
+                user['credentials']['password'] = password
+        for job in automation_framework_script['jobs']:
+            if job['type'] == 'requestor':
+                for req in job["requests"]:
+                    req["url"] = self.target_url
+            elif job['type'] == 'report':
+                job['name'] = report_name
+                job['parameters']['reportDir'] = report_dir
+                job['parameters']['reportFile'] = filename
+                job['parameters']['reportTitle'] = report_title
+
+        with open("/tmp/zap_auth_automation.yaml","w") as f:
+            f.write('\n---\n')
+            f.write(yaml.safe_dump(automation_framework_script,sort_keys=False))
+            f.close()
+        print("running automation framework scipt located at /tmp/zap_auth_automation.yaml")
+        planID = self.zap.automation.run_plan("/tmp/zap_auth_automation.yaml")
+        progress = self.zap.automation.plan_progress(planid=planID)
+        while not progress['error'] and\
+              not progress['finished']:
+            progress = self.zap.automation.plan_progress(planid=planID)
+            time.sleep(5)
+            print(f"plan progress {progress}  {progress['info']}")
+        if progress['finished']:
+            print(f"plan completed successfully at {progress['finished']}")
+        if progress['error']:
+            print(f"plan had errors, check progress for hints")
+        
     def get_report(
         self,
         filename: str = "zap-report.json",
@@ -289,17 +434,34 @@ def main():
         type=str,
         help="where to put the report",
     )
-
+    parser.add_argument(
+        "--use-automation-framework",
+        action='store_true',
+        help="use automation framework to execute the scan",
+    )
+    parser.add_argument(
+        "--no-start-zap",
+        default=False,
+        action='store_true',
+        help="(for local dev, do not attempt to start zap)",
+    )
     args = parser.parse_args()
-    runner = ZapRunner(api_key=args.api_key, target_url=args.target)
+    runner = ZapRunner(api_key=args.api_key, target_url=args.target,start_zap=(not args.no_start_zap))
     try:
+        if args.use_automation_framework:
+            return runner.run_automation_framework_scan(
+                login_url=args.login_url,
+                username=args.username,
+                password=args.password,
+                report_dir=args.report_dir,
+                bar=plan_template)
         if args.username and args.password:
             run_zap_authenticated_scan(args, runner)
         else:
             run_zap_baseline_scan(args, runner)
     finally:
         runner.stop_zap()
-
+        # pass
 
 def run_zap_authenticated_scan(args, runner: ZapRunner):
     print(
@@ -307,13 +469,12 @@ def run_zap_authenticated_scan(args, runner: ZapRunner):
     )
     sub_target_list = args.sub_targets.split(",") if args.sub_targets else []
 
-
     runner.set_browser_based_auth(login_url=args.login_url)
     user_id_response = runner.set_user_auth_config(
         user=args.username, username=args.username, password=args.password
     )
     runner.test_user_auth()
-    
+
     runner.set_include_in_context(target_url=args.target)
     spider_id = runner.start_authenticated_spider(user_id=user_id_response)
 
@@ -366,72 +527,3 @@ def run_zap_baseline_scan(args, runner: ZapRunner):
 
 if __name__ == "__main__":
     main()
-
-# the above script is a much more debuggable and configurable version of the below
-# automation_framework_script=f"""
-# ---
-# # A plan which aims to work out how to configure authentication given the following env vars:
-# #   ZAP_SITE         The target site, e.g. https://www.example.com - must not include the path or a trailing slash
-# #   ZAP_LOGIN_URL    The URL of the login page, e.g. https://www.example.com/login
-# #   ZAP_USER         A valid username
-# #   ZAP_PASSWORD     The associated password
-# #
-# # The report generated will give full details of the session handling and verification details found.
-# # For details see https://www.zaproxy.org/docs/desktop/addons/authentication-helper/auth-report-json/
-# env:
-#   contexts:
-#   - name: Default Context
-#     urls:
-#     - {ZAP_SITE}
-#     includePaths:
-#     - {ZAP_SITE}.*
-#     authentication:
-#       method: browser
-#       parameters:
-#         browserId: firefox-headless
-#         loginPageUrl: {ZAP_LOGIN_URL}
-#         loginPageWait: 5
-#       verification:
-#         method: autodetect
-#     sessionManagement:
-#       method: autodetect
-#     technology: {{}}
-#     users:
-#     - name: test-user
-#       credentials:
-#         username: {ZAP_USER}
-#         password: {ZAP_PASSWORD}
-#   parameters: {{}}
-# jobs:
-# - type: passiveScan-config
-#   parameters:
-#     disableAllRules: true
-#   rules:
-#   - name: Authentication Request Identified
-#     id: 10111
-#     threshold: medium
-#   - name: Session Management Response Identified
-#     id: 10112
-#     threshold: medium
-#   - name: Verification Request Identified
-#     id: 10113
-#     threshold: medium
-# - type: requestor
-#   parameters:
-#     user: test-user
-#   requests:
-#   - url: {ZAP_SITE}
-# - type: passiveScan-wait
-#   parameters: {{}}
-# - name: auth-test-report
-#   type: report
-#   parameters:
-#     template: auth-report-json
-#     theme: null
-#     reportDir: .
-#     reportFile: auth-report.json
-#     reportTitle: ZAP Report
-#   sections:
-#   - summary
-#   - afenv
-#   - statistics"""
