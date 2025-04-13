@@ -1,6 +1,10 @@
 name: semgrep
 description: "Runs Semgrep then parses findings into the OCSF format"
 type: scanner
+parameters:
+  - name: ruleset
+    type: string
+    value: "p/default"
 steps:
   - name: run-semgrep
     image: docker.io/returntocorp/semgrep:1.80
@@ -8,8 +12,7 @@ steps:
     args:
     - scan
     - --metrics=off
-    - --config
-    - p/default
+    - --config={{.parameters.ruleset}}
     - --sarif
     - --sarif-output
     - "{{ scratchWorkspace }}/semgrep-out.sarif.json"
