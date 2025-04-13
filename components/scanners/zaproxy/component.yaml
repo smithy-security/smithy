@@ -26,7 +26,9 @@ steps:
     executable: /workdir/venv/bin/python3
     args:
     - /workdir/zap-authenticated-scan.py
+    - --use-automation-framework
     env_vars:
+      API_KEY: "{{ .parameters.api_key }}"
       LOGIN_URL: "{{ .parameters.login_url }}"
       USERNAME: "{{ .parameters.username }}"
       PASSWORD: "{{ .parameters.password }}"
@@ -34,7 +36,6 @@ steps:
       REPORT_DIR: "{{ scratchWorkspace }}"
       REPORT_FILENAME: "zap-report.json"
       SCAN_DURATION_MINS: "{{ .parameters.scan_duration_mins }}"
-      API_KEY: "{{ .parameters.api_key }}"
   - name: parser
     image: components/scanners/zaproxy
     executable: /bin/app
