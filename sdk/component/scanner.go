@@ -47,7 +47,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 					metadataPath = path.Join(metadataPath, "target.json")
 				}
 
-				fstat, err := os.Stat(SCANNER_TARGET_METADATA_PATH_ENV_VAR)
+				fstat, err := os.Stat(metadataPath)
 				if err != nil {
 					return errors.Errorf("%s: could not open target metadata file: %w", metadataPath, err)
 				} else if fstat.IsDir() || !fstat.Mode().IsRegular() {
