@@ -183,7 +183,7 @@ func (g *gosecTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 				occurrencesCount int32 = 0
 			)
 
-			dataSource, err := g.mapDataSource(res.Locations)
+			dataSource, err := g.mapDataSource(ctx, res.Locations)
 			if err != nil {
 				return nil, errors.Errorf("failed to map data source: %w", err)
 			}
@@ -267,7 +267,12 @@ func (*gosecTransformer) mapSeverity(sarifResLevel sarifschemav210.ResultLevel) 
 	return severity
 }
 
-func (g *gosecTransformer) mapDataSource(locations []sarifschemav210.Location) (string, error) {
+func (g *gosecTransformer) mapDataSource(
+	ctx context.Context,
+	locations []sarifschemav210.Location,
+) (string, error) {
+	targetMetadata := component.TargetMetadataFromCtx(ctx)
+
 	for _, location := range locations {
 		if location.PhysicalLocation == nil ||
 			location.PhysicalLocation.ArtifactLocation == nil ||
@@ -288,6 +293,7 @@ func (g *gosecTransformer) mapDataSource(locations []sarifschemav210.Location) (
 				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
 				Path:      *location.PhysicalLocation.ArtifactLocation.Uri,
 			},
+			SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
 		}
 
 		if location.PhysicalLocation.Region != nil {

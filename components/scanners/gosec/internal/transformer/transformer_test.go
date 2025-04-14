@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
@@ -204,6 +205,31 @@ func TestGosecTransformer_Transform(t *testing.T) {
 			assert.NotEmptyf(t, vulnerability.Cwe.SrcUrl, "Unexpected empty value for src url in vulnerability for finding %d", idx)
 			assert.NotEmptyf(t, vulnerability.Cwe.Uid, "Unexpected empty value for uid in vulnerability for finding %d", idx)
 			assert.NotEmptyf(t, vulnerability.Cwe.Caption, "Unexpected empty value for caption in vulnerability for finding %d", idx)
+		}
+	})
+
+	t.Run("it should add target metadata to each finding when they are available", func(t *testing.T) {
+		commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
+		repositoryURL := "https://github.com/smithy-security/test"
+		targetMetadata := &ocsffindinginfo.DataSource{
+			SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+				RepositoryUrl: repositoryURL,
+				Reference:     commitRef,
+			},
+		}
+
+		ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		require.NotEmpty(t, findings)
+		require.Len(t, findings, 21)
+
+		for _, finding := range findings {
+			dataSource := ocsffindinginfo.DataSource{}
+			require.NoError(t, protojson.Unmarshal([]byte(finding.FindingInfo.DataSources[0]), &dataSource))
+			assert.Equal(t, repositoryURL, dataSource.SourceCodeMetadata.RepositoryUrl)
+			assert.Equal(t, commitRef, dataSource.SourceCodeMetadata.Reference)
 		}
 	})
 }
