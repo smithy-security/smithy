@@ -12,11 +12,12 @@ message DataSource {
   enum TargetType {
     TARGET_TYPE_UNSPECIFIED = 0;
     TARGET_TYPE_REPOSITORY = 1;
+    TARGET_TYPE_CONTAINER_IMAGE = 2;
   }
 
   // URISchema specifies the URI schema.
   // For example:
-  // - purl: pkg:npm/%40angular/animation@12.3.1" -> "pkg"
+  // - purl: pkg:npm/angular/animation@12.3.1" -> "pkg"
   // - file: file://main.go -> "file"
   enum URISchema {
     URI_SCHEMA_UNSPECIFIED = 0;
@@ -41,6 +42,20 @@ message DataSource {
   // PurlFindingLocationData specifies data associated with the logical location of a finding in a purl.
   message PurlFindingLocationData {}
 
+  // SourceCodeMetadata records the metadata of the repository holding the code of either
+  message SourceCodeMetadata {
+    string repository_url = 1;
+    string reference = 2;
+  }
+
+  // OCIPackageMetadata records the metadata of the package that was scanned. There is a possibility
+  // that we can correlate an OCI package to a source code repository from where it was generated. The
+  // fact that these fields exist doesn't mean that the SourceCodeMetadata won't be present.
+  message OCIPackageMetadata {
+    string package_url = 1;
+    string tag = 2;
+  }
+
   TargetType target_type = 1;
   URI uri = 2;
   // location_data can be a different value based on target_type.
@@ -48,6 +63,8 @@ message DataSource {
     FileFindingLocationData file_finding_location_data = 3;
     PurlFindingLocationData purl_finding_location_data = 4;
   }
+  SourceCodeMetadata source_code_metadata = 5;
+  OCIPackageMetadata oci_package_metadata = 6;
 }
 
 // annotations created by the DataEnricher
