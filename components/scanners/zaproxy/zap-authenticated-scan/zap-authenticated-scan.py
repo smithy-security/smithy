@@ -13,7 +13,7 @@ from zapv2 import ZAPv2
 from urllib.parse import urlparse
 
 
-plan_template="""
+plan_template = """
 {
   "env": {
     "contexts": [
@@ -156,7 +156,9 @@ class ZapRunner:
             self.start_zap()
             self.wait_for_zap_to_start()
         else:
-            print(f"'start_zap' set to false, assuming there is already a zap instance running on {host}:{port}")
+            print(
+                f"'start_zap' set to false, assuming there is already a zap instance running on {host}:{port}"
+            )
         self.check_connection()
         self.create_context()
 
@@ -181,6 +183,8 @@ class ZapRunner:
             ],
             stdout=sys.stdout,
             stderr=sys.stderr,
+            # stdout=subprocess.DEVNULL,
+            # stderr=subprocess.DEVNULL,
             text=True,
         )
         print(f"initializing zap, subprocess success")
@@ -227,7 +231,9 @@ class ZapRunner:
             raise RuntimeError(
                 "could not setup authentication for login_url: {login_url}, response: {resp}"
             )
-        resp = self.zap.sessionManagement.set_session_management_method(contextid=self.context_id,methodname="autoDetectSessionManagement")
+        resp = self.zap.sessionManagement.set_session_management_method(
+            contextid=self.context_id, methodname="autoDetectSessionManagement"
+        )
         print(
             f"Configured browser based authentication for login url: {login_url}, response: {resp}"
         )
@@ -302,51 +308,52 @@ class ZapRunner:
 
     def run_automation_framework_scan(
         self,
-        login_url:str=None,
-        username:str=None,
-        password:str=None,
+        login_url: str = None,
+        username: str = None,
+        password: str = None,
         filename: str = "zap-report.json",
-        report_name:str = "Smithy Zap Report",
-        report_title:str= "Smithy Zap Report",
+        report_name: str = "Smithy Zap Report",
+        report_title: str = "Smithy Zap Report",
         report_dir: str = None,
-        bar:str=None
+        plan: str = None,
     ):
-        automation_framework_script = json.loads(bar)
-        for context in automation_framework_script['env']['contexts']:
+        automation_framework_script = json.loads(plan)
+        for context in automation_framework_script["env"]["contexts"]:
             print(f"setting zap target for context {context['name']}")
-            context['urls']=[self.target_url]
-            context['includePaths']=[f"{self.target_url}.*"]
-            context['authentication']['parameters']['loginPageUrl'] = login_url
-            for user in context['users']:
-                user['credentials']['username'] = username
-                user['credentials']['password'] = password
-        for job in automation_framework_script['jobs']:
-            if job['type'] == 'requestor':
+            context["urls"] = [self.target_url]
+            context["includePaths"] = [f"{self.target_url}.*"]
+            context["authentication"]["parameters"]["loginPageUrl"] = login_url
+            for user in context["users"]:
+                user["credentials"]["username"] = username
+                user["credentials"]["password"] = password
+        for job in automation_framework_script["jobs"]:
+            if job["type"] == "requestor":
                 for req in job["requests"]:
                     req["url"] = self.target_url
-            elif job['type'] == 'report':
-                job['name'] = report_name
-                job['parameters']['reportDir'] = report_dir
-                job['parameters']['reportFile'] = filename
-                job['parameters']['reportTitle'] = report_title
+            elif job["type"] == "report":
+                job["name"] = report_name
+                job["parameters"]["reportDir"] = report_dir
+                job["parameters"]["reportFile"] = filename
+                job["parameters"]["reportTitle"] = report_title
 
-        with open("/tmp/zap_auth_automation.yaml","w") as f:
-            f.write('\n---\n')
-            f.write(yaml.safe_dump(automation_framework_script,sort_keys=False))
+        with open("/tmp/zap_auth_automation.yaml", "w") as f:
+            f.write("\n---\n")
+            f.write(yaml.safe_dump(automation_framework_script, sort_keys=False))
             f.close()
-        print("running automation framework scipt located at /tmp/zap_auth_automation.yaml")
+        print(
+            "running automation framework scipt located at /tmp/zap_auth_automation.yaml"
+        )
         planID = self.zap.automation.run_plan("/tmp/zap_auth_automation.yaml")
         progress = self.zap.automation.plan_progress(planid=planID)
-        while not progress['error'] and\
-              not progress['finished']:
+        while not progress["error"] and not progress["finished"]:
             progress = self.zap.automation.plan_progress(planid=planID)
             time.sleep(5)
             print(f"plan progress {progress}  {progress['info']}")
-        if progress['finished']:
+        if progress["finished"]:
             print(f"plan completed successfully at {progress['finished']}")
-        if progress['error']:
+        if progress["error"]:
             print(f"plan had errors, check progress for hints")
-        
+
     def get_report(
         self,
         filename: str = "zap-report.json",
@@ -436,32 +443,41 @@ def main():
     )
     parser.add_argument(
         "--use-automation-framework",
-        action='store_true',
+        action="store_true",
         help="use automation framework to execute the scan",
     )
     parser.add_argument(
         "--no-start-zap",
         default=False,
-        action='store_true',
+        action="store_true",
         help="(for local dev, do not attempt to start zap)",
     )
     args = parser.parse_args()
-    runner = ZapRunner(api_key=args.api_key, target_url=args.target,start_zap=(not args.no_start_zap))
+    target_url = args.target.strip("/")
+    print(f"starting zap scanning target: {target_url}")
+    runner = ZapRunner(
+        api_key=args.api_key, target_url=target_url, start_zap=(not args.no_start_zap)
+    )
     try:
-        if args.use_automation_framework:
-            return runner.run_automation_framework_scan(
-                login_url=args.login_url,
-                username=args.username,
-                password=args.password,
-                report_dir=args.report_dir,
-                bar=plan_template)
         if args.username and args.password:
-            run_zap_authenticated_scan(args, runner)
-        else:
-            run_zap_baseline_scan(args, runner)
+            if args.use_automation_framework:
+                print("running automation framework scan")
+                return runner.run_automation_framework_scan(
+                    login_url=args.login_url,
+                    username=args.username,
+                    password=args.password,
+                    report_dir=args.report_dir,
+                    plan=plan_template,
+                )
+            print("running scan using the rest api")
+            return run_zap_authenticated_scan(args, runner)
+
+        print("running baseline scan using the rest api")
+        return run_zap_baseline_scan(args, runner)
     finally:
         runner.stop_zap()
         # pass
+
 
 def run_zap_authenticated_scan(args, runner: ZapRunner):
     print(
@@ -500,10 +516,9 @@ def run_zap_authenticated_scan(args, runner: ZapRunner):
 
 def run_zap_baseline_scan(args, runner: ZapRunner):
     print(
-        f"did not receive a username and a password, running an unauthenticated baseline scan for target '{args.target}'"
+        f"did not receive a username and a password, running an unauthenticated baseline scan for target '{runner.target_url}'"
     )
-
-    runner.set_include_in_context(target_url=args.target)
+    runner.set_include_in_context(target_url=runner.target_url)
     spider_id = runner.start_spider()
     spider_status = runner.get_spider_status(spider_id)
     while "100" not in spider_status:
@@ -514,8 +529,14 @@ def run_zap_baseline_scan(args, runner: ZapRunner):
 
     print("running active scan")
     scan_id = runner.active_scan(args.max_scan_duration)
+    if scan_id == 'url_not_in_context':
+            raise RuntimeError("scan url is not in context")
+    
+    print(f"started scan with id {scan_id}")
     scan_status = runner.get_scan_status(scanID=scan_id)
     while "100" not in scan_status:
+        if 'DOES_NOT_EXIST' in scan_status:
+            raise RuntimeError("scan was never started")
         print(f"active scan status: {scan_status}%")
         time.sleep(10)
         scan_status = runner.get_scan_status(scanID=scan_id)
