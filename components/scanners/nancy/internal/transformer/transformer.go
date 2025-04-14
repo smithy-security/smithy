@@ -231,7 +231,7 @@ func (b *NancyTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 
 	logger.Info("received", slog.Int("num_raw_nancy_findings", len(results.Vulnerable)))
 	for _, res := range results.Vulnerable {
-		v, err := b.parseResult(res)
+		v, err := b.parseResult(ctx, res)
 		if err != nil {
 			return nil, errors.Errorf("could not parse nancy result, err: %w", err)
 		}
@@ -260,7 +260,7 @@ func (b *NancyTransformer) cvssToSeverity(score float64) ocsf.VulnerabilityFindi
 	}
 }
 
-func (b *NancyTransformer) parseResult(advisory NancyAdvisory) ([]*ocsf.VulnerabilityFinding, error) {
+func (b *NancyTransformer) parseResult(ctx context.Context, advisory NancyAdvisory) ([]*ocsf.VulnerabilityFinding, error) {
 	now := b.clock.Now().Unix()
 	confidenceID := ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH
 	confidence := ocsf.VulnerabilityFinding_ConfidenceId_name[int32(confidenceID)]
@@ -270,7 +270,7 @@ func (b *NancyTransformer) parseResult(advisory NancyAdvisory) ([]*ocsf.Vulnerab
 		slog.Info("could not find the direct dependency this likely means that there is a vulnerability in a transitive dependency which you may not care about", slog.String("purl", advisory.Coordinates))
 	}
 	for _, vulnerability := range advisory.Vulnerabilities {
-		dataSource, err := b.mapDataSource(advisory)
+		dataSource, err := b.mapDataSource(ctx, advisory)
 		if err != nil {
 			return nil, err
 		}
@@ -431,14 +431,19 @@ func (*NancyTransformer) optionallyMapCWE(r *NancyVulnerability) *ocsf.Cwe {
 	}
 }
 
-func (b *NancyTransformer) mapDataSource(r NancyAdvisory) (string, error) {
+func (b *NancyTransformer) mapDataSource(ctx context.Context, r NancyAdvisory) (string, error) {
+	targetMetadata := component.TargetMetadataFromCtx(ctx)
+
 	dataSource := ocsffindinginfo.DataSource{
 		TargetType: b.targetType,
 		Uri: &ocsffindinginfo.DataSource_URI{
 			UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_PURL,
 			Path:      r.Coordinates,
 		},
-		LocationData: &ocsffindinginfo.DataSource_PurlFindingLocationData_{PurlFindingLocationData: &ocsffindinginfo.DataSource_PurlFindingLocationData{}}, // TODO : figure out what location data we would need here that is different that code
+		SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
+		LocationData: &ocsffindinginfo.DataSource_PurlFindingLocationData_{
+			PurlFindingLocationData: &ocsffindinginfo.DataSource_PurlFindingLocationData{},
+		},
 	}
 
 	toBytes, err := protojson.Marshal(&dataSource)
