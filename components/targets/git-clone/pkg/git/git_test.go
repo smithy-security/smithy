@@ -12,11 +12,13 @@ import (
 
 func TestNewConf(t *testing.T) {
 	const (
-		clonePath      = "/workspace"
-		repoURL        = "https://github.com/andream16/go-opentracing-example"
-		reference      = "main"
-		accessToken    = "superSecureToken"
-		accessUsername = "andrea@smithy.security"
+		clonePath              = "/workspace"
+		repoURL                = "https://github.com/andream16/go-opentracing-example"
+		reference              = "main"
+		accessToken            = "superSecureToken"
+		accessUsername         = "andrea@smithy.security"
+		targetMetadataPath     = "/workspace/metadata"
+		targetMetadataPathJSON = "/workspace/metadata/target.json"
 	)
 
 	var (
@@ -59,12 +61,13 @@ func TestNewConf(t *testing.T) {
 
 	t.Run("it should configure correctly with all overrides and no defaults", func(t *testing.T) {
 		conf, err := git.NewConf(makeLoader(map[string]string{
-			"GIT_CLONE_PATH":            clonePath,
-			"GIT_CLONE_REPO_URL":        repoURL,
-			"GIT_CLONE_REFERENCE":       reference,
-			"GIT_CLONE_AUTH_ENABLED":    "true",
-			"GIT_CLONE_ACCESS_TOKEN":    accessToken,
-			"GIT_CLONE_ACCESS_USERNAME": accessUsername,
+			"GIT_CLONE_PATH":                 clonePath,
+			"GIT_CLONE_REPO_URL":             repoURL,
+			"GIT_CLONE_REFERENCE":            reference,
+			"GIT_CLONE_AUTH_ENABLED":         "true",
+			"GIT_CLONE_ACCESS_TOKEN":         accessToken,
+			"GIT_CLONE_ACCESS_USERNAME":      accessUsername,
+			"GIT_CLONE_TARGET_METADATA_PATH": targetMetadataPath,
 		}))
 		require.NoError(t, err)
 		assert.Equal(t, repoURL, conf.RepoURL)
@@ -72,6 +75,7 @@ func TestNewConf(t *testing.T) {
 		assert.True(t, conf.ConfAuth.AuthEnabled)
 		assert.Equal(t, accessToken, conf.ConfAuth.AccessToken)
 		assert.Equal(t, accessUsername, conf.ConfAuth.Username)
+		assert.Equal(t, targetMetadataPathJSON, conf.TargetMetadataPath)
 	})
 }
 

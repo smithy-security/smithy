@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/url"
+	"os"
+	"path"
 	"strings"
 
 	"github.com/go-errors/errors"
@@ -13,6 +15,8 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/smithy-security/pkg/env"
+	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/smithy/sdk/component"
 )
@@ -25,9 +29,10 @@ const (
 type (
 	// Conf wraps the component configuration.
 	Conf struct {
-		RepoURL   string
-		Reference string
-		ClonePath string
+		RepoURL            string
+		Reference          string
+		ClonePath          string
+		TargetMetadataPath string
 
 		ConfAuth ConfAuth
 	}
@@ -46,6 +51,7 @@ type (
 
 	manager struct {
 		clonePath    string
+		metadataPath string
 		cloneOptions *git.CloneOptions
 	}
 )
@@ -70,6 +76,19 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	clonePath, err := env.GetOrDefault("GIT_CLONE_PATH", "", envOpts...)
 	if err != nil {
 		return nil, err
+	}
+
+	targetMetadataPath, err := env.GetOrDefault(
+		"GIT_CLONE_TARGET_METADATA_PATH",
+		"",
+		append(envOpts, env.WithDefaultOnError(true))...,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if targetMetadataPath != "" && !strings.HasSuffix(targetMetadataPath, "target.json") {
+		targetMetadataPath = path.Join(targetMetadataPath, "target.json")
 	}
 
 	authEnabled, err := env.GetOrDefault(
@@ -97,9 +116,10 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	}
 
 	return &Conf{
-		RepoURL:   repoURL,
-		Reference: reference,
-		ClonePath: clonePath,
+		RepoURL:            repoURL,
+		Reference:          reference,
+		ClonePath:          clonePath,
+		TargetMetadataPath: targetMetadataPath,
 		ConfAuth: ConfAuth{
 			Username:    accessUsername,
 			AuthEnabled: authEnabled,
@@ -161,6 +181,7 @@ func NewManager(conf *Conf) (*manager, error) {
 
 	return &manager{
 		clonePath:    conf.ClonePath,
+		metadataPath: conf.TargetMetadataPath,
 		cloneOptions: opts,
 	}, nil
 }
@@ -182,9 +203,58 @@ func (mgr *manager) Clone(ctx context.Context) (*Repository, error) {
 
 	logger.Debug("successfully cloned repository")
 
+	if mgr.metadataPath == "" {
+		return &Repository{
+			repo: repo,
+		}, nil
+	}
+
+	logger.Info("generating target metadata...")
+
+	fd, err := os.OpenFile(mgr.metadataPath, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return nil, errors.Errorf("could not open file to report clone metadata: %w", err)
+	}
+
+	parsedURL, err := url.Parse(mgr.cloneOptions.URL)
+	if err != nil {
+		return nil, errors.Errorf("could not parse clone URL of the repository: %w", err)
+	}
+
+	if parsedURL.User != nil {
+		parsedURL.User = nil
+	}
+
+	// remove the .git suffix to ensure everything is normalised
+	parsedURL.Path = strings.TrimRight(parsedURL.Path, ".git")
+
+	dataSource := &ocsffindinginfo.DataSource{
+		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+			RepositoryUrl: parsedURL.String(),
+			Reference:     mgr.cloneOptions.ReferenceName.String(),
+		},
+	}
+
+	marshaledDataSource, err := protojson.Marshal(dataSource)
+	if err != nil {
+		return nil, errors.Errorf("could not marshal data source into JSON: %w", err)
+	}
+
+	_, err = fd.Write(marshaledDataSource)
+	if err != nil {
+		return nil, errors.Errorf("could not write marshaled data source to file: %w", err)
+	}
+
+	logger.Debug(
+		"wrote the following content for target metadata",
+		slog.String("content", string(marshaledDataSource)),
+		slog.String("file", mgr.metadataPath),
+	)
+
 	return &Repository{
 		repo: repo,
-	}, nil
+	}, fd.Close()
 }
 
 func extractRepoName(path string) (string, error) {

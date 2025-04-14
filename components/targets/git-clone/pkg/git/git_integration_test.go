@@ -1,6 +1,7 @@
 package git_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -12,8 +13,11 @@ import (
 
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // TestGitCloneSuite sets up gitea and runs the git-clone container.
@@ -163,6 +167,8 @@ func (s *TestGitCloneSuite) SetupTest() {
 				"SMITHY_BACKEND_STORE_TYPE=local",
 				"GIT_CLONE_REPO_URL=http://gitea:3000/gitcloner/testrepo.git",
 				"GIT_CLONE_REFERENCE=main",
+				"GIT_CLONE_PATH=/workspace/source-code",
+				"GIT_CLONE_TARGET_METADATA_PATH=/workspace/metadata",
 			},
 			Networks: []*dockertest.Network{
 				{
@@ -171,7 +177,8 @@ func (s *TestGitCloneSuite) SetupTest() {
 			},
 		}, func(config *docker.HostConfig) {
 			config.Binds = []string{
-				path.Join(absPath, "testdata/testrepo:/workspace"),
+				path.Join(absPath, "testdata/testrepo:/workspace/source-code"),
+				path.Join(absPath, "testdata/metadata:/workspace/metadata"),
 			}
 		},
 	)
@@ -187,6 +194,26 @@ func (s *TestGitCloneSuite) SetupTest() {
 		Stderr:       true,
 		Follow:       true,
 	}))
+
+	targetJSONPath := path.Join(absPath, "testdata/metadata:/workspace/metadata/target.json")
+	finfo, err := os.Stat(targetJSONPath)
+	require.NoError(s.T(), err)
+	require.False(s.T(), finfo.IsDir())
+	require.True(s.T(), finfo.Mode().IsRegular())
+
+	fd, err := os.OpenFile(targetJSONPath, os.O_RDONLY, 0666)
+	require.NoError(s.T(), err)
+
+	var dataSource ocsffindinginfo.DataSource
+	buffer := bytes.NewBuffer([]byte{})
+	_, err = buffer.ReadFrom(fd)
+	require.NoError(s.T(), err)
+
+	require.NoError(s.T(), protojson.Unmarshal(buffer.Bytes(), &dataSource))
+	assert.Equal(s.T(), ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY, dataSource.TargetType)
+	require.NotNil(s.T(), dataSource.SourceCodeMetadata)
+	assert.Equal(s.T(), "http://gitea:3000/gitcloner/testrepo", dataSource.SourceCodeMetadata.RepositoryUrl)
+	assert.Equal(s.T(), "main", dataSource.SourceCodeMetadata.Reference)
 
 	s.dockerResources = []*dockertest.Resource{
 		seeder,
