@@ -8,8 +8,9 @@ require (
 	github.com/jonboulle/clockwork v0.4.0
 	github.com/ory/dockertest/v3 v3.11.0
 	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/smithy/sdk v0.0.7-alpha
+	github.com/smithy-security/smithy/sdk v0.0.8-alpha
 	github.com/stretchr/testify v1.9.0
+	google.golang.org/protobuf v1.36.3
 )
 
 require (
@@ -95,7 +96,6 @@ require (
 	golang.org/x/tools/cmd/cover v0.1.0-deprecated // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53 // indirect
 	google.golang.org/grpc v1.69.4 // indirect
-	google.golang.org/protobuf v1.36.3 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
