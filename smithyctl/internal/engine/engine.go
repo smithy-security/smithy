@@ -107,6 +107,10 @@ func (e *executor) Execute(ctx context.Context, wf *v1Types.Workflow) error {
 	for _, stage := range wf.Stages {
 		for _, ref := range stage.ComponentRefs {
 			sharedComponentVolumes := map[string]volumeDescription{}
+			if err := e.prepareComponent(ctx, ref); err != nil {
+				return errors.Errorf("failed to run step for component '%s': %w", ref.Component.Name, err)
+			}
+
 			for _, step := range ref.Component.Steps {
 				if err := e.executeStep(ctx, step, sharedComponentVolumes); err != nil {
 					return errors.Errorf("failed to run step for component '%s': %w", ref.Component.Name, err)
@@ -227,6 +231,24 @@ func (e *executor) renderVolumes(
 	}
 
 	return slices.Collect(maps.Values(volumeRequests)), nil
+}
+
+// prepareComponent does a pass of the component and adds any context required
+// to get the component executing correctly
+func (e *executor) prepareComponent(
+	_ context.Context,
+	component v1Types.ComponentRef,
+) error {
+	switch component.Component.Type {
+	case v1Types.ComponentTypeScanner:
+		// transparently add an environment variable to point the SDK to the
+		// metadata workspace to ensure the scanners can add the metadata to
+		// their findings
+		for _, step := range component.Component.Steps {
+			step.EnvVars["TARGET_METADATA_PATH"] = "{{ targetMetadataWorkspace }}"
+		}
+	}
+	return nil
 }
 
 // executeStep builds the container run context and runs the container on the passed execution backend.
