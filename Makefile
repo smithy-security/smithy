@@ -173,8 +173,14 @@ $(component_major_tags): check-branch check-tag-message
 smithyctl/bin:
 	$(eval GOOS:=linux)
 	$(eval GOARCH:=amd64)
+	$(eval SMITHYCTL_VERSION:=development)
 	@cd smithyctl && \
-		GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl main.go
+		GOOS=$(GOOS) \
+		GOARCH=$(GOARCH) \
+			go build \
+				-ldflags "-X github.com/smithy-security/smithy/smithyctl/command/version.SmithyCTLVersion=${SMITHYCTL_VERSION} -s -w" \
+				-trimpath \
+				-o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl main.go
 
 component-sdk-version:
 	@if [ -z "$(COMPONENT_DIR)" ]; then \

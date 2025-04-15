@@ -32,7 +32,7 @@ jobs:
     
     - name: Build Smithyctl
       run: |
-        make smithyctl/bin
+        make smithyctl/bin SMITHYCTL_VERSION=${{ steps.tag_info.outputs.version }}
         cd bin/smithyctl/cmd/linux/amd64/
         tar --create --file smithyctl-linux-amd64-${{ steps.tag_info.outputs.version }}.tar.gz --verbose --gzip smithyctl
 

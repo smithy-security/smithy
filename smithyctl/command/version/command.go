@@ -1,14 +1,21 @@
 package version
 
-import "github.com/spf13/cobra"
+import (
+	"log"
+
+	"github.com/spf13/cobra"
+)
+
+// SmithyCTLVersion overridable smithyctl version.
+var SmithyCTLVersion = "development"
 
 // NewCommand returns a new version command.
 func NewCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "Outputs smithyctl's version",
-		// TODO: implement in https://linear.app/smithy/issue/OCU-481/version-command
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
+			log.Println(SmithyCTLVersion)
 			return nil
 		},
 	}
