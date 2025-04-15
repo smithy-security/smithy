@@ -4,11 +4,22 @@ Smithyctl is the CLI used to develop new components, run them in workflows and d
 
 ## Installation
 
+### Precompiled Binaries
+
+Visit the [releases](https://github.com/smithy-security/smithy/releases?q=smithyctl\&expanded=true)
+and pick the binary for your OS/Architecture.
+
+### From source
+
+You must have [go](https://go.dev/) installed, and then run:
+
 ```shell
 go install github.com/smithy-security/smithy/smithyctl@latest
 ```
 
-Verify installation by running:
+### Verify installation
+
+Run:
 
 ```shell
 smithyctl version
@@ -23,12 +34,12 @@ smithyctl version
 
 ## Commands
 
-| Command     | Description                                                 | Status                |
-|-------------|-------------------------------------------------------------|-----------------------|
-| `help`      | will output how to use `smithyctl`                          | Implemented           |
-| `version`   | will output the version of the installed `smithyctl` binary | Not implemented yet   |
-| `component` | allows to develop, run and distribute components            | Not fully implemented |
-| `workflow`  | allows to develop and run workflows                         | Implemented           |
+| Command     | Description                                                 |
+|-------------|-------------------------------------------------------------|
+| `help`      | will output how to use `smithyctl`                          |
+| `version`   | will output the version of the installed `smithyctl` binary |
+| `component` | allows to develop, run and distribute components            |
+| `workflow`  | allows to develop and run workflows                         |
 
 ### Component
 
