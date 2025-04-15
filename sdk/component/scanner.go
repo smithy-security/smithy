@@ -60,7 +60,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 				}
 
 				buffer := bytes.NewBuffer([]byte{})
-				_, err = fd.ReadFrom(buffer)
+				_, err = buffer.ReadFrom(fd)
 				if err != nil {
 					return errors.Errorf("%s: could read bytes from target metadata file: %w", metadataPath, err)
 				}
