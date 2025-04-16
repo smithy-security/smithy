@@ -212,7 +212,7 @@ func (g *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 		return nil, errors.Errorf("could not parse trufflehog file with multiple messages, err: %w", err)
 	}
 
-	findings, err := g.parseFindings(truffleResults)
+	findings, err := g.parseFindings(ctx, truffleResults)
 	if err != nil {
 		return nil, errors.Errorf("one or more findings failed to transform err: %w", err)
 	}
@@ -220,7 +220,7 @@ func (g *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 	return findings, err
 }
 
-func (t *trufflehogTransformer) parseFindings(out []*TrufflehogOut) ([]*ocsf.VulnerabilityFinding, error) {
+func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*TrufflehogOut) ([]*ocsf.VulnerabilityFinding, error) {
 	vulns := make([]*ocsf.VulnerabilityFinding, 0, len(out))
 	now := t.clock.Now().Unix()
 
@@ -230,7 +230,7 @@ func (t *trufflehogTransformer) parseFindings(out []*TrufflehogOut) ([]*ocsf.Vul
 			confidenceID = ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH
 		}
 		confidence := ocsf.VulnerabilityFinding_ConfidenceId_name[int32(confidenceID)]
-		dataSource, err := t.mapDataSource(*finding)
+		dataSource, err := t.mapDataSource(ctx, *finding)
 		if err != nil {
 			return nil, errors.Errorf("could not map datasource for finding %#v, err:%w", finding, err)
 		}
@@ -294,10 +294,11 @@ func (t *trufflehogTransformer) parseFindings(out []*TrufflehogOut) ([]*ocsf.Vul
 	return vulns, nil
 }
 
-func (t *trufflehogTransformer) mapDataSource(location TrufflehogOut) (string, error) {
+func (t *trufflehogTransformer) mapDataSource(ctx context.Context, location TrufflehogOut) (string, error) {
 	if location.SourceMetadata.Data.Filesystem.File == "" {
 		return "", errors.Errorf("unsupported trufflehog findings with empty file entry detected, finding %#v", location)
 	}
+	targetMetadata := component.TargetMetadataFromCtx(ctx)
 	dataSource := ocsffindinginfo.DataSource{
 		TargetType: t.targetType,
 		Uri: &ocsffindinginfo.DataSource_URI{
@@ -309,6 +310,7 @@ func (t *trufflehogTransformer) mapDataSource(location TrufflehogOut) (string, e
 				StartLine: uint32(location.SourceMetadata.Data.Filesystem.Line),
 			},
 		},
+		SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
 	}
 	toBytes, err := protojson.Marshal(&dataSource)
 	if err != nil {
