@@ -7,13 +7,11 @@
 package v1
 
 import (
-	reflect "reflect"
-	sync "sync"
-
+	v1 "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-
-	v1 "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (

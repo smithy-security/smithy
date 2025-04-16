@@ -206,8 +206,11 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 	rule := s.ruleToTools[*ruleID]
 	var cve *ocsf.Cve
 	if rule.FullDescription != nil {
-		uid := s.extractCVE(rule.FullDescription.Text)
-		if uid != "" {
+		if strings.HasPrefix(*ruleID, "CVE-") {
+			cve = &ocsf.Cve{}
+			cve.Uid = *ruleID
+			cve.Desc = &rule.FullDescription.Text
+		} else if uid := s.extractCVE(rule.FullDescription.Text); uid != "" {
 			cve = &ocsf.Cve{}
 			cve.Uid = uid
 			cve.Desc = &rule.FullDescription.Text
@@ -667,7 +670,7 @@ func (s *SarifTransformer) mapTargetType(targetType TargetType) ocsffindinginfo.
 		return ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY
 		// TODO: update when we push new protos
 	// case TargetTypeDependency:
-	// 	return ocsffindinginfo.DataSource_TARGET_TYPE_DEPENDENCY
+	// 	return ocsffindinginfo.DataSource_TARGET_TYPE_DEPENCENCY
 	// case TargetTypeImage:
 	// 	return ocsffindinginfo.DataSource_TARGET_TYPE_IMAGE
 	// case TargetTypeWeb:

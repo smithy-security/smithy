@@ -131,6 +131,8 @@ github.com/smithy-security/pkg/env v0.0.1 h1:uwLTMLdNN/dv3x4zat75JahEBQDpdBeldjE
 github.com/smithy-security/pkg/env v0.0.1/go.mod h1:VIJfDqeAbQQcmohaXcZI6grjeJC9Y8CmqR4ITpdngZE=
 github.com/smithy-security/smithy/sdk v0.0.7-alpha h1:gqvovQlJhc+qcJgUYlROJjPY5F6yhhjFDdMD+7bvBRs=
 github.com/smithy-security/smithy/sdk v0.0.7-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
+github.com/smithy-security/smithy/sdk v0.0.11-alpha h1:ukPP/nBAbLlvJ0KFA7i4/9+lXV2Lwl6W5sFaEX8LwxU=
+github.com/smithy-security/smithy/sdk v0.0.11-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
 github.com/spf13/cast v1.7.1 h1:cuNEagBQEHWN1FnbGEjCXL2szYEXqfJPbP2HNUaca9Y=
 github.com/spf13/cast v1.7.1/go.mod h1:ancEpBxwJDODSW/UG4rDrAqiKolqNNh2DX3mk86cAdo=
 github.com/sqlc-dev/sqlc v1.28.0 h1:2QB4X22pKNpKMyb8dRLnqZwMXW6S+ZCyYCpa+3/ICcI=

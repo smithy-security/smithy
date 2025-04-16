@@ -6,7 +6,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.17.1
 	github.com/go-errors/errors v1.5.1
 	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/smithy/sdk v0.0.7-alpha
+	github.com/smithy-security/smithy/sdk v0.0.11-alpha
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.5
 )

@@ -8,7 +8,7 @@ require (
 	github.com/jonboulle/clockwork v0.4.0
 	github.com/ory/dockertest/v3 v3.11.0
 	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/smithy/sdk v0.0.8-alpha
+	github.com/smithy-security/smithy/sdk v0.0.11-alpha
 	github.com/stretchr/testify v1.9.0
 	google.golang.org/protobuf v1.36.3
 )

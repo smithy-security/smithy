@@ -42,6 +42,7 @@ type (
 		cveRegExp         *regexp.Regexp
 		ruleToTools       map[string]sarif.ReportingDescriptor
 		taxasByCWEID      map[string]sarif.ReportingDescriptor
+		ruleToEcosystem   map[string]string
 	}
 	UUIDProvider interface {
 		String() string
@@ -105,7 +106,7 @@ func (s *SarifTransformer) ToOCSF(ctx context.Context) ([]*ocsf.VulnerabilityFin
 
 	vulns := make([]*ocsf.VulnerabilityFinding, 0)
 	var parseErr error
-
+	s.ruleToEcosystem = s.rulesToEcosystem()
 	// Preparing helper data sets to reconstruct linked data.
 	for _, run := range s.sarifResult.Runs {
 		for _, res := range run.Results {
@@ -205,8 +206,11 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 	rule := s.ruleToTools[*ruleID]
 	var cve *ocsf.Cve
 	if rule.FullDescription != nil {
-		uid := s.extractCVE(rule.FullDescription.Text)
-		if uid != "" {
+		if strings.HasPrefix(*ruleID, "CVE-") {
+			cve = &ocsf.Cve{}
+			cve.Uid = *ruleID
+			cve.Desc = &rule.FullDescription.Text
+		} else if uid := s.extractCVE(rule.FullDescription.Text); uid != "" {
 			cve = &ocsf.Cve{}
 			cve.Uid = uid
 			cve.Desc = &rule.FullDescription.Text
@@ -356,7 +360,7 @@ func (s *SarifTransformer) mapAffectedPackage(fixes []sarif.Fix, purl packageurl
 	return affectedPackage
 }
 
-func (s *SarifTransformer) detectPackageFromPhysicalLocation(physicalLocation sarif.PhysicalLocation) *packageurl.PackageURL {
+func (s *SarifTransformer) detectPackageFromPhysicalLocation(physicalLocation sarif.PhysicalLocation, ecosyststem string) *packageurl.PackageURL {
 	if s.isSnykURI(*physicalLocation.ArtifactLocation.Uri) {
 		return nil
 	}
@@ -364,15 +368,19 @@ func (s *SarifTransformer) detectPackageFromPhysicalLocation(physicalLocation sa
 		return &p
 	}
 	// if we get hinted that this scan is for dependencies and the deps have a specific ecosystem we can assume more things
-	if s.findingsEcosystem != "" {
+	if s.findingsEcosystem != "" || ecosyststem != "" {
+		pkgManager := s.findingsEcosystem
+		if ecosyststem != "" {
+			pkgManager = ecosyststem
+		}
 		switch s.targetType {
 		case TargetTypeDependency:
-			purl := fmt.Sprintf("pkg:%s/%s", s.findingsEcosystem, *physicalLocation.ArtifactLocation.Uri)
+			purl := fmt.Sprintf("pkg:%s/%s", pkgManager, *physicalLocation.ArtifactLocation.Uri)
 			if p, e := packageurl.FromString(purl); e == nil {
 				return &p
 			}
 		case TargetTypeImage:
-			purl := fmt.Sprintf("pkg:%s/%s", s.findingsEcosystem, strings.Replace(*physicalLocation.ArtifactLocation.Uri, "library/", "/", -1))
+			purl := fmt.Sprintf("pkg:%s/%s", pkgManager, strings.Replace(*physicalLocation.ArtifactLocation.Uri, "library/", "/", -1))
 			if p, e := packageurl.FromString(purl); e == nil {
 				return &p
 			}
@@ -382,21 +390,37 @@ func (s *SarifTransformer) detectPackageFromPhysicalLocation(physicalLocation sa
 }
 
 // this method is to get around Snyk's weird Sarif parsing
-func (s *SarifTransformer) detectPackageFromLogicalLocation(logicalLocation sarif.LogicalLocation) *packageurl.PackageURL {
+func (s *SarifTransformer) detectPackageFromLogicalLocation(logicalLocation sarif.LogicalLocation, pkgType string) *packageurl.PackageURL {
 	if p, e := packageurl.FromString(*logicalLocation.FullyQualifiedName); e == nil {
 		return &p
 	}
 	// if we get hinted that this scan is for dependencies and the deps have a specific ecosystem we can assume more things
-	if s.targetType == TargetTypeDependency && s.findingsEcosystem != "" {
+	if s.targetType == TargetTypeDependency && (s.findingsEcosystem != "" || pkgType != "") {
 		// snyk puts parts of the purl in logical locations
-		purl := fmt.Sprintf("pkg:%s/%s", s.findingsEcosystem, *logicalLocation.FullyQualifiedName)
+		pkgNamespace := s.findingsEcosystem
+		if pkgType != "" {
+			pkgNamespace = pkgType
+		}
+		purl := fmt.Sprintf("pkg:%s/%s", pkgNamespace, *logicalLocation.FullyQualifiedName)
 		if p, e := packageurl.FromString(purl); e == nil {
 			return &p
 		}
 	}
 	return nil
 }
-
+func (s *SarifTransformer) rulesToEcosystem() map[string]string {
+	result := map[string]string{}
+	for _, run := range s.sarifResult.Runs {
+		for _, rule := range run.Tool.Driver.Rules {
+			for _, tag := range rule.Properties.Tags {
+				if _, ok := packageurl.KnownTypes[tag]; ok {
+					result[rule.Id] = tag
+				}
+			}
+		}
+	}
+	return result
+}
 func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode, []*ocsf.AffectedPackage) {
 	var affectedCode []*ocsf.AffectedCode
 	var affectedPackages []*ocsf.AffectedPackage
@@ -413,8 +437,18 @@ func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode,
 			}
 			physicalLocation = location.PhysicalLocation
 		)
+		pkgType := s.findingsEcosystem
+		ruleID := ""
+		if res.RuleId != nil {
+			ruleID = *res.RuleId
+		} else if res.Rule != nil && res.Rule.Id != nil {
+			ruleID = *res.Rule.Id
+		}
+		if eco, ok := s.ruleToEcosystem[ruleID]; ok {
+			pkgType = eco
+		}
 		if physicalLocation.ArtifactLocation != nil && physicalLocation.ArtifactLocation.Uri != nil {
-			if p := s.detectPackageFromPhysicalLocation(*physicalLocation); p != nil {
+			if p := s.detectPackageFromPhysicalLocation(*physicalLocation, pkgType); p != nil {
 				affectedPackages = append(affectedPackages, s.mapAffectedPackage(res.Fixes, *p))
 			} else if !s.isSnykURI(*location.PhysicalLocation.ArtifactLocation.Uri) {
 				// Snyk special case, they use the repo url with some weird replacement as the artifact location
@@ -434,7 +468,7 @@ func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode,
 			affectedCode = append(affectedCode, ac)
 		}
 		for _, logicalLocation := range location.LogicalLocations {
-			if p := s.detectPackageFromLogicalLocation(logicalLocation); p != nil {
+			if p := s.detectPackageFromLogicalLocation(logicalLocation, pkgType); p != nil {
 				affectedPackages = append(affectedPackages, s.mapAffectedPackage(res.Fixes, *p))
 			}
 		}
