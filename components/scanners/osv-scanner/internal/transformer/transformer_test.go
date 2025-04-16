@@ -13,17 +13,18 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
-func fakeClock() clockwork.FakeClock {
+func fakeClock() *clockwork.FakeClock {
 	return clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
 }
 
 // test that it finds both requirements.txt and pyproject.toml
 
-func TestPipAuditTransformer_Transform(t *testing.T) {
+func TestTransformer_Transform(t *testing.T) {
 	var (
 		clock = fakeClock()
 	)
@@ -31,13 +32,13 @@ func TestPipAuditTransformer_Transform(t *testing.T) {
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
 		path, err := os.Getwd()
 		require.NoError(t, err)
+		os.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-output.sarif.json")
 		ocsfTransformer, err := New(
-			PipAuditRawOutFileGlob("./testdata/result.*.json"),
-			PipAuditTransformerWithClock(clock),
-			PipAuditTransformerWithProjectRoot(filepath.Join(path, ".")),
+			OSVScannerTransformerWithClock(clock),
+			OSVScannerTransformerWithProjectRoot(filepath.Join(path, ".")),
 		)
 		require.NoError(t, err)
-		transformMethodTest(t, ocsfTransformer.Transform, nil, 2)
+		transformMethodTest(t, ocsfTransformer.Transform, nil, 11)
 	})
 }
 
@@ -105,7 +106,7 @@ func assertValid(t *testing.T, finding *ocsf.VulnerabilityFinding, idx int, nowU
 	require.Lenf(
 		t,
 		findingInfo.DataSources,
-		3, "Unexpected number of data sources for finding %d. Expected 3",
+		1, "Unexpected number of data sources for finding %d. Expected 1",
 		idx,
 	)
 	require.NoErrorf(
@@ -130,7 +131,8 @@ func assertValid(t *testing.T, finding *ocsf.VulnerabilityFinding, idx int, nowU
 		idx,
 	)
 	assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
-	require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
+	// require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
+	require.NotNilf(t, dataSource.SourceCodeMetadata, "Unexpected nil data source source code metadata for finding %d", idx)
 
 	require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 	vulnerability := finding.Vulnerabilities[0]
@@ -161,6 +163,17 @@ func transformMethodTest(t *testing.T, transformCallback func(ctx context.Contex
 	)
 
 	defer cancel()
+	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
+	repositoryURL := "https://github.com/smithy-security/test"
+	targetMetadata := &ocsffindinginfo.DataSource{
+		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+			RepositoryUrl: repositoryURL,
+			Reference:     commitRef,
+		},
+	}
+
+	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
+
 	findings, err := transformCallback(ctx)
 	if expectedError != nil {
 		require.ErrorIsf(t, err, expectedError, "did not receive the expected error, got %w, wanted %w", err, expectedError)
