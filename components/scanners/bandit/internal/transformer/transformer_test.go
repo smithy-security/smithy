@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
@@ -190,6 +191,7 @@ func assertValid(t *testing.T, finding *ocsf.VulnerabilityFinding, idx int, nowU
 	)
 	assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
 	require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
+	require.NotNilf(t, dataSource.SourceCodeMetadata, "Unexpected nil data sourcecode metadata for finding %d", idx)
 
 	require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 	vulnerability := finding.Vulnerabilities[0]
@@ -233,6 +235,16 @@ func transformMethodTest(t *testing.T, transformCallback func(ctx context.Contex
 				ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.Number(),
 		)
 	)
+	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
+	repositoryURL := "https://github.com/smithy-security/test"
+	targetMetadata := &ocsffindinginfo.DataSource{
+		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+			RepositoryUrl: repositoryURL,
+			Reference:     commitRef,
+		},
+	}
+
+	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
 
 	defer cancel()
 	findings, err := transformCallback(ctx)
