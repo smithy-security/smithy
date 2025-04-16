@@ -1,10 +1,6 @@
 name: reachability
 description: "Adds a boolean 'Reachable-Code' enrichment to the passed findings"
 type: enricher
-parameters:
-  - name: programming_language
-    type: string
-    value: ""
 steps:
   - name: get-reachables
     image: components/enrichers/reachability/cdxgen-atom-runner
