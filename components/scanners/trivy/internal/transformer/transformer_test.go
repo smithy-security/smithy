@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
@@ -29,6 +30,21 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 		)
 	)
 	defer cancel()
+	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
+	repositoryURL := "https://github.com/smithy-security/test"
+	targetMetadata := &ocsffindinginfo.DataSource{
+		OciPackageMetadata: &ocsffindinginfo.DataSource_OCIPackageMetadata{
+			PackageUrl: "pkg:docker/example/myapp@1.0",
+			Tag:        "1.0",
+		},
+		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+			RepositoryUrl: repositoryURL,
+			Reference:     commitRef,
+		},
+	}
+
+	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
+
 	ocsfTransformer, err := transformer.New(
 		transformer.TrivyRawOutFilePath("./testdata/trivy.sarif.json"),
 		transformer.TrivyTransformerWithTarget(transformer.TargetTypeContainer),
@@ -174,6 +190,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			)
 			assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
 			require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
+			require.NotNilf(t, dataSource.SourceCodeMetadata, "Unexpected nil data source source code metadata for finding %d", idx)
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 			vulnerability := finding.Vulnerabilities[0]
