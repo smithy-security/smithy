@@ -1,0 +1,8 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: "https://github.com/sqreen/go-dvwa"
+slack:
+- name: "slack_webhook"
+  type: "string"
+  value: "Your webhook here"
