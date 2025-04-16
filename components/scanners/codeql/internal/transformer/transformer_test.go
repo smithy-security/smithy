@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
@@ -37,6 +38,16 @@ func TestCodeQLTransformer_Transform(t *testing.T) {
 		transformer.CodeqlTransformerWithClock(clock),
 	)
 	require.NoError(t, err)
+	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
+	repositoryURL := "https://github.com/smithy-security/test"
+	targetMetadata := &ocsffindinginfo.DataSource{
+		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+			RepositoryUrl: repositoryURL,
+			Reference:     commitRef,
+		},
+	}
+
+	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
 
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
 		findings, err := ocsfTransformer.Transform(ctx)
@@ -174,6 +185,7 @@ func TestCodeQLTransformer_Transform(t *testing.T) {
 			)
 			assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
 			require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
+			require.NotNilf(t, dataSource.SourceCodeMetadata, "Unexpected nil sourceCodeMetadata for finding %d", idx)
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 			vulnerability := finding.Vulnerabilities[0]
