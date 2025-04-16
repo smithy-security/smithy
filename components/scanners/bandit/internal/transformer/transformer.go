@@ -186,7 +186,7 @@ func (b *BanditTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 	vulns := make([]*ocsf.VulnerabilityFinding, 0)
 
 	for _, res := range results.Results {
-		v, err := b.parseResult(res)
+		v, err := b.parseResult(ctx, res)
 		if err != nil {
 			return nil, errors.Errorf("could not parse bandit result, err: %w", err)
 		}
@@ -200,13 +200,13 @@ func (b *BanditTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 	return vulns, nil
 }
 
-func (b *BanditTransformer) parseResult(r *BanditResult) (*ocsf.VulnerabilityFinding, error) {
+func (b *BanditTransformer) parseResult(ctx context.Context, r *BanditResult) (*ocsf.VulnerabilityFinding, error) {
 	now := b.clock.Now().Unix()
 	confidence := fmt.Sprintf("CONFIDENCE_ID_%s", r.IssueConfidence)
 	confidenceID := ocsf.VulnerabilityFinding_ConfidenceId_value[confidence]
 	severity := fmt.Sprintf("SEVERITY_ID_%s", r.IssueSeverity)
 	severityID := ocsf.VulnerabilityFinding_SeverityId_value[severity]
-	dataSource, err := b.mapDataSource(r)
+	dataSource, err := b.mapDataSource(ctx, r)
 	if err != nil {
 		return nil, errors.Errorf("failed to map data source: %w", err)
 	}
@@ -306,7 +306,8 @@ func (*BanditTransformer) mapCWE(r *BanditCWE) *ocsf.Cwe {
 	}
 }
 
-func (b *BanditTransformer) mapDataSource(r *BanditResult) (string, error) {
+func (b *BanditTransformer) mapDataSource(ctx context.Context, r *BanditResult) (string, error) {
+	targetMetadata := component.TargetMetadataFromCtx(ctx)
 	endLine := uint32(r.LineNumber)
 	if len(r.LineRange) > 0 {
 		endLine = uint32(r.LineRange[len(r.LineRange)-1])
@@ -329,6 +330,7 @@ func (b *BanditTransformer) mapDataSource(r *BanditResult) (string, error) {
 				EndColumn:   uint32(r.EndColOffset),
 			},
 		},
+		SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
 	}
 	toBytes, err := protojson.Marshal(&dataSource)
 	if err != nil {
