@@ -11,8 +11,10 @@ import (
 	"github.com/smithy-security/pkg/env"
 	"github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/smithy/sdk/component"
+	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
@@ -167,7 +169,30 @@ func (g *codeqlTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 		if err != nil {
 			return nil, err
 		}
+		vulns, err = g.AddMetadataToDatasources(ctx, vulns)
+		if err != nil {
+			return nil, err
+		}
 		result = append(result, vulns...)
 	}
 	return result, nil
+}
+
+func (g *codeqlTransformer) AddMetadataToDatasources(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+	targetMetadata := component.TargetMetadataFromCtx(ctx)
+	for _, f := range findings {
+		for i, source := range f.FindingInfo.DataSources {
+			dataSource := ocsffindinginfo.DataSource{}
+			if err := protojson.Unmarshal([]byte(source), &dataSource); err != nil {
+				return nil, errors.Errorf("could not unmarshal datasource %s, err:%w", source, err)
+			}
+			dataSource.SourceCodeMetadata = targetMetadata.SourceCodeMetadata
+			metadataSource, err := protojson.Marshal(&dataSource)
+			if err != nil {
+				return nil, errors.Errorf("could not marshal new datasource with metdata err:%w", err)
+			}
+			f.FindingInfo.DataSources[i] = string(metadataSource)
+		}
+	}
+	return findings, nil
 }
