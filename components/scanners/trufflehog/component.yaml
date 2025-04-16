@@ -1,10 +1,6 @@
 name: "trufflehog"
 description: "Runs trufflehog against a target"
 type: "scanner"
-parameters:
-  - name: "target_type"
-    type: "string"
-    value: "TARGET_TYPE_REPOSITORY"
 steps:
   - name: "run-trufflehog"
     image:  ghcr.io/trufflesecurity/trufflehog:3.88.23
@@ -20,4 +16,4 @@ steps:
     executable: "/bin/app"
     env_vars:
       TRUFFLEHOG_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/trufflehog.json"
-      TRUFFLEHOG_TARGET_TYPE: "{{ .parameters.target_type }}"
+      TRUFFLEHOG_TARGET_TYPE: "TARGET_TYPE_REPOSITORY"
