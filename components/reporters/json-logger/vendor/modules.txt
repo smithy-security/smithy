@@ -129,7 +129,7 @@ github.com/shopspring/decimal
 # github.com/smithy-security/pkg/env v0.0.1
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/smithy/sdk v0.0.7-alpha
+# github.com/smithy-security/smithy/sdk v0.0.11-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component
@@ -145,6 +145,7 @@ github.com/smithy-security/smithy/sdk/component/store/remote/postgresql/sqlc/mig
 github.com/smithy-security/smithy/sdk/component/uuid
 github.com/smithy-security/smithy/sdk/component/vulnerability-finding
 github.com/smithy-security/smithy/sdk/gen/findings_service/v1
+github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1
 github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1
 # github.com/spf13/cast v1.7.1
 ## explicit; go 1.19
