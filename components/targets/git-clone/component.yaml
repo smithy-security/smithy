@@ -7,7 +7,7 @@ parameters:
     value: https://github.com/sqreen/go-dvwa.git
   - name: reference
     type: string
-    value: master
+    value: main
 steps:
   - name: clone-repo
     env_vars:
