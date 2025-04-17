@@ -1,6 +1,6 @@
 name: trivy-based-image-scanning
 description: |
-  Trivy based workflow for image scanning. Temporarily uses a git clone component which is not actually used
+  Trivy based workflow for image scanning.
 components:
 - component: file://components/targets/image-get/component.yaml
 - component: file://components/scanners/trivy/component.yaml

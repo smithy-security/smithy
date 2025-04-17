@@ -18,3 +18,9 @@ steps:
     args:
       - -c
       - /entrypoint.sh "{{ .parameters.image }}" "{{ sourceCodeWorkspace }}/image.tar" "{{ .parameters.username }}" "{{.parameters.password}}"
+  - name: write-metadata
+    image: components/targets/image-get/metadata-writer
+    executable: /bin/app
+    env_vars:
+      IMAGE_GET_TARGET_METADATA_PATH: "{{ targetMetadataWorkspace }}"
+      IMAGE_GET_IMAGE: "{{ .parameters.image }}"
