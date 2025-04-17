@@ -1,5 +1,5 @@
 #!/bin/sh
-set -ex
+set -e
 
 check_var() {
   if [ -n "$1" ]; then
