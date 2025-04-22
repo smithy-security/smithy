@@ -167,6 +167,7 @@ func (g *trivyTransformer) AddMetadataToDatasources(ctx context.Context, finding
 			if err := protojson.Unmarshal([]byte(source), &dataSource); err != nil {
 				return nil, errors.Errorf("could not unmarshal datasource %s, err:%w", source, err)
 			}
+			dataSource.TargetType = ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE
 			dataSource.SourceCodeMetadata = targetMetadata.SourceCodeMetadata
 			dataSource.OciPackageMetadata = targetMetadata.OciPackageMetadata
 			metadataSource, err := protojson.Marshal(&dataSource)
