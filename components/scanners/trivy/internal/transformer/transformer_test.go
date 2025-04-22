@@ -175,7 +175,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			)
 			assert.Equalf(
 				t,
-				ocsffindinginfo.DataSource_TARGET_TYPE_UNSPECIFIED,
+				ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE,
 				dataSource.TargetType,
 				"Unexpected data source target type for finding %d",
 				idx,
