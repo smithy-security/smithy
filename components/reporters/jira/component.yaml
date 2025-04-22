@@ -1,0 +1,33 @@
+name: "jira"
+description: "Creates Issues on JIRA"
+type: "reporter"
+parameters:
+  - name: "base_url"
+    type: "string"
+    value: ""
+  - name: "project"
+    type: "string"
+    value: ""
+  - name: "auth_enabled"
+    type: "string"
+    value: "false"
+  - name: "username"
+    type: "string"
+    value: ""
+  - name: "password"
+    type: "string"
+    value: ""
+  - name: "client_max_retries"
+    type: "string"
+    value: "10"
+steps:
+  - name: create-issues
+    env_vars:
+      JIRA_BASE_URL: "{{ .parameters.base_url }}"
+      JIRA_PROJECT: "{{ .parameters.project }}"
+      JIRA_AUTH_ENABLED: "{{ .parameters.auth_enabled }}"
+      JIRA_AUTH_USERNAME: "{{ .parameters.username }}"
+      JIRA_AUTH_PASSWORD: "{{ .parameters.password }}"
+      JIRA_CLIENT_MAX_RETRIES: "{{ .parameters.client_max_retries }}"
+    image: components/reporters/jira
+    executable: /bin/app
