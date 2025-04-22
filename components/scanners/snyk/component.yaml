@@ -2,6 +2,12 @@ name: snyk
 description: "Runs snyk open source then parses findings into the OCSF format"
 type: scanner
 parameters:
+  - name: http_proxy
+    type: string
+    value: ""
+  - name: https_proxy
+    type: string
+    value: ""
   - name: snyk_token
     type: string
     value: ""
@@ -9,6 +15,8 @@ steps:
   - name: run-snyk
     image: components/scanners/snyk/scanner
     env_vars:
+      HTTP_PROXY: "{{.parameters.http_proxy}}"
+      HTTPS_PROXY: "{{.parameters.https_proxy}}"
       SNYK_INTEGRATION_VERSION: docker
       SNYK_INTEGRATION_NAME: smithy
       SNYK_TOKEN: "{{.parameters.snyk_token}}"
