@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"os"
 	"path"
 	"strings"
@@ -59,11 +60,15 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	}, nil
 }
 
-func WriteTargetMetadata(conf *Conf) error {
+func WriteTargetMetadata(ctx context.Context, conf *Conf) error {
+	logger := component.LoggerFromContext(ctx)
+
 	purl, err := packageUrlFromImage(conf.Image)
 	if err != nil {
 		return errors.Errorf("could not get package url from image: %w", err)
 	}
+
+	logger.Info("package url from image", slog.String("purl", purl.ToString()))
 
 	dataSource := &ocsffindinginfo.DataSource{
 		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE,
@@ -148,6 +153,8 @@ func main() {
 }
 
 func Main(ctx context.Context) error {
+	logger := component.LoggerFromContext(ctx)
+
 	conf, err := NewConf(nil)
 	if err != nil {
 		return errors.Errorf("could not create new configuration: %w", err)
@@ -167,7 +174,7 @@ func Main(ctx context.Context) error {
 	); err != nil {
 		return errors.Errorf("could not run target: %w", err)
 	}
-
+	logger.Info("target finished successfully")
 	return nil
 }
 
@@ -182,13 +189,17 @@ func NewTarget(conf *Conf) (*imageMetadataWriterTarget, error) {
 }
 
 func (t *imageMetadataWriterTarget) Prepare(ctx context.Context) error {
+	logger := component.LoggerFromContext(ctx)
+
 	if t.conf == nil {
 		return errors.New("conf cannot be nil")
 	}
 
-	if err := WriteTargetMetadata(t.conf); err != nil {
+	if err := WriteTargetMetadata(ctx, t.conf); err != nil {
 		return errors.Errorf("could not write target metadata: %w", err)
 	}
+	logger.Info("target metadata written to ", slog.String("metadata_loc", t.conf.TargetMetadataPath))
+	logger.Debug("Prepare method completed successfully for target")
 
 	return nil
 }
