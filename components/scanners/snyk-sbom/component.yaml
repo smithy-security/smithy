@@ -1,0 +1,55 @@
+name: snyk-sbom
+description: "Runs `snyk sbom` then uploads findings to Dependency-Track"
+type: scanner
+parameters:
+  - name: snyk_token
+    type: string
+    value: ""
+  - name: dependency_track_api_key
+    type: string
+    value: ""
+  - name: dependency_track_api_url
+    type: string
+    value: ""
+  - name: dependency_track_project_name   
+    type: string
+    value: ""
+  - name: dependency_track_project_uuid
+    type: string
+    value: ""
+  - name: dependency_track_project_version
+    type: string
+    value: ""
+  - name: http_proxy
+    type: string
+    value: ""
+  - name: https_proxy
+    type: string
+    value: ""
+steps:
+  - name: run-snyk-sbom
+    image: components/scanners/snyk-sbom/scanner
+    env_vars:
+      HTTP_PROXY: "{{.parameters.http_proxy}}"
+      HTTPS_PROXY: "{{.parameters.https_proxy}}"
+      SNYK_INTEGRATION_VERSION: docker
+      SNYK_INTEGRATION_NAME: smithy
+      SNYK_TOKEN: "{{.parameters.snyk_token}}"
+    executable: /bin/snyk
+    args:
+      - sbom
+      - --prune-repeated-subdependencies 
+      - --format=cyclonedx1.4+json
+      - --all-projects
+      - --json-file-output={{scratchWorkspace}}/snyk-sbom.out
+      - "{{sourceCodeWorkspace}}/"
+  - name: upload-sbom-to-dependency-track
+    image: "components/scanners/snyk-sbom"
+    executable: /bin/app
+    env_vars:
+      RAW_OUT_FILE_PATH: "{{scratchWorkspace}}/snyk-sbom.out"
+      DEPENDENCY_TRACK_API_KEY: "{{.parameters.dependency_track_api_key}}"
+      DEPENDENCY_TRACK_API_URL: "{{.parameters.dependency_track_api_url}}"
+      DEPENDENCY_TRACK_PROJECT_NAME: "{{.parameters.dependency_track_project_name}}"
+      DEPENDENCY_TRACK_PROJECT_UUID: "{{.parameters.dependency_track_project_uuid}}"
+      DEPENDENCY_TRACK_PROJECT_VERSION: "{{.parameters.dependency_track_project_version}}"
