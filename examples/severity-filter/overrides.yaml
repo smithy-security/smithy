@@ -1,0 +1,7 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: "https://github.com/0c34/govwa.git"
+- name: "reference"
+  type: "string"
+  value: "master"
