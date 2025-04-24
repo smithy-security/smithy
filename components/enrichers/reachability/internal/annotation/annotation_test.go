@@ -116,9 +116,9 @@ func TestReachability_Annotate(t *testing.T) {
 						FirstSeenTime: &now,
 						LastSeenTime:  &now,
 						ModifiedTime:  &now,
-						ProductUid:    ptr("gosec"),
-						Title:         "You have lots of hacky code",
-						Uid:           "2",
+						// remove product uid use case
+						Title: "You have lots of hacky code",
+						Uid:   "2",
 					},
 					Message: ptr("lots of hacky code"),
 					Resource: &ocsf.ResourceDetails{
@@ -182,11 +182,16 @@ func TestReachability_Annotate(t *testing.T) {
 						FirstSeenTime: &now,
 						LastSeenTime:  &now,
 						ModifiedTime:  &now,
-						ProductUid:    ptr("gosec"),
 						Title:         "You have lots of hacks",
-						Uid:           "3",
+						// remove product uid use case but add metadata
+						Uid: "3",
 					},
 					Message: ptr("lots of hacks"),
+					Metadata: &ocsf.Metadata{
+						Product: &ocsf.Product{
+							Name: ptr("tests"),
+						},
+					},
 					Resource: &ocsf.ResourceDetails{
 						Uid: ptr(
 							strings.Join([]string{

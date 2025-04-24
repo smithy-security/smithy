@@ -116,8 +116,23 @@ func (ra *reachabilityAnnotator) Enrich(ctx context.Context, findings []*vf.Vuln
 			return nil, errors.Errorf("could not initialize atom purl parser err: %w", err)
 		}
 		for idx, finding := range findings {
+			vendor := ""
+			switch {
+			case finding.Finding.FindingInfo.ProductUid != nil:
+				vendor = *finding.Finding.FindingInfo.ProductUid
+			case finding.Finding.Metadata != nil:
+				if finding.Finding.Metadata.Product != nil && finding.Finding.Metadata.Product.Name != nil {
+					vendor = *finding.Finding.Metadata.Product.Name
+				}
+			case len(finding.Finding.Vulnerabilities) > 0:
+				if finding.Finding.Vulnerabilities[0].VendorName != nil {
+					vendor = *finding.Finding.Vulnerabilities[0].VendorName
+				}
+			default:
+				vendor = ""
+			}
 			logger := logger.With(
-				slog.String("vendor", *finding.Finding.FindingInfo.ProductUid),
+				slog.String("vendor", vendor),
 				slog.Any("scan_id", finding.ID),
 				slog.Int("num_vulns", len(finding.Finding.Vulnerabilities)),
 			)
