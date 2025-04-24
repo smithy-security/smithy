@@ -74,6 +74,7 @@ message Enrichment {
     ENRICHMENT_TYPE_CORRELATION = 1;
     ENRICHMENT_TYPE_DUPLICATION = 2;
     ENRICHMENT_INVESTIGATION = 3;
+    ENRICHMENT_EXPLOIT_EXISTS = 4;
   }
 
   // if it has this enrichment at all, the finding is a duplicate
@@ -91,9 +92,19 @@ message Enrichment {
     ocsf_schema.v1.IncidentFinding.VerdictId status = 1;
   }
 
+  // an enrichment that indicates that the finding has a known exploit
+  // and a list of references to the exploit and relevant writeups or papers
+  // that can be used to investigate the finding
+  message ExploitExistsEnrichment {
+    string exploit_url = 1;
+    repeated string references = 2;
+    string exploit_code = 3;
+  }
+
   oneof enrichment {
     DuplicateEnrichment duplicate = 2;
     CorrelationEnrichment correlations = 3;
     InvestigationEnrichment investigations = 4;
+    ExploitExistsEnrichment exploit_exists = 5;
   }
 }
