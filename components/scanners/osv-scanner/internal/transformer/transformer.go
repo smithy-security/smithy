@@ -160,6 +160,7 @@ func (b *OSVScannerTransformer) AddMetadataToDatasources(ctx context.Context, fi
 			if err := protojson.Unmarshal([]byte(source), &dataSource); err != nil {
 				return nil, errors.Errorf("could not unmarshal datasource %s, err:%w", source, err)
 			}
+			dataSource.TargetType = ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY
 			dataSource.SourceCodeMetadata = targetMetadata.SourceCodeMetadata
 			metadataSource, err := protojson.Marshal(&dataSource)
 			if err != nil {
