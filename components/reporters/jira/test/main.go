@@ -71,7 +71,7 @@ func Main(ctx context.Context) error {
 									StartLine: ptr(int32(10)),
 								},
 							},
-							Severity:   ptr("MEDIUM"),
+							Severity:   ptr("SEVERITY_ID_MEDIUM"),
 							VendorName: ptr("gosec"),
 							Cve: &ocsf.Cve{
 								Desc:  ptr("Super bad"),

@@ -26,10 +26,12 @@ import (
 var issueDescrTpl string
 
 type (
+	// IssueCreator abstracts how to batch create issues.
 	IssueCreator interface {
 		BatchCreate(ctx context.Context, issues []issuer.Issue) (uint, bool, error)
 	}
 
+	// IssueDescriptionTplData is the template payload data used to build the description of the issue.
 	IssueDescriptionTplData struct {
 		FindingID        uint64
 		FindingLink      string
@@ -50,6 +52,7 @@ type (
 		Reference        string
 	}
 
+	// IssueContext contains metadata used to enrich the Issue with more Smithy based info.
 	IssueContext struct {
 		SmithyInstanceBaseURL *url.URL
 		SmithyRunName         string
@@ -62,6 +65,7 @@ type (
 	}
 )
 
+// New returns a new reporter.
 func New(issueCtx IssueContext, issuer IssueCreator) (*reporter, error) {
 	if issuer == nil {
 		return nil, errors.New("invalid nil IssueCreator")
@@ -73,6 +77,7 @@ func New(issueCtx IssueContext, issuer IssueCreator) (*reporter, error) {
 	}, nil
 }
 
+// Report reports OCSF issues to Jira.
 func (r *reporter) Report(
 	ctx context.Context,
 	findings []*vf.VulnerabilityFinding,
