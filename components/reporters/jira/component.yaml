@@ -8,6 +8,9 @@ parameters:
   - name: "project"
     type: "string"
     value: ""
+  - name: "issue_type"
+    type: "string"
+    value: "Task"
   - name: "auth_enabled"
     type: "string"
     value: "false"
@@ -25,6 +28,7 @@ steps:
     env_vars:
       JIRA_BASE_URL: "{{ .parameters.base_url }}"
       JIRA_PROJECT: "{{ .parameters.project }}"
+      JIRA_ISSUE_TYPE: "{{ .parameters.issue_type }}"
       JIRA_AUTH_ENABLED: "{{ .parameters.auth_enabled }}"
       JIRA_AUTH_USERNAME: "{{ .parameters.username }}"
       JIRA_AUTH_PASSWORD: "{{ .parameters.password }}"
