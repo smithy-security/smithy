@@ -5,5 +5,4 @@ type Issue struct {
 	Summary     string
 	ID          uint64
 	Priority    string
-	Reporter    string
 }

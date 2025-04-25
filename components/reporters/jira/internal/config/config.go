@@ -55,6 +55,11 @@ func New() (Config, error) {
 		errs = errors.Join(errs, fmt.Errorf("failed to get env var JIRA_PROJECT: %w", err))
 	}
 
+	cfg.Jira.IssueType, err = env.GetOrDefault("JIRA_ISSUE_TYPE", "Task", env.WithDefaultOnError(true))
+	if err != nil {
+		errs = errors.Join(errs, fmt.Errorf("failed to get env var JIRA_ISSUE_TYPE: %w", err))
+	}
+
 	cfg.Jira.ClientMaxRetries, err = env.GetOrDefault("JIRA_CLIENT_MAX_RETRIES", uint(5), env.WithDefaultOnError(true))
 	if err != nil {
 		errs = errors.Join(errs, fmt.Errorf("failed to get env var JIRA_CLIENT_MAX_RETRIES: %w", err))
