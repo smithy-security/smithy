@@ -254,6 +254,7 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result) (
 			SrcUrl:          res.HostedViewerUri,
 			Title:           title,
 			Uid:             findingUid,
+			ProductUid:      &toolName,
 		},
 		Message: res.Message.Text,
 		Metadata: &ocsf.Metadata{
