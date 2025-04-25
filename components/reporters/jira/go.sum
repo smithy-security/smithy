@@ -145,6 +145,8 @@ github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
 github.com/smithy-security/pkg/env v0.0.1 h1:uwLTMLdNN/dv3x4zat75JahEBQDpdBeldjEE8El4OiM=
 github.com/smithy-security/pkg/env v0.0.1/go.mod h1:VIJfDqeAbQQcmohaXcZI6grjeJC9Y8CmqR4ITpdngZE=
+github.com/smithy-security/pkg/retry v0.0.2 h1:zfKAxRstSmNzaOX58Vs/5FKdDw2K9luVI5bPnF31NWs=
+github.com/smithy-security/pkg/retry v0.0.2/go.mod h1:sM07AAnXzJswi/tX/a7rvD11SVe/rcA5tBrzmwd4lmM=
 github.com/smithy-security/smithy/sdk v0.0.11-alpha h1:ukPP/nBAbLlvJ0KFA7i4/9+lXV2Lwl6W5sFaEX8LwxU=
 github.com/smithy-security/smithy/sdk v0.0.11-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
 github.com/spf13/cast v1.7.1 h1:cuNEagBQEHWN1FnbGEjCXL2szYEXqfJPbP2HNUaca9Y=

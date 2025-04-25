@@ -1,12 +1,12 @@
 module github.com/smithy-security/smithy/components/reporters/jira
 
-go 1.23.2
+go 1.24.0
 
 require (
 	github.com/andygrunwald/go-jira v1.16.0
-	github.com/cenkalti/backoff/v5 v5.0.2
 	github.com/go-errors/errors v1.5.1
 	github.com/smithy-security/pkg/env v0.0.1
+	github.com/smithy-security/pkg/retry v0.0.2
 	github.com/smithy-security/smithy/sdk v0.0.11-alpha
 )
 
@@ -20,6 +20,7 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
+	github.com/cenkalti/backoff/v5 v5.0.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.6 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
