@@ -2,12 +2,13 @@ package jira
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/url"
 
 	"github.com/andygrunwald/go-jira"
 	"github.com/go-errors/errors"
+	"github.com/smithy-security/pkg/retry"
+	"github.com/smithy-security/smithy/sdk/component"
 
 	"github.com/smithy-security/smithy/components/reporters/jira/internal/issuer"
 )
@@ -30,6 +31,7 @@ type (
 	Config struct {
 		BaseURL            *url.URL
 		Project            string
+		IssueType          string
 		AuthEnabled        bool
 		AuthPassword       string
 		AuthUsername       string
@@ -52,12 +54,12 @@ func (c Config) IsValid() error {
 	return nil
 }
 
-func NewClient(cfg Config) (*client, error) {
+func NewClient(ctx context.Context, cfg Config) (*client, error) {
 	if err := cfg.IsValid(); err != nil {
 		return nil, errors.Errorf("invalid config: %w", err)
 	}
 
-	var transport = http.DefaultTransport
+	transport := http.DefaultTransport
 	if cfg.AuthEnabled {
 		transport = &jira.BasicAuthTransport{
 			Username: cfg.AuthUsername,
@@ -65,17 +67,16 @@ func NewClient(cfg Config) (*client, error) {
 		}
 	}
 
-	clientMaxRetries := cfg.ClientMaxRetries
-	if clientMaxRetries == 0 {
-		clientMaxRetries = 5
-	}
-
-	hc, err := NewHttpClient(transport, clientMaxRetries)
+	rc, err := retry.NewClient(retry.Config{
+		BaseTransport: transport,
+		MaxRetries:    cfg.ClientMaxRetries,
+		Logger:        component.LoggerFromContext(ctx),
+	})
 	if err != nil {
-		return nil, errors.Errorf("failed to create jira http client: %w", err)
+		return nil, errors.Errorf("failed to create retry client: %w", err)
 	}
 
-	jc, err := jira.NewClient(hc, cfg.BaseURL.String())
+	jc, err := jira.NewClient(rc, cfg.BaseURL.String())
 	if err != nil {
 		return nil, errors.Errorf("failed to create jira client: %w", err)
 	}
@@ -100,11 +101,7 @@ func (c *client) BatchCreate(ctx context.Context, issues []issuer.Issue) (uint, 
 
 	var jiraIssues = make([]jira.Issue, 0, len(issues))
 	for _, issue := range issues {
-		ji, err := c.toJiraIssue(u.AccountID, issue)
-		if err != nil {
-			errs = errors.Join(errs, err)
-		}
-		jiraIssues = append(jiraIssues, ji)
+		jiraIssues = append(jiraIssues, c.toJiraIssue(u, issue))
 	}
 
 	for _, jiraIssue := range jiraIssues {
@@ -123,30 +120,20 @@ func (c *client) BatchCreate(ctx context.Context, issues []issuer.Issue) (uint, 
 	return numCreated, numCreated > 0, nil
 }
 
-func (c *client) toJiraIssue(reporterAccountID string, issue issuer.Issue) (jira.Issue, error) {
-	runURL, err := url.JoinPath(c.cfg.SmithyDashURL.String(), "runs", c.cfg.SmithyInstanceID)
-	if err != nil {
-		return jira.Issue{}, errors.Errorf("failed to create parse run url: %w", err)
-	}
-
+func (c *client) toJiraIssue(user *jira.User, issue issuer.Issue) jira.Issue {
 	return jira.Issue{
 		Fields: &jira.IssueFields{
-			Summary:     issue.Summary,
 			Description: issue.Description,
+			Summary:     issue.Summary,
 			Type: jira.IssueType{
-				Name: "Task",
+				Name: c.cfg.IssueType,
 			},
 			Reporter: &jira.User{
-				AccountID: reporterAccountID,
-			},
-			Labels: []string{
-				fmt.Sprintf("priority:%s", issue.Priority),
-				fmt.Sprintf("run:%s", runURL),
-				fmt.Sprintf("run_name:%s", c.cfg.SmithyInstanceName),
+				AccountID: user.AccountID,
 			},
 			Project: jira.Project{
 				Key: c.cfg.Project,
 			},
 		},
-	}, nil
+	}
 }

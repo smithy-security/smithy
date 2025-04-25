@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-
 	"github.com/smithy-security/smithy/sdk/component"
 
 	"github.com/smithy-security/smithy/components/reporters/jira/internal/config"
@@ -29,12 +28,19 @@ func Main(ctx context.Context) error {
 		return errors.Errorf("failed to load configuration: %w", err)
 	}
 
-	jiraIssuerCreator, err := jira.NewClient(cfg.Jira)
+	jiraIssuerCreator, err := jira.NewClient(ctx, cfg.Jira)
 	if err != nil {
 		return errors.Errorf("failed to create jira issuer creator: %w", err)
 	}
 
-	r, err := reporter.New(jiraIssuerCreator)
+	r, err := reporter.New(
+		reporter.IssueContext{
+			SmithyInstanceBaseURL: cfg.Jira.SmithyDashURL,
+			SmithyRunName:         cfg.Jira.SmithyInstanceName,
+			SmithyRunID:           cfg.Jira.SmithyInstanceID,
+		},
+		jiraIssuerCreator,
+	)
 	if err != nil {
 		return errors.Errorf("failed to create reporter: %w", err)
 	}
