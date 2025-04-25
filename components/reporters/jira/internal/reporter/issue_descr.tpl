@@ -7,4 +7,4 @@ Location: *{{ .FindingPath }}*.
 {{ end }}
 
 ||ID||Confidence||CWE||CVE||Reporting Tool||Detected by Run||
-|[{{ .FindingID }}|{{ .FindingLink }}]|{{ .Confidence }}|[{{ .CWE }}|{{ .CWELink }}]|{{ .CVE }}|{{ .Tool }}| [{{ .RunName }}|{{ .RunLink }}]|
+|[{{ .FindingID }}|{{ .FindingLink }}]|{{ .Confidence }}|[{{ .CWE }}|{{ .CWELink }}]|{{ .CVE }}|{{ .Tool }}|[{{ .RunName }}|{{ .RunLink }}]|

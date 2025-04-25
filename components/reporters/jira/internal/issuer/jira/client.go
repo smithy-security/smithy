@@ -14,10 +14,12 @@ import (
 )
 
 type (
+	// IssueCreator describes how to create issues.
 	IssueCreator interface {
 		CreateWithContext(ctx context.Context, issue *jira.Issue) (*jira.Issue, *jira.Response, error)
 	}
 
+	// UserGetter describes how to get user info of the underlying username/password.
 	UserGetter interface {
 		GetSelfWithContext(ctx context.Context) (*jira.User, *jira.Response, error)
 	}
@@ -28,23 +30,36 @@ type (
 		cfg           Config
 	}
 
+	// Config contains the Jira configuration.
 	Config struct {
-		BaseURL            *url.URL
-		Project            string
-		IssueType          string
-		AuthEnabled        bool
-		AuthPassword       string
-		AuthUsername       string
-		ClientMaxRetries   uint
-		SmithyInstanceID   string
+		// BaseURL is the base URL of the Jira server.
+		BaseURL *url.URL
+		// Project is the Jira project on which issues should be opened.
+		Project string
+		// IssueType specifies the issue type. Task is the default.
+		IssueType string
+		// AuthEnabled allows to switch on or off the authentication to Jira.
+		AuthEnabled bool
+		// AuthPassword is the password or API Token associated to the user that makes requests to Jira.
+		AuthPassword string
+		// AuthUsername is the username or API Token associated to the user that makes requests to Jira.
+		AuthUsername string
+		// ClientMaxRetries configures how many retries we should do when the API calls to Jira fail
+		// for retryable status codes (i.e. 503).
+		ClientMaxRetries uint
+		// SmithyInstanceID is the uuid representing the instance id in smithy. This is used for enriching the finding.
+		SmithyInstanceID string
+		// SmithyInstanceName is the instance name in smithy. This is used for enriching the finding.
 		SmithyInstanceName string
-		SmithyDashURL      *url.URL
+		// SmithyDashURL is instance URL backing a smithy instance.
+		SmithyDashURL *url.URL
 	}
 )
 
+// IsValid checks if the configuration is valid.
 func (c Config) IsValid() error {
 	switch {
-	case c.BaseURL.String() == "":
+	case c.BaseURL == nil || c.BaseURL.String() == "":
 		return errors.New("base URL is required")
 	case c.Project == "":
 		return errors.New("project is required")
@@ -54,6 +69,23 @@ func (c Config) IsValid() error {
 	return nil
 }
 
+// NewTestClient is used to get a test client in tests.
+func NewTestClient(issuerCreator IssueCreator, userGetter UserGetter, cfg Config) (*client, error) {
+	switch {
+	case issuerCreator == nil:
+		return nil, errors.New("issuer creator is required")
+	case userGetter == nil:
+		return nil, errors.New("user getter is required")
+	}
+
+	return &client{
+		issuerCreator: issuerCreator,
+		userGetter:    userGetter,
+		cfg:           cfg,
+	}, cfg.IsValid()
+}
+
+// NewClient returns a new Jira client.
 func NewClient(ctx context.Context, cfg Config) (*client, error) {
 	if err := cfg.IsValid(); err != nil {
 		return nil, errors.Errorf("invalid config: %w", err)
@@ -88,7 +120,12 @@ func NewClient(ctx context.Context, cfg Config) (*client, error) {
 	}, nil
 }
 
+// BatchCreate creates passed issues on Jira.
 func (c *client) BatchCreate(ctx context.Context, issues []issuer.Issue) (uint, bool, error) {
+	if len(issues) == 0 {
+		return 0, false, nil
+	}
+
 	u, _, err := c.userGetter.GetSelfWithContext(ctx)
 	if err != nil {
 		return 0, false, errors.Errorf("failed to get user info: %w", err)

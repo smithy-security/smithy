@@ -10,10 +10,12 @@ import (
 	"github.com/smithy-security/smithy/components/reporters/jira/internal/issuer/jira"
 )
 
+// Config describes the application configuration.
 type Config struct {
 	Jira jira.Config
 }
 
+// New returns a new configuration initialised by introspecting the environment variables.
 func New() (Config, error) {
 	var (
 		err, errs error
