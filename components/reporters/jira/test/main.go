@@ -29,12 +29,19 @@ func Main(ctx context.Context) error {
 		return errors.Errorf("failed to load configuration: %w", err)
 	}
 
-	jiraIssuerCreator, err := jira.NewClient(cfg.Jira)
+	jiraIssuerCreator, err := jira.NewClient(ctx, cfg.Jira)
 	if err != nil {
 		return errors.Errorf("failed to create jira issuer creator: %w", err)
 	}
 
-	r, err := reporter.New(jiraIssuerCreator)
+	r, err := reporter.New(
+		reporter.IssueContext{
+			SmithyInstanceBaseURL: cfg.Jira.SmithyDashURL,
+			SmithyRunName:         cfg.Jira.SmithyInstanceName,
+			SmithyRunID:           cfg.Jira.SmithyInstanceID,
+		},
+		jiraIssuerCreator,
+	)
 	if err != nil {
 		return errors.Errorf("failed to create reporter: %w", err)
 	}
@@ -45,9 +52,15 @@ func Main(ctx context.Context) error {
 			{
 				ID: 1,
 				Finding: &ocsf.VulnerabilityFinding{
+					FindingInfo: &ocsf.FindingInfo{
+						DataSources: []string{
+							"{\"targetType\":\"TARGET_TYPE_REPOSITORY\", \"uri\":{\"uriSchema\":\"URI_SCHEMA_FILE\", \"path\":\"util/middleware/middleware.go\"}, \"fileFindingLocationData\":{\"startLine\":70, \"endLine\":76, \"startColumn\":4, \"endColumn\":4}, \"sourceCodeMetadata\":{\"repositoryUrl\":\"https://github.com/0c34/govwa\", \"reference\":\"master\"}}",
+						},
+					},
+					Confidence: ptr("High"),
 					Vulnerabilities: []*ocsf.Vulnerability{
 						{
-							Title: ptr("Miao miao"),
+							Title: ptr("New vulnerability 1"),
 							Desc:  ptr("Fix fix fix"),
 							AffectedCode: []*ocsf.AffectedCode{
 								{
@@ -58,8 +71,16 @@ func Main(ctx context.Context) error {
 									StartLine: ptr(int32(10)),
 								},
 							},
-							Severity:   ptr("DANGER"),
+							Severity:   ptr("MEDIUM"),
 							VendorName: ptr("gosec"),
+							Cve: &ocsf.Cve{
+								Desc:  ptr("Super bad"),
+								Title: ptr("CVE-1"),
+							},
+							Cwe: &ocsf.Cwe{
+								Caption: ptr("CWE-1"),
+								SrcUrl:  ptr("https://cwe.mitre.org/data/definitions/843.html"),
+							},
 						},
 					},
 				},
