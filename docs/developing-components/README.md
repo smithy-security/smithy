@@ -238,3 +238,36 @@ steps:
     image: some-registry.com/smithy/components/scanners/sql-injection/helper:{{ some-version.parameter }}
     executable: /bin/app
 ```
+
+## OCSF Field Mappings for Scanners
+
+OCSF is a very expressive standard.
+As such it has a variety of fields, subfields and various object that can be expressed.
+It is important to define strict rules and maintain discipline on mappings so that each component treats information the same way. This is so that the datalake produced by Smithy remains useful instead of becoming the *data swamp of doom*, a place where data goes to rot since it requires significant manual effort to understand.
+
+### Rules for mapping:
+
+**Glossary**:
+
+* A **finding** is a single instance of a potential vulnerability from any security tool. For example for SAST, a finding is an ocurrnce of a single CWE in a specific file and line.
+
+**Rules**:
+
+* Each scanner should report one instance of each vulnerability as a an instance of a "VulnerabilityFinding" object with a single vulnerability in it. This is because at the current OCSF version, an individual Vulnerability object cannot be enriched.
+* The title of each finding is: details.'findingInfo'.'title'
+* Titles should uniquely identify a type of finding and be as understandable to humans as possible. For exaaple: Trivy's SARIF output, sets the title for license related finding to "License", this is obviously a bad title. A good title would have been: "Potentially Dangerous License: GPL2.0". *This isn't a problem only with Trivy, several tools report overly short info*.
+* Each Scanner should report the name of the tool it parses information for as part of each finding in the field "details.findingInfo.productUid".
+* If the corresponding tool reports Confidence, each Scanner should propagate the reporting tool's confidence in the field 'details.confidenceId' and 'details.confidence'.
+* The field 'details.confidence' should be a textual representation of 'details.confidenceID'
+* If the corresponding tool reports Severity, each Scanner should propagate the reporting tool's severity in the field 'details.severityID' and 'details.severity'.
+* The field 'details.severity' should be a textual representation of 'details.severityID'
+* The field 'details.message' should contain a concise and human friendly description of exactly what the problem is with ideally, an explanation of the impact and maybe remediation advice. For example: GoSec has descriptions such as
+
+  > "Implicit memory aliasing in for loop."
+
+  this means very little without extensive extra enrichment. A good description is the following:
+
+  > golang.org/x/text/language in golang.org/x/text before 0.3.7 can panic with an out-of-bounds read during BCP 47 language tag parsing. Index calculation is mishandled. If parsing untrusted user input, this can be used as a vector for a denial-of-service attack."
+* A scanner should mandatorily set a `Datasource` to a supported TargetType depending on if the target being scanned is a Repository, Dependency, OCIPackage or Website.
+* A scanner should try to propagate as much information from the source as possible. For example if the source tool reports fixes in a machine-understandable way, the scanners should convert those fixes to the relevant OCSF fields.
+* If the source tool reports common identifiers such as CVE ids, CWEs, CREs or any other Common Identifiers, the scanner should make every effort to propagate this information
