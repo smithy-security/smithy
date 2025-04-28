@@ -13,6 +13,7 @@ message DataSource {
     TARGET_TYPE_UNSPECIFIED = 0;
     TARGET_TYPE_REPOSITORY = 1;
     TARGET_TYPE_CONTAINER_IMAGE = 2;
+    TARGET_TYPE_WEBSITE = 3;
   }
 
   // URISchema specifies the URI schema.
@@ -23,6 +24,7 @@ message DataSource {
     URI_SCHEMA_UNSPECIFIED = 0;
     URI_SCHEMA_FILE = 1;
     URI_SCHEMA_PURL = 2;
+    URI_SCHEMA_WEBSITE = 3;
   }
 
   // URI specifies uri content.
@@ -56,6 +58,11 @@ message DataSource {
     string tag = 2;
   }
 
+  // WebsiteMetadata records the metadata of the webiste that was scanned.
+  message WebsiteMetadata {
+    string url = 1;
+  }
+
   TargetType target_type = 1;
   URI uri = 2;
   // location_data can be a different value based on target_type.
@@ -65,6 +72,7 @@ message DataSource {
   }
   SourceCodeMetadata source_code_metadata = 5;
   OCIPackageMetadata oci_package_metadata = 6;
+  WebsiteMetadata website_metadata = 7;
 }
 
 // annotations created by the DataEnricher
