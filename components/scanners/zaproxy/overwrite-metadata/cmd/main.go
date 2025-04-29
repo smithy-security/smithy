@@ -24,7 +24,7 @@ func main() {
 	metadataPath, exists := os.LookupEnv(component.SCANNER_TARGET_METADATA_PATH_ENV_VAR)
 	if exists {
 		if !strings.HasSuffix(metadataPath, "target.json") {
-			metadataPath = filepath.Join(metadataPath,"target.json")
+			metadataPath = filepath.Join(metadataPath, "target.json")
 		}
 		if err := overwriteMetadata(metadataPath, target); err != nil {
 			fmt.Println(errors.Errorf("could not write metadata: %w", err))
