@@ -3,16 +3,17 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/jonboulle/clockwork"
+	"github.com/smithy-security/smithy/sdk/component"
+	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
-
-	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
 	"github.com/smithy-security/smithy/new-components/scanners/zaproxy/internal/transformer"
 )
@@ -39,6 +40,18 @@ func TestZapTransformer_Transform(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
+		target := "http://bodgeit.com:8080"
+		dataSource := &ocsffindinginfo.DataSource{
+			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE,
+			WebsiteMetadata: &ocsffindinginfo.DataSource_WebsiteMetadata{
+				Url: target,
+			},
+		}
+
+		ctx := context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, dataSource)
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
 		findings, err := ocsfTransformer.Transform(ctx)
 		require.NoError(t, err)
 		require.NotEmpty(t, findings)
@@ -161,26 +174,29 @@ func TestZapTransformer_Transform(t *testing.T) {
 			)
 			assert.Equalf(
 				t,
-				ocsffindinginfo.DataSource_TARGET_TYPE_UNSPECIFIED,
+				ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE,
 				dataSource.TargetType,
 				"Unexpected data source target type for finding %d",
 				idx,
 			)
+			require.NotNil(t, dataSource.WebsiteMetadata)
+			assert.Equal(t, target, dataSource.WebsiteMetadata.Url)
 			require.NotNilf(t, dataSource.Uri, "Unexpected nil data source uri for finding %d", idx)
 			assert.Equalf(
 				t,
-				ocsffindinginfo.DataSource_URI_SCHEMA_UNSPECIFIED,
+				ocsffindinginfo.DataSource_URI_SCHEMA_WEBSITE,
 				dataSource.Uri.UriSchema,
 				"Unexpected data source uri schema for finding %d",
 				idx,
 			)
 			assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
 			require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
+			assert.True(t, strings.HasPrefix(dataSource.Uri.Path, target))
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 			vulnerability := finding.Vulnerabilities[0]
 			assert.Equalf(t, nowUnix, *vulnerability.FirstSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
-			assert.Equalf(t, nowUnix, *vulnerability.LastSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
+			assert.Equalf(t, nowUnix, *vulnerability.LastSeenTime, "Unexpected vulnerability firsy time	 seen time for finding %d", idx)
 			assert.Containsf(
 				t,
 				[]string{

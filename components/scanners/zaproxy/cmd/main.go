@@ -28,7 +28,6 @@ func Main(ctx context.Context, opts ...component.RunnerOption) error {
 	if err != nil {
 		return errors.Errorf("could not create transformer: %w", err)
 	}
-
 	if err := component.RunScanner(ctx, ocsfTransformer, opts...); err != nil {
 		return errors.Errorf("could not run scanner: %w", err)
 	}
