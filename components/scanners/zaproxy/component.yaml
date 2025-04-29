@@ -21,6 +21,11 @@ parameters:
     type: string
     value: "changeme"
 steps:
+  - name: write-metadata
+    image: components/scanners/zaproxy/overwrite-metadata
+    executable: /bin/app
+    env_vars:
+      TARGET: "{{ .parameters.target }}"
   - name: run-authenticated-zap-scan
     image: components/scanners/zaproxy/zap-authenticated-scan
     executable: /workdir/venv/bin/python3
