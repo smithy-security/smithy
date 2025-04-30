@@ -231,12 +231,12 @@ func (b *BanditTransformer) parseResult(ctx context.Context, r *BanditResult) (*
 			DataSources: []string{
 				dataSource,
 			},
-			Desc:          ptr.Ptr(r.IssueText),
+			Desc:          ptr.Ptr(fmt.Sprintf("%s:%s", r.TestName, r.IssueText)),
 			FirstSeenTime: &now,
 			LastSeenTime:  &now,
 			ModifiedTime:  &now,
 			ProductUid:    ptr.Ptr("bandit"),
-			Title:         r.TestName,
+			Title:         r.IssueText,
 			Uid:           r.TestID,
 		},
 		Message:    &r.IssueText,
@@ -268,34 +268,20 @@ func (b *BanditTransformer) parseResult(ctx context.Context, r *BanditResult) (*
 
 func (*BanditTransformer) mapCode(r *BanditResult) ([]*ocsf.AffectedCode, error) {
 	var ac []*ocsf.AffectedCode
-	switch len(r.LineRange) {
-	case 0:
+	if len(r.LineRange) == 0 {
 		return nil, ErrNoLineRange
-	case 1:
-		return []*ocsf.AffectedCode{
-			{
-				EndLine:   ptr.Ptr(int32(r.LineRange[0])),
-				StartLine: ptr.Ptr(int32(r.LineRange[0])),
-				File: &ocsf.File{
-					Name: filepath.Base(r.Filename),
-					Path: ptr.Ptr(fmt.Sprintf("file://%s", r.Filename)),
-				},
-			}}, nil
-	default:
-		for i := 0; i < len(r.LineRange); i += 2 {
-			ac = append(ac,
-				&ocsf.AffectedCode{
-					EndLine:   ptr.Ptr(int32(r.LineRange[i+1])),
-					StartLine: ptr.Ptr(int32(r.LineRange[i])),
-					File: &ocsf.File{
-						Name: filepath.Base(r.Filename),
-						Path: ptr.Ptr(fmt.Sprintf("file://%s", r.Filename)),
-					},
-				},
-			)
-		}
-		return ac, nil
 	}
+	ac = append(ac,
+		&ocsf.AffectedCode{
+			EndLine:   ptr.Ptr(int32(r.LineRange[0])),
+			StartLine: ptr.Ptr(int32(r.LineRange[len(r.LineRange)-1])),
+			File: &ocsf.File{
+				Name: filepath.Base(r.Filename),
+				Path: ptr.Ptr(fmt.Sprintf("file://%s", r.Filename)),
+			},
+		},
+	)
+	return ac, nil
 }
 
 // Future TODO: do a DB query and enrich the CWE with info such as description, current state(valid/not valid) etc
