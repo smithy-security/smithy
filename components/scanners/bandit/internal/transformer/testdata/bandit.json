@@ -498,6 +498,28 @@
       "more_info": "https://bandit.readthedocs.io/en/1.7.5/plugins/b324_hashlib.html",
       "test_id": "B324",
       "test_name": "hashlib"
+    },
+    {
+      "code": "40     def check_password(self, password: str):\n41         return self.pwd_hash == md5(password.encode('utf-8')).hexdigest()\n",
+      "col_offset": 32,
+      "end_col_offset": 61,
+      "filename": "/code/dvpwa/sqli/dao/user.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 327,
+        "link": "https://cwe.mitre.org/data/definitions/327.html"
+      },
+      "issue_severity": "HIGH",
+      "issue_text": "Use of weak MD5 hash for security. Consider usedforsecurity=False",
+      "line_number": 41,
+      "line_range": [
+        41,
+        42,
+        43
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.7.5/plugins/b324_hashlib.html",
+      "test_id": "B324",
+      "test_name": "hashlib"
     }
   ]
 }
