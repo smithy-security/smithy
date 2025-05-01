@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/scanner/trufflehog
+module github.com/smithy-security/smithy/components/scanners/trufflehog
 
 go 1.23.3
 
