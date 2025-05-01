@@ -2,6 +2,7 @@ package transformer
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -10,10 +11,9 @@ import (
 	"github.com/smithy-security/pkg/env"
 	sarif "github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
-	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/smithy/new-components/scanners/mobsfscan/internal/util/ptr"
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
@@ -147,34 +147,21 @@ func (g *mobSFTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
 	transformer, err := sarif.NewTransformer(&report,
 		"",
-		sarif.TargetTypeRepository,
-		g.clock, sarif.RealUUIDProvider{})
+		g.clock, sarif.RealUUIDProvider{}, false)
 	if err != nil {
 		return nil, err
 	}
-	ocsfVulns, err := transformer.ToOCSF(ctx)
+	ocsfVulns, err := transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
 	if err != nil {
 		return nil, err
 	}
-	return g.AddMetadataToDatasources(ctx, ocsfVulns)
-}
-
-func (g *mobSFTransformer) AddMetadataToDatasources(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
-	targetMetadata := component.TargetMetadataFromCtx(ctx)
-	for _, f := range findings {
-		for i, source := range f.FindingInfo.DataSources {
-			dataSource := ocsffindinginfo.DataSource{}
-			if err := protojson.Unmarshal([]byte(source), &dataSource); err != nil {
-				return nil, errors.Errorf("could not unmarshal datasource %s, err:%w", source, err)
-			}
-			dataSource.TargetType = ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY
-			dataSource.SourceCodeMetadata = targetMetadata.SourceCodeMetadata
-			metadataSource, err := protojson.Marshal(&dataSource)
-			if err != nil {
-				return nil, errors.Errorf("could not marshal new datasource with metdata err:%w", err)
-			}
-			f.FindingInfo.DataSources[i] = string(metadataSource)
+	// post processing, mosfscan titles are ruleIDs which is not good UX
+	for _, v := range ocsfVulns {
+		if v.FindingInfo.Desc != nil {
+			ruleID := v.FindingInfo.Title
+			v.FindingInfo.Title = *v.FindingInfo.Desc
+			v.FindingInfo.Desc = ptr.Ptr(fmt.Sprintf("%s\n rule-id:%s", *v.FindingInfo.Desc, ruleID))
 		}
 	}
-	return findings, nil
+	return ocsfVulns, nil
 }
