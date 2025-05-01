@@ -15,10 +15,11 @@ import (
 	"github.com/smithy-security/pkg/env"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/components/scanners/trufflehog/internal/util/ptr"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+
+	"github.com/smithy-security/smithy/components/scanners/trufflehog/internal/util/ptr"
 )
 
 type (
@@ -78,11 +79,11 @@ var (
 	// ErrBadTargetType is thrown when the option set target type is called with an unspecified or empty target type
 	ErrBadTargetType = errors.New("invalid empty target type")
 
-	// Bandit Parser Specific Errors
+	// Parser Specific Errors
 
-	// ErrNoLineRange is thrown when bandit produces a finding without a line range
-	ErrNoLineRange = errors.Errorf("bandit result does not contain a line range")
-	// ErrBadDataSource is thrown when bandit produces a finding that cannot have a datasource (e.g. no filename)
+	// ErrNoLineRange is thrown when parser produces a finding without a line range
+	ErrNoLineRange = errors.Errorf("result does not contain a line range")
+	// ErrBadDataSource is thrown when parser produces a finding that cannot have a datasource (e.g. no filename)
 	ErrBadDataSource = errors.Errorf("failed to marshal data source to JSON")
 )
 
@@ -258,7 +259,7 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 					FirstSeenTime: &now,
 					LastSeenTime:  &now,
 					ModifiedTime:  &now,
-					ProductUid:    ptr.Ptr("bandit"),
+					ProductUid:    ptr.Ptr("trufflehog"),
 					Title:         fmt.Sprintf("%s\n%s:%s", finding.SourceName, finding.DecoderName, finding.DetectorName),
 					Uid:           fmt.Sprintf("%d:%d:%d", finding.SourceID, finding.SourceType, finding.DetectorType),
 				},
