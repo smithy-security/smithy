@@ -18,7 +18,9 @@ service FindingsService {
 
 // Finding represents a finding.
 message Finding {
+  // id is the finding id.
   uint64 id = 1;
+  // details contains the underlying OCSF Vulnerability Finding.
   ocsf_schema.v1.VulnerabilityFinding details = 2;
 }
 
