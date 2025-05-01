@@ -73,8 +73,9 @@ message Enrichment {
     ENRICHMENT_TYPE_UNSPECIFIED = 0;
     ENRICHMENT_TYPE_CORRELATION = 1;
     ENRICHMENT_TYPE_DUPLICATION = 2;
-    ENRICHMENT_INVESTIGATION = 3;
-    ENRICHMENT_EXPLOIT_EXISTS = 4;
+    ENRICHMENT_TYPE_INVESTIGATION = 3;
+    ENRICHMENT_TYPE_EXPLOIT_EXISTS = 4;
+    ENRICHMENT_TYPE_REACHABILITY = 5;
   }
 
   // if it has this enrichment at all, the finding is a duplicate
@@ -99,12 +100,18 @@ message Enrichment {
     string exploit_url = 1;
     repeated string references = 2;
     string exploit_code = 3;
+    bool is_exploitable = 4;
   }
 
+  // ReachabilityEnrichment this is currently a placeholder.
+  message ReachabilityEnrichment {}
+
+  // enrichment represents the enrichment annotation raw value.
   oneof enrichment {
     DuplicateEnrichment duplicate = 2;
     CorrelationEnrichment correlations = 3;
     InvestigationEnrichment investigations = 4;
     ExploitExistsEnrichment exploit_exists = 5;
+    ReachabilityEnrichment reachability = 6;
   }
 }
