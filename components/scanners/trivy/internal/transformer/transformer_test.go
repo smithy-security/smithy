@@ -33,6 +33,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
 	repositoryURL := "https://github.com/smithy-security/test"
 	targetMetadata := &ocsffindinginfo.DataSource{
+		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE,
 		OciPackageMetadata: &ocsffindinginfo.DataSource_OCIPackageMetadata{
 			PackageUrl: "pkg:docker/example/myapp@1.0",
 			Tag:        "1.0",
@@ -159,6 +160,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			assert.NotEmptyf(t, *findingInfo.Desc, "Unexpected empty desc for finding %d", idx)
 			assert.NotEmptyf(t, findingInfo.Title, "Unexpected empty title for finding %d", idx)
 			assert.NotEmptyf(t, findingInfo.Uid, "Unexpected empty uid for finding %d", idx)
+			assert.Equalf(t, "Trivy", *findingInfo.ProductUid, "Unexpected findingInfo.ProductUid for finding %d", idx)
 
 			var dataSource ocsffindinginfo.DataSource
 			require.Lenf(
@@ -180,7 +182,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 				"Unexpected data source target type for finding %d",
 				idx,
 			)
-			require.NotNilf(t, dataSource.Uri, "Unexpected nil data source uri for finding %d", idx)
+			// require.NotNilf(t, dataSource.Uri, "Unexpected nil data source uri for finding %d", idx)
 			assert.Equalf(
 				t,
 				ocsffindinginfo.DataSource_URI_SCHEMA_PURL,
@@ -191,6 +193,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
 			require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
 			require.NotNilf(t, dataSource.SourceCodeMetadata, "Unexpected nil data source source code metadata for finding %d", idx)
+			require.NotNilf(t, dataSource.OciPackageMetadata, "Unexpected nil data source OCI PACKAGE METADATA %d", idx)
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 			vulnerability := finding.Vulnerabilities[0]

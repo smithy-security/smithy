@@ -145,37 +145,35 @@ func (g *trivyTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 	)
 
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
-	transformer, err := sarif.NewTransformer(&report,
-		"",
-		sarif.TargetTypeImage,
-		g.clock, sarif.RealUUIDProvider{})
+	transformer, err := sarif.NewTransformer(&report, "", g.clock, sarif.RealUUIDProvider{}, true)
 	if err != nil {
 		return nil, err
 	}
-	ocsfVulns, err := transformer.ToOCSF(ctx)
+	ocsfVulns, err := transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
 	if err != nil {
 		return nil, err
 	}
-	return g.AddMetadataToDatasources(ctx, ocsfVulns)
+	return g.PostProcessing(ctx, ocsfVulns)
 }
 
-func (g *trivyTransformer) AddMetadataToDatasources(ctx context.Context, findings []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
-	targetMetadata := component.TargetMetadataFromCtx(ctx)
-	for _, f := range findings {
-		for i, source := range f.FindingInfo.DataSources {
-			var dataSource ocsffindinginfo.DataSource
-			if err := protojson.Unmarshal([]byte(source), &dataSource); err != nil {
-				return nil, errors.Errorf("could not unmarshal datasource %s, err:%w", source, err)
+func (g *trivyTransformer) PostProcessing(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
+	for _, vuln := range vulns {
+		if vuln == nil {
+			continue
+		}
+		if vuln.FindingInfo == nil {
+			return nil, errors.Errorf("nil findingInfo for finding: %#v", vuln)
+		}
+		var datasource ocsffindinginfo.DataSource
+		protojson.Unmarshal([]byte(vuln.FindingInfo.DataSources[0]), &datasource)
+		purl := datasource.OciPackageMetadata.PackageUrl
+		for _, v := range vuln.Vulnerabilities {
+			if len(v.AffectedPackages) == 0 {
+				v.AffectedPackages = append(v.AffectedPackages, &ocsf.AffectedPackage{
+					Purl: &purl,
+				})
 			}
-			dataSource.TargetType = ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE
-			dataSource.SourceCodeMetadata = targetMetadata.SourceCodeMetadata
-			dataSource.OciPackageMetadata = targetMetadata.OciPackageMetadata
-			metadataSource, err := protojson.Marshal(&dataSource)
-			if err != nil {
-				return nil, errors.Errorf("could not marshal new datasource with metdata err:%w", err)
-			}
-			f.FindingInfo.DataSources[i] = string(metadataSource)
 		}
 	}
-	return findings, nil
+	return vulns, nil
 }
