@@ -6,13 +6,14 @@ import (
 	"testing"
 	"time"
 
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	ocsfExt "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/conf"
-	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
 func ptr[T any](v T) *T {
@@ -257,6 +258,7 @@ func TestReachability_Annotate(t *testing.T) {
 					Name:     "Reachable-Code",
 					Value:    "true",
 					Provider: ptr("reachability-enricher"),
+					Type:     ptr(ocsfExt.Enrichment_ENRICHMENT_TYPE_REACHABILITY.String()),
 				},
 			},
 			enrichedVulns[0].Finding.Enrichments,
@@ -269,6 +271,7 @@ func TestReachability_Annotate(t *testing.T) {
 					Name:     "Reachable-Code",
 					Value:    "true",
 					Provider: ptr("reachability-enricher"),
+					Type:     ptr(ocsfExt.Enrichment_ENRICHMENT_TYPE_REACHABILITY.String()),
 				},
 			},
 			enrichedVulns[1].Finding.Enrichments,
@@ -281,6 +284,7 @@ func TestReachability_Annotate(t *testing.T) {
 					Name:     "Reachable-Code",
 					Value:    "false",
 					Provider: ptr("reachability-enricher"),
+					Type:     ptr(ocsfExt.Enrichment_ENRICHMENT_TYPE_REACHABILITY.String()),
 				},
 			},
 			enrichedVulns[2].Finding.Enrichments,

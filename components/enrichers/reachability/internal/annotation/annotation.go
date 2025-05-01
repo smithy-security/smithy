@@ -6,9 +6,9 @@ import (
 	"log/slog"
 
 	"github.com/go-errors/errors"
-
 	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	ocsfExt "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
 	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom"
@@ -205,9 +205,11 @@ func (ra *reachabilityAnnotator) isReachable(searcher *search.Searcher, target s
 		return nil, false, err
 	}
 
+	enrichmentType := ocsfExt.Enrichment_ENRICHMENT_TYPE_REACHABILITY.String()
 	return &ocsf.Enrichment{
 		Name:     ra.annotationName,
 		Value:    fmt.Sprintf("%t", ok),
 		Provider: &ra.providerName,
+		Type:     &enrichmentType,
 	}, ok, nil
 }
