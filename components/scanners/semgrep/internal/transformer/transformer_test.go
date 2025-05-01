@@ -34,6 +34,7 @@ func TestSemgrepTransformer_Transform(t *testing.T) {
 	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
 	repositoryURL := "https://github.com/smithy-security/test"
 	targetMetadata := &ocsffindinginfo.DataSource{
+		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
 		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
 			RepositoryUrl: repositoryURL,
 			Reference:     commitRef,
