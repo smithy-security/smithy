@@ -66,6 +66,7 @@ func NewTarget(conf *git.Conf, cloner Cloner, opts ...gitCloneTargetOption) (*gi
 }
 
 // Prepare clones a repository in the desired path.
+// It also adds target metadata and potential diff into the provided paths.
 func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 	var (
 		startTime = g.clock.Now()
@@ -75,12 +76,14 @@ func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 				With(slog.String("repo_url", g.conf.RepoURL)).
 				With(slog.String("reference", g.conf.Reference)).
 				With(slog.String("reference", g.conf.Reference)).
-				With(slog.String("metadata_path", g.conf.TargetMetadataPath))
+				With(slog.String("metadata_path", g.conf.TargetMetadataPath)).
+				With(slog.String("raw_diff_path", g.conf.RawDiffPath))
 	)
 
 	ctx = component.ContextWithLogger(ctx, logger)
 	logger.Debug("preparing to clone repository...")
-	if _, err := g.cloner.Clone(ctx); err != nil {
+	repo, err := g.cloner.Clone(ctx)
+	if err != nil {
 		if errors.Is(err, gogit.ErrRepositoryAlreadyExists) {
 			logger.Debug("clone path already exists, skipping clone")
 			return nil
@@ -100,15 +103,26 @@ func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 			slog.String("clone_duration", cloneDuration.String()),
 		)
 
+	logger.Debug("preparing to write metadata...")
 	if err := g.prepareMetadata(ctx); err != nil {
 		return errors.Errorf("could not prepare metadata: %w", err)
 	}
+	logger.Debug("successfully wrote metadata")
 
+	logger.Debug("preparing to write diff...")
+	if err := g.prepareDiff(ctx, repo); err != nil {
+		return errors.Errorf("could not prepare diff: %w", err)
+	}
+	logger.Debug("successfully wrote diff")
+
+	logger.Debug("git-cloner completed, returning")
 	return nil
 }
 
 func (g *gitCloneTarget) prepareMetadata(ctx context.Context) error {
 	logger := component.LoggerFromContext(ctx)
+	logger.Debug("preparing to write target metadata...")
+
 	if g.conf.TargetMetadataPath == "" {
 		logger.Warn("target metadata path is empty, skipping writing source metadata")
 		return nil
@@ -153,6 +167,35 @@ func (g *gitCloneTarget) prepareMetadata(ctx context.Context) error {
 		"wrote the following content for target metadata",
 		slog.String("content", string(marshaledDataSource)),
 	)
+
+	return fd.Close()
+}
+
+func (g *gitCloneTarget) prepareDiff(ctx context.Context, repo *git.Repository) error {
+	if repo == nil || repo.Repo == nil {
+		return nil
+	}
+
+	logger := component.LoggerFromContext(ctx)
+	logger.Debug("preparing to compute diff...")
+
+	diff, err := repo.GetDiff()
+	switch {
+	case err != nil:
+		return errors.Errorf("could not get repository diff: %w", err)
+	case diff == "":
+		logger.Debug("no diff found, skipping writing raw diff")
+	}
+
+	logger.Debug("computed diff", slog.String("raw_diff", diff))
+	fd, err := os.OpenFile(g.conf.RawDiffPath, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return errors.Errorf("could not open file to report raw diff: %w", err)
+	}
+
+	if _, err := fd.WriteString(diff); err != nil {
+		return errors.Errorf("could not write raw diff to file: %w", err)
+	}
 
 	return fd.Close()
 }

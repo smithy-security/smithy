@@ -22,7 +22,7 @@ func TestNewManager(t *testing.T) {
 		expectsErr bool
 	}{
 		{
-			testCase: "it should return an error because the repo url is empty",
+			testCase: "it should return an error because the Repo url is empty",
 			conf: &git.Conf{
 				Reference: reference,
 				ConfAuth: git.ConfAuth{

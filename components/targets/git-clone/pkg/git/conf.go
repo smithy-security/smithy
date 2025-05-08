@@ -14,6 +14,7 @@ type (
 		Reference          string
 		ClonePath          string
 		TargetMetadataPath string
+		RawDiffPath        string
 
 		ConfAuth ConfAuth
 	}
@@ -45,7 +46,7 @@ func NewConf() (*Conf, error) {
 
 	targetMetadataPath, err := env.GetOrDefault(
 		"GIT_CLONE_TARGET_METADATA_PATH",
-		"./repo/metadata",
+		"./repo",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
@@ -54,6 +55,19 @@ func NewConf() (*Conf, error) {
 
 	if targetMetadataPath != "" && !strings.HasSuffix(targetMetadataPath, "target.json") {
 		targetMetadataPath = path.Join(targetMetadataPath, "target.json")
+	}
+
+	rawDiffOutPath, err := env.GetOrDefault(
+		"GIT_RAW_DIFF_PATH",
+		"./repo",
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if rawDiffOutPath != "" && !strings.HasSuffix(rawDiffOutPath, "raw.diff") {
+		rawDiffOutPath = path.Join(rawDiffOutPath, "raw.diff")
 	}
 
 	authEnabled, err := env.GetOrDefault(
@@ -84,6 +98,7 @@ func NewConf() (*Conf, error) {
 		Reference:          reference,
 		ClonePath:          clonePath,
 		TargetMetadataPath: targetMetadataPath,
+		RawDiffPath:        rawDiffOutPath,
 		ConfAuth: ConfAuth{
 			Username:    accessUsername,
 			AuthEnabled: authEnabled,
