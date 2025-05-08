@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-
 	"github.com/smithy-security/smithy/sdk/component"
 
+	"github.com/smithy-security/smithy/new-components/targets/git-clone/internal/target"
 	"github.com/smithy-security/smithy/new-components/targets/git-clone/pkg/git"
 )
 
@@ -22,22 +22,25 @@ func main() {
 }
 
 func Main(ctx context.Context) error {
-	conf, err := git.NewConf(nil)
+	conf, err := git.NewConf()
 	if err != nil {
 		return errors.Errorf("could not create new configuration: %w", err)
 	}
 
-	gitCloneTarget, err := git.NewTarget(conf)
+	gitManager, err := git.NewManager(conf)
+	if err != nil {
+		return errors.Errorf("could not create new git manager: %w", err)
+	}
+
+	gitCloneTarget, err := target.NewTarget(conf, gitManager)
 	if err != nil {
 		return errors.Errorf("could not create git clone target: %w", err)
 	}
 
-	opts := append(make([]component.RunnerOption, 0), component.RunnerWithComponentName("git-clone"))
-
 	if err := component.RunTarget(
 		ctx,
 		gitCloneTarget,
-		opts...,
+		component.RunnerWithComponentName("git-clone"),
 	); err != nil {
 		return errors.Errorf("could not run target: %w", err)
 	}

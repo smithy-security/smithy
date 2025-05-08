@@ -1,5 +1,5 @@
 # Used only to build Go binaries.
-FROM golang:1.23.3 AS builder
+FROM golang:1.24 AS builder
 
 WORKDIR /wrk
 
@@ -7,6 +7,7 @@ WORKDIR /wrk
 COPY go.mod go.sum ./
 COPY vendor ./vendor
 COPY cmd/git-clone ./cmd/git-clone
+COPY internal ./internal
 COPY pkg ./pkg
 # And builder.
 COPY Makefile .

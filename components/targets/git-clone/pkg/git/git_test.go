@@ -3,81 +3,10 @@ package git_test
 import (
 	"testing"
 
-	"github.com/smithy-security/pkg/env"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/smithy-security/smithy/new-components/targets/git-clone/pkg/git"
 )
-
-func TestNewConf(t *testing.T) {
-	const (
-		clonePath              = "/workspace"
-		repoURL                = "https://github.com/andream16/go-opentracing-example"
-		reference              = "main"
-		accessToken            = "superSecureToken"
-		accessUsername         = "andrea@smithy.security"
-		targetMetadataPath     = "/workspace/metadata"
-		targetMetadataPathJSON = "/workspace/metadata/target.json"
-	)
-
-	var (
-		makeLoader = func(envs map[string]string) env.Loader {
-			return func(key string) string {
-				return envs[key]
-			}
-		}
-	)
-
-	t.Run("it should configure correctly with auth disabled and defaults", func(t *testing.T) {
-		conf, err := git.NewConf(makeLoader(map[string]string{
-			"GIT_CLONE_REPO_URL":  repoURL,
-			"GIT_CLONE_REFERENCE": reference,
-			"GIT_CLONE_PATH":      clonePath,
-		}))
-		require.NoError(t, err)
-		assert.Equal(t, repoURL, conf.RepoURL)
-		assert.Equal(t, reference, conf.Reference)
-		assert.Equal(t, clonePath, conf.ClonePath)
-	})
-
-	t.Run("it should configure correctly with auth enabled and defaults", func(t *testing.T) {
-		conf, err := git.NewConf(makeLoader(map[string]string{
-			"GIT_CLONE_REPO_URL":        repoURL,
-			"GIT_CLONE_REFERENCE":       reference,
-			"GIT_CLONE_PATH":            clonePath,
-			"GIT_CLONE_AUTH_ENABLED":    "true",
-			"GIT_CLONE_ACCESS_TOKEN":    accessToken,
-			"GIT_CLONE_ACCESS_USERNAME": accessUsername,
-		}))
-		require.NoError(t, err)
-		assert.Equal(t, repoURL, conf.RepoURL)
-		assert.Equal(t, reference, conf.Reference)
-		assert.Equal(t, clonePath, conf.ClonePath)
-		assert.True(t, conf.ConfAuth.AuthEnabled)
-		assert.Equal(t, accessToken, conf.ConfAuth.AccessToken)
-		assert.Equal(t, accessUsername, conf.ConfAuth.Username)
-	})
-
-	t.Run("it should configure correctly with all overrides and no defaults", func(t *testing.T) {
-		conf, err := git.NewConf(makeLoader(map[string]string{
-			"GIT_CLONE_PATH":                 clonePath,
-			"GIT_CLONE_REPO_URL":             repoURL,
-			"GIT_CLONE_REFERENCE":            reference,
-			"GIT_CLONE_AUTH_ENABLED":         "true",
-			"GIT_CLONE_ACCESS_TOKEN":         accessToken,
-			"GIT_CLONE_ACCESS_USERNAME":      accessUsername,
-			"GIT_CLONE_TARGET_METADATA_PATH": targetMetadataPath,
-		}))
-		require.NoError(t, err)
-		assert.Equal(t, repoURL, conf.RepoURL)
-		assert.Equal(t, reference, conf.Reference)
-		assert.True(t, conf.ConfAuth.AuthEnabled)
-		assert.Equal(t, accessToken, conf.ConfAuth.AccessToken)
-		assert.Equal(t, accessUsername, conf.ConfAuth.Username)
-		assert.Equal(t, targetMetadataPathJSON, conf.TargetMetadataPath)
-	})
-}
 
 func TestNewManager(t *testing.T) {
 	const (
@@ -141,14 +70,14 @@ func TestNewManager(t *testing.T) {
 			expectsErr: true,
 		},
 		{
-			testCase: "it should return a valid manager with no auth configured",
+			testCase: "it should return a valid Manager with no auth configured",
 			conf: &git.Conf{
 				RepoURL:   repoURL,
 				Reference: reference,
 			},
 		},
 		{
-			testCase: "it should return a valid manager with all options configured",
+			testCase: "it should return a valid Manager with all options configured",
 			conf: &git.Conf{
 				RepoURL:   repoURL,
 				Reference: reference,

@@ -1,4 +1,4 @@
-package git_test
+package target_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/jonboulle/clockwork"
 	"github.com/stretchr/testify/require"
 
+	"github.com/smithy-security/smithy/new-components/targets/git-clone/internal/target"
 	"github.com/smithy-security/smithy/new-components/targets/git-clone/pkg/git"
 )
 
@@ -50,25 +51,25 @@ func TestGitCloneTarget_Prepare(t *testing.T) {
 		cloner := &testCloner{}
 		cloner.setRepo(&git.Repository{})
 
-		target, err := git.NewTarget(
+		gt, err := target.NewTarget(
 			conf,
-			git.WithClock(clock),
-			git.WithCloner(cloner),
+			cloner,
+			target.WithClock(clock),
 		)
 		require.NoError(t, err)
-		require.NoError(t, target.Prepare(ctx))
+		require.NoError(t, gt.Prepare(ctx))
 	})
 
 	t.Run("it should fail because cloning errored", func(t *testing.T) {
 		cloner := &testCloner{}
 		cloner.setErr(errors.New("no repo for you"))
 
-		target, err := git.NewTarget(
+		gt, err := target.NewTarget(
 			conf,
-			git.WithClock(clock),
-			git.WithCloner(cloner),
+			cloner,
+			target.WithClock(clock),
 		)
 		require.NoError(t, err)
-		require.Error(t, target.Prepare(ctx))
+		require.Error(t, gt.Prepare(ctx))
 	})
 }
