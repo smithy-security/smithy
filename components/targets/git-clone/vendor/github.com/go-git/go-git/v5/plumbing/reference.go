@@ -11,7 +11,6 @@ const (
 	refPrefix       = "refs/"
 	refHeadPrefix   = refPrefix + "heads/"
 	refTagPrefix    = refPrefix + "tags/"
-	refPullPrefix   = refPrefix + "pull/"
 	refRemotePrefix = refPrefix + "remotes/"
 	refNotePrefix   = refPrefix + "notes/"
 	symrefPrefix    = "ref: "
@@ -23,7 +22,6 @@ const (
 var RefRevParseRules = []string{
 	"%s",
 	"refs/%s",
-	"refs/pull/%s",
 	"refs/tags/%s",
 	"refs/heads/%s",
 	"refs/remotes/%s",
@@ -112,11 +110,6 @@ func (r ReferenceName) IsTag() bool {
 	return strings.HasPrefix(string(r), refTagPrefix)
 }
 
-// IsPRRef check if a reference is a tag
-func (r ReferenceName) IsPRRef() bool {
-	return strings.HasPrefix(string(r), refPullPrefix)
-}
-
 func (r ReferenceName) String() string {
 	return string(r)
 }
@@ -195,7 +188,7 @@ func (r ReferenceName) Validate() error {
 
 	isBranch := r.IsBranch()
 	isTag := r.IsTag()
-	for _, part := range parts {
+	for i, part := range parts {
 		// rule 6
 		if len(part) == 0 {
 			return ErrInvalidReferenceName
@@ -212,7 +205,7 @@ func (r ReferenceName) Validate() error {
 			return ErrInvalidReferenceName
 		}
 
-		if (isBranch || isTag) && strings.HasPrefix(part, "-") { // branches & tags can't start with -
+		if (isBranch || isTag) && strings.HasPrefix(part, "-") && (i == 2) { // branches & tags can't start with -
 			return ErrInvalidReferenceName
 		}
 	}

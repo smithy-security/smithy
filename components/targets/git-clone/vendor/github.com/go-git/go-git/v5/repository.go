@@ -19,6 +19,7 @@ import (
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/osfs"
 	"github.com/go-git/go-billy/v5/util"
+
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/internal/path_util"
 	"github.com/go-git/go-git/v5/internal/revision"
@@ -930,6 +931,8 @@ func (r *Repository) clone(ctx context.Context, o *CloneOptions) error {
 		Tags:            o.Tags,
 		RemoteName:      o.RemoteName,
 		InsecureSkipTLS: o.InsecureSkipTLS,
+		ClientCert:      o.ClientCert,
+		ClientKey:       o.ClientKey,
 		CABundle:        o.CABundle,
 		ProxyOptions:    o.ProxyOptions,
 	}, o.ReferenceName)
@@ -956,7 +959,7 @@ func (r *Repository) clone(ctx context.Context, o *CloneOptions) error {
 		}
 
 		if o.RecurseSubmodules != NoRecurseSubmodules {
-			if err := w.updateSubmodules(&SubmoduleUpdateOptions{
+			if err := w.updateSubmodules(ctx, &SubmoduleUpdateOptions{
 				RecurseSubmodules: o.RecurseSubmodules,
 				Depth: func() int {
 					if o.ShallowSubmodules {
@@ -1000,7 +1003,6 @@ func (r *Repository) clone(ctx context.Context, o *CloneOptions) error {
 
 const (
 	refspecTag              = "+refs/tags/%s:refs/tags/%[1]s"
-	refspecPull             = "+refs/pull/%s:refs/pull/%[1]s"
 	refspecSingleBranch     = "+refs/heads/%s:refs/remotes/%s/%[1]s"
 	refspecSingleBranchHEAD = "+HEAD:refs/remotes/%s/HEAD"
 )
@@ -1012,10 +1014,6 @@ func (r *Repository) cloneRefSpec(o *CloneOptions) []config.RefSpec {
 	case o.ReferenceName.IsTag():
 		return []config.RefSpec{
 			config.RefSpec(fmt.Sprintf(refspecTag, o.ReferenceName.Short())),
-		}
-	case o.ReferenceName.IsPRRef():
-		return []config.RefSpec{
-			config.RefSpec(fmt.Sprintf(refspecPull, o.ReferenceName.Short())),
 		}
 	case o.SingleBranch && o.ReferenceName == plumbing.HEAD:
 		return []config.RefSpec{
@@ -1042,7 +1040,7 @@ func (r *Repository) setIsBare(isBare bool) error {
 	return r.Storer.SetConfig(cfg)
 }
 
-func (r *Repository) updateRemoteConfigIfNeeded(o *CloneOptions, c *config.RemoteConfig, head *plumbing.Reference) error {
+func (r *Repository) updateRemoteConfigIfNeeded(o *CloneOptions, c *config.RemoteConfig, _ *plumbing.Reference) error {
 	if !o.SingleBranch {
 		return nil
 	}
