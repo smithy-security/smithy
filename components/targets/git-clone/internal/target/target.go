@@ -113,7 +113,7 @@ func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 	if err := g.prepareDiff(ctx, repo); err != nil {
 		return errors.Errorf("could not prepare diff: %w", err)
 	}
-	logger.Debug("successfully wrote diff")
+	logger.Debug("successfully wrote diff if needed")
 
 	logger.Debug("git-cloner completed, returning")
 	return nil
@@ -179,12 +179,13 @@ func (g *gitCloneTarget) prepareDiff(ctx context.Context, repo *git.Repository) 
 	logger := component.LoggerFromContext(ctx)
 	logger.Debug("preparing to compute diff...")
 
-	diff, err := repo.GetDiff()
+	diff, err := repo.GetDiff(ctx)
 	switch {
 	case err != nil:
 		return errors.Errorf("could not get repository diff: %w", err)
 	case diff == "":
 		logger.Debug("no diff found, skipping writing raw diff")
+		return nil
 	}
 
 	logger.Debug("computed diff", slog.String("raw_diff", diff))
