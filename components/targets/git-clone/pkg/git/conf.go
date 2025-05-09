@@ -12,6 +12,7 @@ type (
 	Conf struct {
 		RepoURL            string
 		Reference          string
+		BaseRef            string
 		ClonePath          string
 		TargetMetadataPath string
 		RawDiffPath        string
@@ -34,7 +35,12 @@ func NewConf() (*Conf, error) {
 		return nil, err
 	}
 
-	reference, err := env.GetOrDefault("GIT_CLONE_REFERENCE", "")
+	reference, err := env.GetOrDefault("GIT_CLONE_REFERENCE", "", env.WithDefaultOnError(true))
+	if err != nil {
+		return nil, err
+	}
+
+	baseRef, err := env.GetOrDefault("GIT_CLONE_BASE_REFERENCE", "")
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +102,7 @@ func NewConf() (*Conf, error) {
 	return &Conf{
 		RepoURL:            repoURL,
 		Reference:          reference,
+		BaseRef:            baseRef,
 		ClonePath:          clonePath,
 		TargetMetadataPath: targetMetadataPath,
 		RawDiffPath:        rawDiffOutPath,
