@@ -8,11 +8,15 @@ parameters:
   - name: reference
     type: string
     value: main
+  - name: base_reference
+    type: string
+    value: ""
 steps:
   - name: clone-repo
     env_vars:
       GIT_CLONE_REPO_URL: "{{ .parameters.repo_url }}"
       GIT_CLONE_REFERENCE: "{{ .parameters.reference }}"
+      GIT_CLONE_BASE_REFERENCE: "{{ .parameters.base_reference }}"
       GIT_CLONE_PATH: "{{ sourceCodeWorkspace }}"
       GIT_CLONE_TARGET_METADATA_PATH: "{{ targetMetadataWorkspace }}"
       GIT_RAW_DIFF_PATH: "{{ targetMetadataWorkspace }}"
