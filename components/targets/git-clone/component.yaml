@@ -15,5 +15,6 @@ steps:
       GIT_CLONE_REFERENCE: "{{ .parameters.reference }}"
       GIT_CLONE_PATH: "{{ sourceCodeWorkspace }}"
       GIT_CLONE_TARGET_METADATA_PATH: "{{ targetMetadataWorkspace }}"
+      GIT_RAW_DIFF_PATH: "{{ targetMetadataWorkspace }}"
     image: components/targets/git-clone
     executable: /bin/target
