@@ -65,6 +65,8 @@ func NewManager(conf *Conf) (*Manager, error) {
 		ShallowSubmodules: true,
 		// URL specifies the repository url.
 		URL: u.String(),
+		// ReferenceName is the reference name.
+		ReferenceName: plumbing.ReferenceName(conf.Reference),
 	}
 
 	// This is off by default to facilitate local setup.
@@ -106,56 +108,20 @@ func (mgr *Manager) Clone(ctx context.Context) (*Repository, error) {
 	}
 	logger.Debug("successfully cloned repository")
 
-	logger.Debug("checking out HEAD...")
-	rh, err := repo.Head()
-	if err != nil {
-		return nil, errors.Errorf("error getting HEAD: %w", err)
-	}
-
-	wt, err := repo.Worktree()
-	if err != nil {
-		return nil, errors.Errorf("error getting worktree: %w", err)
-	}
-	logger.Debug("successfully checked out HEAD!")
-
-	logger.Debug("checking out references...")
-	var isCheckoutErr bool
-	for _, branch := range []plumbing.ReferenceName{
-		plumbing.ReferenceName(path.Join("refs", "heads", mgr.conf.Reference)),
-		plumbing.ReferenceName(path.Join("refs", "remotes", "origin", mgr.conf.Reference)),
-	} {
-		logger.Debug("checking out reference", slog.String("branch", branch.String()))
-		checkoutErr := wt.Checkout(&git.CheckoutOptions{
-			Branch: branch,
-			Force:  true,
-		})
-		if checkoutErr != nil {
-			logger.Warn("couldn't checkout branch, attempting next if available", slog.String("branch", branch.String()))
-			isCheckoutErr = true
-		} else {
-			isCheckoutErr = false
-		}
-	}
-	if isCheckoutErr {
-		logger.Error("checking out reference failed")
-		return nil, errors.Errorf("couldn't checkout branches for reference: %s", mgr.conf.Reference)
-	}
-	logger.Debug("successfully checked out references!")
-
 	return &Repository{
+		BaseRef: mgr.conf.BaseRef,
 		Repo:    repo,
-		BaseRef: rh.Name().String(),
 	}, nil
 }
 
 // GetDiff returns the raw git diff between the target reference and the base reference.
-func (r *Repository) GetDiff() (string, error) {
+// We try to resolve the base branch based on the passed configuration on relying on default branches main/master.
+func (r *Repository) GetDiff(ctx context.Context) (string, error) {
+	logger := component.LoggerFromContext(ctx)
+
 	currRef, err := r.Repo.Head()
-	switch {
-	case err != nil:
+	if err != nil {
 		return "", errors.Errorf("could not get HEAD: %w", err)
-	case currRef.Name().String() == r.BaseRef:
-		return "", nil
 	}
 
 	currRefCommit, err := r.Repo.CommitObject(currRef.Hash())
@@ -163,12 +129,40 @@ func (r *Repository) GetDiff() (string, error) {
 		return "", errors.Errorf("error getting head commit: %w", err)
 	}
 
-	baseRefObj, err := r.Repo.Reference(plumbing.ReferenceName(r.BaseRef), true)
-	if err != nil {
-		return "", errors.Errorf("error getting base reference '%s': %w", r.BaseRef, err)
+	var baseRefCommit *plumbing.Reference = nil
+	if r.BaseRef != "" {
+		if r.BaseRef == currRef.Name().String() {
+			logger.Debug("the passed base reference and target base reference is the same, skipping diff step")
+			return "", nil
+		}
+
+		logger.Debug("getting base ref from passed base reference...")
+		baseRefCommit, err = r.getRef([]string{
+			r.BaseRef,
+			path.Join("refs/remotes/origin", r.BaseRef),
+			path.Join("refs/heads", r.BaseRef),
+		})
+		if err != nil {
+			return "", errors.Errorf("error getting reference commit for passed base reference: %w", err)
+		}
+	} else {
+		logger.Debug("getting base ref from default references (main/master)...")
+		baseRefCommit, err = r.getRef([]string{
+			"refs/remotes/origin/main",
+			"refs/remotes/origin/master",
+			"refs/heads/main",
+			"refs/heads/master",
+		})
+		if err != nil {
+			return "", errors.Errorf("error getting reference commit for passed base reference: %w", err)
+		}
 	}
 
-	baseCommit, err := r.Repo.CommitObject(baseRefObj.Hash())
+	if baseRefCommit == nil {
+		return "", errors.Errorf("could not find base reference")
+	}
+
+	baseCommit, err := r.Repo.CommitObject(baseRefCommit.Hash())
 	if err != nil {
 		return "", errors.Errorf("error getting base commit: %w", err)
 	}
@@ -217,6 +211,26 @@ func (r *Repository) GetDiff() (string, error) {
 	}
 
 	return sb.String(), nil
+}
+
+func (r *Repository) getRef(potentialRefs []string) (*plumbing.Reference, error) {
+	var (
+		ref *plumbing.Reference = nil
+		err error
+	)
+	for _, currRef := range potentialRefs {
+		ref, err = r.Repo.Reference(plumbing.ReferenceName(currRef), true)
+		if err != nil {
+			continue
+		}
+		break
+	}
+
+	if ref == nil {
+		return nil, errors.Errorf("could not find base reference")
+	}
+
+	return ref, nil
 }
 
 func extractRepoName(path string) (string, error) {
