@@ -1,0 +1,17 @@
+name: "discord"
+description: "Reports findings to Discord"
+type: "reporter"
+parameters:
+  - name: "channel_id"
+    type: "string"
+    value: ""
+  - name: "auth_token"
+    type: "string"
+    value: ""
+steps:
+  - name: create-issues
+    env_vars:
+      DISCORD_CHANNEL_ID: "{{ .parameters.channel_id }}"
+      DISCORD_AUTH_TOKEN: "{{ .parameters.auth_token }}"
+    image: components/reporters/discord
+    executable: /bin/app
