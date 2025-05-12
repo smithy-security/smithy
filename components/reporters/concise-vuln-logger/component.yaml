@@ -1,0 +1,7 @@
+name: concise-vuln-logger
+description: "Logs what matters from findings in JSON format"
+type: reporter
+steps:
+  - name: concise-vuln-logger
+    image: components/reporters/concise-vuln-logger
+    executable: /bin/app
