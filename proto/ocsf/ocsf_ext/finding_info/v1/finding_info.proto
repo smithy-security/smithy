@@ -84,6 +84,7 @@ message Enrichment {
     ENRICHMENT_TYPE_INVESTIGATION = 3;
     ENRICHMENT_TYPE_EXPLOIT_EXISTS = 4;
     ENRICHMENT_TYPE_REACHABILITY = 5;
+    ENRICHMENT_TYPE_PR_DIFF = 6;
   }
 
   // if it has this enrichment at all, the finding is a duplicate
@@ -101,7 +102,7 @@ message Enrichment {
     ocsf_schema.v1.IncidentFinding.VerdictId status = 1;
   }
 
-  // an enrichment that indicates that the finding has a known exploit
+  // ExploitExistsEnrichment is an enrichment that indicates that the finding has a known exploit
   // and a list of references to the exploit and relevant writeups or papers
   // that can be used to investigate the finding
   message ExploitExistsEnrichment {
@@ -114,6 +115,14 @@ message Enrichment {
   // ReachabilityEnrichment this is currently a placeholder.
   message ReachabilityEnrichment {}
 
+  // PRDiffEnrichment is an enrichment that adds data about findings related to
+  // files in PR diffs.
+  message PRDiffEnrichment {
+    bool in_diff = 1;
+    string file_path = 2;
+    string pr_link = 3;
+  }
+
   // enrichment represents the enrichment annotation raw value.
   oneof enrichment {
     DuplicateEnrichment duplicate = 2;
@@ -121,5 +130,6 @@ message Enrichment {
     InvestigationEnrichment investigations = 4;
     ExploitExistsEnrichment exploit_exists = 5;
     ReachabilityEnrichment reachability = 6;
+    PRDiffEnrichment pr_diff = 7;
   }
 }
