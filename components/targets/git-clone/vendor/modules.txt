@@ -68,9 +68,6 @@ github.com/agext/levenshtein
 # github.com/apparentlymart/go-textseg/v15 v15.0.0
 ## explicit; go 1.16
 github.com/apparentlymart/go-textseg/v15/textseg
-# github.com/bluekeyes/go-gitdiff v0.8.1
-## explicit; go 1.21
-github.com/bluekeyes/go-gitdiff/gitdiff
 # github.com/bmatcuk/doublestar v1.3.4
 ## explicit; go 1.12
 github.com/bmatcuk/doublestar

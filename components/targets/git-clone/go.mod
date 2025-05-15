@@ -3,7 +3,6 @@ module github.com/smithy-security/smithy/new-components/targets/git-clone
 go 1.24
 
 require (
-	github.com/bluekeyes/go-gitdiff v0.8.1
 	github.com/go-errors/errors v1.5.1
 	github.com/go-git/go-git/v5 v5.16.0
 	github.com/jonboulle/clockwork v0.5.0
