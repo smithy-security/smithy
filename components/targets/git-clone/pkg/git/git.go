@@ -8,7 +8,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/go-errors/errors"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -167,50 +166,12 @@ func (r *Repository) GetDiff(ctx context.Context) (string, error) {
 		return "", errors.Errorf("error getting base commit: %w", err)
 	}
 
-	patch, err := baseCommit.Patch(currRefCommit)
+	patch, err := baseCommit.PatchContext(ctx, currRefCommit)
 	if err != nil {
 		return "", errors.Errorf("error generating patch: %w", err)
 	}
 
-	patchStr := patch.String()
-	if patchStr == "" {
-		return "", nil
-	}
-
-	files, _, err := gitdiff.Parse(strings.NewReader(patchStr))
-	if err != nil {
-		return "", errors.Errorf("error parsing patch with gitdiff: %w", err)
-	}
-
-	var sb strings.Builder
-	for _, f := range files {
-		sb.WriteString(fmt.Sprintf("diff --git a/%s b/%s\n", f.OldName, f.NewName))
-		if f.IsBinary {
-			sb.WriteString("Binary files differ\n\n")
-			continue
-		}
-
-		for _, fragment := range f.TextFragments {
-			sb.WriteString(
-				fmt.Sprintf("@@ -%d,%d +%d,%d @@\n",
-					fragment.OldPosition,
-					fragment.OldLines,
-					fragment.NewPosition,
-					fragment.NewLines,
-				),
-			)
-
-			for _, line := range fragment.Lines {
-				sb.WriteString(line.Line)
-				if !strings.HasSuffix(line.Line, "\n") {
-					sb.WriteString("\n")
-				}
-			}
-		}
-		sb.WriteString("\n")
-	}
-
-	return sb.String(), nil
+	return patch.String(), nil
 }
 
 func (r *Repository) getRef(potentialRefs []string) (*plumbing.Reference, error) {
