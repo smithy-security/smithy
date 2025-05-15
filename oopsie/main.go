@@ -50,6 +50,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, "Welcome, user #%d!", id)
+	panic("cheese")
 }
 
 func commandHandler(w http.ResponseWriter, r *http.Request) {
