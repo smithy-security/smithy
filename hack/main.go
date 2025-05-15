@@ -16,7 +16,7 @@ var db *sql.DB
 
 func init() {
 	// Hardcoded credentials (vulnerable practice)
-	dbUser := "admin"
+	dbUser := "admin1"
 	dbPass := "password123"
 	dbHost := "localhost:3306"
 	dbName := "userdb"
