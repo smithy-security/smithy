@@ -164,7 +164,7 @@ class ZapRunner:
         self: "ZapRunner",
         wait: bool = True,
         interval: timedelta = timedelta(seconds=10),
-        max_retries: int = 3,
+        max_retries: int = 5,
     ) -> None:
         print(f"initializing zap, listening on {self.host}:{self.port}")
         self.zap_process = subprocess.Popen(
@@ -185,12 +185,12 @@ class ZapRunner:
         if not wait:
             return
 
-        for i in range(max_retries, 0, -1):
+        for i in range(max_retries, -1, -1):
             try:
                 self.check_connection()
                 print("connection to ZAP daemon established")
             except Exception as e:  
-                print(f"{datetime.now().isoformat()}: there was an issue connecting to Zap: {e}")
+                print(f"there was an issue connecting to Zap: {e}")
                 if i == 0:
                     print("not waiting any more for zap subprocess to finish bootstraping")
                     raise e
@@ -200,7 +200,7 @@ class ZapRunner:
                     print(f"zap subprocess exited with exit code: {exit_code}")
                     raise e
 
-                print(f"{datetime.now().isoformat()}: sleeping {interval.seconds}s until next retry, retries left: {i}/{max_retries}")
+                print(f"sleeping {interval.seconds}s until next retry, retries left: {i-1}/{max_retries}")
                 sleep(interval.seconds)
 
     def stop_zap(self: "ZapRunner") -> int:
@@ -470,13 +470,28 @@ def main():
         action="store_true",
         help="(for local dev, do not attempt to start zap)",
     )
+    parser.add_argument(
+        "--startup-check-retries",
+        default=get_env_or_default("", "STARTUP_CHECK_RETRIES", default=3),
+        type=int,
+        help="how many times to check if ZAP has started before leaving",
+    )
+    parser.add_argument(
+        "--startup-check-interval",
+        default=get_env_or_default("", "STARTUP_CHECK_INTERVAL", default=10),
+        type=int,
+        help="how many seconds to wait before successive ZAP liveness checks",
+    )
     args = parser.parse_args()
 
     target_url = args.target.strip("/")
     print(f"starting zap scanning target: {target_url}")
     runner = ZapRunner(api_key=args.api_key, target_url=target_url)
     if not args.no_start_zap:
-        runner.start_zap()
+        runner.start_zap(
+            max_retries=args.startup_check_retries,
+            interval=timedelta(seconds=args.startup_check_interval),
+        )
 
     runner.create_context()
 

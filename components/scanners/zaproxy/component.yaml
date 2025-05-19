@@ -20,6 +20,12 @@ parameters:
   - name: api_key
     type: string
     value: "changeme"
+  - name: startup_check_retries
+    type: string
+    value: "10"
+  - name: startup_check_interval
+    type: string
+    value: "10"
 steps:
   - name: write-metadata
     image: components/scanners/zaproxy/overwrite-metadata
@@ -41,6 +47,8 @@ steps:
       REPORT_DIR: "{{ scratchWorkspace }}"
       REPORT_FILENAME: "zap-report.json"
       SCAN_DURATION_MINS: "{{ .parameters.scan_duration_mins }}"
+      STARTUP_CHECK_RETRIES: "{{ .parameters.startup_check_retries }}"
+      STARTUP_CHECK_INTERVAL: "{{ .parameters.startup_check_interval }}"
   - name: parser
     image: components/scanners/zaproxy
     executable: /bin/app
