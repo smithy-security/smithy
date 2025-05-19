@@ -8,9 +8,12 @@ import argparse
 import os
 import time
 import requests
-import urllib.parse
+
+from datetime import datetime, timedelta
+from time import sleep
+from urllib.parse import quote, urlparse
+
 from zapv2 import ZAPv2
-from urllib.parse import urlparse
 
 
 plan_template = """
@@ -132,94 +135,104 @@ class ZapRunner:
     zap_process: None
 
     def __init__(
-        self,
+        self: "ZapRunner",
         api_key: str,
         target_url: str,
         host: str = "localhost",
         port: int = 8090,
-        start_zap: bool = True,
-    ):
+    ) -> None:
+        if not target_url:
+            raise ZapInvalidAPIKeyError(target="no target provided")
+
         parsed = urlparse(target_url)
-        if not bool(parsed.scheme and parsed.netloc):
+        if not parsed.scheme and not parsed.netloc:
             raise ZapInvalidTargetError(target=target_url)
+
         print(f"zap target {target_url}, recorded")
 
         if not api_key:
             raise ZapInvalidAPIKeyError(api_key=api_key)
         self.api_key = api_key
         self.target_url = target_url
+        self.host = host
+        self.port = port
         self.zap_api_url = f"http://{host}:{port}"
         self.request_proxies = {"http": self.zap_api_url, "https": self.zap_api_url}
         self.zap = ZAPv2(apikey=api_key, proxies=self.request_proxies)
 
-        if start_zap:
-            self.start_zap()
-            self.wait_for_zap_to_start()
-        else:
-            print(
-                f"'start_zap' set to false, assuming there is already a zap instance running on {host}:{port}"
-            )
-        self.check_connection()
-        self.create_context()
-
-    def wait_for_zap_to_start(self):
-        print("Sleeping 15 seconds to let zap init")
-        time.sleep(15)
-
-    def start_zap(self):
-        print(f"initializing zap, listening on localhost:8090")
+    def start_zap(
+        self: "ZapRunner",
+        wait: bool = True,
+        interval: timedelta = timedelta(seconds=10),
+        max_retries: int = 3,
+    ) -> None:
+        print(f"initializing zap, listening on {self.host}:{self.port}")
         self.zap_process = subprocess.Popen(
             [
                 "/zap/zap.sh",
                 "-daemon",
                 "-silent",
                 "-notel",
-                "-config",
-                f"api.key={self.api_key}",
-                "-host",
-                "localhost",
-                "-port",
-                "8090",
+                "-config", f"api.key={self.api_key}",
+                "-host", self.host,
+                "-port", str(self.port),
             ],
             stdout=sys.stdout,
             stderr=sys.stderr,
-            # stdout=subprocess.DEVNULL,
-            # stderr=subprocess.DEVNULL,
-            text=True,
         )
-        print(f"initializing zap, subprocess success")
+        print("zap subprocess started")
 
-    def stop_zap(self):
+        if not wait:
+            return
+
+        for i in range(max_retries, 0, -1):
+            try:
+                self.check_connection()
+                print("connection to ZAP daemon established")
+            except Exception as e:  
+                print(f"{datetime.now().isoformat()}: there was an issue connecting to Zap: {e}")
+                if i == 0:
+                    print("not waiting any more for zap subprocess to finish bootstraping")
+                    raise e
+                
+                exit_code = self.zap_process.poll()
+                if exit_code:
+                    print(f"zap subprocess exited with exit code: {exit_code}")
+                    raise e
+
+                print(f"{datetime.now().isoformat()}: sleeping {interval.seconds}s until next retry, retries left: {i}/{max_retries}")
+                sleep(interval.seconds)
+
+    def stop_zap(self: "ZapRunner") -> int:
         print(
             f"shutting down zap, {self.zap.core.shutdown(apikey=self.api_key)}"
         )  # stop zap
-        time.sleep(10)
-        os.killpg(os.getpgid(self.zap_process.pid), signal.SIGTERM)  # politely
+        self.zap_process.terminate()
+        return self.zap_process.wait(timeout=10)
 
-    def check_connection(self):
+    def check_connection(self: "ZapRunner") -> None:
         version = self.zap.core.version
 
         if not version:
             raise RuntimeError(f"could not connect to remote zap at {self.zap_api_url}")
         print(f"connected to remote zap version {version}")
 
-    def create_context(self):
+    def create_context(self: "ZapRunner") -> None:
         self.context_id = self.zap.context.new_context(self.context_name)
         if self.context_id == "already_exists":
             ctx = self.zap.context.context(self.context_name)
             self.context_id = ctx["id"]
         print(f"context is {self.zap.context.context(self.context_name)}")
 
-    def set_include_in_context(self, target_url: str):
+    def set_include_in_context(self: "ZapRunner", target_url: str) -> None:
         include_url = f"{target_url}.*"
         print(
             f"Configured include regexp {include_url}, response: {self.zap.context.include_in_context(self.context_name, include_url)}"
         )
 
-    def set_browser_based_auth(self, login_url: str):
-
+    def set_browser_based_auth(self: "ZapRunner", login_url: str) -> None:
         browser_based_config = (
-            f"loginPageUrl={urllib.parse.quote(login_url)}&browserId=firefox-headless"
+            f"loginPageUrl={quote(login_url)}&browserId=firefox-headless"
         )
         resp = self.zap.authentication.set_authentication_method(
             contextid=self.context_id,
@@ -235,17 +248,22 @@ class ZapRunner:
             contextid=self.context_id, methodname="autoDetectSessionManagement"
         )
         print(
-            f"Configured browser based authentication for login url: {login_url}, response: {resp}"
+            f"Configured browser based authentication for login     url: {login_url}, response: {resp}"
         )
 
-    def set_user_auth_config(self, user: str, username: str, password: str):
+    def set_user_auth_config(
+        self: "ZapRunner",
+        user: str,
+        username: str,
+        password: str,
+    ) -> None:
         if not user or not username or not password:
             raise ValueError(
                 f"parameters 'user', 'username' and 'password' must be set, received: user:{user},username:{username},password:{password}"
             )
 
         self.user_id = self.zap.users.new_user(self.context_id, user)
-        user_auth_config = f"username={urllib.parse.quote(username)}&password={urllib.parse.quote(password)}"
+        user_auth_config = f"username={quote(username)}&password={quote(password)}"
         self.zap.users.set_authentication_credentials(
             self.context_id, self.user_id, user_auth_config
         )
@@ -255,14 +273,14 @@ class ZapRunner:
         return self.user_id
 
     def test_user_auth(
-        self,
-    ):
+        self: "ZapRunner",
+    ) -> None:
         print(
             f"authentication as user:"
             f" {self.zap.users.authenticate_as_user(userid=self.user_id,contextid=self.context_id)}"
         )
 
-    def start_authenticated_spider(self, user_id):
+    def start_authenticated_spider(self: "ZapRunner", user_id):
         scan_id = self.zap.spider.scan_as_user(
             contextid=self.context_id,
             userid=user_id,
@@ -274,17 +292,17 @@ class ZapRunner:
         print(f"Started Spidering with Authentication for zap userid: {user_id}")
         return scan_id
 
-    def start_spider(self):
+    def start_spider(self: "ZapRunner"):
         scan_id = self.zap.spider.scan(
             url=self.target_url, recurse=False, subtreeonly=True
         )
         print(f"Started Spidering")
         return scan_id
 
-    def get_spider_status(self, scanID):
+    def get_spider_status(self: "ZapRunner", scanID):
         return self.zap.spider.status(scanid=scanID)
 
-    def active_authenticated_scan(self, scan_duration):
+    def active_authenticated_scan(self: "ZapRunner", scan_duration):
         self.zap.ascan.set_option_max_scan_duration_in_mins(scan_duration)
         return self.zap.ascan.scan_as_user(
             url=self.target_url,
@@ -294,7 +312,7 @@ class ZapRunner:
             apikey=self.api_key,
         )
 
-    def active_scan(self, scan_duration):
+    def active_scan(self: "ZapRunner", scan_duration):
         self.zap.ascan.set_option_max_scan_duration_in_mins(scan_duration)
         return self.zap.ascan.scan(
             url=self.target_url,
@@ -303,11 +321,11 @@ class ZapRunner:
             apikey=self.api_key,
         )
 
-    def get_scan_status(self, scanID):
+    def get_scan_status(self: "ZapRunner", scanID):
         return self.zap.ascan.status(scanid=scanID)
 
     def run_automation_framework_scan(
-        self,
+        self: "ZapRunner",
         login_url: str = None,
         username: str = None,
         password: str = None,
@@ -355,7 +373,7 @@ class ZapRunner:
             print(f"plan had errors, check progress for hints")
 
     def get_report(
-        self,
+        self: "ZapRunner",
         filename: str = "zap-report.json",
         title: str = "Smithy ZAP report",
         report_dir: str = None,
@@ -453,11 +471,15 @@ def main():
         help="(for local dev, do not attempt to start zap)",
     )
     args = parser.parse_args()
+
     target_url = args.target.strip("/")
     print(f"starting zap scanning target: {target_url}")
-    runner = ZapRunner(
-        api_key=args.api_key, target_url=target_url, start_zap=(not args.no_start_zap)
-    )
+    runner = ZapRunner(api_key=args.api_key, target_url=target_url)
+    if not args.no_start_zap:
+        runner.start_zap()
+
+    runner.create_context()
+
     try:
         if args.username and args.password:
             if args.use_automation_framework:
@@ -476,14 +498,12 @@ def main():
         return run_zap_baseline_scan(args, runner)
     finally:
         runner.stop_zap()
-        # pass
 
 
 def run_zap_authenticated_scan(args, runner: ZapRunner):
     print(
         f"received a username and a password, running an authenticated scan for target: '{args.target}'"
     )
-    sub_target_list = args.sub_targets.split(",") if args.sub_targets else []
 
     runner.set_browser_based_auth(login_url=args.login_url)
     user_id_response = runner.set_user_auth_config(
