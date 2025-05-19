@@ -7,11 +7,9 @@ import (
 	"log"
 	"log/slog"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"github.com/go-errors/errors"
-	"github.com/google/uuid"
 	"github.com/jonboulle/clockwork"
 	"github.com/package-url/packageurl-go"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
@@ -19,27 +17,20 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/smithy-security/pkg/sarif/internal/ptr"
 	sarif "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
+	"github.com/smithy-security/pkg/utils"
 )
 
 type (
 	SarifTransformer struct {
 		findingsEcosystem string
 		clock             clockwork.Clock
-		uUIDProvider      UUIDProvider
+		guidProvider      StableUUIDProvider
 		sarifResult       sarif.SchemaJson
-		cveRegExp         *regexp.Regexp
 		ruleToTools       map[string]sarif.ReportingDescriptor
 		taxasByCWEID      map[string]sarif.ReportingDescriptor
 		ruleToEcosystem   map[string]string
 		richDescription   bool
-	}
-	UUIDProvider interface {
-		String() string
-	}
-
-	RealUUIDProvider struct {
 	}
 )
 
@@ -51,14 +42,10 @@ var typeName = map[int64]string{
 	200299: "Other",
 }
 
-func (r RealUUIDProvider) String() string {
-	return uuid.NewString()
-}
-
 func NewTransformer(scanResult *sarif.SchemaJson,
 	findingsEcosystem string,
 	clock clockwork.Clock,
-	idProvider UUIDProvider,
+	guidProvider StableUUIDProvider,
 	richDescription bool) (*SarifTransformer, error) {
 	if scanResult == nil {
 		return nil, errors.Errorf("method 'NewTransformer called with nil scanResult")
@@ -66,18 +53,22 @@ func NewTransformer(scanResult *sarif.SchemaJson,
 	if clock == nil {
 		clock = clockwork.NewRealClock()
 	}
-	if idProvider == nil {
-		idProvider = RealUUIDProvider{}
+
+	if utils.IsNil(guidProvider) {
+		var err error
+		guidProvider, err = NewBasicStableUUIDProvider()
+		if err != nil {
+			return nil, errors.Errorf("could not bootstrap stable UUID provider: %w", err)
+		}
 	}
 
 	return &SarifTransformer{
 		clock:             clock,
 		sarifResult:       *scanResult,
 		findingsEcosystem: findingsEcosystem,
-		uUIDProvider:      idProvider,
+		guidProvider:      guidProvider,
 		ruleToTools:       make(map[string]sarif.ReportingDescriptor),
 		taxasByCWEID:      make(map[string]sarif.ReportingDescriptor),
-		cveRegExp:         regexp.MustCompile(`(?i)(?:^|[^A-Za-z0-9-])(CVE-\d{4}-\d{4,7})(?:[^A-Za-z0-9-]|$)`),
 		richDescription:   richDescription,
 	}, nil
 }
@@ -128,7 +119,11 @@ func (s *SarifTransformer) ToOCSF(ctx context.Context, datasource *ocsffindingin
 	return vulns, parseErr
 }
 
-func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result, datasource *ocsffindinginfo.DataSource) (*ocsf.VulnerabilityFinding, error) {
+func (s *SarifTransformer) transformToOCSF(
+	toolName string,
+	res *sarif.Result,
+	datasource *ocsffindinginfo.DataSource,
+) (*ocsf.VulnerabilityFinding, error) {
 	slog.Debug("parsing run from", slog.String("toolname", toolName))
 	affectedCode, affectedPackages := s.mapAffected(res, datasource)
 
@@ -139,22 +134,22 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result, d
 		occurrencesCount *int32
 		now              = s.clock.Now()
 	)
-	if res.RuleId != nil {
-		ruleID = res.RuleId
-	} else if res.Rule != nil {
-		if res.Rule.ToolComponent != nil && res.Rule.ToolComponent.Name != nil {
-			ruleID = res.Rule.ToolComponent.Name
-		}
-		if res.Rule.Guid != nil {
-			ruleGuid = res.Rule.Guid
-		}
+
+	ruleID = getRuleID(res)
+	if res.Rule != nil {
+		ruleGuid = res.Rule.Guid
 	}
+
+	if ruleID == nil {
+		return nil, errors.Errorf("could not get rule ID from Sarif result: %v", *res)
+	}
+
 	confidence := s.mapConfidence(*ruleID, s.ruleToTools)
 
 	if res.OccurrenceCount != nil {
-		occurrencesCount = ptr.Ptr(int32(*res.OccurrenceCount))
+		occurrencesCount = utils.Ptr(int32(*res.OccurrenceCount))
 	} else {
-		occurrencesCount = ptr.Ptr(int32(1))
+		occurrencesCount = utils.Ptr(int32(1))
 	}
 	labels, err := s.mapProperties(res.Properties)
 	if err != nil {
@@ -165,53 +160,42 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result, d
 	if res.Provenance != nil {
 		if res.Provenance.FirstDetectionTimeUtc != nil {
 			firstSeenTimeDT = timestamppb.New(*res.Provenance.FirstDetectionTimeUtc)
-			firstSeenTime = ptr.Ptr(res.Provenance.FirstDetectionTimeUtc.Unix())
+			firstSeenTime = utils.Ptr(res.Provenance.FirstDetectionTimeUtc.Unix())
 		} else {
-			firstSeenTime = ptr.Ptr(now.Unix())
+			firstSeenTime = utils.Ptr(now.Unix())
 			firstSeenTimeDT = timestamppb.New(now)
 		}
 
 		if res.Provenance.LastDetectionTimeUtc != nil {
 			lastSeenTimeDT = timestamppb.New(*res.Provenance.LastDetectionTimeUtc)
-			lastSeenTime = ptr.Ptr(res.Provenance.LastDetectionTimeUtc.Unix())
+			lastSeenTime = utils.Ptr(res.Provenance.LastDetectionTimeUtc.Unix())
 		} else {
-			lastSeenTime = ptr.Ptr(now.Unix())
+			lastSeenTime = utils.Ptr(now.Unix())
 			lastSeenTimeDT = timestamppb.New(now)
 		}
 
-		modifiedTime = ptr.Ptr(now.Unix())
+		modifiedTime = utils.Ptr(now.Unix())
 		modifiedTimeDT = timestamppb.New(now)
 	} else {
-		firstSeenTime = ptr.Ptr(now.Unix())
+		firstSeenTime = utils.Ptr(now.Unix())
 		firstSeenTimeDT = timestamppb.New(now)
-		lastSeenTime = ptr.Ptr(now.Unix())
+		lastSeenTime = utils.Ptr(now.Unix())
 		lastSeenTimeDT = timestamppb.New(now)
-		modifiedTime = ptr.Ptr(now.Unix())
+		modifiedTime = utils.Ptr(now.Unix())
 		modifiedTimeDT = timestamppb.New(now)
 	}
 
 	rule := s.ruleToTools[*ruleID]
-	var cve *ocsf.Cve
-	if rule.FullDescription != nil {
-		if strings.HasPrefix(*ruleID, "CVE-") {
-			cve = &ocsf.Cve{}
-			cve.Uid = *ruleID
-			cve.Desc = &rule.FullDescription.Text
-		} else if uid := s.extractCVE(rule.FullDescription.Text); uid != "" {
-			cve = &ocsf.Cve{}
-			cve.Uid = uid
-			cve.Desc = &rule.FullDescription.Text
-		}
-	}
-	findingUid := ""
-	if res.Guid != nil {
-		findingUid = *res.Guid
-	} else {
-		findingUid = s.uUIDProvider.String()
+
+	cve := extractCVE(rule)
+	cwe := extractCWE(*ruleID, s.taxasByCWEID, s.ruleToTools)
+	findingUid, err := s.guidProvider.Generate(toolName, res)
+	if err != nil {
+		return nil, errors.Errorf("could not generate a GUID for the result: %w", err)
 	}
 
 	// Location
-	var fixAvailable = ptr.Ptr(len(res.Fixes) > 0)
+	var fixAvailable = utils.Ptr(len(res.Fixes) > 0)
 
 	if err := s.mergeDatasources(res, datasource); err != nil {
 		return nil, err
@@ -224,16 +208,16 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result, d
 	classID := ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING
 	return &ocsf.VulnerabilityFinding{
 		ActivityId:   activityID,
-		ActivityName: ptr.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
-		CategoryName: ptr.Ptr(ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS.String()),
+		ActivityName: utils.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
+		CategoryName: utils.Ptr(ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS.String()),
 		CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
 		ClassUid:     classID,
-		ClassName:    ptr.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
-		Confidence:   ptr.Ptr(confidence.String()),
-		ConfidenceId: ptr.Ptr(confidence),
+		ClassName:    utils.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
+		Confidence:   utils.Ptr(confidence.String()),
+		ConfidenceId: utils.Ptr(confidence),
 		Count:        occurrencesCount,
 		FindingInfo: &ocsf.FindingInfo{
-			CreatedTime:     ptr.Ptr(now.Unix()),
+			CreatedTime:     utils.Ptr(now.Unix()),
 			CreatedTimeDt:   timestamppb.New(now),
 			DataSources:     []string{string(ds)},
 			Desc:            &desc,
@@ -259,21 +243,21 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result, d
 			Uid: ruleGuid,
 		},
 
-		Severity:   ptr.Ptr(severityID.String()),
+		Severity:   utils.Ptr(severityID.String()),
 		SeverityId: severityID,
-		StartTime:  ptr.Ptr(now.Unix()),
-		Status:     ptr.Ptr(s.mapResultKind(res.Kind).String()),
-		StatusId:   ptr.Ptr(s.mapResultKind(res.Kind)),
+		StartTime:  utils.Ptr(now.Unix()),
+		Status:     utils.Ptr(s.mapResultKind(res.Kind).String()),
+		StatusId:   utils.Ptr(s.mapResultKind(res.Kind)),
 		Time:       now.Unix(),
 		TimeDt:     timestamppb.New(now),
-		TypeName:   ptr.Ptr(typeName[int64(classID)*100+int64(activityID)]),
+		TypeName:   utils.Ptr(typeName[int64(classID)*100+int64(activityID)]),
 		TypeUid:    int64(classID)*100 + int64(activityID),
 		Vulnerabilities: []*ocsf.Vulnerability{
 			{
 				AffectedCode:     affectedCode,
 				AffectedPackages: affectedPackages,
 				Cve:              cve,
-				Cwe:              s.mapCWE(*ruleID),
+				Cwe:              cwe,
 				Desc:             &desc,
 				FirstSeenTime:    firstSeenTime,
 				FirstSeenTimeDt:  firstSeenTimeDT,
@@ -281,8 +265,8 @@ func (s *SarifTransformer) transformToOCSF(toolName string, res *sarif.Result, d
 				IsFixAvailable:   fixAvailable,
 				LastSeenTime:     lastSeenTime,
 				LastSeenTimeDt:   lastSeenTimeDT,
-				Severity:         ptr.Ptr(severityID.String()),
-				Title:            ptr.Ptr(title),
+				Severity:         utils.Ptr(severityID.String()),
+				Title:            utils.Ptr(title),
 				VendorName:       &toolName,
 			},
 		},
@@ -323,21 +307,13 @@ func (s *SarifTransformer) mapResultKind(kind sarif.ResultKind) ocsf.Vulnerabili
 	return ocsf.VulnerabilityFinding_STATUS_ID_NEW
 }
 
-func (s *SarifTransformer) extractCVE(text string) string {
-	match := s.cveRegExp.FindStringSubmatch(text)
-	if len(match) > 1 {
-		return match[1]
-	}
-	return ""
-}
-
 func (s *SarifTransformer) isSnykURI(uri string) bool {
 	return strings.HasPrefix(uri, "https_//")
 }
 
 func (s *SarifTransformer) mapAffectedPackage(fixes []sarif.Fix, purl packageurl.PackageURL) *ocsf.AffectedPackage {
 	affectedPackage := &ocsf.AffectedPackage{
-		Purl:           ptr.Ptr(purl.String()),
+		Purl:           utils.Ptr(purl.String()),
 		Name:           purl.Name,
 		PackageManager: &purl.Type,
 	}
@@ -450,15 +426,15 @@ func (s *SarifTransformer) mapAffected(res *sarif.Result, datasource *ocsffindin
 			} else if !s.isSnykURI(*location.PhysicalLocation.ArtifactLocation.Uri) {
 				// Snyk special case, they use the repo url with some weird replacement as the artifact location
 				ac.File.Name = *location.PhysicalLocation.ArtifactLocation.Uri
-				ac.File.Path = ptr.Ptr(fmt.Sprintf("file://%s", *location.PhysicalLocation.ArtifactLocation.Uri))
+				ac.File.Path = utils.Ptr(fmt.Sprintf("file://%s", *location.PhysicalLocation.ArtifactLocation.Uri))
 			}
 		}
 		if physicalLocation.Region != nil {
 			if location.PhysicalLocation.Region.StartLine != nil {
-				ac.StartLine = ptr.Ptr(int32(*location.PhysicalLocation.Region.StartLine))
+				ac.StartLine = utils.Ptr(int32(*location.PhysicalLocation.Region.StartLine))
 			}
 			if location.PhysicalLocation.Region.EndLine != nil {
-				ac.EndLine = ptr.Ptr(int32(*location.PhysicalLocation.Region.EndLine))
+				ac.EndLine = utils.Ptr(int32(*location.PhysicalLocation.Region.EndLine))
 			}
 		}
 		if ac != (&ocsf.AffectedCode{}) {
@@ -566,45 +542,6 @@ func (s *SarifTransformer) mapTitleDesc(res *sarif.Result, ruleToTools map[strin
 		}
 	}
 	return
-}
-
-func (s *SarifTransformer) mapCWE(ruleID string) *ocsf.Cwe {
-	cwe := &ocsf.Cwe{}
-
-	rule, ok := s.ruleToTools[ruleID]
-	if !ok {
-		return nil
-	}
-
-	for _, rel := range rule.Relationships {
-		cwe.Uid = *rel.Target.Id
-		taxa, ok := s.taxasByCWEID[cwe.Uid]
-		if !ok {
-			continue
-		}
-		cwe.SrcUrl = taxa.HelpUri
-		if taxa.FullDescription != nil && taxa.FullDescription.Text != "" {
-			cwe.Caption = ptr.Ptr(taxa.FullDescription.Text)
-		}
-	}
-	if cwe.Uid != "" {
-		return cwe
-	}
-	// if all else fails try to match regexp with tags (semgrep, snyk and codeql do that)
-	if rule.Properties != nil {
-		for _, tag := range rule.Properties.Tags {
-			re := regexp.MustCompile(`(?i)CWE-\d{3,}`)
-			matches := re.FindAllString(tag, -1)
-			for _, match := range matches {
-				if match != "" {
-					cwe.Uid = strings.ReplaceAll(strings.ToLower(match), "cwe-", "")
-					return cwe // we only care about 1, since ocsf only supports one cwe
-				}
-			}
-
-		}
-	}
-	return nil // all failed, no cwe
 }
 
 func (s *SarifTransformer) mergeDatasources(res *sarif.Result, datasource *ocsffindinginfo.DataSource) error {
