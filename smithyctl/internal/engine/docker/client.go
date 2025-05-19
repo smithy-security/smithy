@@ -2,13 +2,13 @@ package docker
 
 import (
 	"context"
-	"io"
 	"log/slog"
 	"os"
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/go-errors/errors"
 	"golang.org/x/sync/errgroup"
 
@@ -88,7 +88,6 @@ func (e *executor) runContainer(ctx context.Context, containerID string) error {
 func (e *executor) waitContainer(ctx context.Context, containerID string) error {
 	logger := logging.FromContext(ctx)
 
-	// Preparing to stream container logs.
 	logReader, err := e.dockerClient.ContainerLogs(
 		ctx,
 		containerID,
@@ -122,7 +121,7 @@ func (e *executor) waitContainer(ctx context.Context, containerID string) error 
 	g, ctx := errgroup.WithContext(ctx)
 
 	g.Go(func() error {
-		if _, err := io.Copy(os.Stdout, logReader); err != nil {
+		if _, err := stdcopy.StdCopy(os.Stdout, os.Stdout, logReader); err != nil {
 			logger.Error(
 				"failed to stream container logs",
 				slog.String("err", err.Error()),
