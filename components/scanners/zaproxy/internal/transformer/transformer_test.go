@@ -56,6 +56,11 @@ func TestZapTransformer_Transform(t *testing.T) {
 		require.NoError(t, err)
 		require.NotEmpty(t, findings)
 		require.Len(t, findings, 3)
+		expectedResultGUIDs := []string{
+			"d12d62ce-a615-527c-8e13-e79655e31a7d",
+			"be3749a7-3e6f-512c-9cd6-f6fd40dea190",
+			"cf72f5da-0b15-5607-9da9-73175addad99",
+		}
 
 		for idx, finding := range findings {
 			assert.Equalf(
@@ -157,7 +162,7 @@ func TestZapTransformer_Transform(t *testing.T) {
 			assert.Equalf(t, nowUnix, *findingInfo.ModifiedTime, "Unexpected finding info modified time seen for finding %d", idx)
 			assert.NotEmptyf(t, *findingInfo.Desc, "Unexpected empty desc for finding %d", idx)
 			assert.NotEmptyf(t, findingInfo.Title, "Unexpected empty title for finding %d", idx)
-			assert.NotEmptyf(t, findingInfo.Uid, "Unexpected empty uid for finding %d", idx)
+			assert.Equal(t, expectedResultGUIDs[idx], findingInfo.Uid, "Unexpected uid for finding %d", idx)
 
 			var dataSource ocsffindinginfo.DataSource
 			require.Lenf(
