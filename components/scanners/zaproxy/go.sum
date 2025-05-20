@@ -134,8 +134,8 @@ github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
 github.com/smithy-security/pkg/env v0.0.1 h1:uwLTMLdNN/dv3x4zat75JahEBQDpdBeldjEE8El4OiM=
 github.com/smithy-security/pkg/env v0.0.1/go.mod h1:VIJfDqeAbQQcmohaXcZI6grjeJC9Y8CmqR4ITpdngZE=
-github.com/smithy-security/pkg/sarif v0.0.7 h1:IECWxx6fzCUDMUbspgbCQWPMtEFsTczFQK1R3IZtoC4=
-github.com/smithy-security/pkg/sarif v0.0.7/go.mod h1:fMNL2Uk1fxAAPd4uLUH+zTZ8Fc56rzRmUY2PX2t0X2c=
+github.com/smithy-security/pkg/sarif v0.0.8 h1:T9O5RHDsEn0p4olF8lPH0PEwCPeUWtAJR4lvgdAjpmc=
+github.com/smithy-security/pkg/sarif v0.0.8/go.mod h1:fMNL2Uk1fxAAPd4uLUH+zTZ8Fc56rzRmUY2PX2t0X2c=
 github.com/smithy-security/pkg/utils v0.0.2 h1:r1Gz5eki8xUJXShw4i5ZaizkiKgZlYNYtKE2PDwpoHQ=
 github.com/smithy-security/pkg/utils v0.0.2/go.mod h1:bzCtRv/q9BdCrALRkcWWW3y8DzugbZrEQPwgZ/iepig=
 github.com/smithy-security/smithy/sdk v0.0.14-alpha h1:yoypKsyvDwT7qBSqVb0ddshsp7TbR509DuyLciMwEns=

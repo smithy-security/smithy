@@ -128,7 +128,7 @@ func (s *SarifTransformer) transformToOCSF(
 	affectedCode, affectedPackages := s.mapAffected(res, datasource)
 
 	var (
-		ruleID, ruleGuid *string
+		ruleID           *string
 		severityID       = s.mapSeverity(res.Level)
 		title, desc      = s.mapTitleDesc(res, s.ruleToTools)
 		occurrencesCount *int32
@@ -136,10 +136,6 @@ func (s *SarifTransformer) transformToOCSF(
 	)
 
 	ruleID = getRuleID(res)
-	if res.Rule != nil {
-		ruleGuid = res.Rule.Guid
-	}
-
 	if ruleID == nil {
 		return nil, errors.Errorf("could not get rule ID from Sarif result: %v", *res)
 	}
@@ -229,7 +225,7 @@ func (s *SarifTransformer) transformToOCSF(
 			ModifiedTimeDt:  modifiedTimeDT,
 			SrcUrl:          res.HostedViewerUri,
 			Title:           title,
-			Uid:             findingUid,
+			Uid:             *ruleID,
 			ProductUid:      &toolName,
 		},
 		Message: &desc,
@@ -240,7 +236,7 @@ func (s *SarifTransformer) transformToOCSF(
 			Product: &ocsf.Product{
 				Name: &toolName,
 			},
-			Uid: ruleGuid,
+			Uid: utils.Ptr(findingUid),
 		},
 
 		Severity:   utils.Ptr(severityID.String()),
