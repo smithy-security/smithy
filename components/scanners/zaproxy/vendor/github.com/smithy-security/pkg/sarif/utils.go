@@ -120,13 +120,17 @@ func extractCWE(
 }
 
 func getRuleID(res *sarif.Result) *string {
-	if res.RuleId != nil {
+	switch res.Rule {
+	case nil:
 		return res.RuleId
-	} else if res.Rule != nil {
-		if res.Rule.ToolComponent != nil {
-			return res.Rule.ToolComponent.Name
+	default:
+		switch {
+		case res.Rule.Id != nil:
+			return res.Rule.Id
+		case res.Rule.Guid != nil:
+			return res.Rule.Guid
+		default:
+			return nil
 		}
 	}
-
-	return nil
 }
