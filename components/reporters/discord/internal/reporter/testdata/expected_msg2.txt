@@ -13,4 +13,4 @@ Description 2.
 - **CWE:** [CWE-89](https://cwe.mitre.org/data/definitions/89.html)
 - **CVE:** -
 - **Reporting Tool:** semgrep
-- **Detected by Run:** [Test Instance](https://smithy.example.com/instances/instance-1234)
+- **Detected by Run:** [Test Instance](https://smithy.example.com/runs/instance-1234)

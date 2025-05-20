@@ -13,4 +13,4 @@ Description 3.
 - **CWE:** [-](-)
 - **CVE:** CVE-2023-5678
 - **Reporting Tool:** snyk
-- **Detected by Run:** [Test Instance](https://smithy.example.com/instances/instance-1234)
+- **Detected by Run:** [Test Instance](https://smithy.example.com/runs/instance-1234)
