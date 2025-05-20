@@ -209,7 +209,7 @@ func (r *orasRegistry) FetchPackage(ctx context.Context, ref reference.Reference
 
 	tagName, ok := ref.(reference.Tagged)
 	if !ok {
-		return nil, errors.Errorf("could not parse reference: expected tag, got %T", ref)
+		return nil, errors.Errorf("%v: could not parse reference: expected tag, got %T", ref, ref)
 	}
 
 	var (

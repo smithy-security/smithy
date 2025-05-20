@@ -43,10 +43,7 @@ func NewRunCommand() *cobra.Command {
 		Use:   "run",
 		Short: "Allows running workflows",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := runWorkflow(cmd.Context(), runCmdFlags, args); err != nil {
-				return errors.Errorf("unexpected failure: %w", err)
-			}
-			return nil
+			return runWorkflow(cmd.Context(), runCmdFlags, args)
 		},
 	}
 

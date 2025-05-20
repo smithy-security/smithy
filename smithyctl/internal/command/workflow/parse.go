@@ -210,7 +210,6 @@ func (sp *specParser) Parse(ctx context.Context, config ParserConfig) (*v1.Workf
 		}
 		components   = make([]*v1.Component, 0)
 		componentMap = make(map[string]*v1.Component)
-		errs         error
 	)
 
 	for _, c := range rawWf.Components {
@@ -244,8 +243,7 @@ func (sp *specParser) Parse(ctx context.Context, config ParserConfig) (*v1.Workf
 		}
 
 		if err != nil {
-			errs = errors.Join(errs, err)
-			continue
+			return nil, errors.Errorf("failed to parse a component: %w", err)
 		}
 
 		for index, step := range parsedComponent.Steps {
@@ -260,10 +258,6 @@ func (sp *specParser) Parse(ctx context.Context, config ParserConfig) (*v1.Workf
 
 		componentMap[parsedComponent.Name] = parsedComponent
 		components = append(components, parsedComponent)
-	}
-
-	if errs != nil {
-		return nil, errors.Errorf("failed to parse components: %w", errs)
 	}
 
 	// Applying overrides.
