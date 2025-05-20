@@ -5,4 +5,4 @@ Location: *util/middleware/middleware.go* between line 70 and 76 on branch *mast
 
 
 ||ID||Confidence||CWE||CVE||Reporting Tool||Detected by Run||
-|[1|https://smithy.example.com/issues/1]|High|[CWE-79|https://cwe.mitre.org/data/definitions/79.html]|CVE-2022-1234|gosec|[Test Run|https://smithy.example.com/instances/run-1234]|
+|[1|https://smithy.example.com/issues/1]|High|[CWE-79|https://cwe.mitre.org/data/definitions/79.html]|CVE-2022-1234|gosec|[Test Run|https://smithy.example.com/runs/run-1234]|

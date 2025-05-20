@@ -190,7 +190,7 @@ func (r *reporter) toIssues(tpl *template.Template, vf *vf.VulnerabilityFinding)
 				"https://%s",
 				path.Join(
 					r.issueContextData.SmithyInstanceBaseURL.Host,
-					"instances",
+					"runs",
 					r.issueContextData.SmithyRunID,
 				),
 			)
