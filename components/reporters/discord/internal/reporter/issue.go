@@ -111,7 +111,7 @@ func (r reporter) getMsgs(findings []*vf.VulnerabilityFinding) ([]string, error)
 					"https://%s",
 					path.Join(
 						r.cfg.SmithyDashURL.Host,
-						"instances",
+						"runs",
 						r.cfg.SmithyInstanceID,
 					),
 				)

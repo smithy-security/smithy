@@ -13,4 +13,4 @@ Description 1.
 - **CWE:** [CWE-79](https://cwe.mitre.org/data/definitions/79.html)
 - **CVE:** CVE-2022-1234
 - **Reporting Tool:** gosec
-- **Detected by Run:** [Test Instance](https://smithy.example.com/instances/instance-1234)
+- **Detected by Run:** [Test Instance](https://smithy.example.com/runs/instance-1234)
