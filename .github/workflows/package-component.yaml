@@ -5,11 +5,11 @@ on:
   push:
     tags:
       # Matches: components/scanners/gosec/v1.0.0 or components/scanners/gosec/v1.0.0-alpha3 for example.
-      - 'components/targets/*/v[0-9].[0-9].[0-9]*'
-      - 'components/scanners/*/v[0-9].[0-9].[0-9]*'
-      - 'components/enrichers/*/v[0-9].[0-9].[0-9]*'
-      - 'components/filters/*/v[0-9].[0-9].[0-9]*'
-      - 'components/reporters/*/v[0-9].[0-9].[0-9]*'
+      - 'components/targets/*/v[0-9]+.[0-9]+.[0-9]*'
+      - 'components/scanners/*/v[0-9]+.[0-9]+.[0-9]*'
+      - 'components/enrichers/*/v[0-9]+.[0-9]+.[0-9]*'
+      - 'components/filters/*/v[0-9]+.[0-9]+.[0-9]*'
+      - 'components/reporters/*/v[0-9]+.[0-9]+.[0-9]+*'
 
 permissions:
   # Grant the ability to checkout the repository
