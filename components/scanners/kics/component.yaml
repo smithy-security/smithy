@@ -1,0 +1,21 @@
+name: kics
+description: "Runs Kics then parses findings into the OCSF format"
+type: scanner
+steps:
+  - name: run-kics
+    image: checkmarx/kics:latest
+    executable: /app/bin/kics
+    args:
+    - scan
+    - --ignore-on-exit=results
+    - --output-path={{ scratchWorkspace }}
+    - --parallel=0
+    - --path={{sourceCodeWorkspace}} 
+    - --payload-lines
+    - --report-formats=sarif 
+    - --ci              
+    - name: parser
+    image: components/scanners/kics
+    env_vars:
+      KICS_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/results_sarif.sarif"
+    executable: /bin/app
