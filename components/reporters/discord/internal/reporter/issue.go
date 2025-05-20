@@ -21,6 +21,8 @@ import (
 var issueTpl string
 
 type IssueData struct {
+	Description      string
+	Title            string
 	FindingID        uint64
 	FindingLink      string
 	TargetName       string
@@ -136,6 +138,8 @@ func (r reporter) getMsgs(findings []*vf.VulnerabilityFinding) ([]string, error)
 			if err := tpl.Execute(
 				&buf,
 				IssueData{
+					Title:            f.GetTitle(),
+					Description:      f.GetDesc(),
 					FindingID:        finding.ID,
 					FindingLink:      findingLink,
 					Tool:             tool,

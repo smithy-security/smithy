@@ -39,24 +39,24 @@ func (r reporter) Report(ctx context.Context, findings []*vf.VulnerabilityFindin
 		return nil
 	}
 
-	logger.Debug("starting reporting thread...")
-	threadMsg, err := r.getThreadMsg(len(findings))
+	msgs, err := r.getMsgs(findings)
+	if err != nil {
+		return errors.Errorf("error getting messages: %w", err)
+	}
+
+	threadMsg, err := r.getThreadMsg(len(msgs))
 	if err != nil {
 		return errors.Errorf("error getting thread message: %w", err)
 	}
 
+	logger.Debug("starting creating thread...")
 	threadID, err := r.ms.CreateThread(ctx, threadMsg)
 	if err != nil {
 		return errors.Errorf("error creating thread: %w", err)
 	}
 	logger.Debug("successfully created thread!")
 
-	logger.Debug("sending thread message to channel...")
-	msgs, err := r.getMsgs(findings)
-	if err != nil {
-		return errors.Errorf("error getting messages: %w", err)
-	}
-
+	logger.Debug("sending messages to channel...")
 	if err := r.ms.SendMessages(ctx, threadID, msgs); err != nil {
 		return errors.Errorf("error sending messages: %w", err)
 	}
