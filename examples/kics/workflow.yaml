@@ -1,0 +1,7 @@
+description: Checkov based workflow
+name: checkov
+components:
+- component: file://components/targets/git-clone/component.yaml
+- component: file://components/scanners/kics/component.yaml
+- component: file://components/enrichers/custom-annotation/component.yaml
+- component: file://components/reporters/json-logger/component.yaml
