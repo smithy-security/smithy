@@ -48,10 +48,7 @@ func NewPackageCommand() *cobra.Command {
 				return errors.New("you need to provide exactly one positional argument with a path to a component YAML spec")
 			}
 
-			if err := packageComponent(cmd.Context(), packageCmdFlags, args[0]); err != nil {
-				return errors.Errorf("unexpected failure: %w", err)
-			}
-			return nil
+			return packageComponent(cmd.Context(), packageCmdFlags, args[0])
 		},
 	}
 

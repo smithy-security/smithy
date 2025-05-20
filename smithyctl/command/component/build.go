@@ -45,10 +45,7 @@ func NewBuildCommand() *cobra.Command {
 		Use:   "build",
 		Short: "Builds a component's containers",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := parseFlagsAndBuildImages(cmd.Context(), buildCmdFlags, args); err != nil {
-				return errors.Errorf("unexpected failure: %w", err)
-			}
-			return nil
+			return parseFlagsAndBuildImages(cmd.Context(), buildCmdFlags, args)
 		},
 	}
 
