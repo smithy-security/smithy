@@ -57,6 +57,11 @@ func TestZapTransformer_Transform(t *testing.T) {
 		require.NotEmpty(t, findings)
 		require.Len(t, findings, 3)
 		expectedResultGUIDs := []string{
+			"40012",
+			"40012",
+			"40018",
+		}
+		expectedMetadataUIDs := []string{
 			"d12d62ce-a615-527c-8e13-e79655e31a7d",
 			"be3749a7-3e6f-512c-9cd6-f6fd40dea190",
 			"cf72f5da-0b15-5607-9da9-73175addad99",
@@ -216,6 +221,9 @@ func TestZapTransformer_Transform(t *testing.T) {
 			assert.NotEmptyf(t, vulnerability.Desc, "Unexpected empty desc for vulnerability for finding %d", idx)
 			require.Nilf(t, vulnerability.AffectedCode, "Unexpected NON nil file for web vulnerability for finding %d", idx)
 			require.Nilf(t, vulnerability.AffectedPackages, "Unexpected NON nil file for web vulnerability for finding %d", idx)
+
+			require.NotNil(t, finding.Metadata, "finding metadata are nil")
+			assert.Equal(t, expectedMetadataUIDs[idx], *finding.Metadata.Uid, "Unexpected metadata uid for finding %d", idx)
 		}
 	})
 }
