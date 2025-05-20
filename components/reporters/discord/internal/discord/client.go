@@ -64,20 +64,13 @@ func (c client) CreateThread(ctx context.Context, msg string) (string, error) {
 	if err != nil {
 		return "", errors.Errorf("could not send message: %w", err)
 	}
-	logger.Debug("successfully sent thread message message to channel...")
 
-	logger.Debug("starting thread...", slog.String("message_id", firstMsg.ID))
 	thread, err := c.sess.MessageThreadStartComplex(c.channelID, firstMsg.ID, &discordgo.ThreadStart{
 		Name: msg,
 	})
 	if err != nil {
 		return "", errors.Errorf("could not create thread for message '%s': %w", firstMsg.ID, err)
 	}
-	logger.Debug(
-		"successfully started thread!",
-		slog.String("message_id", firstMsg.ID),
-		slog.String("thread_id", thread.ID),
-	)
 
 	return thread.ID, nil
 }
@@ -91,6 +84,9 @@ func (c client) SendMessages(ctx context.Context, threadID string, messages []st
 			With(slog.String("thread_id", threadID))
 	)
 
+	logger.Debug("miao")
+	logger.Debug("bau")
+
 	logger.Debug("preparing to send messages...")
 	for _, msg := range messages {
 		if _, err := c.sess.ChannelMessageSend(threadID, msg); err != nil {
@@ -103,6 +99,8 @@ func (c client) SendMessages(ctx context.Context, threadID string, messages []st
 		}
 	}
 	logger.Debug("successfully sent messages!")
+
+	logger.Debug("aaa")
 
 	return errs
 }
