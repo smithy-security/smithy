@@ -11,11 +11,15 @@ parameters:
   - name: "issue_labels"
     type: "string"
     value: ""
+  - name: "base_url"
+    type: "string"
+    value: "https://api.linear.app/graphql"
 steps:
   - name: create-issues
     env_vars:
       LINEAR_TEAM_ID: "{{ .parameters.team_id }}"
       LINEAR_API_KEY: "{{ .parameters.api_key }}"
       LINEAR_LABEL_NAMES: "{{ .parameters.issue_labels }}"
+      LINEAR_BASE_URL: "{{ .parameters.base_url }}"
     image: components/reporters/linear
     executable: /bin/app
