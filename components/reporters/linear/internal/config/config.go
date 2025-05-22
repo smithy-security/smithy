@@ -46,7 +46,7 @@ func New() (Config, error) {
 		}
 	}
 
-	linearBaseURL, err := env.GetOrDefault("LINEAR_BASE_URL", "")
+	linearBaseURL, err := env.GetOrDefault("LINEAR_BASE_URL", "https://api.linear.app/graphql", env.WithDefaultOnError(true))
 	if err != nil {
 		errs = errors.Join(errs, fmt.Errorf("failed to get env var LINEAR_BASE_URL: %w", err))
 	}
