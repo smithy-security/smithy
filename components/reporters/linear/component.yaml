@@ -1,0 +1,21 @@
+name: "linear"
+description: "Reports findings to Linear"
+type: "reporter"
+parameters:
+  - name: "api_key"
+    type: "string"
+    value: ""
+  - name: "team_id"
+    type: "string"
+    value: ""
+  - name: "issue_labels"
+    type: "string"
+    value: ""
+steps:
+  - name: create-issues
+    env_vars:
+      LINEAR_TEAM_ID: "{{ .parameters.team_id }}"
+      LINEAR_API_KEY: "{{ .parameters.api_key }}"
+      LINEAR_LABEL_NAMES: "{{ .parameters.issue_labels }}"
+    image: components/reporters/linear
+    executable: /bin/app
