@@ -9,6 +9,7 @@ import (
 	"github.com/smithy-security/pkg/retry"
 	"github.com/smithy-security/smithy/sdk/component"
 
+	"github.com/smithy-security/smithy/components/reporters/linear/internal/config"
 	"github.com/smithy-security/smithy/components/reporters/linear/internal/linear/client"
 	"github.com/smithy-security/smithy/components/reporters/linear/internal/reporter"
 )
@@ -23,34 +24,36 @@ func main() {
 }
 
 func Main(ctx context.Context) error {
-	conf, err := reporter.NewConf()
+	logger := component.LoggerFromContext(ctx)
+
+	cfg, err := config.New()
 	if err != nil {
-		return errors.Errorf("could not get config: %w", err)
+		return errors.Errorf("failed to get config: %w", err)
 	}
 
-	authTrans, err := client.NewAuthRoundTripper(conf.LinearAPIKey)
+	rt, err := client.NewAuthRoundTripper(cfg.Linear.APIKey)
 	if err != nil {
-		return errors.Errorf("could not create auth round tripper: %v", err)
+		return errors.Errorf("failed to create round tripper: %w", err)
 	}
 
-	retryClient, err := retry.NewClient(
+	cfg.Linear.Client, err = retry.NewClient(
 		retry.Config{
-			BaseTransport: authTrans,
-			Logger:        component.LoggerFromContext(ctx),
+			BaseTransport: rt,
+			Logger:        logger,
 		},
 	)
 	if err != nil {
 		return errors.Errorf("failed to create retry client: %w", err)
 	}
 
-	lc, err := client.New(client.Config{
-		Client:  retryClient,
-		BaseURL: conf.LinearBaseURL,
-	})
-
-	r, err := reporter.New(lc)
+	lc, err := client.New(ctx, cfg.Linear)
 	if err != nil {
-		return errors.Errorf("failed to create reporter: %w", err)
+		return errors.Errorf("failed to create linear client: %w", err)
+	}
+
+	r, err := reporter.New(cfg, lc)
+	if err != nil {
+		return errors.Errorf("failed to create reporter client: %w", err)
 	}
 
 	if err := component.RunReporter(
