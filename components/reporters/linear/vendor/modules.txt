@@ -36,6 +36,9 @@ github.com/cenkalti/backoff/v5
 # github.com/cpuguy83/go-md2man/v2 v2.0.4
 ## explicit; go 1.11
 github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/davecgh/go-spew v1.1.1
+## explicit
+github.com/davecgh/go-spew/spew
 # github.com/go-errors/errors v1.5.1
 ## explicit; go 1.14
 github.com/go-errors/errors
@@ -125,6 +128,9 @@ github.com/mitchellh/reflectwalk
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/pmezard/go-difflib v1.0.0
+## explicit
+github.com/pmezard/go-difflib/difflib
 # github.com/russross/blackfriday/v2 v2.1.0
 ## explicit
 github.com/russross/blackfriday/v2
@@ -137,6 +143,9 @@ github.com/smithy-security/pkg/env
 # github.com/smithy-security/pkg/retry v0.0.2
 ## explicit; go 1.24.0
 github.com/smithy-security/pkg/retry
+# github.com/smithy-security/pkg/utils v0.0.2
+## explicit; go 1.23.2
+github.com/smithy-security/pkg/utils
 # github.com/smithy-security/smithy/sdk v0.0.12-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
@@ -161,6 +170,11 @@ github.com/spf13/cast
 # github.com/sqlc-dev/sqlc v1.27.0
 ## explicit; go 1.22
 github.com/sqlc-dev/sqlc
+# github.com/stretchr/testify v1.10.0
+## explicit; go 1.17
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/assert/yaml
+github.com/stretchr/testify/require
 # github.com/urfave/cli/v2 v2.26.0
 ## explicit; go 1.18
 github.com/urfave/cli/v2
@@ -345,3 +359,6 @@ google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/structpb
 google.golang.org/protobuf/types/known/timestamppb
+# gopkg.in/yaml.v3 v3.0.1
+## explicit
+gopkg.in/yaml.v3
