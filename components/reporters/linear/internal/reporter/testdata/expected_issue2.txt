@@ -1,0 +1,14 @@
+Smithy detected a vulnerability in [https://github.com/0c34/govwa](https://github.com/0c34/govwa/blob/master/util/middleware/middleware.go#L70-L76).
+
+
+*Location*: **util/middleware/middleware.go** between line 70 and 76 on branch **master**.
+
+
+| Field | Value |
+| :--- | :--- |
+| **ID** | [1](https://smithy.example.com/issues/1) |
+| **Confidence** | High |
+| **CWE** | [CWE-79](https://cwe.mitre.org/data/definitions/79.html) |
+| **CVE** | CVE-2023-5678 |
+| **Reporting Tool** | gosec |
+| **Detected by Run** | [Test Instance](https://smithy.example.com/runs/instance-1234) |
