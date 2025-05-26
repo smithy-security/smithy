@@ -15,95 +15,102 @@ from urllib.parse import urlparse
 
 plan_template = """
 {
-  "env": {
-    "contexts": [
-      {
-        "name": "Default Context",
-        "urls": [
-          "${zap_target}"
-        ],
-        "includePaths": [
-          "${zap_target}.*"
-        ],
-        "authentication": {
-          "method": "browser",
-          "parameters": {
-            "browserId": "firefox-headless",
-            "loginPageUrl": "${zap_login_path}",
-            "loginPageWait": 5
-          },
-          "verification": {
-            "method": "autodetect"
-          }
-        },
-        "sessionManagement": {
-          "method": "autodetect"
-        },
-        "technology": {},
-        "users": [
-          {
-            "name": "test-user",
-            "credentials": {
-              "username": "${zap_username}",
-              "password": "${zap_password}"
+    "env": {
+        "contexts": [
+            {
+                "name": "Default Context",
+                "urls": [
+                    "${zap_target}"
+                ],
+                "includePaths": [
+                    "*.${zap_target}.*"
+                ],
+                "authentication": {
+                    "method": "browser",
+                    "parameters": {
+                        "browserId": "firefox-headless",
+                        "loginPageUrl": "${zap_login_path}",
+                        "loginPageWait": 5
+                    },
+                    "verification": {
+                        "method": "autodetect"
+                    }
+                },
+                "sessionManagement": {
+                    "method": "autodetect"
+                },
+                "technology": {},
+                "users": [
+                    {
+                        "name": "test-user",
+                        "credentials": {
+                            "username": "${zap_username}",
+                            "password": "${zap_password}"
+                        }
+                    }
+                ]
             }
-          }
-        ]
-      }
-    ],
-    "parameters": {}
-  },
-  "jobs": [
-    {
-      "type": "passiveScan-config",
-      "parameters": {
-        "disableAllRules": true
-      },
-      "rules": [
+        ],
+        "parameters": {}
+    },
+    "jobs": [
         {
-          "name": "Authentication Request Identified",
-          "id": 10111,
-          "threshold": "medium"
+            "type": "activeScan-config",
+            "rules": []
         },
         {
-          "name": "Session Management Response Identified",
-          "id": 10112,
-          "threshold": "medium"
+            "type": "passiveScan-config",
+            "rules": []
         },
         {
-          "name": "Verification Request Identified",
-          "id": 10113,
-          "threshold": "medium"
-        }
-      ]
-    },
-    {
-      "type": "requestor",
-      "parameters": {
-        "user": "test-user"
-      },
-      "requests": [
+            "parameters": {},
+            "name": "spider",
+            "type": "spider"
+        },
         {
-          "url": "${zap_target}"
+            "parameters": {
+                "maxDuration": 5,
+                "maxCrawlDepth": 10,
+                "runOnlyIfModern": true
+            },
+            "name": "spiderAjax",
+            "type": "spiderAjax"
+        },
+        {
+            "type": "requestor",
+            "parameters": {
+                "user": "test-user"
+            },
+            "requests": [
+                {
+                    "url": "${zap_target}"
+                }
+            ]
+        },
+         {
+            "name": "activeScan",
+            "type": "activeScan",
+            "parameters": {
+                "maxScanDurationInMins": 10
+            }
+        },
+        {
+            "type": "passiveScan-wait",
+            "parameters": {},
+            "name": "passiveScan-wait"
+        },
+        {
+            "name": "${zap_report_name}",
+            "type": "report",
+            "parameters": {
+                "template": "sarif-json",
+                "theme": null,
+                "reportDir": "${zap_report_dir}",
+                "reportFile": "${zap_report_file}",
+                "reportTitle": "${zap_report_title}"
+            }
         }
-      ]
-    },
-    {
-      "type": "passiveScan-wait",
-      "parameters": {}
-    },
-    {
-      "name": "${zap_report_name}",
-      "type": "report",
-      "parameters": {
-        "template": "sarif-json",
-        "theme": null,
-        "reportDir": "${zap_report_dir}",
-        "reportFile": "${zap_report_file}",
-        "reportTitle": "${zap_report_title}"
-      }
-    }
-  ]
+    ]
 }
 """
 
@@ -529,13 +536,13 @@ def run_zap_baseline_scan(args, runner: ZapRunner):
 
     print("running active scan")
     scan_id = runner.active_scan(args.max_scan_duration)
-    if scan_id == 'url_not_in_context':
-            raise RuntimeError("scan url is not in context")
-    
+    if scan_id == "url_not_in_context":
+        raise RuntimeError("scan url is not in context")
+
     print(f"started scan with id {scan_id}")
     scan_status = runner.get_scan_status(scanID=scan_id)
     while "100" not in scan_status:
-        if 'DOES_NOT_EXIST' in scan_status:
+        if "DOES_NOT_EXIST" in scan_status:
             raise RuntimeError("scan was never started")
         print(f"active scan status: {scan_status}%")
         time.sleep(10)
