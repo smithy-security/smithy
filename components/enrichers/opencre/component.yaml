@@ -1,0 +1,7 @@
+name: opencre
+description: "Adds a cre enrichment to the passed findings"
+type: enricher
+steps:
+  - name: cre-enrichment
+    image: components/enrichers/opencre
+    executable: /bin/app
