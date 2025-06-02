@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -8,6 +9,7 @@ import (
 )
 
 func TestWriteTargetMetadata(t *testing.T) {
+	ctx := context.Background()
 	tests := []struct {
 		name           string
 		conf           Conf
@@ -88,7 +90,7 @@ func TestWriteTargetMetadata(t *testing.T) {
 			// Update the conf to use the temp file path
 			tt.conf.TargetMetadataPath = tempFile.Name()
 
-			err = WriteTargetMetadata(tt.conf)
+			err = WriteTargetMetadata(ctx, &tt.conf)
 			if tt.expectedError {
 				assert.Error(t, err)
 			} else {
