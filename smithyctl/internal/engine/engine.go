@@ -245,6 +245,9 @@ func (e *executor) prepareComponent(
 		// metadata workspace to ensure the scanners can add the metadata to
 		// their findings
 		for _, step := range component.Component.Steps {
+			if step.EnvVars == nil {
+				step.EnvVars = make(map[string]string)
+			}
 			step.EnvVars["TARGET_METADATA_PATH"] = "{{ targetMetadataWorkspace }}"
 		}
 	}

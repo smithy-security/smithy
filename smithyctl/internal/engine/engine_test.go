@@ -76,16 +76,18 @@ func TestExecutor_Execute(t *testing.T) {
 		}
 		tmpFolderProvisioner = func(instanceIDForTmpFolder uuid.UUID, s string) (string, error) {
 			require.Equal(t, instanceID, instanceIDForTmpFolder)
-			require.True(t, s == "scratch" || s == "source-code")
+			require.True(t, s == "scratch" || s == "source-code" || s == "target-metadata")
 
 			return "/tmp/" + instanceIDForTmpFolder.String() + "-" + s, nil
 		}
-		sourceCodeHostPath  = "/tmp/" + instanceID.String() + "-source-code"
-		scratchHostPath     = "/tmp/" + instanceID.String() + "-scratch"
-		sourceCodeMountPath = "/workspace/source-code"
-		scratchMountPath    = "/workspace/scratch"
-		mockContainerExec   = NewMockContainerExecutor(ctrl)
-		workflow            = &v1.Workflow{
+		sourceCodeHostPath      = "/tmp/" + instanceID.String() + "-source-code"
+		scratchHostPath         = "/tmp/" + instanceID.String() + "-scratch"
+		targetMetdatadaHostPath = "/tmp/" + instanceID.String() + "-target-metadata"
+		sourceCodeMountPath     = "/workspace/source-code"
+		scratchMountPath        = "/workspace/scratch"
+		targetMetadataMountPath = "/workspace/target-metadata"
+		mockContainerExec       = NewMockContainerExecutor(ctrl)
+		workflow                = &v1.Workflow{
 			Name:        "test-workflow",
 			Description: "test workflow",
 			Stages: []v1.Stage{
@@ -224,10 +226,16 @@ func TestExecutor_Execute(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, exe)
 
-	var envVars = []string{
-		fmt.Sprintf("SMITHY_INSTANCE_ID=%s", instanceID.String()),
-		"SMITHY_LOG_LEVEL=debug",
-	}
+	var (
+		envVars = []string{
+			fmt.Sprintf("SMITHY_INSTANCE_ID=%s", instanceID.String()),
+			"SMITHY_LOG_LEVEL=debug",
+		}
+		sourcePath         = sourceCodeHostPath + ":" + sourceCodeMountPath
+		scratchPath        = scratchHostPath + ":" + scratchMountPath
+		workspacePath      = path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy"))
+		targetMetadataPath = targetMetdatadaHostPath + ":" + targetMetadataMountPath
+	)
 
 	t.Run("it executes a workflow correctly", func(t *testing.T) {
 		gomock.InOrder(
@@ -241,8 +249,8 @@ func TestExecutor_Execute(t *testing.T) {
 						Executable: "/bin/clone",
 						EnvVars:    appendAndSort(envVars, "REPO_URL=github.com/andream16/tree"),
 						VolumeBindings: []string{
-							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
-							sourceCodeHostPath + ":" + sourceCodeMountPath,
+							workspacePath,
+							sourcePath,
 						},
 						Cmd: []string{"/workspace/source-code"},
 					},
@@ -259,9 +267,9 @@ func TestExecutor_Execute(t *testing.T) {
 						Executable: "/bin/prescan",
 						EnvVars:    envVars,
 						VolumeBindings: []string{
-							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
-							scratchHostPath + ":" + scratchMountPath,
-							sourceCodeHostPath + ":" + sourceCodeMountPath,
+							workspacePath,
+							scratchPath,
+							sourcePath,
 						},
 						Cmd: []string{"--from=/workspace/source-code", "--to=/workspace/scratch"},
 					},
@@ -278,8 +286,8 @@ func TestExecutor_Execute(t *testing.T) {
 						Executable: "/bin/scan",
 						EnvVars:    envVars,
 						VolumeBindings: []string{
-							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
-							scratchHostPath + ":" + scratchMountPath,
+							workspacePath,
+							scratchPath,
 						},
 						Cmd: []string{"/workspace/scratch"},
 					},
@@ -294,11 +302,17 @@ func TestExecutor_Execute(t *testing.T) {
 						Name:       scanner2ComponentStepName,
 						Image:      scanner2ComponentImage,
 						Executable: "/bin/scan",
-						EnvVars:    appendAndSort(envVars, "FROM=/workspace/source-code", "TO=/workspace/scratch"),
+						EnvVars: appendAndSort(
+							envVars,
+							"FROM=/workspace/source-code",
+							"TARGET_METADATA_PATH=/workspace/target-metadata",
+							"TO=/workspace/scratch",
+						),
 						VolumeBindings: []string{
-							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
-							scratchHostPath + ":" + scratchMountPath,
-							sourceCodeHostPath + ":" + sourceCodeMountPath,
+							workspacePath,
+							scratchPath,
+							sourcePath,
+							targetMetadataPath,
 						},
 					},
 				).
@@ -313,7 +327,7 @@ func TestExecutor_Execute(t *testing.T) {
 						Image:      enricherComponentImage,
 						Executable: "/bin/enrich",
 						VolumeBindings: []string{
-							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
+							workspacePath,
 						},
 						EnvVars: envVars,
 					},
@@ -329,7 +343,7 @@ func TestExecutor_Execute(t *testing.T) {
 						Image:      filterComponentImage,
 						Executable: "/bin/filter",
 						VolumeBindings: []string{
-							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
+							workspacePath,
 						},
 						EnvVars: envVars,
 					},
@@ -345,7 +359,7 @@ func TestExecutor_Execute(t *testing.T) {
 						Image:      reporterComponentImage,
 						Executable: "/bin/report",
 						VolumeBindings: []string{
-							path.Join(absPath, fmt.Sprintf("%s:/workspace", ".smithy")),
+							workspacePath,
 						},
 						Cmd: []string{
 							"-arg1=1",

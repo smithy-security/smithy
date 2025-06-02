@@ -6,11 +6,10 @@ import (
 	"time"
 
 	"github.com/distribution/reference"
+	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
-
-	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
 	"github.com/smithy-security/smithy/smithyctl/component"
 	"github.com/smithy-security/smithy/smithyctl/images"
@@ -53,11 +52,6 @@ func TestSpecParser_Parse(t *testing.T) {
 						EXPECT().
 						Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
 						Return("localhost:5000/components/targets/git-clone:latest", nil),
-
-					mockRemoteImageResolver.
-						EXPECT().
-						Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
-						Return("localhost:5000/components/reporters/json-logger:latest", nil),
 				)
 
 				mockImageResolver.remote = func() (images.Resolver, error) {
@@ -76,11 +70,6 @@ func TestSpecParser_Parse(t *testing.T) {
 					EXPECT().
 					Resolve(ctx, "localhost:5000/components/targets/git-clone:latest").
 					Return("localhost:5000/components/targets/git-clone:latest", nil)
-
-				mockRemoteImageResolver.
-					EXPECT().
-					Resolve(ctx, "localhost:5000/components/reporters/json-logger:latest").
-					Return("localhost:5000/components/reporters/json-logger:latest", nil)
 
 				mockImageResolver.remote = func() (images.Resolver, error) {
 					return mockRemoteImageResolver, nil

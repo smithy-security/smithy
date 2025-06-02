@@ -26,7 +26,7 @@ func TestStaticCredsStore(t *testing.T) {
 			errExpected: true,
 		},
 		{
-			name:        "no password casues an error",
+			name:        "no password causes an error",
 			host:        "localhost:5000",
 			username:    "foo",
 			password:    "",

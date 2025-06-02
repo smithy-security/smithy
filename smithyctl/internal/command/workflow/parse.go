@@ -13,12 +13,10 @@ import (
 	"github.com/distribution/reference"
 	dockerclient "github.com/docker/docker/client"
 	"github.com/go-errors/errors"
+	"github.com/smithy-security/pkg/utils"
+	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 	"gopkg.in/yaml.v3"
 	"oras.land/oras-go/v2/registry/remote/credentials"
-
-	"github.com/smithy-security/pkg/utils"
-
-	v1 "github.com/smithy-security/smithy/pkg/types/v1"
 
 	"github.com/smithy-security/smithy/smithyctl/images"
 	dockerimages "github.com/smithy-security/smithy/smithyctl/images/docker"
