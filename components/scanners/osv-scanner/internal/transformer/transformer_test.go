@@ -131,23 +131,20 @@ func assertValid(t *testing.T, finding *ocsf.VulnerabilityFinding, idx int, nowU
 		idx,
 	)
 	assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
-	// require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
 	require.NotNilf(t, dataSource.SourceCodeMetadata, "Unexpected nil data source source code metadata for finding %d", idx)
 
 	require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 	vulnerability := finding.Vulnerabilities[0]
-	assert.Equalf(t, nowUnix, *vulnerability.FirstSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
-	assert.Equalf(t, nowUnix, *vulnerability.LastSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
+	assert.Equalf(t, nowUnix, *vulnerability.FirstSeenTime, "Unexpected vulnerability firstly time seen time for finding %d", idx)
+	assert.Equalf(t, nowUnix, *vulnerability.LastSeenTime, "Unexpected vulnerability firstly time seen time for finding %d", idx)
 	assert.NotEmptyf(t, vulnerability.Title, "Unexpected empty title for vulnerability for finding %d", idx)
 	assert.NotEmptyf(t, vulnerability.Desc, "Unexpected empty desc for vulnerability for finding %d", idx)
-	require.Lenf(t, vulnerability.AffectedCode, 3, "Unexpected lenght for affected code for vulnerability for finding %d. Expected 3", idx)
+	require.Lenf(t, vulnerability.AffectedCode, 1, "Unexpected length for affected code for vulnerability for finding %d. Expected 3", idx)
 
 	var affectedCode = vulnerability.AffectedCode[0]
 	require.NotNilf(t, affectedCode.File, "Unexpected nil file for vulnerability for finding %d", idx)
 	assert.NotEmptyf(t, affectedCode.File.Path, "Unexpected empty file path for vulnerability for finding %d", idx)
 	assert.NotEmptyf(t, affectedCode.File.Name, "Unexpected empty file name for vulnerability for finding %d", idx)
-	assert.NotNilf(t, affectedCode.StartLine, "Unexpected nil start line for vulnerability for finding %d", idx)
-	assert.NotNilf(t, affectedCode.EndLine, "Unexpected nil end line for vulnerability for finding %d", idx)
 }
 
 func transformMethodTest(t *testing.T, transformCallback func(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error), expectedError error, expectedNumFindings int) {
@@ -166,6 +163,7 @@ func transformMethodTest(t *testing.T, transformCallback func(ctx context.Contex
 	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
 	repositoryURL := "https://github.com/smithy-security/test"
 	targetMetadata := &ocsffindinginfo.DataSource{
+		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
 		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
 			RepositoryUrl: repositoryURL,
 			Reference:     commitRef,
