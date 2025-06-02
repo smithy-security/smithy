@@ -1,12 +1,12 @@
 module github.com/smithy-security/smithy/components/scanners/bandit
 
-go 1.23.3
+go 1.24
 
 require (
 	github.com/go-errors/errors v1.5.1
 	github.com/jonboulle/clockwork v0.5.0
 	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/smithy/sdk v0.0.11-alpha
+	github.com/smithy-security/smithy/sdk v0.0.14-alpha
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.5
 )

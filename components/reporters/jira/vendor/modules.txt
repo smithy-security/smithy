@@ -150,7 +150,7 @@ github.com/smithy-security/pkg/env
 # github.com/smithy-security/pkg/retry v0.0.2
 ## explicit; go 1.24.0
 github.com/smithy-security/pkg/retry
-# github.com/smithy-security/smithy/sdk v0.0.11-alpha
+# github.com/smithy-security/smithy/sdk v0.0.14-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component

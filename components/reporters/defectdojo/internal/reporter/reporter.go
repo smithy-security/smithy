@@ -17,12 +17,13 @@ import (
 
 	"github.com/smithy-security/pkg/env"
 
-	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/client"
-	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/types"
 	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+
+	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/client"
+	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/types"
 )
 
 const (
