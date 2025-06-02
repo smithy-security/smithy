@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/enrichers/reachability/cdxgen-atom-runner
+module github.com/smithy-security/smithy/components/enrichers/reachability/cdxgen-atom-runner
 
 go 1.23.3
 

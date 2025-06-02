@@ -20,8 +20,8 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/smithy-security/smithy/new-components/reporters/defectdojo/internal/client"
-	"github.com/smithy-security/smithy/new-components/reporters/defectdojo/internal/types"
+	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/client"
+	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/types"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"

@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/enrichers/custom-annotation
+module github.com/smithy-security/smithy/components/enrichers/custom-annotation
 
 go 1.23.2
 

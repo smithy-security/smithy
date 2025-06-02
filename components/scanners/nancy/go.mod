@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/scanner/nancy
+module github.com/smithy-security/smithy/components/scanner/nancy
 
 go 1.23.3
 

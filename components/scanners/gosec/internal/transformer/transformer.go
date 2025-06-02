@@ -9,7 +9,7 @@ import (
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
-	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/config"
+	"github.com/smithy-security/smithy/components/scanners/gosec/internal/config"
 )
 
 const TargetTypeRepository TargetType = "repository"

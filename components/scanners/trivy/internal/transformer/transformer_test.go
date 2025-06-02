@@ -15,7 +15,7 @@ import (
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
-	"github.com/smithy-security/smithy/new-components/scanners/trivy/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/trivy/internal/transformer"
 )
 
 func TestTrivyTransformer_Transform(t *testing.T) {

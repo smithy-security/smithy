@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/reporters/defectdojo
+module github.com/smithy-security/smithy/components/reporters/defectdojo
 
 go 1.23.3
 

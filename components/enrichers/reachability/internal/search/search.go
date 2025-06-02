@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
 )
 
 // Searcher is responsible for finding reachable purls in the supplied reachability report.

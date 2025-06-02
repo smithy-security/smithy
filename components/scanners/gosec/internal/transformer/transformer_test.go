@@ -14,9 +14,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/config"
-	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/sarif"
-	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/gosec/internal/config"
+	"github.com/smithy-security/smithy/components/scanners/gosec/internal/sarif"
+	"github.com/smithy-security/smithy/components/scanners/gosec/internal/transformer"
 )
 
 func TestGosecTransformer_Transform(t *testing.T) {

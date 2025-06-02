@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/smithy-security/smithy/new-components/scanners/bandit/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/bandit/internal/transformer"
 	"github.com/smithy-security/smithy/sdk/component"
 )
 

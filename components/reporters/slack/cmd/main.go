@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/smithy-security/smithy/new-components/reporters/slack/internal/reporter"
+	"github.com/smithy-security/smithy/components/reporters/slack/internal/reporter"
 	"github.com/smithy-security/smithy/sdk/component"
 )
 

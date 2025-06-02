@@ -15,7 +15,7 @@ import (
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/new-components/targets/git-clone/pkg/git"
+	"github.com/smithy-security/smithy/components/targets/git-clone/pkg/git"
 )
 
 type (

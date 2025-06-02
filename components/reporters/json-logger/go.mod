@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/reporters/json-logger
+module github.com/smithy-security/smithy/components/reporters/json-logger
 
 go 1.23.2
 

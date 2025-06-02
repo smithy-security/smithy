@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/smithy-security/smithy/new-components/reporters/defectdojo/internal/types"
+	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/types"
 )
 
 func TestDojoClient(t *testing.T) {

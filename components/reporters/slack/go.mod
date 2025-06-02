@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/reporters/slack
+module github.com/smithy-security/smithy/components/reporters/slack
 
 go 1.23.3
 

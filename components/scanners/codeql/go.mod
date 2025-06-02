@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/scanners/codeql
+module github.com/smithy-security/smithy/components/scanners/codeql
 
 go 1.24
 
