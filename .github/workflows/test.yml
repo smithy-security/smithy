@@ -37,7 +37,7 @@ jobs:
         run: make install-go-test-tools
 
       - name: Run Go tests
-        run: make go-tests
+        run: make tests
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2
