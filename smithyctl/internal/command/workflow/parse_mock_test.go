@@ -10,14 +10,14 @@
 package workflow
 
 import (
-	"context"
-	"reflect"
+	context "context"
+	reflect "reflect"
 
-	"github.com/distribution/reference"
+	reference "github.com/distribution/reference"
 	v1 "github.com/smithy-security/smithy/pkg/types/v1"
-	"github.com/smithy-security/smithy/smithyctl/images"
-	"github.com/smithy-security/smithy/smithyctl/registry"
-	"go.uber.org/mock/gomock"
+	images "github.com/smithy-security/smithy/smithyctl/images"
+	registry "github.com/smithy-security/smithy/smithyctl/registry"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockComponentFetcher is a mock of ComponentFetcher interface.

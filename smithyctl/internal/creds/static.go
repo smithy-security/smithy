@@ -19,12 +19,17 @@ type StaticStore struct {
 // NewStaticStore returns a new instance of the Store interface that will
 // return only the credentials provided
 func NewStaticStore(host, username, password string) (StaticStore, error) {
+	if host == "" {
+		return StaticStore{}, errors.Errorf("invalid empty host %s", host)
+	}
+
 	_, err := url.Parse(host)
-	if err != nil {
+	switch {
+	case err != nil:
 		return StaticStore{}, errors.Errorf("could not parse host %s: %w", host, err)
-	} else if username == "" {
+	case username == "":
 		return StaticStore{}, errors.New("username provided is empty")
-	} else if password == "" {
+	case password == "":
 		return StaticStore{}, errors.New("password provided is empty")
 	}
 
