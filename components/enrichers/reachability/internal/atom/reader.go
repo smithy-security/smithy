@@ -11,8 +11,8 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom/purl"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/logging"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/logging"
 )
 
 type (

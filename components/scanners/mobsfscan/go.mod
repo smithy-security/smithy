@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/scanners/mobsfscan
+module github.com/smithy-security/smithy/components/scanners/mobsfscan
 
 go 1.24
 

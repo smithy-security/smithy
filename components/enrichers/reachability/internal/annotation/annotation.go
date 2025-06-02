@@ -11,11 +11,11 @@ import (
 	ocsfExt "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom/purl"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/conf"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/logging"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/search"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/conf"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/logging"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/search"
 )
 
 type (

@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/scanners/trivy
+module github.com/smithy-security/smithy/components/scanners/trivy
 
 go 1.24
 

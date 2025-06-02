@@ -9,7 +9,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 
-	"github.com/smithy-security/smithy/new-components/enrichers/custom-annotation/internal/annotation"
+	"github.com/smithy-security/smithy/components/enrichers/custom-annotation/internal/annotation"
 )
 
 func main() {

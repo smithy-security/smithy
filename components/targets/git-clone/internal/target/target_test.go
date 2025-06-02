@@ -9,8 +9,8 @@ import (
 	"github.com/jonboulle/clockwork"
 	"github.com/stretchr/testify/require"
 
-	"github.com/smithy-security/smithy/new-components/targets/git-clone/internal/target"
-	"github.com/smithy-security/smithy/new-components/targets/git-clone/pkg/git"
+	"github.com/smithy-security/smithy/components/targets/git-clone/internal/target"
+	"github.com/smithy-security/smithy/components/targets/git-clone/pkg/git"
 )
 
 type testCloner struct {

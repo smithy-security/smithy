@@ -15,7 +15,7 @@ import (
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
-	"github.com/smithy-security/smithy/new-components/scanners/semgrep/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/semgrep/internal/transformer"
 )
 
 func TestSemgrepTransformer_Transform(t *testing.T) {

@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/scanners/bandit
+module github.com/smithy-security/smithy/components/scanners/bandit
 
 go 1.23.3
 

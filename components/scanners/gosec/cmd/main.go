@@ -9,9 +9,9 @@ import (
 	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/smithy/sdk/component"
 
-	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/config"
-	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/sarif"
-	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/gosec/internal/config"
+	"github.com/smithy-security/smithy/components/scanners/gosec/internal/sarif"
+	"github.com/smithy-security/smithy/components/scanners/gosec/internal/transformer"
 )
 
 func main() {

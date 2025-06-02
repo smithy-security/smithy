@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/enrichers/reachability
+module github.com/smithy-security/smithy/components/enrichers/reachability
 
 go 1.23.3
 

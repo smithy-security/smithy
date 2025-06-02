@@ -3,8 +3,8 @@ package enricher
 import (
 	"errors"
 
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/conf"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/conf"
 )
 
 type (

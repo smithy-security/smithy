@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/scanners/semgrep
+module github.com/smithy-security/smithy/components/scanners/semgrep
 
 go 1.24
 

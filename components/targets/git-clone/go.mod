@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/targets/git-clone
+module github.com/smithy-security/smithy/components/targets/git-clone
 
 go 1.24
 

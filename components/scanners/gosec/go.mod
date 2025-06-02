@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/scanners/gosec
+module github.com/smithy-security/smithy/components/scanners/gosec
 
 go 1.24
 

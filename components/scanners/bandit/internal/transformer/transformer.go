@@ -14,7 +14,7 @@ import (
 	"github.com/smithy-security/pkg/env"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/new-components/scanners/bandit/internal/util/ptr"
+	"github.com/smithy-security/smithy/components/scanners/bandit/internal/util/ptr"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"

@@ -9,7 +9,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 
-	"github.com/smithy-security/smithy/new-components/reporters/json-logger/internal/reporter"
+	"github.com/smithy-security/smithy/components/reporters/json-logger/internal/reporter"
 )
 
 func main() {

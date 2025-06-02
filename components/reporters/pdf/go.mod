@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/reporters/pdf
+module github.com/smithy-security/smithy/components/reporters/pdf
 
 go 1.23.3
 

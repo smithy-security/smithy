@@ -6,10 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/atom/purl"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/conf"
-	"github.com/smithy-security/smithy/new-components/enrichers/reachability/internal/enricher"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/conf"
+	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/enricher"
 )
 
 func TestNewEnricher(t *testing.T) {

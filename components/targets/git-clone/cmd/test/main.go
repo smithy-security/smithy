@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/smithy-security/smithy/new-components/targets/git-clone/internal/target"
-	"github.com/smithy-security/smithy/new-components/targets/git-clone/pkg/git"
+	"github.com/smithy-security/smithy/components/targets/git-clone/internal/target"
+	"github.com/smithy-security/smithy/components/targets/git-clone/pkg/git"
 )
 
 func main() {

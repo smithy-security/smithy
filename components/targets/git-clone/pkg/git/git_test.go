@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/smithy-security/smithy/new-components/targets/git-clone/pkg/git"
+	"github.com/smithy-security/smithy/components/targets/git-clone/pkg/git"
 )
 
 func TestNewManager(t *testing.T) {

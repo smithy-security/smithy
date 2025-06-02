@@ -9,7 +9,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 
-	"github.com/smithy-security/smithy/new-components/scanners/semgrep/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/semgrep/internal/transformer"
 )
 
 func main() {

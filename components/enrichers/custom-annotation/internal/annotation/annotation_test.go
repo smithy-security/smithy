@@ -13,7 +13,7 @@ import (
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
-	"github.com/smithy-security/smithy/new-components/enrichers/custom-annotation/internal/annotation"
+	"github.com/smithy-security/smithy/components/enrichers/custom-annotation/internal/annotation"
 )
 
 func ptr[T any](v T) *T {

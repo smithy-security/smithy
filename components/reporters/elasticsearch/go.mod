@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/new-components/reporters/elasticsearch
+module github.com/smithy-security/smithy/components/reporters/elasticsearch
 
 go 1.23.3
 

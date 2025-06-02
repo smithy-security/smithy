@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/smithy-security/smithy/new-components/reporters/defectdojo/internal/client"
-	"github.com/smithy-security/smithy/new-components/reporters/defectdojo/internal/reporter"
+	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/client"
+	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/reporter"
 	"github.com/smithy-security/smithy/sdk/component"
 )
 
