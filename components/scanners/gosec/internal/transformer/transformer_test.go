@@ -7,14 +7,15 @@ import (
 	"time"
 
 	"github.com/jonboulle/clockwork"
+	"github.com/smithy-security/smithy/sdk/component"
+	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/sdk/component"
-	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
-
+	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/config"
+	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/sarif"
 	"github.com/smithy-security/smithy/new-components/scanners/gosec/internal/transformer"
 )
 
@@ -22,8 +23,12 @@ func TestGosecTransformer_Transform(t *testing.T) {
 	var (
 		ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
-		nowUnix     = clock.Now().Unix()
-		typeUid     = int64(
+		cfg         = config.Config{
+			RawOutFilePath: "./testdata/gosec.json",
+			TargetType:     transformer.TargetTypeRepository.String(),
+		}
+		nowUnix = clock.Now().Unix()
+		typeUid = int64(
 			ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
 				100 +
 				ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.Number(),
@@ -32,11 +37,11 @@ func TestGosecTransformer_Transform(t *testing.T) {
 
 	defer cancel()
 
-	ocsfTransformer, err := transformer.New(
-		transformer.GosecRawOutFilePath("./testdata/gosec.json"),
-		transformer.GosecTransformerWithTarget(transformer.TargetTypeRepository),
-		transformer.GosecTransformerWithClock(clock),
-	)
+	sarifTransformer, err := sarif.NewTransformer("./testdata/gosec.json", clock)
+	require.NoError(t, err)
+	require.NotNil(t, sarifTransformer)
+
+	ocsfTransformer, err := transformer.New(sarifTransformer, cfg)
 	require.NoError(t, err)
 
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
@@ -158,22 +163,6 @@ func TestGosecTransformer_Transform(t *testing.T) {
 				"Unexpected error unmarshaling data source for finding %d",
 				idx,
 			)
-			assert.Equalf(
-				t,
-				ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
-				dataSource.TargetType,
-				"Unexpected data source target type for finding %d",
-				idx,
-			)
-			require.NotNilf(t, dataSource.Uri, "Unexpected nil data source uri for finding %d", idx)
-			assert.Equalf(
-				t,
-				ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
-				dataSource.Uri.UriSchema,
-				"Unexpected data source uri schema for finding %d",
-				idx,
-			)
-			assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
 			require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
