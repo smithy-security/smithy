@@ -117,6 +117,8 @@ github.com/opencontainers/runc v1.1.13 h1:98S2srgG9vw0zWcDpFMn5TRrh8kLxa/5OFUstu
 github.com/opencontainers/runc v1.1.13/go.mod h1:R016aXacfp/gwQBYw2FDGa9m+n6atbLWrYY8hNMT/sA=
 github.com/ory/dockertest/v3 v3.11.0 h1:OiHcxKAvSDUwsEVh2BjxQQc/5EHz9n0va9awCtNGuyA=
 github.com/ory/dockertest/v3 v3.11.0/go.mod h1:VIPxS1gwT9NpPOrfD3rACs8Y9Z7yhzO4SB194iUDnUI=
+github.com/package-url/packageurl-go v0.1.3 h1:4juMED3hHiz0set3Vq3KeQ75KD1avthoXLtmE3I0PLs=
+github.com/package-url/packageurl-go v0.1.3/go.mod h1:nKAWB8E6uk1MHqiS/lQb9pYBGH2+mdJ2PJc2s50dQY0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
@@ -133,10 +135,12 @@ github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
 github.com/smithy-security/pkg/env v0.0.1 h1:uwLTMLdNN/dv3x4zat75JahEBQDpdBeldjEE8El4OiM=
 github.com/smithy-security/pkg/env v0.0.1/go.mod h1:VIJfDqeAbQQcmohaXcZI6grjeJC9Y8CmqR4ITpdngZE=
-github.com/smithy-security/pkg/sarif v0.0.4 h1:8g0Q2DBQpKihdpj32f0l/NAWmjEhguIivDb2LvrJhlI=
-github.com/smithy-security/pkg/sarif v0.0.4/go.mod h1:ersViyXg5Vm8Cng9iWJ+vCO/VYKzS+WHSMFXsl5WfNc=
-github.com/smithy-security/smithy/sdk v0.0.11-alpha h1:ukPP/nBAbLlvJ0KFA7i4/9+lXV2Lwl6W5sFaEX8LwxU=
-github.com/smithy-security/smithy/sdk v0.0.11-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
+github.com/smithy-security/pkg/sarif v0.0.8 h1:T9O5RHDsEn0p4olF8lPH0PEwCPeUWtAJR4lvgdAjpmc=
+github.com/smithy-security/pkg/sarif v0.0.8/go.mod h1:fMNL2Uk1fxAAPd4uLUH+zTZ8Fc56rzRmUY2PX2t0X2c=
+github.com/smithy-security/pkg/utils v0.0.1 h1:iFMwa5xjn6jelZzJ4PA8ES5q9XLCxh4uh9x91VY8LtA=
+github.com/smithy-security/pkg/utils v0.0.1/go.mod h1:4fKspUvRAMjX42wHOqlGY8bO8EDnKF16WhMXzXyzVnE=
+github.com/smithy-security/smithy/sdk v0.0.14-alpha h1:yoypKsyvDwT7qBSqVb0ddshsp7TbR509DuyLciMwEns=
+github.com/smithy-security/smithy/sdk v0.0.14-alpha/go.mod h1:76LY9UVqLYfc7+a1++rOHkCvvMXAU4zfWw5/TtHbeOI=
 github.com/spf13/cast v1.7.1 h1:cuNEagBQEHWN1FnbGEjCXL2szYEXqfJPbP2HNUaca9Y=
 github.com/spf13/cast v1.7.1/go.mod h1:ancEpBxwJDODSW/UG4rDrAqiKolqNNh2DX3mk86cAdo=
 github.com/sqlc-dev/sqlc v1.28.0 h1:2QB4X22pKNpKMyb8dRLnqZwMXW6S+ZCyYCpa+3/ICcI=
@@ -239,8 +243,8 @@ google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53 h1:
 google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53/go.mod h1:GX3210XPVPUjJbTUbvwI8f2IpZDMZuPJWDzDuebbviI=
 google.golang.org/grpc v1.69.4 h1:MF5TftSMkd8GLw/m0KM6V8CMOCY6NZ1NQDPGFgbTt4A=
 google.golang.org/grpc v1.69.4/go.mod h1:vyjdE6jLBI76dgpDojsFGNaHlxdjXN9ghpnd2o7JGZ4=
-google.golang.org/protobuf v1.36.5 h1:tPhr+woSbjfYvY6/GPufUoYizxw1cF/yFoxJ2fmpwlM=
-google.golang.org/protobuf v1.36.5/go.mod h1:9fA7Ob0pmnwhb644+1+CVWFRbNajQ6iRojtC/QF5bRE=
+google.golang.org/protobuf v1.36.6 h1:z1NpPI8ku2WgiWnf+t9wTPsn6eP1L7ksHUlkfLvd9xY=
+google.golang.org/protobuf v1.36.6/go.mod h1:jduwjTPXsFjZGTmRluh+L6NjiWu7pchiJ2/5YcXBHnY=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=

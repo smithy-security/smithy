@@ -1,15 +1,15 @@
 module github.com/smithy-security/smithy/new-components/scanners/gosec
 
-go 1.23.2
+go 1.24
 
 require (
 	github.com/go-errors/errors v1.5.1
 	github.com/jonboulle/clockwork v0.5.0
 	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/pkg/sarif v0.0.4
-	github.com/smithy-security/smithy/sdk v0.0.11-alpha
+	github.com/smithy-security/pkg/sarif v0.0.8
+	github.com/smithy-security/smithy/sdk v0.0.14-alpha
 	github.com/stretchr/testify v1.10.0
-	google.golang.org/protobuf v1.36.5
+	google.golang.org/protobuf v1.36.6
 )
 
 require (
@@ -42,9 +42,11 @@ require (
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
+	github.com/package-url/packageurl-go v0.1.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
+	github.com/smithy-security/pkg/utils v0.0.1 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/sqlc-dev/sqlc v1.28.0 // indirect
 	github.com/urfave/cli/v2 v2.27.5 // indirect

@@ -120,6 +120,9 @@ github.com/mitchellh/mapstructure
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
+# github.com/package-url/packageurl-go v0.1.3
+## explicit; go 1.18
+github.com/package-url/packageurl-go
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
@@ -132,10 +135,14 @@ github.com/shopspring/decimal
 # github.com/smithy-security/pkg/env v0.0.1
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/pkg/sarif v0.0.4
+# github.com/smithy-security/pkg/sarif v0.0.8
 ## explicit; go 1.23.2
+github.com/smithy-security/pkg/sarif
 github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0
-# github.com/smithy-security/smithy/sdk v0.0.11-alpha
+# github.com/smithy-security/pkg/utils v0.0.1
+## explicit; go 1.23.2
+github.com/smithy-security/pkg/utils
+# github.com/smithy-security/smithy/sdk v0.0.14-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component
@@ -319,8 +326,8 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.36.5
-## explicit; go 1.21
+# google.golang.org/protobuf v1.36.6
+## explicit; go 1.22
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
