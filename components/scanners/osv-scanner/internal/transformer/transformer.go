@@ -130,14 +130,23 @@ func (b *OSVScannerTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 		return nil, errors.Errorf("failed to parse raw semgrep output: %w", err)
 	}
 
-	transformer, err := sarif.NewTransformer(&report,
+	guidProvider, err := sarif.NewBasicStableUUIDProvider()
+	if err != nil {
+		return nil, errors.Errorf("failed to create guid provider: %w", err)
+	}
+
+	transformer, err := sarif.NewTransformer(
+		&report,
 		"",
-		sarif.TargetTypeRepository,
-		b.clock, sarif.RealUUIDProvider{})
+		b.clock,
+		guidProvider,
+		false,
+	)
 	if err != nil {
 		return nil, err
 	}
-	vulns, err := transformer.ToOCSF(ctx)
+
+	vulns, err := transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
 	if err != nil {
 		return nil, err
 	}
