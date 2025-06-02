@@ -35,6 +35,7 @@ func TestMobSFScanTransformer_Transform(t *testing.T) {
 	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
 	repositoryURL := "https://github.com/smithy-security/test"
 	targetMetadata := &ocsffindinginfo.DataSource{
+		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
 		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
 			RepositoryUrl: repositoryURL,
 			Reference:     commitRef,
@@ -150,9 +151,6 @@ func TestMobSFScanTransformer_Transform(t *testing.T) {
 			require.NotNilf(t, finding.FindingInfo, "Unexpected nil finding info for finding %d", idx)
 			findingInfo := finding.FindingInfo
 			assert.Equalf(t, nowUnix, *findingInfo.CreatedTime, "Unexpected finding info created time for finding %d", idx)
-			// assert.Equalf(t, nowUnix, *findingInfo.FirstSeenTime, "Unexpected finding info first time seen for finding %d", idx)
-			// assert.Equalf(t, nowUnix, *findingInfo.LastSeenTime, "Unexpected finding info last time seen for finding %d", idx)
-			// assert.Equalf(t, nowUnix, *findingInfo.ModifiedTime, "Unexpected finding info modified time seen for finding %d", idx)
 			assert.NotEmptyf(t, *findingInfo.Desc, "Unexpected empty desc for finding %d", idx)
 			assert.NotEmptyf(t, findingInfo.Title, "Unexpected empty title for finding %d", idx)
 			assert.NotEmptyf(t, findingInfo.Uid, "Unexpected empty uid for finding %d", idx)
@@ -191,8 +189,6 @@ func TestMobSFScanTransformer_Transform(t *testing.T) {
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 			vulnerability := finding.Vulnerabilities[0]
-			// assert.Equalf(t, nowUnix, *vulnerability.FirstSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
-			// assert.Equalf(t, nowUnix, *vulnerability.LastSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
 			assert.Containsf(
 				t,
 				[]string{

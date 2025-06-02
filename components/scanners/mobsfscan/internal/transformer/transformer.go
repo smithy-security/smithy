@@ -9,10 +9,10 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/pkg/env"
-	sarif "github.com/smithy-security/pkg/sarif"
+	"github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
+	"github.com/smithy-security/pkg/utils"
 
-	"github.com/smithy-security/smithy/new-components/scanners/mobsfscan/internal/util/ptr"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
@@ -145,9 +145,19 @@ func (g *mobSFTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 	)
 
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
-	transformer, err := sarif.NewTransformer(&report,
+
+	guidProvider, err := sarif.NewBasicStableUUIDProvider()
+	if err != nil {
+		return nil, errors.Errorf("failed to create guid provider: %w", err)
+	}
+
+	transformer, err := sarif.NewTransformer(
+		&report,
 		"",
-		g.clock, sarif.RealUUIDProvider{}, false)
+		g.clock,
+		guidProvider,
+		true,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +170,7 @@ func (g *mobSFTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 		if v.FindingInfo.Desc != nil {
 			ruleID := v.FindingInfo.Title
 			v.FindingInfo.Title = *v.FindingInfo.Desc
-			v.FindingInfo.Desc = ptr.Ptr(fmt.Sprintf("%s\n rule-id:%s", *v.FindingInfo.Desc, ruleID))
+			v.FindingInfo.Desc = utils.Ptr(fmt.Sprintf("%s\n rule-id:%s", *v.FindingInfo.Desc, ruleID))
 		}
 	}
 	return ocsfVulns, nil
