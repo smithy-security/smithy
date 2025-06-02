@@ -1,11 +1,11 @@
 module github.com/smithy-security/smithy/components/enrichers/reachability
 
-go 1.23.3
+go 1.24
 
 require (
 	github.com/go-errors/errors v1.5.1
 	github.com/package-url/packageurl-go v0.1.3
-	github.com/smithy-security/smithy/sdk v0.0.12-alpha
+	github.com/smithy-security/smithy/sdk v0.0.14-alpha
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.6
 )

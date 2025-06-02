@@ -7,8 +7,9 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/smithy-security/smithy/components/reporters/elasticsearch/internal/reporter"
 	"github.com/smithy-security/smithy/sdk/component"
+
+	"github.com/smithy-security/smithy/components/reporters/elasticsearch/internal/reporter"
 )
 
 func main() {

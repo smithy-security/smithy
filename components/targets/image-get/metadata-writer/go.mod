@@ -1,8 +1,8 @@
 module github.com/smithy-security/smithy/components/targets/image-get/skopeo-getter
 
-go 1.23.7
+go 1.24
 
-require github.com/smithy-security/smithy/sdk v0.0.11-alpha
+require github.com/smithy-security/smithy/sdk v0.0.14-alpha
 
 require (
 	github.com/go-errors/errors v1.5.1

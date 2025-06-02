@@ -1,10 +1,10 @@
 module github.com/smithy-security/smithy/components/scanners/zaproxy/overwrite-metadata
 
-go 1.23.3
+go 1.24
 
 require (
 	github.com/go-errors/errors v1.5.1
-	github.com/smithy-security/smithy/sdk v0.0.13-alpha
+	github.com/smithy-security/smithy/sdk v0.0.14-alpha
 	google.golang.org/protobuf v1.36.6
 )
 
