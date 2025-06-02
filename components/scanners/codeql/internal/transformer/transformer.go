@@ -156,7 +156,13 @@ func (g *codeqlTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 				return countRes
 			}(report.Runs)),
 		)
-		transformer, err := sarif.NewTransformer(&report, "", g.clock, sarif.RealUUIDProvider{}, true)
+
+		guidProvider, err := sarif.NewBasicStableUUIDProvider()
+		if err != nil {
+			return nil, errors.Errorf("failed to create guid provider: %w", err)
+		}
+
+		transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true)
 		if err != nil {
 			return nil, err
 		}
