@@ -7,7 +7,7 @@ parameters:
     value: https://github.com/sqreen/go-dvwa.git
   - name: reference
     type: string
-    value: main
+    value: master
   - name: base_reference
     type: string
     value: ""
