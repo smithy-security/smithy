@@ -1,10 +1,7 @@
 name: gosec
 description: "Parses gosec findings into OCSF format"
 type: scanner
-parameters:
-  - name: repo_name
-    type: string
-    value: go-dvwa
+parameters: []
 steps:
   - name: scanner
     image: docker.io/securego/gosec:2.15.0
