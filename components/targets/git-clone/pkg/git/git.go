@@ -39,8 +39,6 @@ func NewManager(conf *Conf) (*Manager, error) {
 	switch {
 	case conf.RepoURL == "":
 		return nil, fmt.Errorf(errInvalidConfigurationStr, "repo_url", errInvalidConfigurationReasonEmpty)
-	case conf.Reference == "":
-		return nil, fmt.Errorf(errInvalidConfigurationStr, "reference", errInvalidConfigurationReasonEmpty)
 	}
 
 	u, err := url.Parse(conf.RepoURL)
@@ -69,13 +67,15 @@ func NewManager(conf *Conf) (*Manager, error) {
 	}
 
 	// This is off by default to facilitate local setup.
-	if conf.ConfAuth.AuthEnabled {
-		if conf.ConfAuth.AccessToken == "" {
-			return nil, fmt.Errorf(errInvalidConfigurationStr, "auth_access_token", errInvalidConfigurationReasonEmpty)
-		}
-		if conf.ConfAuth.Username == "" {
-			return nil, fmt.Errorf(errInvalidConfigurationStr, "auth_username", errInvalidConfigurationReasonEmpty)
-		}
+	if conf.ConfAuth.AccessToken == "" && conf.ConfAuth.Username != "" {
+		return nil, fmt.Errorf(errInvalidConfigurationStr, "auth_access_token", errInvalidConfigurationReasonEmpty)
+	}
+
+	if conf.ConfAuth.Username == "" && conf.ConfAuth.AccessToken != "" {
+		return nil, fmt.Errorf(errInvalidConfigurationStr, "auth_username", errInvalidConfigurationReasonEmpty)
+	}
+
+	if conf.ConfAuth.AccessToken != "" {
 		opts.Auth = &http.BasicAuth{
 			Username: conf.ConfAuth.Username,
 			Password: conf.ConfAuth.AccessToken,

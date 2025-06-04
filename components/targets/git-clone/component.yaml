@@ -8,6 +8,12 @@ parameters:
   - name: reference
     type: string
     value: master
+  - name: username
+    type: string
+    value: ""
+  - name: token
+    type: string
+    value: ""
   - name: base_reference
     type: string
     value: ""
@@ -15,6 +21,8 @@ steps:
   - name: clone-repo
     env_vars:
       GIT_CLONE_REPO_URL: "{{ .parameters.repo_url }}"
+      GIT_CLONE_ACCESS_USERNAME: "{{ .parameters.username }}"
+      GIT_CLONE_ACCESS_TOKEN: "{{ .parameters.token }}"
       GIT_CLONE_REFERENCE: "{{ .parameters.reference }}"
       GIT_CLONE_BASE_REFERENCE: "{{ .parameters.base_reference }}"
       GIT_CLONE_PATH: "{{ sourceCodeWorkspace }}"

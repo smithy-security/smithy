@@ -26,7 +26,6 @@ func TestNewManager(t *testing.T) {
 			conf: &git.Conf{
 				Reference: reference,
 				ConfAuth: git.ConfAuth{
-					AuthEnabled: true,
 					AccessToken: accessToken,
 					Username:    accessUsername,
 				},
@@ -34,36 +33,22 @@ func TestNewManager(t *testing.T) {
 			expectsErr: true,
 		},
 		{
-			testCase: "it should return an error because the branch is empty",
+			testCase: "it should return an error because username is set but the access token is empty",
 			conf: &git.Conf{
-				RepoURL: repoURL,
+				Reference: reference,
+				RepoURL:   repoURL,
 				ConfAuth: git.ConfAuth{
-					AuthEnabled: true,
-					AccessToken: accessToken,
-					Username:    accessUsername,
+					Username: accessUsername,
 				},
 			},
 			expectsErr: true,
 		},
 		{
-			testCase: "it should return an error because auth is on but the access token is empty",
+			testCase: "it should return an error because access token is set but the access username is empty",
 			conf: &git.Conf{
 				Reference: reference,
 				RepoURL:   repoURL,
 				ConfAuth: git.ConfAuth{
-					AuthEnabled: true,
-					Username:    accessUsername,
-				},
-			},
-			expectsErr: true,
-		},
-		{
-			testCase: "it should return an error because auth is on but the access username is empty",
-			conf: &git.Conf{
-				Reference: reference,
-				RepoURL:   repoURL,
-				ConfAuth: git.ConfAuth{
-					AuthEnabled: true,
 					AccessToken: accessToken,
 				},
 			},
@@ -82,7 +67,6 @@ func TestNewManager(t *testing.T) {
 				RepoURL:   repoURL,
 				Reference: reference,
 				ConfAuth: git.ConfAuth{
-					AuthEnabled: true,
 					AccessToken: accessToken,
 					Username:    accessUsername,
 				},

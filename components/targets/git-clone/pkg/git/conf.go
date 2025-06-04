@@ -23,7 +23,6 @@ type (
 	// ConfAuth contains authentication configuration.
 	ConfAuth struct {
 		Username    string
-		AuthEnabled bool
 		AccessToken string
 	}
 )
@@ -35,17 +34,29 @@ func NewConf() (*Conf, error) {
 		return nil, err
 	}
 
-	reference, err := env.GetOrDefault("GIT_CLONE_REFERENCE", "", env.WithDefaultOnError(true))
+	reference, err := env.GetOrDefault(
+		"GIT_CLONE_REFERENCE",
+		"",
+		env.WithDefaultOnError(true),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	baseRef, err := env.GetOrDefault("GIT_CLONE_BASE_REFERENCE", "")
+	baseRef, err := env.GetOrDefault(
+		"GIT_CLONE_BASE_REFERENCE",
+		"",
+		env.WithDefaultOnError(true),
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	clonePath, err := env.GetOrDefault("GIT_CLONE_PATH", "./repo", env.WithDefaultOnError(true))
+	clonePath, err := env.GetOrDefault(
+		"GIT_CLONE_PATH",
+		"./repo",
+		env.WithDefaultOnError(true),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -76,23 +87,18 @@ func NewConf() (*Conf, error) {
 		rawDiffOutPath = path.Join(rawDiffOutPath, "raw.diff")
 	}
 
-	authEnabled, err := env.GetOrDefault(
-		"GIT_CLONE_AUTH_ENABLED",
-		false,
+	accessUsername, err := env.GetOrDefault(
+		"GIT_CLONE_ACCESS_USERNAME",
+		"",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	accessToken, err := env.GetOrDefault("GIT_CLONE_ACCESS_TOKEN", "", env.WithDefaultOnError(true))
-	if err != nil {
-		return nil, err
-	}
-
-	accessUsername, err := env.GetOrDefault(
-		"GIT_CLONE_ACCESS_USERNAME",
-		"smithy@smithy.security",
+	accessToken, err := env.GetOrDefault(
+		"GIT_CLONE_ACCESS_TOKEN",
+		"",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
@@ -108,7 +114,6 @@ func NewConf() (*Conf, error) {
 		RawDiffPath:        rawDiffOutPath,
 		ConfAuth: ConfAuth{
 			Username:    accessUsername,
-			AuthEnabled: authEnabled,
 			AccessToken: accessToken,
 		},
 	}, nil
