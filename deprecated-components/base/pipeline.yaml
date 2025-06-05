@@ -1,8 +1,0 @@
----
-apiVersion: tekton.dev/v1beta1
-kind: Pipeline
-metadata:
-  name: smithy
-spec:
-  workspaces: []
-  tasks: []

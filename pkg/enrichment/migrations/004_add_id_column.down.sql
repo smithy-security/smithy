@@ -1,1 +1,0 @@
-ALTER TABLE issues DROP COLUMN uuid;

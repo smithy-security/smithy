@@ -1,7 +1,0 @@
-linters:
-  enable:
-    - asciicheck
-    - errorlint
-    - gofmt
-    - gosec
-    - wastedassign
