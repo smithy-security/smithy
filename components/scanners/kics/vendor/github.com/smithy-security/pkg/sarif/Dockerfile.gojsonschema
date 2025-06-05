@@ -1,0 +1,8 @@
+FROM golang:1.23-alpine
+
+RUN apk add --no-cache ca-certificates
+RUN go install github.com/atombender/go-jsonschema@v0.17.0
+
+WORKDIR /app
+
+ENTRYPOINT ["go-jsonschema"]
