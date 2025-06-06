@@ -12,7 +12,7 @@ type (
 	// Parseable represents the types the parser is capable of handling.
 	// TODO: extend with slices if needed.
 	Parseable interface {
-		string | bool | int | uint | int64 | uint64 | float64 | time.Duration | time.Time
+		string | bool | int | uint | uint32 | int64 | uint64 | float64 | time.Duration | time.Time
 	}
 
 	// ParseOption is a means to customize parse options via variadic parameters.
@@ -92,6 +92,10 @@ func GetOrDefault[T Parseable](envVar string, defaultVal T, opts ...ParseOption)
 		v, err = strconv.ParseBool(envStr)
 	case int:
 		v, err = strconv.Atoi(envStr)
+	case uint32:
+		var i uint64
+		i, err = strconv.ParseUint(envStr, 10, 32)
+		v = uint32(i)
 	case uint:
 		var i uint64
 		i, err = strconv.ParseUint(envStr, 10, 64)

@@ -28,6 +28,11 @@ message Finding {
 message GetFindingsRequest {
   // id is the uuid associated with a group of findings.
   string id = 1;
+  // page is the requested page of results out of the total pages
+  optional uint32 page = 2;
+  // page_size is the number of results expected by the client to
+  // be returned for each page
+  optional uint32 page_size = 3;
 }
 
 // GetFindingsResponse is the response used to get findings.

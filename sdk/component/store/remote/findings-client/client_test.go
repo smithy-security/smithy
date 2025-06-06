@@ -3,7 +3,10 @@ package findingsclient_test
 import (
 	"context"
 	"errors"
+	"maps"
 	"net"
+	"os"
+	"slices"
 	"testing"
 	"time"
 
@@ -17,6 +20,7 @@ import (
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/store"
 	findingsclient "github.com/smithy-security/smithy/sdk/component/store/remote/findings-client"
+	"github.com/smithy-security/smithy/sdk/component/utils"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	v1 "github.com/smithy-security/smithy/sdk/gen/findings_service/v1"
@@ -34,7 +38,8 @@ type (
 	fakeFindingsService struct {
 		grpcServer *grpc.Server
 		v1.UnimplementedFindingsServiceServer
-		findings map[string]map[uint64]*ocsf.VulnerabilityFinding
+		findings         map[string]map[uint64]*ocsf.VulnerabilityFinding
+		findingIDCounter uint64
 	}
 )
 
@@ -43,21 +48,46 @@ func (ffs *fakeFindingsService) GetFindings(_ context.Context, req *v1.GetFindin
 		return &v1.GetFindingsResponse{}, errors.New("create findings request is nil")
 	}
 
+	if req.Page != nil && req.PageSize == nil {
+		return &v1.GetFindingsResponse{}, status.Errorf(codes.InvalidArgument, "when requesting a specific page you need to set the page size")
+	} else if req.Page != nil && *req.PageSize == 0 {
+		return &v1.GetFindingsResponse{}, status.Errorf(codes.InvalidArgument, "page size when set should be greater than 0")
+	}
+
 	findings, ok := ffs.findings[req.Id]
 	if !ok {
 		return &v1.GetFindingsResponse{}, status.Errorf(codes.NotFound, "findings not found")
 	}
 
-	var resFindings = make([]*v1.Finding, 0, len(findings))
-	for id, finding := range findings {
-		resFindings = append(resFindings, &v1.Finding{
-			Id:      id,
-			Details: finding,
-		})
+	var requestedFindingIDs []uint64
+	if req.Page != nil {
+		offset := int(*req.Page * *req.PageSize)
+		if offset > len(findings) {
+			return &v1.GetFindingsResponse{}, status.Errorf(codes.InvalidArgument, "page is out of bounds")
+		} else {
+			requestedFindingIDs = slices.Sorted(maps.Keys(findings))
+			if offset+int(*req.PageSize) < len(requestedFindingIDs) {
+				requestedFindingIDs = requestedFindingIDs[offset:int(*req.PageSize)]
+			} else {
+				requestedFindingIDs = requestedFindingIDs[offset:]
+			}
+		}
+	} else {
+		requestedFindingIDs = slices.Sorted(maps.Keys(findings))
 	}
 
 	return &v1.GetFindingsResponse{
-		Findings: resFindings,
+		Findings: slices.Collect(
+			utils.MapSlice(
+				slices.Values(requestedFindingIDs),
+				func(findingID uint64) *v1.Finding {
+					return &v1.Finding{
+						Id:      findingID,
+						Details: findings[findingID],
+					}
+				},
+			),
+		),
 	}, nil
 }
 
@@ -92,13 +122,13 @@ func (ffs *fakeFindingsService) CreateFindings(_ context.Context, req *v1.Create
 	}
 
 	for _, finding := range req.Findings {
-		existingFindings, ok := ffs.findings[req.Id]
+		_, ok := ffs.findings[req.Id]
 		if !ok {
 			ffs.findings[req.Id] = make(map[uint64]*ocsf.VulnerabilityFinding)
 		}
 
-		// Generating a next ID (serial) that makes sense based on the number of findings present already.
-		ffs.findings[req.Id][uint64(len(existingFindings)+1)] = finding
+		ffs.findingIDCounter++
+		ffs.findings[req.Id][ffs.findingIDCounter] = finding
 	}
 
 	return &v1.CreateFindingsResponse{}, nil
@@ -120,6 +150,7 @@ func (s *FindingsClientTestSuite) SetupSuite() {
 		grpcServer: grpcServer,
 	}
 
+	require.NoError(s.T(), os.Setenv("SMITHY_REMOTE_CLIENT_PAGE_SIZE", "1"))
 	s.findingsServiceClient, err = findingsclient.New()
 	require.NoError(s.T(), err)
 
@@ -169,16 +200,20 @@ func (s *FindingsClientTestSuite) TestClient() {
 		for _, finding := range findings {
 			finding.TypeUid = 120
 		}
-		require.NoError(s.T(), s.findingsServiceClient.Update(ctx, instanceID, []*vf.VulnerabilityFinding{
-			{
-				ID:      1,
-				Finding: findings[0],
-			},
-			{
-				ID:      2,
-				Finding: findings[1],
-			},
-		}))
+		require.NoError(s.T(), s.findingsServiceClient.Update(
+			ctx,
+			instanceID,
+			[]*vf.VulnerabilityFinding{
+				{
+					ID:      1,
+					Finding: findings[0],
+				},
+				{
+					ID:      2,
+					Finding: findings[1],
+				},
+			}),
+		)
 	})
 
 	s.T().Run("it should returns the created findings", func(t *testing.T) {
