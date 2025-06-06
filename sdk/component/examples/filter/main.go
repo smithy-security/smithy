@@ -7,12 +7,13 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	"github.com/smithy-security/smithy/sdk/logger"
 )
 
 type sampleFilter struct{}
 
 func (s sampleFilter) Filter(ctx context.Context, findings []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, bool, error) {
-	component.LoggerFromContext(ctx).Info("Filter.")
+	logger.LoggerFromContext(ctx).Info("Filter.")
 	return make([]*vf.VulnerabilityFinding, 0, 80), true, nil
 }
 
