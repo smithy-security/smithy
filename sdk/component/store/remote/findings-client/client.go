@@ -3,6 +3,8 @@ package findingsclient
 import (
 	"context"
 	"encoding/json"
+	"iter"
+	"slices"
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
@@ -168,7 +170,10 @@ func (c *client) Validate(finding *ocsf.VulnerabilityFinding) error {
 
 // Read gets findings by instanceID.
 func (c *client) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.VulnerabilityFinding, error) {
-	resp, err := c.findingsSvcClient.GetFindings(ctx, &v1.GetFindingsRequest{Id: instanceID.String()})
+	resp, err := c.findingsSvcClient.GetFindings(
+		ctx,
+		&v1.GetFindingsRequest{Id: instanceID.String()},
+	)
 	if err != nil {
 		return nil, errors.Errorf("could not get findings: %w", c.checkErr(err))
 	}
@@ -194,27 +199,44 @@ func (c *client) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.Vulnerab
 	return findings, nil
 }
 
+func mapChunksToFindings(seq iter.Seq[[]*vf.VulnerabilityFinding]) iter.Seq[[]*v1.Finding] {
+	return func(yield func([]*v1.Finding) bool) {
+		for vulnFindingChunk := range seq {
+			vf := make([]*v1.Finding, len(vulnFindingChunk))
+			for _, finding := range vulnFindingChunk {
+				vf = append(vf, &v1.Finding{
+					Id:      finding.ID,
+					Details: finding.Finding,
+				})
+			}
+
+			// Set the capacity of each chunk so that appending to a chunk does
+			// not modify the original slice.
+			if !yield(vf) {
+				return
+			}
+		}
+	}
+}
+
 // Update updates findings by instanceID.
 func (c *client) Update(ctx context.Context, instanceID uuid.UUID, findings []*vf.VulnerabilityFinding) error {
-	reqFindings := make([]*v1.Finding, 0, len(findings))
-	for _, finding := range findings {
-		reqFindings = append(
-			reqFindings,
-			&v1.Finding{
-				Id:      finding.ID,
-				Details: finding.Finding,
-			},
-		)
-	}
+	logger := sdklogger.LoggerFromContext(ctx)
+	batchSize := 100
 
-	if _, err := c.findingsSvcClient.UpdateFindings(
-		ctx,
-		&v1.UpdateFindingsRequest{
-			Id:       instanceID.String(),
-			Findings: reqFindings,
-		},
-	); err != nil {
-		return errors.Errorf("could not update findings: %w", c.checkErr(err))
+	batchNo := 1
+	for findingChunk := range mapChunksToFindings(slices.Chunk(findings, batchSize)) {
+		logger.Info("submitting batch of findings", "batchNo", batchNo, "batchSize", len(findingChunk))
+
+		if _, err := c.findingsSvcClient.UpdateFindings(
+			ctx,
+			&v1.UpdateFindingsRequest{
+				Id:       instanceID.String(),
+				Findings: findingChunk,
+			},
+		); err != nil {
+			return errors.Errorf("could not update findings: %w", c.checkErr(err))
+		}
 	}
 
 	return nil
@@ -222,14 +244,22 @@ func (c *client) Update(ctx context.Context, instanceID uuid.UUID, findings []*v
 
 // Write creates findings by instanceID.
 func (c *client) Write(ctx context.Context, instanceID uuid.UUID, findings []*ocsf.VulnerabilityFinding) error {
-	if _, err := c.findingsSvcClient.CreateFindings(
-		ctx,
-		&v1.CreateFindingsRequest{
-			Id:       instanceID.String(),
-			Findings: findings,
-		},
-	); err != nil {
-		return errors.Errorf("could not update findings: %w", c.checkErr(err))
+	logger := sdklogger.LoggerFromContext(ctx)
+	batchSize := 100
+
+	batchNo := 1
+	for findingChunk := range slices.Chunk(findings, batchSize) {
+		logger.Info("submitting batch of findings", "batchNo", batchNo, "batchSize", len(findingChunk))
+
+		if _, err := c.findingsSvcClient.CreateFindings(
+			ctx,
+			&v1.CreateFindingsRequest{
+				Id:       instanceID.String(),
+				Findings: findingChunk,
+			},
+		); err != nil {
+			return errors.Errorf("could not update findings: %w", c.checkErr(err))
+		}
 	}
 	return nil
 }
