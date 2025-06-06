@@ -7,12 +7,13 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	"github.com/smithy-security/smithy/sdk/logger"
 )
 
 type sampleEnricher struct{}
 
 func (s sampleEnricher) Annotate(ctx context.Context, findings []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, error) {
-	component.LoggerFromContext(ctx).Info("Annotate.")
+	logger.LoggerFromContext(ctx).Info("Annotate.")
 	return make([]*vf.VulnerabilityFinding, 0, 10), nil
 }
 

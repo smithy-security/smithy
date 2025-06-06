@@ -7,12 +7,13 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	"github.com/smithy-security/smithy/sdk/logger"
 )
 
 type sampleScanner struct{}
 
 func (s sampleScanner) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	component.LoggerFromContext(ctx).Info("Transforming.")
+	logger.LoggerFromContext(ctx).Info("Transforming.")
 	return make([]*ocsf.VulnerabilityFinding, 0, 10), nil
 }
 

@@ -14,6 +14,7 @@ import (
 	"github.com/smithy-security/smithy/sdk/component/store"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 func runEnricherHelper(
@@ -28,7 +29,7 @@ func runEnricherHelper(
 	return component.RunEnricher(
 		ctx,
 		enricher,
-		component.RunnerWithLogger(component.NewNoopLogger()),
+		component.RunnerWithLogger(sdklogger.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-enricher"),
 		component.RunnerWithInstanceID(instanceID),
 		component.RunnerWithStorer(store),

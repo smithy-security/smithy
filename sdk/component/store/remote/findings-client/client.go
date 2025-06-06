@@ -16,6 +16,7 @@ import (
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	v1 "github.com/smithy-security/smithy/sdk/gen/findings_service/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 const (

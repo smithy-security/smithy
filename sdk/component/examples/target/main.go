@@ -6,12 +6,13 @@ import (
 	"time"
 
 	"github.com/smithy-security/smithy/sdk/component"
+	"github.com/smithy-security/smithy/sdk/logger"
 )
 
 type sampleTarget struct{}
 
 func (s sampleTarget) Prepare(ctx context.Context) error {
-	component.LoggerFromContext(ctx).Info("Preparing.")
+	logger.LoggerFromContext(ctx).Info("Preparing.")
 	return nil
 }
 
