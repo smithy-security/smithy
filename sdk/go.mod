@@ -12,8 +12,9 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/ory/dockertest/v3 v3.11.0
 	github.com/smithy-security/pkg/env v0.0.1
+	github.com/smithy-security/pkg/utils v0.0.2
 	github.com/sqlc-dev/sqlc v1.27.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/mock v0.5.0
 	golang.org/x/sync v0.8.0
 	google.golang.org/grpc v1.65.0

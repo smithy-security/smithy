@@ -1244,9 +1244,9 @@ func (e *ObjectConsKeyExpr) UnwrapExpression() Expression {
 
 // ForExpr represents iteration constructs:
 //
-//	tuple = [for i, v in list: upper(v) if i > 2]
-//	object = {for k, v in map: k => upper(v)}
-//	object_of_tuples = {for v in list: v.key: v...}
+//     tuple = [for i, v in list: upper(v) if i > 2]
+//     object = {for k, v in map: k => upper(v)}
+//     object_of_tuples = {for v in list: v.key: v...}
 type ForExpr struct {
 	KeyVar string // empty if ignoring the key
 	ValVar string
