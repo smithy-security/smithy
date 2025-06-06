@@ -6,6 +6,7 @@ import (
 	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/sdk/component/store"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 // RunEnricher runs an enricher after initialising the run context.
@@ -15,13 +16,13 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 		func(ctx context.Context, cfg *RunnerConfig) error {
 			var (
 				instanceID = cfg.InstanceID
-				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "enricher")
+				logger     = sdklogger.LoggerFromContext(ctx).With(sdklogger.LogKeyComponentType, "enricher")
 				storer     = cfg.StoreConfig.Storer
 			)
 
 			defer func() {
 				if err := storer.Close(ctx); err != nil {
-					logger.With(logKeyError, err.Error()).Error("closing step failed, ignoring...")
+					logger.With(sdklogger.LogKeyError, err.Error()).Error("closing step failed, ignoring...")
 				}
 			}()
 
@@ -34,7 +35,7 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 					logger.Debug("no findings found, skipping enrichment step...")
 					return nil
 				}
-				logger.With(logKeyError, err.Error()).Error("reading step failed")
+				logger.With(sdklogger.LogKeyError, err.Error()).Error("reading step failed")
 				return errors.Errorf("could not read: %w", err)
 			}
 
@@ -43,22 +44,22 @@ func RunEnricher(ctx context.Context, enricher Enricher, opts ...RunnerOption) e
 				return nil
 			}
 
-			logger = logger.With(logKeyNumParsedFindings, len(findings))
+			logger = logger.With(sdklogger.LogKeyNumParsedFindings, len(findings))
 			logger.Debug("read step completed!")
 
 			logger.Debug("preparing to execute enricher step...")
 			enrichedFindings, err := enricher.Annotate(ctx, findings)
 			if err != nil {
-				logger.With(logKeyError, err.Error()).Error("enricher step failed")
+				logger.With(sdklogger.LogKeyError, err.Error()).Error("enricher step failed")
 				return errors.Errorf("could not enricher: %w", err)
 			}
 
-			logger = logger.With(logKeyNumEnrichedFindings, len(enrichedFindings))
+			logger = logger.With(sdklogger.LogKeyNumEnrichedFindings, len(enrichedFindings))
 			logger.Debug("enricher step completed!")
 			logger.Debug("preparing to execute update step...")
 
 			if err := storer.Update(ctx, instanceID, enrichedFindings); err != nil {
-				logger.With(logKeyError, err.Error()).Error("updating step failed")
+				logger.With(sdklogger.LogKeyError, err.Error()).Error("updating step failed")
 				return errors.Errorf("could not update: %w", err)
 			}
 

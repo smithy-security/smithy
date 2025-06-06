@@ -1,4 +1,4 @@
-package component
+package logger
 
 import (
 	"context"
@@ -7,21 +7,21 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/utils"
+	"github.com/smithy-security/pkg/utils"
 )
 
 const (
-	logKeyError               = "error"
-	logKeyPanicStackTrace     = "panic_stack_trace"
-	logKeySDKVersion          = "sdk_version"
-	logKeyComponentName       = "component_name"
-	logKeyInstanceID          = "instance_id"
-	logKeyComponentType       = "component_type"
-	logKeyNumRawFindings      = "num_raw_findings"
-	logKeyRawFinding          = "raw_finding"
-	logKeyNumParsedFindings   = "num_parsed_findings"
-	logKeyNumFilteredFindings = "num_filtered_findings"
-	logKeyNumEnrichedFindings = "num_enriched_findings"
+	LogKeyError               = "error"
+	LogKeyPanicStackTrace     = "panic_stack_trace"
+	LogKeySDKVersion          = "sdk_version"
+	LogKeyComponentName       = "component_name"
+	LogKeyInstanceID          = "instance_id"
+	LogKeyComponentType       = "component_type"
+	LogKeyNumRawFindings      = "num_raw_findings"
+	LogKeyRawFinding          = "raw_finding"
+	LogKeyNumParsedFindings   = "num_parsed_findings"
+	LogKeyNumFilteredFindings = "num_filtered_findings"
+	LogKeyNumEnrichedFindings = "num_enriched_findings"
 
 	ctxLoggerKey = ctxgKey("logging")
 )
@@ -88,13 +88,13 @@ func ContextWithLogger(ctx context.Context, logger Logger) context.Context {
 func LoggerFromContext(ctx context.Context) Logger {
 	logger := ctx.Value(ctxLoggerKey)
 	if utils.IsNil(logger) {
-		l, _ := newDefaultLogger(RunnerConfigLoggingLevelDebug)
+		l, _ := NewDefaultLogger(RunnerConfigLoggingLevelDebug)
 		return l
 	}
 	return logger.(Logger)
 }
 
-func newDefaultLogger(level RunnerConfigLoggingLevel) (*defaultLogger, error) {
+func NewDefaultLogger(level RunnerConfigLoggingLevel) (*defaultLogger, error) {
 	var logLevel slog.Level
 
 	switch level {

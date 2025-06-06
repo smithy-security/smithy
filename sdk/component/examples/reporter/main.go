@@ -7,12 +7,13 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	"github.com/smithy-security/smithy/sdk/logger"
 )
 
 type sampleReporter struct{}
 
 func (s sampleReporter) Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error {
-	component.LoggerFromContext(ctx).Info("Report.")
+	logger.LoggerFromContext(ctx).Info("Report.")
 	return nil
 }
 

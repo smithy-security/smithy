@@ -16,9 +16,9 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/smithy-security/pkg/utils"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/utils"
 	"github.com/smithy-security/smithy/sdk/component/store"
 	"github.com/smithy-security/smithy/sdk/component/store/local/sqlite/sqlc"
 	_ "github.com/smithy-security/smithy/sdk/component/store/local/sqlite/sqlc/migrations"

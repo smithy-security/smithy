@@ -12,6 +12,7 @@ import (
 	"github.com/smithy-security/smithy/sdk/component"
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 func runTargetHelper(t *testing.T, ctx context.Context, target component.Target, store component.Storer) error {
@@ -20,7 +21,7 @@ func runTargetHelper(t *testing.T, ctx context.Context, target component.Target,
 	return component.RunTarget(
 		ctx,
 		target,
-		component.RunnerWithLogger(component.NewNoopLogger()),
+		component.RunnerWithLogger(sdklogger.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-target"),
 		component.RunnerWithInstanceID(uuid.New()),
 	)
@@ -77,7 +78,6 @@ func TestRunTarget(t *testing.T) {
 			Prepare(mockCtx).
 			DoAndReturn(func(ctx context.Context) error {
 				panic(errPrepare)
-				return nil
 			})
 
 		err := runTargetHelper(t, ctx, mockTarget, mockStore)

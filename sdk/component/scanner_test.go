@@ -12,6 +12,7 @@ import (
 	"github.com/smithy-security/smithy/sdk/component/internal/mocks"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 func runScannerHelper(
@@ -26,7 +27,7 @@ func runScannerHelper(
 	return component.RunScanner(
 		ctx,
 		reporter,
-		component.RunnerWithLogger(component.NewNoopLogger()),
+		component.RunnerWithLogger(sdklogger.NewNoopLogger()),
 		component.RunnerWithComponentName("sample-scanner"),
 		component.RunnerWithInstanceID(instanceID),
 		component.RunnerWithStorer(storer),
