@@ -29,7 +29,7 @@ require (
 	github.com/smithy-security/pkg/detect-repo-languages v0.0.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.11.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tektoncd/pipeline v0.57.0
 	github.com/trivago/tgo v1.0.7
 	github.com/xeipuuv/gojsonschema v1.2.0
