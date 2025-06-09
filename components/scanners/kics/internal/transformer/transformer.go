@@ -8,7 +8,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/pkg/env"
-	sarif "github.com/smithy-security/pkg/sarif"
+	"github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 
 	"github.com/smithy-security/smithy/sdk/component"
@@ -143,10 +143,16 @@ func (g *kicsTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityF
 	)
 
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
-	transformer, err := sarif.NewTransformer(&report, "", g.clock, sarif.RealUUIDProvider{}, true)
+	guidProvider, err := sarif.NewBasicStableUUIDProvider()
+	if err != nil {
+		return nil, errors.Errorf("failed to create guid provider: %w", err)
+	}
+
+	transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true)
 	if err != nil {
 		return nil, err
 	}
+
 	ocsfFindings, err := transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
 	if err != nil {
 		return nil, err
