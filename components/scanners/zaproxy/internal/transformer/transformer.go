@@ -13,6 +13,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 const TargetTypeWebsite TargetType = "website"
@@ -112,8 +113,7 @@ func New(opts ...ZapTransformerOption) (*zapTransformer, error) {
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *zapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	logger := component.
-		LoggerFromContext(ctx)
+	logger := sdklogger.LoggerFromContext(ctx)
 
 	logger.Debug("preparing to parse raw zap output...")
 

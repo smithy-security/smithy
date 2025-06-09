@@ -6,6 +6,7 @@ import (
 	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/sdk/component/store"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 // RunReporter runs a reporter after initialising the run context.
@@ -15,13 +16,13 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 		func(ctx context.Context, cfg *RunnerConfig) error {
 			var (
 				instanceID = cfg.InstanceID
-				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "reporter")
+				logger     = sdklogger.LoggerFromContext(ctx).With(sdklogger.LogKeyComponentType, "reporter")
 				storer     = cfg.StoreConfig.Storer
 			)
 
 			defer func() {
 				if err := storer.Close(ctx); err != nil {
-					logger.With(logKeyError, err.Error()).Error("closing step failed, ignoring...")
+					logger.With(sdklogger.LogKeyError, err.Error()).Error("closing step failed, ignoring...")
 				}
 			}()
 
@@ -34,7 +35,7 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 					logger.Debug("no findings found, skipping reporter step...")
 					return nil
 				}
-				logger.With(logKeyError, err.Error()).Error("reading step failed")
+				logger.With(sdklogger.LogKeyError, err.Error()).Error("reading step failed")
 				return errors.Errorf("could not read: %w", err)
 			}
 
@@ -48,7 +49,7 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 
 			if err := reporter.Report(ctx, findings); err != nil {
 				logger.
-					With(logKeyError, err.Error()).
+					With(sdklogger.LogKeyError, err.Error()).
 					Debug("could not execute report step")
 				return errors.Errorf("could not report findings: %w", err)
 			}
