@@ -27,7 +27,9 @@ type Finding struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id      uint64                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// id is the finding id.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// details contains the underlying OCSF Vulnerability Finding.
 	Details *v1.VulnerabilityFinding `protobuf:"bytes,2,opt,name=details,proto3" json:"details,omitempty"`
 }
 
