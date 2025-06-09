@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-
 	"github.com/smithy-security/smithy/sdk/component"
 
 	"github.com/smithy-security/smithy/new-components/scanners/kics/internal/transformer"
