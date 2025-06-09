@@ -92,16 +92,16 @@ func GetOrDefault[T Parseable](envVar string, defaultVal T, opts ...ParseOption)
 		v, err = strconv.ParseBool(envStr)
 	case int:
 		v, err = strconv.Atoi(envStr)
-	case uint32:
-		var i uint64
-		i, err = strconv.ParseUint(envStr, 10, 32)
-		v = uint32(i)
 	case uint:
 		var i uint64
 		i, err = strconv.ParseUint(envStr, 10, 64)
 		v = uint(i)
 	case int64:
 		v, err = strconv.ParseInt(envStr, 10, 64)
+	case uint32:
+		var i uint64
+		i, err = strconv.ParseUint(envStr, 10, 32)
+		v = uint(i)
 	case uint64:
 		v, err = strconv.ParseUint(envStr, 10, 64)
 	case float64:

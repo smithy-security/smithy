@@ -11,7 +11,7 @@ require (
 	github.com/jonboulle/clockwork v0.4.0
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/ory/dockertest/v3 v3.11.0
-	github.com/smithy-security/pkg/env v0.0.1
+	github.com/smithy-security/pkg/env v0.0.2
 	github.com/smithy-security/pkg/utils v0.0.2
 	github.com/sqlc-dev/sqlc v1.27.0
 	github.com/stretchr/testify v1.10.0
