@@ -100,7 +100,7 @@ func (m *manager) Validate(finding *ocsf.VulnerabilityFinding) error {
 }
 
 // Read finds Vulnerability Findings by instanceID.
-// It returns ErrNoFindingsFound is not vulnerabilities were found.
+// It returns ErrNoFindingsFound if not vulnerabilities were found.
 func (m *manager) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.VulnerabilityFinding, error) {
 	rows, err := m.queries.FindingsByID(ctx, m.newPgUUID(instanceID))
 	if err != nil {
