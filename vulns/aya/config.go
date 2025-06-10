@@ -1,4 +1,4 @@
-package vulns
+package aya
 
 import (
 	"encoding/json"
