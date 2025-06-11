@@ -6,19 +6,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/smithy-security/pkg/utils"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
-
 	"github.com/smithy-security/smithy/components/enrichers/custom-annotation/internal/annotation"
 )
-
-func ptr[T any](v T) *T {
-	return &v
-}
 
 func TestCustomAnnotator_Annotate(t *testing.T) {
 	const annotationName = "reachability"
@@ -38,25 +34,25 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 					ActivityId:   ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
 					CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
 					ClassUid:     ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING,
-					Confidence:   ptr("MEDIUM"),
-					ConfidenceId: ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_LOW),
-					Count:        ptr(int32(1)),
+					Confidence:   utils.Ptr("MEDIUM"),
+					ConfidenceId: utils.Ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_LOW),
+					Count:        utils.Ptr(int32(1)),
 					FindingInfo: &ocsf.FindingInfo{
 						CreatedTime: &now,
 						DataSources: []string{
 							"/main.go",
 						},
-						Desc:          ptr("lots of hacks"),
+						Desc:          utils.Ptr("lots of hacks"),
 						FirstSeenTime: &now,
 						LastSeenTime:  &now,
 						ModifiedTime:  &now,
-						ProductUid:    ptr("gosec"),
+						ProductUid:    utils.Ptr("gosec"),
 						Title:         "You have lots of issues",
 						Uid:           "1",
 					},
-					Message: ptr("lots of hacks"),
+					Message: utils.Ptr("lots of hacks"),
 					Resource: &ocsf.ResourceDetails{
-						Uid: ptr(
+						Uid: utils.Ptr(
 							strings.Join([]string{
 								"/main.go",
 								"1",
@@ -71,11 +67,11 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 							},
 						},
 					},
-					RawData:    ptr(`{"issues" : []}`),
-					Severity:   ptr("CRITICAL"),
+					RawData:    utils.Ptr(`{"issues" : []}`),
+					Severity:   utils.Ptr("CRITICAL"),
 					SeverityId: ocsf.VulnerabilityFinding_SEVERITY_ID_CRITICAL,
 					StartTime:  &now,
-					Status:     ptr("opened"),
+					Status:     utils.Ptr("opened"),
 					Time:       now,
 					TypeUid: int64(
 						ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
@@ -86,7 +82,7 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 						{
 							Cwe: &ocsf.Cwe{
 								Uid:    "1",
-								SrcUrl: ptr("https://issues.com/1"),
+								SrcUrl: utils.Ptr("https://issues.com/1"),
 							},
 						},
 					},
@@ -98,25 +94,25 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 					ActivityId:   ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
 					CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
 					ClassUid:     ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING,
-					Confidence:   ptr("HIGH"),
-					ConfidenceId: ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
-					Count:        ptr(int32(2)),
+					Confidence:   utils.Ptr("HIGH"),
+					ConfidenceId: utils.Ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
+					Count:        utils.Ptr(int32(2)),
 					FindingInfo: &ocsf.FindingInfo{
 						CreatedTime: &now,
 						DataSources: []string{
 							"/internal/sketchy/sketch.go",
 						},
-						Desc:          ptr("stop writing hacky code"),
+						Desc:          utils.Ptr("stop writing hacky code"),
 						FirstSeenTime: &now,
 						LastSeenTime:  &now,
 						ModifiedTime:  &now,
-						ProductUid:    ptr("gosec"),
+						ProductUid:    utils.Ptr("gosec"),
 						Title:         "You have lots of hacky code",
 						Uid:           "2",
 					},
-					Message: ptr("lots of hacky code"),
+					Message: utils.Ptr("lots of hacky code"),
 					Resource: &ocsf.ResourceDetails{
-						Uid: ptr(
+						Uid: utils.Ptr(
 							strings.Join([]string{
 								"/internal/sketchy/sketch.go",
 								"10",
@@ -131,11 +127,11 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 							},
 						},
 					},
-					RawData:    ptr(`{"issues" : [{"id": 2}]}`),
-					Severity:   ptr("HIGH"),
+					RawData:    utils.Ptr(`{"issues" : [{"id": 2}]}`),
+					Severity:   utils.Ptr("HIGH"),
 					SeverityId: ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH,
 					StartTime:  &now,
-					Status:     ptr("opened"),
+					Status:     utils.Ptr("opened"),
 					Time:       now,
 					TypeUid: int64(
 						ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
@@ -146,7 +142,7 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 						{
 							Cwe: &ocsf.Cwe{
 								Uid:    "2",
-								SrcUrl: ptr("https://issues.com/2"),
+								SrcUrl: utils.Ptr("https://issues.com/2"),
 							},
 						},
 					},
@@ -158,25 +154,25 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 					ActivityId:   ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
 					CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
 					ClassUid:     ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING,
-					Confidence:   ptr("LOW"),
-					ConfidenceId: ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_LOW),
-					Count:        ptr(int32(3)),
+					Confidence:   utils.Ptr("LOW"),
+					ConfidenceId: utils.Ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_LOW),
+					Count:        utils.Ptr(int32(3)),
 					FindingInfo: &ocsf.FindingInfo{
 						CreatedTime: &now,
 						DataSources: []string{
 							"/internal/sketchy/hacks.go",
 						},
-						Desc:          ptr("stop writing hacks"),
+						Desc:          utils.Ptr("stop writing hacks"),
 						FirstSeenTime: &now,
 						LastSeenTime:  &now,
 						ModifiedTime:  &now,
-						ProductUid:    ptr("gosec"),
+						ProductUid:    utils.Ptr("gosec"),
 						Title:         "You have lots of hacks",
 						Uid:           "3",
 					},
-					Message: ptr("lots of hacks"),
+					Message: utils.Ptr("lots of hacks"),
 					Resource: &ocsf.ResourceDetails{
-						Uid: ptr(
+						Uid: utils.Ptr(
 							strings.Join([]string{
 								"/internal/sketchy/hacks.go",
 								"123",
@@ -191,11 +187,11 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 							},
 						},
 					},
-					RawData:    ptr(`{"issues" : [{"id": 3}]}`),
-					Severity:   ptr("HIGH"),
+					RawData:    utils.Ptr(`{"issues" : [{"id": 3}]}`),
+					Severity:   utils.Ptr("HIGH"),
 					SeverityId: ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH,
 					StartTime:  &now,
-					Status:     ptr("opened"),
+					Status:     utils.Ptr("opened"),
 					Time:       now,
 					TypeUid: int64(
 						ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
@@ -206,7 +202,7 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 						{
 							Cwe: &ocsf.Cwe{
 								Uid:    "3",
-								SrcUrl: ptr("https://issues.com/3"),
+								SrcUrl: utils.Ptr("https://issues.com/3"),
 							},
 						},
 					},
@@ -225,5 +221,17 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 		require.NoError(t, err)
 		require.Len(t, enrichedVulns, 3)
 		assert.ElementsMatch(t, enrichedVulns, vulns)
+
+		for _, vuln := range enrichedVulns {
+			require.NotNil(t, vuln)
+			require.NotEmpty(t, vuln.Finding.Enrichments)
+			for _, enrichment := range vuln.Finding.Enrichments {
+				require.NotNil(t, enrichment)
+				require.Equal(t, annotationName, enrichment.Name)
+				require.Equal(t, "custom-annotation-enricher", *enrichment.Provider)
+				require.Equal(t, "custom-annotation-enricher", *enrichment.Type)
+				require.NotEmpty(t, enrichment.Value)
+			}
+		}
 	})
 }

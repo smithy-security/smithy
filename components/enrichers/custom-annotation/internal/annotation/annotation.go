@@ -36,7 +36,7 @@ func NewConf() (*Conf, error) {
 
 	cfg.AnnotationName, err = env.GetOrDefault(
 		"CUSTOM_ANNOTATION_NAME",
-		"",
+		"custom-annotation",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
@@ -98,6 +98,7 @@ func (ca *customAnnotator) Annotate(
 			&ocsf.Enrichment{
 				Name:     ca.conf.AnnotationName,
 				Value:    ca.conf.AnnotationValuesJSON,
+				Type:     &providerName,
 				Provider: &providerName,
 			},
 		)
