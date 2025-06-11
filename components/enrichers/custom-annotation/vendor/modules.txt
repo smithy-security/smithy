@@ -129,6 +129,9 @@ github.com/shopspring/decimal
 # github.com/smithy-security/pkg/env v0.0.1
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
+# github.com/smithy-security/pkg/utils v0.0.2
+## explicit; go 1.23.2
+github.com/smithy-security/pkg/utils
 # github.com/smithy-security/smithy/sdk v0.0.14-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
@@ -153,9 +156,10 @@ github.com/spf13/cast
 # github.com/sqlc-dev/sqlc v1.28.0
 ## explicit; go 1.22.9
 github.com/sqlc-dev/sqlc
-# github.com/stretchr/testify v1.9.0
+# github.com/stretchr/testify v1.10.0
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
+github.com/stretchr/testify/assert/yaml
 github.com/stretchr/testify/require
 # github.com/urfave/cli/v2 v2.27.5
 ## explicit; go 1.18
