@@ -1,10 +1,10 @@
-name: custom-annotation
+name: "custom-annotation"
 description: "Adds a custom annotation enrichment to the passed findings"
-type: enricher
+type: "enricher"
 steps:
-  - name: custom-annotation
-    image: components/enrichers/custom-annotation
+  - name: "custom-annotation"
+    image: "components/enrichers/custom-annotation"
     env_vars:
-      CUSTOM_ANNOTATION_NAME: reachability
+      CUSTOM_ANNOTATION_NAME: "custom-annotation"
       CUSTOM_ANNOTATION_VALUES: '{"foo":"bar"}'
-    executable: /bin/app
+    executable: "/bin/app"
