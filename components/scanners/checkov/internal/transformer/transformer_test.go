@@ -7,15 +7,14 @@ import (
 	"time"
 
 	"github.com/jonboulle/clockwork"
+	"github.com/smithy-security/smithy/sdk/component"
+	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/sdk/component"
-	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
-
-	"github.com/smithy-security/smithy/new-components/scanners/checkov/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/checkov/internal/transformer"
 )
 
 func TestCheckovTransformer_Transform(t *testing.T) {

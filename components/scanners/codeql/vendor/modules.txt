@@ -132,21 +132,20 @@ github.com/russross/blackfriday/v2
 # github.com/shopspring/decimal v1.3.1
 ## explicit; go 1.13
 github.com/shopspring/decimal
-# github.com/smithy-security/pkg/env v0.0.1
+# github.com/smithy-security/pkg/env v0.0.3
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
 # github.com/smithy-security/pkg/sarif v0.0.8
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/sarif
 github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0
-# github.com/smithy-security/pkg/utils v0.0.1
+# github.com/smithy-security/pkg/utils v0.0.2
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/utils
-# github.com/smithy-security/smithy/sdk v0.0.14-alpha
+# github.com/smithy-security/smithy/sdk v0.0.18-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component
-github.com/smithy-security/smithy/sdk/component/internal/utils
 github.com/smithy-security/smithy/sdk/component/store
 github.com/smithy-security/smithy/sdk/component/store/local/sqlite
 github.com/smithy-security/smithy/sdk/component/store/local/sqlite/sqlc
@@ -155,11 +154,13 @@ github.com/smithy-security/smithy/sdk/component/store/remote/findings-client
 github.com/smithy-security/smithy/sdk/component/store/remote/postgresql
 github.com/smithy-security/smithy/sdk/component/store/remote/postgresql/sqlc
 github.com/smithy-security/smithy/sdk/component/store/remote/postgresql/sqlc/migrations
+github.com/smithy-security/smithy/sdk/component/utils
 github.com/smithy-security/smithy/sdk/component/uuid
 github.com/smithy-security/smithy/sdk/component/vulnerability-finding
 github.com/smithy-security/smithy/sdk/gen/findings_service/v1
 github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1
 github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1
+github.com/smithy-security/smithy/sdk/logger
 # github.com/spf13/cast v1.5.0
 ## explicit; go 1.18
 github.com/spf13/cast

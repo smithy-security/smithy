@@ -3,6 +3,8 @@ package findingsclient
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
+	"slices"
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
@@ -12,21 +14,25 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/smithy-security/smithy/sdk/component/store"
+	"github.com/smithy-security/smithy/sdk/component/utils"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	v1 "github.com/smithy-security/smithy/sdk/gen/findings_service/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 const (
-	defaultClientMaxAttempts           = 10
-	defaultClientInitialBackoffSeconds = "5s"
-	defaultClientMaxBackoffSeconds     = "60s"
-	defaultClientBackoffMultiplier     = 1.5
+	defaultClientMaxAttempts                  = 10
+	defaultClientInitialBackoffSeconds        = "5s"
+	defaultClientMaxBackoffSeconds            = "60s"
+	defaultClientBackoffMultiplier            = 1.5
+	defaultClientPageSize              uint32 = 100
 )
 
 type (
 	client struct {
+		pageSize          uint32
 		rpcConn           *grpc.ClientConn
 		findingsSvcClient v1.FindingsServiceClient
 	}
@@ -78,7 +84,17 @@ func New() (*client, error) {
 		return nil, errors.Errorf("could not create findings client connection: %v", err)
 	}
 
+	clientPageSize, err := env.GetOrDefault(
+		"SMITHY_REMOTE_CLIENT_PAGE_SIZE",
+		defaultClientPageSize,
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	return &client{
+		pageSize:          clientPageSize,
 		rpcConn:           conn,
 		findingsSvcClient: v1.NewFindingsServiceClient(conn),
 	}, nil
@@ -166,8 +182,70 @@ func (c *client) Validate(finding *ocsf.VulnerabilityFinding) error {
 }
 
 // Read gets findings by instanceID.
-func (c *client) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.VulnerabilityFinding, error) {
-	resp, err := c.findingsSvcClient.GetFindings(ctx, &v1.GetFindingsRequest{Id: instanceID.String()})
+func (c *client) Read(
+	ctx context.Context,
+	instanceID uuid.UUID,
+	queryOpts *store.QueryOpts,
+) (vfs []*vf.VulnerabilityFinding, err error) {
+	findingBatches := [][]*v1.Finding{}
+
+	defer func() {
+		vfs = slices.Collect(
+			utils.MapSlice(
+				utils.CollectSlices(findingBatches),
+				func(finding *v1.Finding) *vf.VulnerabilityFinding {
+					return &vf.VulnerabilityFinding{
+						Finding: finding.GetDetails(),
+						ID:      finding.GetId(),
+					}
+				},
+			),
+		)
+	}()
+
+	if queryOpts == nil {
+		// we impose our own paging in this case
+		for page := uint32(0); ; page++ {
+			findingsPage, err := c.read(
+				ctx,
+				instanceID,
+				&store.QueryOpts{
+					Page:     page,
+					PageSize: c.pageSize,
+				},
+			)
+			switch {
+			case errors.Is(store.ErrNoFindingsFound, err) && page > 0:
+				return nil, nil
+			case err != nil:
+				return nil, err
+			case len(findingsPage) < int(c.pageSize):
+				findingBatches = append(findingBatches, findingsPage)
+				return nil, nil
+			default:
+				findingBatches = append(findingBatches, findingsPage)
+			}
+		}
+	}
+
+	findings, err := c.read(ctx, instanceID, queryOpts)
+	findingBatches = append(findingBatches, findings)
+	return nil, err
+}
+
+func (c *client) read(
+	ctx context.Context,
+	instanceID uuid.UUID,
+	queryOpts *store.QueryOpts,
+) ([]*v1.Finding, error) {
+	resp, err := c.findingsSvcClient.GetFindings(
+		ctx,
+		&v1.GetFindingsRequest{
+			Id:       instanceID.String(),
+			Page:     &queryOpts.Page,
+			PageSize: &queryOpts.PageSize,
+		},
+	)
 	if err != nil {
 		return nil, errors.Errorf("could not get findings: %w", c.checkErr(err))
 	}
@@ -177,43 +255,41 @@ func (c *client) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.Vulnerab
 		return nil, errors.New("unexpected nil response")
 	case len(resp.Findings) == 0:
 		return nil, store.ErrNoFindingsFound
+	default:
+		return resp.Findings, nil
 	}
-
-	findings := make([]*vf.VulnerabilityFinding, 0, len(resp.Findings))
-	for _, finding := range resp.Findings {
-		findings = append(
-			findings,
-			&vf.VulnerabilityFinding{
-				Finding: finding.GetDetails(),
-				ID:      finding.GetId(),
-			},
-		)
-	}
-
-	return findings, nil
 }
 
 // Update updates findings by instanceID.
 func (c *client) Update(ctx context.Context, instanceID uuid.UUID, findings []*vf.VulnerabilityFinding) error {
-	reqFindings := make([]*v1.Finding, 0, len(findings))
-	for _, finding := range findings {
-		reqFindings = append(
-			reqFindings,
-			&v1.Finding{
-				Id:      finding.ID,
-				Details: finding.Finding,
-			},
-		)
-	}
+	logger := sdklogger.LoggerFromContext(ctx)
 
-	if _, err := c.findingsSvcClient.UpdateFindings(
-		ctx,
-		&v1.UpdateFindingsRequest{
-			Id:       instanceID.String(),
-			Findings: reqFindings,
+	pageNo := 1
+	findingsPageIterator := utils.MapSlice(
+		slices.Chunk(findings, int(c.pageSize)),
+		func(page []*vf.VulnerabilityFinding) []*v1.Finding {
+			vf := []*v1.Finding{}
+			for _, finding := range page {
+				vf = append(vf, &v1.Finding{
+					Id:      finding.ID,
+					Details: finding.Finding,
+				})
+			}
+			return vf
 		},
-	); err != nil {
-		return errors.Errorf("could not update findings: %w", c.checkErr(err))
+	)
+	for findingsPage := range findingsPageIterator {
+		logger.Info("submitting page of findings", slog.Int("pageNo", pageNo), slog.Int("pageSize", len(findingsPage)))
+
+		if _, err := c.findingsSvcClient.UpdateFindings(
+			ctx,
+			&v1.UpdateFindingsRequest{
+				Id:       instanceID.String(),
+				Findings: findingsPage,
+			},
+		); err != nil {
+			return errors.Errorf("could not update findings: %w", c.checkErr(err))
+		}
 	}
 
 	return nil
@@ -221,14 +297,27 @@ func (c *client) Update(ctx context.Context, instanceID uuid.UUID, findings []*v
 
 // Write creates findings by instanceID.
 func (c *client) Write(ctx context.Context, instanceID uuid.UUID, findings []*ocsf.VulnerabilityFinding) error {
-	if _, err := c.findingsSvcClient.CreateFindings(
-		ctx,
-		&v1.CreateFindingsRequest{
-			Id:       instanceID.String(),
-			Findings: findings,
-		},
-	); err != nil {
-		return errors.Errorf("could not update findings: %w", c.checkErr(err))
+	if len(findings) == 0 {
+		return status.Error(codes.InvalidArgument, "no findings provided")
+	}
+
+	logger := sdklogger.LoggerFromContext(ctx)
+
+	pageNo := 1
+	for page := range slices.Chunk(findings, int(c.pageSize)) {
+		logger.Info("submitting batch of findings", slog.Int("pageNo", pageNo), slog.Int("pageSize", len(page)))
+
+		if _, err := c.findingsSvcClient.CreateFindings(
+			ctx,
+			&v1.CreateFindingsRequest{
+				Id:       instanceID.String(),
+				Findings: page,
+			},
+		); err != nil {
+			return errors.Errorf("could not update findings: %w", c.checkErr(err))
+		}
+
+		pageNo += 1
 	}
 	return nil
 }

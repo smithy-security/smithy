@@ -16,6 +16,7 @@ import (
 	"github.com/jonboulle/clockwork"
 	"github.com/package-url/packageurl-go"
 	"github.com/smithy-security/pkg/env"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/smithy/sdk/component"
@@ -209,7 +210,7 @@ func New(opts ...NancyTransformerOption) (*NancyTransformer, error) {
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (b *NancyTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	logger.Debug("preparing to parse raw nancy output...")
 	if b.fileContents == nil {

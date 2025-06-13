@@ -6,10 +6,10 @@ import (
 	"log/slog"
 
 	"github.com/go-errors/errors"
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsfExt "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom"
 	"github.com/smithy-security/smithy/components/enrichers/reachability/internal/atom/purl"
@@ -42,7 +42,7 @@ func (ra *reachabilityAnnotator) Annotate(
 	findings []*vf.VulnerabilityFinding,
 ) ([]*vf.VulnerabilityFinding, error) {
 	var (
-		logger = component.LoggerFromContext(ctx).
+		logger = componentlogger.LoggerFromContext(ctx).
 			With(slog.Int("num_findings", len(findings))).
 			With(slog.String("provider_name", ra.providerName))
 	)

@@ -13,14 +13,12 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/smithy-security/pkg/env"
-
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/client"
 	"github.com/smithy-security/smithy/components/reporters/defectdojo/internal/types"
@@ -137,7 +135,7 @@ func New(conf *Conf, client *client.Client) (*dojoLogger, error) {
 
 // Report logs the findings in json format.
 func (d dojoLogger) Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error {
-	logger := component.
+	logger := componentlogger.
 		LoggerFromContext(ctx).
 		With(slog.Int("num_findings", len(findings)))
 

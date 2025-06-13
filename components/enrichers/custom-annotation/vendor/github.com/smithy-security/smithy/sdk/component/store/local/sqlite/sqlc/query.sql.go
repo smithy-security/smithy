@@ -29,8 +29,8 @@ func (q *Queries) CreateFinding(ctx context.Context, arg CreateFindingParams) er
 
 const findingsByID = `-- name: FindingsByID :many
 SELECT id, details
-    FROM finding
-    WHERE instance_id = ?
+FROM finding
+WHERE instance_id = ?
 `
 
 type FindingsByIDRow struct {
@@ -47,6 +47,51 @@ func (q *Queries) FindingsByID(ctx context.Context, instanceID interface{}) ([]F
 	var items []FindingsByIDRow
 	for rows.Next() {
 		var i FindingsByIDRow
+		if err := rows.Scan(&i.ID, &i.Details); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const findingsPageByID = `-- name: FindingsPageByID :many
+;
+
+SELECT id, details
+FROM finding
+WHERE instance_id = ?
+ORDER BY id
+LIMIT ?
+OFFSET ?
+`
+
+type FindingsPageByIDParams struct {
+	InstanceID interface{}
+	Limit      int64
+	Offset     int64
+}
+
+type FindingsPageByIDRow struct {
+	ID      int64
+	Details string
+}
+
+func (q *Queries) FindingsPageByID(ctx context.Context, arg FindingsPageByIDParams) ([]FindingsPageByIDRow, error) {
+	rows, err := q.db.QueryContext(ctx, findingsPageByID, arg.InstanceID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FindingsPageByIDRow
+	for rows.Next() {
+		var i FindingsPageByIDRow
 		if err := rows.Scan(&i.ID, &i.Details); err != nil {
 			return nil, err
 		}
