@@ -29,7 +29,7 @@ func RunFilter(ctx context.Context, filter Filter, opts ...RunnerOption) error {
 			logger.Debug("preparing to execute filter component...")
 			logger.Debug("preparing to execute read step...")
 
-			findings, err := storer.Read(ctx, instanceID)
+			findings, err := storer.Read(ctx, instanceID, nil)
 			if err != nil {
 				if errors.Is(err, store.ErrNoFindingsFound) {
 					logger.Debug("no findings found, skipping filter step...")

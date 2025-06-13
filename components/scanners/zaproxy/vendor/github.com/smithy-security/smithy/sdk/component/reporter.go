@@ -29,7 +29,7 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 			logger.Debug("preparing to execute component...")
 			logger.Debug("preparing to execute read step...")
 
-			findings, err := storer.Read(ctx, instanceID)
+			findings, err := storer.Read(ctx, instanceID, nil)
 			if err != nil {
 				if errors.Is(err, store.ErrNoFindingsFound) {
 					logger.Debug("no findings found, skipping reporter step...")
