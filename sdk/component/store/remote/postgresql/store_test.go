@@ -253,7 +253,7 @@ func (suite *ManagerTestSuite) TestManager() {
 	defer cancel()
 
 	suite.T().Run("given an empty findings table, I shouldn't find any for an instanceID", func(t *testing.T) {
-		f, err := suite.manager.Read(ctx, instanceID)
+		f, err := suite.manager.Read(ctx, instanceID, nil)
 		require.ErrorIs(t, err, store.ErrNoFindingsFound)
 		assert.Empty(t, f)
 	})
@@ -263,7 +263,7 @@ func (suite *ManagerTestSuite) TestManager() {
 	})
 
 	suite.T().Run("given two findings are present in the database, I should be able to retrieve them", func(t *testing.T) {
-		resFindings, err := suite.manager.Read(ctx, instanceID)
+		resFindings, err := suite.manager.Read(ctx, instanceID, nil)
 		require.NoError(t, err)
 		require.Len(t, resFindings, 2)
 
@@ -297,7 +297,7 @@ func (suite *ManagerTestSuite) TestManager() {
 				}),
 			)
 
-			resFindings, err := suite.manager.Read(ctx, instanceID)
+			resFindings, err := suite.manager.Read(ctx, instanceID, nil)
 			require.NoError(t, err)
 			require.Len(t, resFindings, 2)
 

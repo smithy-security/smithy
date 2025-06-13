@@ -219,7 +219,6 @@ func TestRunScanner(t *testing.T) {
 						vulns []*ocsf.VulnerabilityFinding,
 					) error {
 						panic(errStore)
-						return nil
 					}),
 			mockStore.
 				EXPECT().
