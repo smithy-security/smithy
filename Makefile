@@ -71,8 +71,8 @@ install-go-fmt-tools:
 
 $(go_fmt_paths):
 	@echo "============== Tidying up Go files for package $$(dirname $@) =============="
-	@find $$(dirname $@) -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*_mock_test.go" | xargs gofmt -w
-	@find $$(dirname $@) -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*_mock_test.go" -exec goimports -local github.com/smithy-security/smithy/$$(dirname $@) -w {} \;
+	@find $$(dirname $@) -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*mock*.go" | xargs gofmt -w
+	@find $$(dirname $@) -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*mock*.go" -exec goimports -local github.com/smithy-security/smithy/$$(dirname $@) -w {} \;
 
 fmt-go: $(go_fmt_paths)
 
