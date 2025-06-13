@@ -11,6 +11,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 const SCANNER_TARGET_METADATA_PATH_ENV_VAR = "TARGET_METADATA_PATH"
@@ -28,13 +29,13 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 		func(ctx context.Context, cfg *RunnerConfig) error {
 			var (
 				instanceID = cfg.InstanceID
-				logger     = LoggerFromContext(ctx).With(logKeyComponentType, "scanner")
+				logger     = sdklogger.LoggerFromContext(ctx).With(sdklogger.LogKeyComponentType, "scanner")
 				store      = cfg.StoreConfig.Storer
 			)
 
 			defer func() {
 				if err := store.Close(ctx); err != nil {
-					logger.With(logKeyError, err.Error()).Error("closing step failed, ignoring...")
+					logger.With(sdklogger.LogKeyError, err.Error()).Error("closing step failed, ignoring...")
 				}
 			}()
 
@@ -80,7 +81,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 			switch {
 			case err != nil:
 				logger.
-					With(logKeyError, err.Error()).
+					With(sdklogger.LogKeyError, err.Error()).
 					Debug("could not execute transform step")
 				return errors.Errorf("could not transform raw findings: %w", err)
 			case len(rawFindings) == 0:
@@ -89,15 +90,15 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 			}
 
 			logger = logger.
-				With(logKeyNumRawFindings, len(rawFindings))
+				With(sdklogger.LogKeyNumRawFindings, len(rawFindings))
 			logger.Debug("transform step completed!")
 			logger.Debug("preparing to execute validate step...")
 
 			for _, rv := range rawFindings {
 				if err := store.Validate(rv); err != nil {
 					logger.
-						With(logKeyError, err.Error()).
-						With(logKeyRawFinding, rv).
+						With(sdklogger.LogKeyError, err.Error()).
+						With(sdklogger.LogKeyRawFinding, rv).
 						Error("invalid raw finding")
 					return errors.Errorf("invalid raw finding: %w", err)
 				}
@@ -108,7 +109,7 @@ func RunScanner(ctx context.Context, scanner Scanner, opts ...RunnerOption) erro
 
 			if err := store.Write(ctx, instanceID, rawFindings); err != nil {
 				logger.
-					With(logKeyError, err.Error()).
+					With(sdklogger.LogKeyError, err.Error()).
 					Debug("could not execute store step")
 				return errors.Errorf("could not store vulnerabilities: %w", err)
 			}

@@ -13,10 +13,10 @@ import (
 	"strings"
 
 	"github.com/go-errors/errors"
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/smithy/components/reporters/jira/internal/issuer"
@@ -82,7 +82,7 @@ func (r *reporter) Report(
 	ctx context.Context,
 	findings []*vf.VulnerabilityFinding,
 ) error {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	logger.Debug("preparing to report issues...")
 	if len(findings) == 0 {

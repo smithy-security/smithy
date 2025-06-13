@@ -1,7 +1,16 @@
 -- name: FindingsByID :many
 SELECT id, details
-    FROM finding
-    WHERE instance_id = ?
+FROM finding
+WHERE instance_id = ?
+;
+
+-- name: FindingsPageByID :many
+SELECT id, details
+FROM finding
+WHERE instance_id = ?
+ORDER BY id
+LIMIT ?
+OFFSET ?
 ;
 
 -- name: CreateFinding :exec

@@ -11,8 +11,8 @@ import (
 	"github.com/go-errors/errors"
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/jonboulle/clockwork"
-	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/smithy/components/targets/git-clone/pkg/git"
@@ -70,7 +70,7 @@ func NewTarget(conf *git.Conf, cloner Cloner, opts ...gitCloneTargetOption) (*gi
 func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 	var (
 		startTime = g.clock.Now()
-		logger    = component.
+		logger    = componentlogger.
 				LoggerFromContext(ctx).
 				With(slog.String("clone_start_time", startTime.Format(time.RFC3339))).
 				With(slog.String("repo_url", g.conf.RepoURL)).
@@ -80,7 +80,7 @@ func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 				With(slog.String("raw_diff_path", g.conf.RawDiffPath))
 	)
 
-	ctx = component.ContextWithLogger(ctx, logger)
+	ctx = componentlogger.ContextWithLogger(ctx, logger)
 	logger.Debug("preparing to clone repository...")
 	repo, err := g.cloner.Clone(ctx)
 	if err != nil {
@@ -120,7 +120,7 @@ func (g *gitCloneTarget) Prepare(ctx context.Context) error {
 }
 
 func (g *gitCloneTarget) prepareMetadata(ctx context.Context) error {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 	logger.Debug("preparing to write target metadata...")
 
 	if g.conf.TargetMetadataPath == "" {
@@ -176,7 +176,7 @@ func (g *gitCloneTarget) prepareDiff(ctx context.Context, repo *git.Repository) 
 		return nil
 	}
 
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 	logger.Debug("preparing to compute diff...")
 
 	diff, err := repo.GetDiff(ctx)

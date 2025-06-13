@@ -202,7 +202,10 @@ $(go_sdk_lib_update):
 	@if ! $$(grep "github.com/smithy-security/smithy/sdk" $$(dirname $@)/go.mod > /dev/null); then \
 		echo "component $$(dirname $@) doesn't have a dependency on the Smithy SDK"; \
 	else \
-		cd $$(dirname $@) && go get github.com/smithy-security/smithy/sdk@$(SDK_VERSION) && go mod vendor; \
+		cd $$(dirname $@); \
+		go get github.com/smithy-security/smithy/sdk@$(SDK_VERSION); \
+		go mod tidy; \
+		go mod vendor; \
 	fi
 
 # Bumps the SDK to a specified version and skips

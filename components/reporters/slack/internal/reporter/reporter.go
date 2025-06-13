@@ -12,10 +12,9 @@ import (
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
-
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 type (
@@ -70,7 +69,7 @@ func (s slackLogger) Report(
 	ctx context.Context,
 	findings []*vf.VulnerabilityFinding,
 ) error {
-	logger := component.
+	logger := componentlogger.
 		LoggerFromContext(ctx).
 		With(slog.Int("num_findings", len(findings)))
 

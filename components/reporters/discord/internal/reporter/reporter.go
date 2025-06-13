@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/go-errors/errors"
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/components/reporters/discord/internal/config"
 )
@@ -33,7 +33,7 @@ func New(cfg config.Config, ms MessageSender) (*reporter, error) {
 
 // Report reports issues found to the implemented messages platform.
 func (r reporter) Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 	if len(findings) == 0 {
 		logger.Debug("no findings found, skipping...")
 		return nil

@@ -11,6 +11,7 @@ import (
 	"github.com/smithy-security/pkg/env"
 	"github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
@@ -113,7 +114,7 @@ func New(opts ...CodeqlTransformerOption) (*codeqlTransformer, error) {
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *codeqlTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 	logger.Debug("preparing to parse raw codeql output...")
 
 	var result []*ocsf.VulnerabilityFinding

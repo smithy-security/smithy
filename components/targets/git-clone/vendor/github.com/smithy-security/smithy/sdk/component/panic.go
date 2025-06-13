@@ -3,6 +3,8 @@ package component
 import (
 	"context"
 	"runtime/debug"
+
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 type (
@@ -23,15 +25,14 @@ func NewDefaultPanicHandler() (*defaultPanicHandler, error) {
 
 // HandlePanic logs a panic and tells the runner to exit from the application.
 func (dph *defaultPanicHandler) HandlePanic(ctx context.Context, err any) (error, bool) {
-	logger := LoggerFromContext(ctx)
+	logger := sdklogger.LoggerFromContext(ctx)
 	if err != nil {
 		e, ok := err.(error)
 		if !ok {
-			logger = logger.With(logKeyError, e.Error())
 			return nil, true
 		}
 		logger.With(
-			logKeyPanicStackTrace, string(debug.Stack()),
+			sdklogger.LogKeyPanicStackTrace, string(debug.Stack()),
 		).Error("received a panic. Check the stacktrace for more information. Exiting.")
 		return e, true
 	}

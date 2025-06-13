@@ -6,9 +6,11 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
+	"iter"
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"ariga.io/atlas/sql/migrate"
 	"ariga.io/atlas/sql/sqlclient"
@@ -16,12 +18,13 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	_ "github.com/mattn/go-sqlite3"
+	smithyutils "github.com/smithy-security/pkg/utils"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/utils"
 	"github.com/smithy-security/smithy/sdk/component/store"
 	"github.com/smithy-security/smithy/sdk/component/store/local/sqlite/sqlc"
 	_ "github.com/smithy-security/smithy/sdk/component/store/local/sqlite/sqlc/migrations"
+	"github.com/smithy-security/smithy/sdk/component/utils"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
@@ -47,7 +50,7 @@ type (
 // ManagerWithClock allows customising manager's clock.
 func ManagerWithClock(clock clockwork.Clock) managerOption {
 	return func(m *manager) error {
-		if utils.IsNil(clock) {
+		if smithyutils.IsNil(clock) {
 			return errors.New("invalid nil clock")
 		}
 		m.clock = clock
@@ -113,21 +116,76 @@ func (m *manager) Validate(*ocsf.VulnerabilityFinding) error {
 
 // Read finds Vulnerability Findings by instanceID.
 // It returns ErrNoFindingsFound is not vulnerabilities were found.
-func (m *manager) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.VulnerabilityFinding, error) {
+func (m *manager) Read(
+	ctx context.Context,
+	instanceID uuid.UUID,
+	queryOpts *store.QueryOpts,
+) ([]*vf.VulnerabilityFinding, error) {
+	if queryOpts != nil {
+		return m.readPage(ctx, instanceID, queryOpts)
+	}
+
+	return m.readAll(ctx, instanceID)
+}
+
+func (m *manager) readPage(
+	ctx context.Context,
+	instanceID uuid.UUID,
+	queryOpts *store.QueryOpts,
+) ([]*vf.VulnerabilityFinding, error) {
+	if queryOpts.PageSize == 0 {
+		return nil, errors.New("page size is set to 0")
+	}
+
+	rawFindings, err := m.queries.FindingsPageByID(ctx, sqlc.FindingsPageByIDParams{
+		InstanceID: instanceID.String(),
+		Limit:      int64(queryOpts.PageSize),
+		Offset:     int64(queryOpts.Page) * int64(queryOpts.PageSize),
+	})
+	if err != nil {
+		return nil, errors.Errorf("could not find findings: %w", err)
+	}
+
+	return parseRawFindings(
+		utils.MapSlice(
+			slices.Values(rawFindings),
+			func(f sqlc.FindingsPageByIDRow) sqlc.FindingRow {
+				return f
+			},
+		),
+	)
+}
+
+func (m *manager) readAll(
+	ctx context.Context,
+	instanceID uuid.UUID,
+) ([]*vf.VulnerabilityFinding, error) {
 	rawFindings, err := m.queries.FindingsByID(ctx, instanceID.String())
 	if err != nil {
 		return nil, errors.Errorf("could not find findings: %w", err)
 	}
 
-	var findings = make([]*vf.VulnerabilityFinding, 0, len(rawFindings))
-	for _, finding := range rawFindings {
+	return parseRawFindings(
+		utils.MapSlice(
+			slices.Values(rawFindings),
+			func(f sqlc.FindingsByIDRow) sqlc.FindingRow {
+				return f
+			},
+		),
+	)
+}
+
+func parseRawFindings(rows iter.Seq[sqlc.FindingRow]) ([]*vf.VulnerabilityFinding, error) {
+	findings := []*vf.VulnerabilityFinding{}
+	for rawFinding := range rows {
 		var ocsfFinding ocsf.VulnerabilityFinding
-		if err := protojson.Unmarshal([]byte(finding.Details), &ocsfFinding); err != nil {
+
+		if err := protojson.Unmarshal([]byte(rawFinding.GetDetails()), &ocsfFinding); err != nil {
 			return nil, errors.Errorf("could not unmarshal finding: %w", err)
 		}
 
 		findings = append(findings, &vf.VulnerabilityFinding{
-			ID:      uint64(finding.ID),
+			ID:      uint64(rawFinding.GetID()),
 			Finding: &ocsfFinding,
 		})
 	}

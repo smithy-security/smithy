@@ -12,9 +12,9 @@ import (
 	"github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 	"github.com/smithy-security/pkg/utils"
-
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 const TargetTypeRepository TargetType = "repository"
@@ -114,7 +114,7 @@ func New(opts ...MobSFTransformerOption) (*mobSFTransformer, error) {
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *mobSFTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	logger := component.
+	logger := componentlogger.
 		LoggerFromContext(ctx)
 
 	logger.Debug("preparing to parse raw mobSF output...")

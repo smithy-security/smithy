@@ -5,11 +5,9 @@ import (
 	"log/slog"
 
 	"github.com/go-errors/errors"
-	"google.golang.org/protobuf/encoding/protojson"
-
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
-
-	"github.com/smithy-security/smithy/sdk/component"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // NewJsonLogger returns a new json logger.
@@ -24,7 +22,7 @@ func (j jsonLogger) Report(
 	ctx context.Context,
 	findings []*vf.VulnerabilityFinding,
 ) error {
-	logger := component.
+	logger := componentlogger.
 		LoggerFromContext(ctx).
 		With(slog.Int("num_findings", len(findings)))
 

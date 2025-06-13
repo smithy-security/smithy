@@ -12,11 +12,11 @@ import (
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	playwright "github.com/smithy-security/smithy/pkg/playwright"
 	s3client "github.com/smithy-security/smithy/pkg/s3"
-	"github.com/smithy-security/smithy/sdk/component"
-	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
 // NewReporter returns a new PDF reporter.
@@ -94,7 +94,7 @@ func (p PdfReporter) Report(
 	ctx context.Context,
 	findings []*vf.VulnerabilityFinding,
 ) error {
-	logger := component.LoggerFromContext(ctx).With(slog.Bool("s3_upload_disabled", p.conf.SkipS3Upload))
+	logger := componentlogger.LoggerFromContext(ctx).With(slog.Bool("s3_upload_disabled", p.conf.SkipS3Upload))
 
 	// get the Playwright client
 	pw, err := getPlayWright()

@@ -3,6 +3,7 @@ package component
 import (
 	"context"
 
+	"github.com/smithy-security/smithy/sdk/component/store"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
 	finding "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
@@ -19,7 +20,7 @@ type (
 	// Reader allows reading vulnerability findings from a storage.
 	Reader interface {
 		// Read reads vulnerability findings from a storage.
-		Read(ctx context.Context, instanceID uuid.UUID) ([]*finding.VulnerabilityFinding, error)
+		Read(ctx context.Context, instanceID uuid.UUID, queryOpts *store.QueryOpts) ([]*finding.VulnerabilityFinding, error)
 	}
 
 	// Updater allows updating vulnerability findings in an underlying storage.

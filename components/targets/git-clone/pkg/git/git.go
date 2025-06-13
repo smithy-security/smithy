@@ -13,7 +13,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"github.com/smithy-security/smithy/sdk/component"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 const (
@@ -93,7 +93,7 @@ func NewManager(conf *Conf) (*Manager, error) {
 func (mgr *Manager) Clone(ctx context.Context) (*Repository, error) {
 	var (
 		clonePath = mgr.conf.ClonePath
-		logger    = component.
+		logger    = componentlogger.
 				LoggerFromContext(ctx).
 				With(
 				slog.String("clone_path", clonePath),
@@ -116,7 +116,7 @@ func (mgr *Manager) Clone(ctx context.Context) (*Repository, error) {
 // GetDiff returns the raw git diff between the target reference and the base reference.
 // We try to resolve the base branch based on the passed configuration on relying on default branches main/master.
 func (r *Repository) GetDiff(ctx context.Context) (string, error) {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	currRef, err := r.Repo.Head()
 	if err != nil {

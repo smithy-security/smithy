@@ -9,6 +9,7 @@ import (
 )
 
 // ENUMs GEN
+//go:generate go run github.com/abice/go-enum --file ./logger/enum.go ./...
 //go:generate go run github.com/abice/go-enum --file ./component/enum.go ./...
 
 // Mocks GEN

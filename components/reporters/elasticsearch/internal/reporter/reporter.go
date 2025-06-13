@@ -10,11 +10,10 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 	"github.com/go-errors/errors"
+	"github.com/smithy-security/pkg/env"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/pkg/env"
-
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
@@ -103,7 +102,7 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 
 // Report logs the findings in json format in the target elastcisearch.
 func (e esLogger) Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error {
-	logger := component.
+	logger := componentlogger.
 		LoggerFromContext(ctx).
 		With(slog.Int("num_findings", len(findings)))
 

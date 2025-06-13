@@ -9,6 +9,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/retry"
 	"github.com/smithy-security/smithy/sdk/component"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/components/reporters/discord/internal/config"
 	"github.com/smithy-security/smithy/components/reporters/discord/internal/discord"
@@ -32,7 +33,7 @@ func Main(ctx context.Context) error {
 
 	cfg.Discord.BaseClient, err = retry.NewClient(
 		retry.Config{
-			Logger: component.LoggerFromContext(ctx),
+			Logger: componentlogger.LoggerFromContext(ctx),
 		},
 	)
 	if err != nil {

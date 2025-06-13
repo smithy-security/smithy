@@ -8,7 +8,7 @@ import (
 	"github.com/andygrunwald/go-jira"
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/retry"
-	"github.com/smithy-security/smithy/sdk/component"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/components/reporters/jira/internal/issuer"
 )
@@ -102,7 +102,7 @@ func NewClient(ctx context.Context, cfg Config) (*client, error) {
 	rc, err := retry.NewClient(retry.Config{
 		BaseTransport: transport,
 		MaxRetries:    cfg.ClientMaxRetries,
-		Logger:        component.LoggerFromContext(ctx),
+		Logger:        componentlogger.LoggerFromContext(ctx),
 	})
 	if err != nil {
 		return nil, errors.Errorf("failed to create retry client: %w", err)

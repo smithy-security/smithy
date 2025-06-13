@@ -7,16 +7,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/smithy-security/smithy/sdk/component"
+	"github.com/smithy-security/smithy/sdk/component/store"
+	"github.com/smithy-security/smithy/sdk/component/uuid"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
-
-	"github.com/smithy-security/smithy/sdk/component/uuid"
-	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
-
-	"github.com/smithy-security/smithy/sdk/component"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
 type (
@@ -25,28 +25,28 @@ type (
 		fields []slog.Attr
 	}
 
-	store struct {
+	mockStore struct {
 		vulns []*vf.VulnerabilityFinding
 	}
 )
 
-func (s *store) Close(ctx context.Context) error {
+func (s *mockStore) Close(ctx context.Context) error {
 	return nil
 }
 
-func (s *store) Validate(finding *ocsf.VulnerabilityFinding) error {
+func (s *mockStore) Validate(finding *ocsf.VulnerabilityFinding) error {
 	return nil
 }
 
-func (s *store) Read(ctx context.Context, instanceID uuid.UUID) ([]*vf.VulnerabilityFinding, error) {
+func (s *mockStore) Read(ctx context.Context, instanceID uuid.UUID, _ *store.QueryOpts) ([]*vf.VulnerabilityFinding, error) {
 	return s.vulns, nil
 }
 
-func (s *store) Update(ctx context.Context, instanceID uuid.UUID, findings []*vf.VulnerabilityFinding) error {
+func (s *mockStore) Update(ctx context.Context, instanceID uuid.UUID, findings []*vf.VulnerabilityFinding) error {
 	return nil
 }
 
-func (s *store) Write(ctx context.Context, instanceID uuid.UUID, findings []*ocsf.VulnerabilityFinding) error {
+func (s *mockStore) Write(ctx context.Context, instanceID uuid.UUID, findings []*ocsf.VulnerabilityFinding) error {
 	for _, finding := range findings {
 		s.vulns = append(s.vulns, &vf.VulnerabilityFinding{
 			ID:      uint64(len(s.vulns) + 1),
@@ -97,7 +97,7 @@ func (c *capturingLogger) Error(msg string, keyvals ...any) {
 	c.capture(msg, keyvals...)
 }
 
-func (c *capturingLogger) With(args ...any) component.Logger {
+func (c *capturingLogger) With(args ...any) componentlogger.Logger {
 	c.capture("", args...)
 	return c
 }
@@ -111,7 +111,7 @@ func TestJsonLogger_Report(t *testing.T) {
 		ctx, cancel = context.WithTimeout(context.Background(), time.Second)
 		now         = time.Now().Unix()
 		logger      = &capturingLogger{}
-		st          = &store{}
+		st          = &mockStore{}
 		instanceID  = uuid.New()
 		vulns       = []*ocsf.VulnerabilityFinding{
 			{

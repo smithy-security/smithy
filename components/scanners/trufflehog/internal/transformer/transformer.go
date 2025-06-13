@@ -13,11 +13,11 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/pkg/env"
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/smithy/components/scanners/trufflehog/internal/util/ptr"
 )
@@ -196,7 +196,7 @@ func New(opts ...TrufflehogTransformerOption) (*trufflehogTransformer, error) {
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	logger.Debug("preparing to parse raw trufflehog output...")
 
