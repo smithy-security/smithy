@@ -51,7 +51,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -76,7 +76,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -113,7 +113,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(nil, errRead),
 			mockStore.
 				EXPECT().
@@ -130,7 +130,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(nil, store.ErrNoFindingsFound),
 			mockStore.
 				EXPECT().
@@ -145,7 +145,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(make([]*vf.VulnerabilityFinding, 0), nil),
 			mockStore.
 				EXPECT().
@@ -162,7 +162,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -183,7 +183,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -208,7 +208,7 @@ func TestRunEnricher(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockEnricher.
 				EXPECT().
@@ -216,7 +216,6 @@ func TestRunEnricher(t *testing.T) {
 				DoAndReturn(
 					func(ctx context.Context, vulns []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, error) {
 						panic(errAnnotation)
-						return enrichedVulns, nil
 					}),
 			mockStore.
 				EXPECT().

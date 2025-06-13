@@ -50,7 +50,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -73,7 +73,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -94,7 +94,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -130,7 +130,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(nil, errRead),
 			mockStore.
 				EXPECT().
@@ -145,7 +145,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(nil, store.ErrNoFindingsFound),
 			mockStore.
 				EXPECT().
@@ -160,7 +160,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(make([]*vf.VulnerabilityFinding, 0), nil),
 			mockStore.
 				EXPECT().
@@ -177,7 +177,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -198,7 +198,7 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
@@ -223,14 +223,13 @@ func TestRunFilter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockFilter.
 				EXPECT().
 				Filter(mockCtx, vulns).
 				DoAndReturn(func(ctx context.Context, vulns []*vf.VulnerabilityFinding) ([]*vf.VulnerabilityFinding, bool, error) {
 					panic(errFilter)
-					return filteredVulns, true, nil
 				}),
 			mockStore.
 				EXPECT().

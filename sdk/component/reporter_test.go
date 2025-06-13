@@ -49,7 +49,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockReporter.
 				EXPECT().
@@ -70,8 +70,8 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
-				DoAndReturn(func(ctx context.Context, instanceID uuid.UUID) ([]*vf.VulnerabilityFinding, error) {
+				Read(mockCtx, instanceID, nil).
+				DoAndReturn(func(ctx context.Context, instanceID uuid.UUID, _ *store.QueryOpts) ([]*vf.VulnerabilityFinding, error) {
 					cancel()
 					return vulns, nil
 				}),
@@ -97,7 +97,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(nil, errRead),
 			mockStore.
 				EXPECT().
@@ -112,7 +112,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(nil, store.ErrNoFindingsFound),
 			mockStore.
 				EXPECT().
@@ -127,7 +127,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(make([]*vf.VulnerabilityFinding, 0), nil),
 			mockStore.
 				EXPECT().
@@ -144,7 +144,7 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockReporter.
 				EXPECT().
@@ -165,14 +165,13 @@ func TestRunReporter(t *testing.T) {
 		gomock.InOrder(
 			mockStore.
 				EXPECT().
-				Read(mockCtx, instanceID).
+				Read(mockCtx, instanceID, nil).
 				Return(vulns, nil),
 			mockReporter.
 				EXPECT().
 				Report(mockCtx, vulns).
 				DoAndReturn(func(ctx context.Context, vulns []*vf.VulnerabilityFinding) error {
 					panic(errReporting)
-					return nil
 				}),
 			mockStore.
 				EXPECT().
