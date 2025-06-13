@@ -5,8 +5,8 @@ go 1.24
 require (
 	github.com/go-errors/errors v1.5.1
 	github.com/jonboulle/clockwork v0.5.0
-	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/smithy/sdk v0.0.14-alpha
+	github.com/smithy-security/pkg/env v0.0.3
+	github.com/smithy-security/smithy/sdk v0.0.18-alpha
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.5
 )
@@ -43,6 +43,7 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
+	github.com/smithy-security/pkg/utils v0.0.2 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/sqlc-dev/sqlc v1.28.0 // indirect
 	github.com/urfave/cli/v2 v2.27.6 // indirect

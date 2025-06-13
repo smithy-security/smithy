@@ -8,8 +8,8 @@ import (
 	"text/template"
 
 	"github.com/go-errors/errors"
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/components/reporters/linear/internal/config"
 	"github.com/smithy-security/smithy/components/reporters/linear/internal/linear"
@@ -45,7 +45,7 @@ func (r *reporter) Report(
 	ctx context.Context,
 	findings []*vf.VulnerabilityFinding,
 ) error {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	logger.Debug("preparing to report issues...")
 	if len(findings) == 0 {

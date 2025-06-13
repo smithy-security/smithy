@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/go-errors/errors v1.5.1
-	github.com/smithy-security/smithy/sdk v0.0.14-alpha
+	github.com/smithy-security/smithy/sdk v0.0.18-alpha
 	google.golang.org/protobuf v1.36.6
 )
 
@@ -39,7 +39,8 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
-	github.com/smithy-security/pkg/env v0.0.1 // indirect
+	github.com/smithy-security/pkg/env v0.0.3 // indirect
+	github.com/smithy-security/pkg/utils v0.0.2 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/sqlc-dev/sqlc v1.27.0 // indirect
 	github.com/urfave/cli/v2 v2.26.0 // indirect

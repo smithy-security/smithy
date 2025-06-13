@@ -8,6 +8,7 @@ import (
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/components/scanners/gosec/internal/config"
 )
@@ -56,7 +57,7 @@ func New(converter FindingsConverter, cfg config.Config) (*gosecTransformer, err
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *gosecTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	logger := component.
+	logger := componentlogger.
 		LoggerFromContext(ctx)
 
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
