@@ -34,6 +34,17 @@ export
 ######### CODE QUALITY TARGETS #########
 ########################################
 .PHONY: lint install-lint-tools tests test-go fmt fmt-proto fmt-go install-go-fmt-tools
+install-misspell:
+	@go install github.com/client9/misspell/cmd/misspell@latest
+
+install-reviewdog:
+	@go install github.com/reviewdog/reviewdog/cmd/reviewdog@latest
+
+py-lint-sdk-python: update-poetry-pkgs-sdk-python install-misspell install-reviewdog
+	@reviewdog -fail-level=error $$([ "${CI}" = "true" ] && echo "-reporter=github-pr-review") -diff="git diff origin/main" -filter-mode=added -tee -runners black,misspell $(REVIEWDOG_EXTRA_FLAGS)
+
+
+py-lint: py-lint-sdk-python
 
 lint:
 # we need to redirect stderr to stdout because Github actions don't capture the stderr lolz
@@ -63,7 +74,17 @@ test-go: $(go_test_paths)
 cover-go: test-go
 	@go tool cover -html=tests/output/cover.out -o=tests/output/cover.html && open tests/output/cover.html
 
-tests: test-go
+REVIEWDOG_EXTRA_FLAGS=
+
+update-poetry-pkgs-sdk-python:
+	@poetry --directory sdk/python install --with dev
+
+py-tests-sdk-python: update-poetry-pkgs-sdk-python
+	@poetry --directory sdk/python run -- pytest --capture no ./tests
+
+py-tests: py-tests-sdk-python
+
+tests: test-go py-tests
 
 install-go-fmt-tools:
 	@go install github.com/bufbuild/buf/cmd/buf@v1.45.0
