@@ -1,29 +1,37 @@
-import uuid, os, grpc
-from typing import Union, List
+import uuid
+from smithy_python.helpers.logger import log
+from typing import Union, List, Optional
 from logging import Logger
 from smithy_python.remote_store.findings_service.v1 import findings_service_pb2_grpc, findings_service_pb2
 from smithy_python.dbmanagers import RemoteDBManager, PostgresDBManager, SqliteDBManager
+from abc import ABC
+from smithy_python.enums.db_type_enum import DBTypeEnum
 
-class Component:
+class Component(ABC):
     """
     A component in the Smithy Python SDK that represents a component in the smithy framework.
     """
 
-    def __init__(self, instance_id: Union[uuid.UUID, str], db_mode: str, logger: Logger):
+    def __init__(self, instance_id: Union[uuid.UUID, str], db_type: DBTypeEnum, logger: Optional[Logger] = None) -> None:
         """
         Initializes a new instance of the Component class.
-        **ATTENTION**: Currently only the `remote` database mode is supported, all other modes will raise a `NotImplementedError`.
-        :param instance_id: The UUID of the component instance.
+        **ATTENTION**: Currently only the `remote` database type is supported, all other types will raise a `NotImplementedError`.
+        :param instance_id: The UUID of the instance (aka the Workflow run to be analyzed)
         :type instance_id: Union[uuid.UUID, str]
-        :param db_mode: The database mode for the component, either `sqlite`, `postgres` or `remote`. (remote is gRPC)
-        :type db_mode: str
-        :param logger: An instance of the Logger class for logging.
-        :type logger: Logger
+        :param db_type: The database mode for the enricher, DBTypeEnum, can be either `SQLITE`, `POSTGRES` or `REMOTE`. (remote is gRPC)
+        :type db_type: DBTypeEnum
+        :param logger: Optional an instance of the Logger class for logging, if not provided, a default logger will be used.
+        :type logger: Optional[Logger]
         :raises ValueError: If the instance_id is not a valid UUID.
-        :raises TypeError: If the instance_id is not a string or UUID object.
+        :raises TypeError: If the instance_id is not a string or UUID object, or the logger is not an instance of Logger or None.
         """
-        
-        self.log = logger
+
+        if not logger:
+            self.log = log
+        elif isinstance(logger, Logger):
+            self.log = logger
+        else:
+            raise TypeError("logger must be an instance of Logger or None.")
 
         if instance_id is None or (not isinstance(instance_id, str) and not isinstance(instance_id, uuid.UUID)):
             raise TypeError("instance_id must be a string or UUID object.")
@@ -36,31 +44,58 @@ class Component:
         
         self.instance_id = instance_id
 
-        if not db_mode or not isinstance(db_mode, str):
-            raise TypeError("db_mode must be a string.")
+        if not db_type or not isinstance(db_type, DBTypeEnum):
+            raise TypeError("db_type must be a DBTypeEnum.")
         
         
-        match db_mode:
-            case "sqlite":
+        match db_type:
+            case DBTypeEnum.SQLITE:
                 self.db_manager = SqliteDBManager()
-            case "postgres":
+            case DBTypeEnum.POSTGRES:
                 self.db_manager = PostgresDBManager()
-            case "remote":
+            case DBTypeEnum.REMOTE:
                 self.db_manager = RemoteDBManager(instance_id=self.instance_id)
             case _:
-                raise ValueError("db_mode must be one of 'sqlite', 'postgres', or 'remote'.")
+                raise ValueError("db_type must be one of DBTypeEnum.SQLITE, DBTypeEnum.POSTGRES, or DBTypeEnum.REMOTE.")
 
 
-    def get_findings(self) -> Union[List[findings_service_pb2.Finding]]:
+    def get_findings(self) -> Union[List[findings_service_pb2.Finding], List[any]]:
         """
         This method helps you to retrieve findings from the database.
         It will use the database mode set in the component instance to determine how to retrieve the findings.
         
-        :return: The findings retrieved from the database.
+        :return: The findings retrieved from the database. This could be a list of `findings_service_pb2.Finding` objects if using the remote database mode, or a list of findings in the format defined by the specific database manager if using `SQLITE` or `POSTGRES`.
         """
-        
 
         return self.db_manager.get_findings()
+
+
+    def update_findings(self, findings: List[any]) -> bool:
+        """
+        This method helps you to update findings in the database.
+        It will use the database mode set in the component instance to determine how to update the findings.
+        
+        :param findings: A list of findings to be updated in the database. The format of the findings should match the expected format of the specific database manager being used.
+        :type findings: List[any]
+        :return: True if the update was successful, False otherwise.
+        :rtype: bool
+        """
+
+        return self.db_manager.update_findings(findings)
+
+
+    def create_findings(self, findings: List[any]) -> bool:
+        """
+        This method helps you to create new findings in the database.
+        It will use the database mode set in the component instance to determine how to create the findings.
+        
+        :param findings: A list of findings to be created in the database. The format of the findings should match the expected format of the specific database manager being used.
+        :type findings: List[any]
+        :return: True if the creation was successful, False otherwise.
+        :rtype: bool
+        """
+
+        return self.db_manager.create_findings(findings)
 
 
     def __del__(self):
@@ -84,4 +119,5 @@ class Component:
             val = uuid.UUID(instance_id, version=4)
         except ValueError:
             return False
+        
         return str(val) == instance_id.lower()
