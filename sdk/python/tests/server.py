@@ -1,88 +1,65 @@
-import time
+
 from concurrent import futures
 
 import grpc
-from google.protobuf.timestamp_pb2 import Timestamp
-
 from smithy_python.remote_store.findings_service.v1 import (
     findings_service_pb2 as pb,
     findings_service_pb2_grpc as pb_grpc,
 )
-import smithy_python.ocsf.ocsf_schema.v1.ocsf_schema_pb2 as ocsf
+from smithy_python.remote_store.findings_service.v1.findings_service_pb2 import  Finding
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Helper: make a unix-epoch → Timestamp conversion once, reuse it.
-def _now_timestamp() -> Timestamp:
-    ts = Timestamp()
-    ts.GetCurrentTime()           # fills ts with "now"
-    return ts
+from .test_data import finding_table
 
-def now() -> tuple[int, Timestamp]:
-    """Return (epoch-ms, Timestamp) for 'now'."""
-    ms = int(time.time() * 1000)
-    ts = Timestamp(); ts.GetCurrentTime()
-    return ms, ts
-# ──────────────────────────────────────────────────────────────────────────────
 class DummyFindingsService(pb_grpc.FindingsServiceServicer):
     """Test implementation that always returns two canned findings."""
 
+    def __init__(self) -> None:
+        # maps request.id → list[pb.Finding] (for Update) OR
+        #                    list[ocsf.VulnerabilityFinding] (for Create)
+        self._groups = finding_table.copy()  # pre-populate with test data
+
     def GetFindings(self, request: pb.GetFindingsRequest, context):
-        # Common values
-        now_ms = int(time.time() * 1000)
-        now_ts = _now_timestamp()
+        
+        if not request.id:
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, "id is required")
 
-        epoch_ms, ts_now = now()
+        return pb.GetFindingsResponse(findings=self._groups.get(request.id, []))
 
-                # 1️⃣  Build two VulnerabilityFinding payloads
-        vuln1 = ocsf.VulnerabilityFinding(
-            activity_id = ocsf.VulnerabilityFinding.ACTIVITY_ID_CREATE,
-            category_uid= ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
-            class_uid   = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-            type_uid    = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-            type_name   = "vulnerability_finding",
-            time        = epoch_ms,
-            time_dt     = ts_now,
-            severity_id = ocsf.VulnerabilityFinding.SEVERITY_ID_HIGH,
-            status_id   = ocsf.VulnerabilityFinding.STATUS_ID_NEW,
-            finding_info= ocsf.FindingInfo(
-                uid          = "FIND-2025-0001",
-                title        = "Outdated OpenSSL detected",
-                desc         = "Host is running end-of-life OpenSSL 1.0.2-u.",
-                created_time = epoch_ms,
-                created_time_dt = ts_now,
-                types        = ["software_vulnerability"],
-            ),
-        )
+    def CreateFindings(self,
+                       request: pb.CreateFindingsRequest,
+                       context) -> pb.CreateFindingsResponse:
+        """
+        Simply stores the supplied VulnerabilityFinding messages under
+        request.id.  If that ID already exists, we append.
+        """
+        if not request.id:
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, "id is required")
 
-        vuln2 = ocsf.VulnerabilityFinding(
-            activity_id = ocsf.VulnerabilityFinding.ACTIVITY_ID_UPDATE,
-            category_uid= ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
-            class_uid   = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-            type_uid    = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-            type_name   = "vulnerability_finding",
-            time        = epoch_ms,
-            time_dt     = ts_now,
-            severity_id = ocsf.VulnerabilityFinding.SEVERITY_ID_MEDIUM,
-            status_id   = ocsf.VulnerabilityFinding.STATUS_ID_IN_PROGRESS,
-            finding_info= ocsf.FindingInfo(
-                uid          = "FIND-2025-0002",
-                title        = "Weak SSH cipher suite",
-                desc         = "SSH server allows deprecated arcfour cipher.",
-                created_time = epoch_ms,
-                created_time_dt = ts_now,
-                types        = ["configuration_weakness"],
-            ),
-        )
+        group = self._groups.setdefault(request.id, [])
+        id = max((f.id for f in group), default=0) + 1  # find next ID
+        for finding in request.findings:
+            group.append(Finding(id=id, details=finding))
+            id += 1
+        print(f"[CreateFindings] stored {len(request.findings)} findings under group {request.id}")
+        return pb.CreateFindingsResponse()
 
-        # 2️⃣  Wrap them in the service-level Finding message
-        finding1 = pb.Finding(id=1, details=vuln1)
-        finding2 = pb.Finding(id=2, details=vuln2)
+    # --------------------------------------------------------------------- #
+    # New RPC: *UpdateFindings*
+    # --------------------------------------------------------------------- #
+    def UpdateFindings(self,
+                       request: pb.UpdateFindingsRequest,
+                       context) -> pb.UpdateFindingsResponse:
+        """
+        Replaces any existing findings for request.id with the supplied list.
+        If the id did not exist yet, we create it (simpler for tests).
+        """
+        if not request.id:
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, "id is required")
 
-        # 3️⃣  Return the response
-        return pb.GetFindingsResponse(findings=[finding1, finding2])
+        self._groups[request.id] = list(request.findings)
+        print(f"[UpdateFindings] group {request.id} now holds {len(request.findings)} findings")
+        return pb.UpdateFindingsResponse()
 
-
-# ──────────────────────────────────────────────────────────────────────────────
 def serve(port: int = 50051) -> None:
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=4))
     pb_grpc.add_FindingsServiceServicer_to_server(DummyFindingsService(), server)
