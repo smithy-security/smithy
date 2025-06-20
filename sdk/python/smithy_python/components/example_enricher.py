@@ -13,7 +13,7 @@ class ExampleEnricher(Enricher):
 
     def __init__(self, instance_id: Union[uuid.UUID, str], db_type: DBTypeEnum, logger: Optional[Logger] = None) -> None:
         """
-        Initializes a new instance of the AnnotateEnricher class.
+        Initializes a new instance of the ExampleEnricher class.
         :param instance_id: The UUID of the instance (aka the Workflow run to be analyzed)
         :type instance_id: Union[uuid.UUID, str]
         :param db_type: The database mode for the enricher, DBTypeEnum, can be either `SQLITE`, `POSTGRES` or `REMOTE`. (remote is gRPC)
@@ -39,6 +39,7 @@ class ExampleEnricher(Enricher):
         for finding in findings:
             # Here you would implement the logic to annotate each finding
             # For example, adding metadata or additional context
+            finding.details.comment = "This is an annotated finding."
             annotated_findings.append(finding)
         
         # Update findings in the database with annotations
