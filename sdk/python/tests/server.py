@@ -23,7 +23,16 @@ class DummyFindingsService(pb_grpc.FindingsServiceServicer):
         if not request.id:
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, "id is required")
 
-        return pb.GetFindingsResponse(findings=self._groups.get(request.id, []))
+        findings = self._groups.get(request.id, [])
+        page_size = request.page_size
+        page = int(request.page) if request.page else 0
+
+        start = page 
+        end = start + page_size
+
+        return pb.GetFindingsResponse(
+            findings=findings[start:end]
+        )
 
     def CreateFindings(self,
                        request: pb.CreateFindingsRequest,
@@ -40,7 +49,6 @@ class DummyFindingsService(pb_grpc.FindingsServiceServicer):
         for finding in request.findings:
             group.append(Finding(id=id, details=finding))
             id += 1
-        print(f"[CreateFindings] stored {len(request.findings)} findings under group {request.id}")
         return pb.CreateFindingsResponse()
 
     # --------------------------------------------------------------------- #
@@ -56,8 +64,20 @@ class DummyFindingsService(pb_grpc.FindingsServiceServicer):
         if not request.id:
             context.abort(grpc.StatusCode.INVALID_ARGUMENT, "id is required")
 
-        self._groups[request.id] = list(request.findings)
-        print(f"[UpdateFindings] group {request.id} now holds {len(request.findings)} findings")
+        for finding in request.findings:
+            if not finding.id:
+                context.abort(grpc.StatusCode.INVALID_ARGUMENT, "finding.id is required")
+            group = self._groups.setdefault(request.id, [])
+            # Find the existing finding by ID and replace it, or append if not found
+            for i, existing_finding in enumerate(group):
+                if existing_finding.id == finding.id:
+                    group[i] = Finding(id=finding.id, details=finding.details)
+                    break
+            else:
+                # If not found, append the new finding
+                group.append(Finding(id=finding.id, details=finding.details))
+            
+        self._groups[request.id] = group
         return pb.UpdateFindingsResponse()
 
 def serve(port: int = 50051) -> None:
@@ -65,7 +85,6 @@ def serve(port: int = 50051) -> None:
     pb_grpc.add_FindingsServiceServicer_to_server(DummyFindingsService(), server)
     server.add_insecure_port(f"[::]:{port}")
     server.start()
-    print(f"Dummy FindingsService listening on :{port}")
     server.wait_for_termination()
 
 
