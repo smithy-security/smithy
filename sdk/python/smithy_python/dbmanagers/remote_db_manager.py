@@ -28,26 +28,31 @@ class RemoteDBManager(DBManager):
         self._load_environment_variables()
 
         self._channel = grpc.insecure_channel(
-            self.remote_store_findings_adress
+            self.findings_adress
         )
 
         self.stub = FindingsServiceStub(self._channel)
         
     @override
-    def get_findings(self) -> List[Finding]:
+    def get_findings(self, page_num: Optional[int] = None) -> List[Finding]:
         """
-        Retrieves **all** findings from the remote database which are associated to the class variable `instance_id`.
+        Retrieves **all** findings from the remote database (unless `page_num` is used) which are associated to the class variable `instance_id`.
+
+        :param page_num: Optional parameter to specify the page number for pagination. If not provided, all findings will be retrieved. Otherwise it will retrieve the `SMITHY_REMOTE_CLIENT_PAGE_SIZE`(default 100) findings for the given page number.
+        :type page_num: Optional[int]
         
         :return: A list of findings retrieved from the remote database.
         """
-        
-        page = 1
+
+        page = 0
+        if page_num and isinstance(page_num, int) and page_num >= 0:
+            page = page_num
         all_findings = []
         try:
             while True:
-                resp = self.stub.GetFindings(GetFindingsRequest(id=self.instance_id, page=page, page_size=self.remote_client_page_size))
+                resp = self.stub.GetFindings(GetFindingsRequest(id=self.instance_id, page=page, page_size=self.page_size))
                 all_findings.extend(resp.findings)
-                if len(resp.findings) < self.remote_client_page_size:
+                if len(resp.findings) < self.page_size or not resp.findings or page == page_num:
                     break
                 page += 1
         except grpc.RpcError as e:
@@ -70,8 +75,8 @@ class RemoteDBManager(DBManager):
             return False
         
         try:
-            for i in range(0, len(findings), self.remote_client_page_size):
-                batch = findings[i:i+self.remote_client_page_size]
+            for i in range(0, len(findings), self.page_size):
+                batch = findings[i:i+self.page_size]
                 self.stub.UpdateFindings(UpdateFindingsRequest(id=self.instance_id, findings=batch))
         except grpc.RpcError as e:
             self.log.error(f"Failed to update findings in remote database: {e}")
@@ -93,8 +98,8 @@ class RemoteDBManager(DBManager):
             return False
         
         try:
-            for i in range(0, len(findings), self.remote_client_page_size):
-                batch = findings[i:i+self.remote_client_page_size]
+            for i in range(0, len(findings), self.page_size):
+                batch = findings[i:i+self.page_size]
                 self.stub.CreateFindings(CreateFindingsRequest(id=self.instance_id, findings=batch))
 
         except grpc.RpcError as e:
@@ -139,9 +144,9 @@ class RemoteDBManager(DBManager):
         Loads all the environment variables required for the remote database connection.
         """
 
-        self.remote_store_findings_adress = os.getenv("SMITHY_REMOTE_STORE_FINDINGS_SERVICE_ADDR", "localhost:50051")
-        self.remote_client_max_attempts = int(os.getenv("SMITHY_REMOTE_CLIENT_MAX_ATTEMPTS", 10))
-        self.remote_client_initial_backoff_seconds = os.getenv("SMITHY_REMOTE_CLIENT_INITIAL_BACKOFF_SECONDS", "5s")
-        self.remote_client_max_backoff_seconds = os.getenv("SMITHY_REMOTE_CLIENT_MAX_BACKOFF_SECONDS", "60s")
-        self.remote_client_backoff_multiplier = float(os.getenv("SMITHY_REMOTE_CLIENT_BACKOFF_MULTIPLIER", 1.5))
-        self.remote_client_page_size = int(os.getenv("SMITHY_REMOTE_CLIENT_PAGE_SIZE", 100))
+        self.findings_adress = os.getenv("SMITHY_REMOTE_STORE_FINDINGS_SERVICE_ADDR", "localhost:50051")
+        self.max_attempts = int(os.getenv("SMITHY_REMOTE_CLIENT_MAX_ATTEMPTS", 10))
+        self.initial_backoff_seconds = os.getenv("SMITHY_REMOTE_CLIENT_INITIAL_BACKOFF_SECONDS", "5s")
+        self.max_backoff_seconds = os.getenv("SMITHY_REMOTE_CLIENT_MAX_BACKOFF_SECONDS", "60s")
+        self.backoff_multiplier = float(os.getenv("SMITHY_REMOTE_CLIENT_BACKOFF_MULTIPLIER", 1.5))
+        self.page_size = int(os.getenv("SMITHY_REMOTE_CLIENT_PAGE_SIZE", 100))
