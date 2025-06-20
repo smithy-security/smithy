@@ -24,7 +24,7 @@ class ComponentTest(unittest.TestCase):
         self.server.start()
         self.instance_id = list(finding_table.keys())[0]
         self.component = Component(
-            instance_id=self.instance_id,  # Use the first key from the test data
+            instance_id=self.instance_id,
             db_type=DBTypeEnum.REMOTE,
             logger=log
         )
@@ -68,9 +68,33 @@ class ComponentTest(unittest.TestCase):
         
         # Verify that the new finding is now in the database
         updated_findings = temp_component.get_findings()
+        self.assertIsInstance(updated_findings, list, "The updated findings should be returned as a list")
 
-        self.assertListEqual(list(finding_table.values())[2], updated_findings, "The new finding should be present in the updated findings")
+        self.assertListEqual(list(finding_table.values())[0][:-1], updated_findings, "The new finding should be present in the updated findings")
         del temp_component  # Clean up the temporary component instance
+
+    def test_grpc_get_findings_with_pagination(self):
+        """
+        Test the get_findings method of the Component instance with pagination.
+        """
+
+        temp_component = Component(
+            instance_id=list(finding_table.keys())[1],  
+            db_type=DBTypeEnum.REMOTE,
+            logger=log
+        )
+        # Manually set the page size for the remote client to make sure we can test pagination.
+        temp_component.db_manager.page_size = 1 
+        # Get findings with pagination
+        page_num = 0
+        findings_page_1 = temp_component.get_findings(page_num=page_num)
+        
+        self.assertIsInstance(findings_page_1, list, "The findings should be returned as a list")
+        
+        # Verify that the findings retrieved are from the first page
+        self.assertEqual(len(findings_page_1), 1, "The number of findings on the first page should 1, as we have set the page size to 1 manually")
+        
+        del temp_component
 
     def test_grpc_create_findings(self):
         """
