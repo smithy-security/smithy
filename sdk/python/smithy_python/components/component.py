@@ -2,7 +2,7 @@ import uuid
 from smithy_python.helpers.logger import log
 from typing import Union, List, Optional
 from logging import Logger
-from smithy_python.remote_store.findings_service.v1 import findings_service_pb2_grpc, findings_service_pb2
+from smithy_python.remote_store.findings_service.v1 import findings_service_pb2
 from smithy_python.dbmanagers import RemoteDBManager, PostgresDBManager, SqliteDBManager
 from abc import ABC
 from smithy_python.enums.db_type_enum import DBTypeEnum
@@ -59,15 +59,18 @@ class Component(ABC):
                 raise ValueError("db_type must be one of DBTypeEnum.SQLITE, DBTypeEnum.POSTGRES, or DBTypeEnum.REMOTE.")
 
 
-    def get_findings(self) -> Union[List[findings_service_pb2.Finding], List[any]]:
+    def get_findings(self, page_num: Optional[int] = None) -> Union[List[findings_service_pb2.Finding], List[any]]:
         """
         This method helps you to retrieve findings from the database.
         It will use the database mode set in the component instance to determine how to retrieve the findings.
         
+        :param page_num: Optional parameter to specify the page number for pagination. If not provided, all findings will be retrieved. Otherwise it will retrieve the `SMITHY_REMOTE_CLIENT_PAGE_SIZE`(default 100) findings for the given page number.
+        :type page_num: Optional[int]
+
         :return: The findings retrieved from the database. This could be a list of `findings_service_pb2.Finding` objects if using the remote database mode, or a list of findings in the format defined by the specific database manager if using `SQLITE` or `POSTGRES`.
         """
 
-        return self.db_manager.get_findings()
+        return self.db_manager.get_findings(page_num=page_num)
 
 
     def update_findings(self, findings: List[any]) -> bool:
