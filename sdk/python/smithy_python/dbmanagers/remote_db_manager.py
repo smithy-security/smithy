@@ -34,7 +34,7 @@ class RemoteDBManager(DBManager):
 
         self._load_environment_variables()
 
-        self._channel = grpc.insecure_channel(self.findings_adress)
+        self._channel = grpc.insecure_channel(self.findings_address)
 
         self.stub = FindingsServiceStub(self._channel)
 
@@ -165,7 +165,7 @@ class RemoteDBManager(DBManager):
         Loads all the environment variables required for the remote database connection.
         """
 
-        self.findings_adress = os.getenv(
+        self.findings_address = os.getenv(
             "SMITHY_REMOTE_STORE_FINDINGS_SERVICE_ADDR", "localhost:50051"
         )
         self.max_attempts = int(os.getenv("SMITHY_REMOTE_CLIENT_MAX_ATTEMPTS", 10))

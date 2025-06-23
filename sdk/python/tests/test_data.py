@@ -1,119 +1,121 @@
 """
 This file contains test data for the Smithy Python SDK.
 """
-from smithy_python.remote_store.findings_service.v1 import (
-    findings_service_pb2 as pb
-)
+
+from smithy_python.remote_store.findings_service.v1 import findings_service_pb2 as pb
 import time
 from google.protobuf.timestamp_pb2 import Timestamp
 import smithy_python.ocsf.ocsf_schema.v1.ocsf_schema_pb2 as ocsf
 from typing import Dict, List
 
+
 def now() -> tuple[int, Timestamp]:
     ms = int(time.time() * 1000)
-    ts = Timestamp(); ts.GetCurrentTime()
+    ts = Timestamp()
+    ts.GetCurrentTime()
     return ms, ts
+
 
 epoch_ms, ts_now = now()
 
-        
+
 _vuln1 = ocsf.VulnerabilityFinding(
-    activity_id = ocsf.VulnerabilityFinding.ACTIVITY_ID_CREATE,
-    category_uid= ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
-    class_uid   = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_uid    = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_name   = "vulnerability_finding",
-    time        = epoch_ms,
-    time_dt     = ts_now,
-    severity_id = ocsf.VulnerabilityFinding.SEVERITY_ID_HIGH,
-    status_id   = ocsf.VulnerabilityFinding.STATUS_ID_NEW,
-    finding_info= ocsf.FindingInfo(
-        uid          = "FIND-2025-0001",
-        title        = "Outdated OpenSSL detected",
-        desc         = "Host is running end-of-life OpenSSL 1.0.2-u.",
-        created_time = epoch_ms,
-        created_time_dt = ts_now,
-        types        = ["software_vulnerability"],
+    activity_id=ocsf.VulnerabilityFinding.ACTIVITY_ID_CREATE,
+    category_uid=ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
+    class_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_name="vulnerability_finding",
+    time=epoch_ms,
+    time_dt=ts_now,
+    severity_id=ocsf.VulnerabilityFinding.SEVERITY_ID_HIGH,
+    status_id=ocsf.VulnerabilityFinding.STATUS_ID_NEW,
+    finding_info=ocsf.FindingInfo(
+        uid="FIND-2025-0001",
+        title="Outdated OpenSSL detected",
+        desc="Host is running end-of-life OpenSSL 1.0.2-u.",
+        created_time=epoch_ms,
+        created_time_dt=ts_now,
+        types=["software_vulnerability"],
     ),
 )
 
 _vuln2 = ocsf.VulnerabilityFinding(
-    activity_id = ocsf.VulnerabilityFinding.ACTIVITY_ID_UPDATE,
-    category_uid= ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
-    class_uid   = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_uid    = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_name   = "vulnerability_finding",
-    time        = epoch_ms,
-    time_dt     = ts_now,
-    severity_id = ocsf.VulnerabilityFinding.SEVERITY_ID_MEDIUM,
-    status_id   = ocsf.VulnerabilityFinding.STATUS_ID_IN_PROGRESS,
-    finding_info= ocsf.FindingInfo(
-        uid          = "FIND-2025-0002",
-        title        = "Weak SSH cipher suite",
-        desc         = "SSH server allows deprecated arcfour cipher.",
-        created_time = epoch_ms,
-        created_time_dt = ts_now,
-        types        = ["configuration_weakness"],
+    activity_id=ocsf.VulnerabilityFinding.ACTIVITY_ID_UPDATE,
+    category_uid=ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
+    class_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_name="vulnerability_finding",
+    time=epoch_ms,
+    time_dt=ts_now,
+    severity_id=ocsf.VulnerabilityFinding.SEVERITY_ID_MEDIUM,
+    status_id=ocsf.VulnerabilityFinding.STATUS_ID_IN_PROGRESS,
+    finding_info=ocsf.FindingInfo(
+        uid="FIND-2025-0002",
+        title="Weak SSH cipher suite",
+        desc="SSH server allows deprecated arcfour cipher.",
+        created_time=epoch_ms,
+        created_time_dt=ts_now,
+        types=["configuration_weakness"],
     ),
 )
 
 _vuln3 = ocsf.VulnerabilityFinding(
-    activity_id = ocsf.VulnerabilityFinding.ACTIVITY_ID_CREATE,
-    category_uid= ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
-    class_uid   = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_uid    = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_name   = "vulnerability_finding",
-    time        = epoch_ms,
-    time_dt     = ts_now,
-    severity_id = ocsf.VulnerabilityFinding.SEVERITY_ID_CRITICAL,
-    status_id   = ocsf.VulnerabilityFinding.STATUS_ID_NEW,
-    finding_info= ocsf.FindingInfo(
-        uid          = "FIND-2025-0003",
-        title        = "Remote Code Execution in Web App",
-        desc         = "Detected RCE vulnerability in /upload endpoint.",
-        created_time = epoch_ms,
-        created_time_dt = ts_now,
-        types        = ["web_application_vulnerability"],
+    activity_id=ocsf.VulnerabilityFinding.ACTIVITY_ID_CREATE,
+    category_uid=ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
+    class_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_name="vulnerability_finding",
+    time=epoch_ms,
+    time_dt=ts_now,
+    severity_id=ocsf.VulnerabilityFinding.SEVERITY_ID_CRITICAL,
+    status_id=ocsf.VulnerabilityFinding.STATUS_ID_NEW,
+    finding_info=ocsf.FindingInfo(
+        uid="FIND-2025-0003",
+        title="Remote Code Execution in Web App",
+        desc="Detected RCE vulnerability in /upload endpoint.",
+        created_time=epoch_ms,
+        created_time_dt=ts_now,
+        types=["web_application_vulnerability"],
     ),
 )
 
 _vuln4 = ocsf.VulnerabilityFinding(
-    activity_id = ocsf.VulnerabilityFinding.ACTIVITY_ID_UPDATE,
-    category_uid= ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
-    class_uid   = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_uid    = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_name   = "vulnerability_finding",
-    time        = epoch_ms,
-    time_dt     = ts_now,
-    severity_id = ocsf.VulnerabilityFinding.SEVERITY_ID_LOW,
-    status_id   = ocsf.VulnerabilityFinding.STATUS_ID_RESOLVED,
-    finding_info= ocsf.FindingInfo(
-        uid          = "FIND-2025-0004",
-        title        = "Information Disclosure via Server Headers",
-        desc         = "Server leaks version info in HTTP headers.",
-        created_time = epoch_ms,
-        created_time_dt = ts_now,
-        types        = ["information_disclosure"],
+    activity_id=ocsf.VulnerabilityFinding.ACTIVITY_ID_UPDATE,
+    category_uid=ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
+    class_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_name="vulnerability_finding",
+    time=epoch_ms,
+    time_dt=ts_now,
+    severity_id=ocsf.VulnerabilityFinding.SEVERITY_ID_LOW,
+    status_id=ocsf.VulnerabilityFinding.STATUS_ID_RESOLVED,
+    finding_info=ocsf.FindingInfo(
+        uid="FIND-2025-0004",
+        title="Information Disclosure via Server Headers",
+        desc="Server leaks version info in HTTP headers.",
+        created_time=epoch_ms,
+        created_time_dt=ts_now,
+        types=["information_disclosure"],
     ),
 )
 
 _vuln5 = ocsf.VulnerabilityFinding(
-    activity_id = ocsf.VulnerabilityFinding.ACTIVITY_ID_CREATE,
-    category_uid= ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
-    class_uid   = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_uid    = ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
-    type_name   = "vulnerability_finding",
-    time        = epoch_ms,
-    time_dt     = ts_now,
-    severity_id = ocsf.VulnerabilityFinding.SEVERITY_ID_MEDIUM,
-    status_id   = ocsf.VulnerabilityFinding.STATUS_ID_NEW,
-    finding_info= ocsf.FindingInfo(
-        uid          = "FIND-2025-0005",
-        title        = "Unpatched Apache HTTP Server",
-        desc         = "Apache HTTP Server is missing security updates.",
-        created_time = epoch_ms,
-        created_time_dt = ts_now,
-        types        = ["software_vulnerability"],
+    activity_id=ocsf.VulnerabilityFinding.ACTIVITY_ID_CREATE,
+    category_uid=ocsf.VulnerabilityFinding.CATEGORY_UID_FINDINGS,
+    class_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_uid=ocsf.VulnerabilityFinding.CLASS_UID_VULNERABILITY_FINDING,
+    type_name="vulnerability_finding",
+    time=epoch_ms,
+    time_dt=ts_now,
+    severity_id=ocsf.VulnerabilityFinding.SEVERITY_ID_MEDIUM,
+    status_id=ocsf.VulnerabilityFinding.STATUS_ID_NEW,
+    finding_info=ocsf.FindingInfo(
+        uid="FIND-2025-0005",
+        title="Unpatched Apache HTTP Server",
+        desc="Apache HTTP Server is missing security updates.",
+        created_time=epoch_ms,
+        created_time_dt=ts_now,
+        types=["software_vulnerability"],
     ),
 )
 
