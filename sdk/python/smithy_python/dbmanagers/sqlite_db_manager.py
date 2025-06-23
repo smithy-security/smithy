@@ -19,12 +19,11 @@ class SqliteDBManager(DBManager):
         :type logger: Optional[Logger]
         :raises TypeError: If the logger is not an instance of Logger or None.
         """
-        
+
         super().__init__(instance_id, logger)
-        
+
         raise NotImplementedError("SQLiteDBManager is not yet implemented.")
-        
-        
+
     @override
     def get_findings(self, page_num: Optional[int] = None) -> List[any]:
         """
@@ -38,7 +37,6 @@ class SqliteDBManager(DBManager):
 
         pass
 
-        
     def __del__(self):
         """
         Cleans up the SqliteDBManager instance.

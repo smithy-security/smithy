@@ -12,11 +12,16 @@ class EnricherContext(AbstractContextManager, Component, Iterator):
     This class aims to be used as a context for implementing enrichments in it.
     """
 
-    def __init__(self, instance_id: Union[str, uuid.UUID], db_type: DBTypeEnum, logger: Optional[Logger] = None) -> None:
+    def __init__(
+        self,
+        instance_id: Union[str, uuid.UUID],
+        db_type: DBTypeEnum,
+        logger: Optional[Logger] = None,
+    ) -> None:
         """
         Initialize the EnricherContext with an instance ID.
 
-        :param instance_id: The unique identifier for the instance (aka the workflow run) 
+        :param instance_id: The unique identifier for the instance (aka the workflow run)
         :type instance_id: Union[str, uuid.UUID]
         :param db_type: The type of database being used (REMOTE, SQLITE, POSTGRES).
         :type db_type: DBTypeEnum
@@ -26,9 +31,9 @@ class EnricherContext(AbstractContextManager, Component, Iterator):
 
         super().__init__(instance_id=instance_id, db_type=db_type, logger=logger)
         self._iter: Optional[Iterator] = None
-        self._pending_updates: List = []               
+        self._pending_updates: List = []
         self._page = 0
-        self._has_more: bool = True              
+        self._has_more: bool = True
 
     def __enter__(self) -> "EnricherContext":
         """
@@ -40,7 +45,7 @@ class EnricherContext(AbstractContextManager, Component, Iterator):
         self._page = 0
         self._load_next_page()
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
         """
         Flush any queued updates, then close resources.
@@ -58,10 +63,10 @@ class EnricherContext(AbstractContextManager, Component, Iterator):
                 self.log.exception("Error while closing DB connection")
 
         return False
-    
-    def __iter__(self) -> "EnricherContext":      # type: ignore[override]
+
+    def __iter__(self) -> "EnricherContext":  # type: ignore[override]
         return self
-    
+
     def __next__(self) -> pb2.Finding:
         """
         Retrieve the next finding from the iterator.
@@ -69,20 +74,19 @@ class EnricherContext(AbstractContextManager, Component, Iterator):
         :rtype: pb2.Finding
         :raises StopIteration: If there are no more findings to iterate over.
         """
-        
+
         if self._iter is None:
             raise RuntimeError("EnricherContext must be used inside a 'with' block.")
 
         try:
-            return next(self._iter)    
+            return next(self._iter)
         except StopIteration:
-            if not self._has_more:              
+            if not self._has_more:
                 raise
-            self._load_next_page()               
-            if not self._has_more:              
+            self._load_next_page()
+            if not self._has_more:
                 raise StopIteration
-            return next(self._iter)        
-        
+            return next(self._iter)
 
     def _load_next_page(self) -> None:
         """
@@ -90,11 +94,11 @@ class EnricherContext(AbstractContextManager, Component, Iterator):
         This method is called when the current page has been exhausted.
         """
         results = self.db_manager.get_findings(page_num=self._page)
-        self._has_more = bool(results)           
+        self._has_more = bool(results)
         self._iter = iter(results)
         self._page += 1
 
-    def update(self, finding:pb2.Finding) -> None:
+    def update(self, finding: pb2.Finding) -> None:
         """
         Queue a mutated finding for persistence. Once the page_size of the db_manager is reached, the updated will be flushed to the DB.
 
@@ -112,6 +116,8 @@ class EnricherContext(AbstractContextManager, Component, Iterator):
         """
         try:
             if not self.db_manager.update_findings(self._pending_updates):
-                self.log.error("Failed to update %d findings", len(self._pending_updates))
+                self.log.error(
+                    "Failed to update %d findings", len(self._pending_updates)
+                )
         finally:
             self._pending_updates.clear()

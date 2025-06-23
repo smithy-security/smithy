@@ -3,6 +3,7 @@ from smithy_python.helpers.logger import log
 from abc import ABC, abstractmethod
 from logging import Logger
 
+
 class DBManager(ABC):
     """
     Base class for database managers.
@@ -11,7 +12,7 @@ class DBManager(ABC):
     Therefore we are only defining the interface here, without any implementation details.
     """
 
-    def __init__(self, instance_id:str, logger:Optional[Logger] = None) -> None:
+    def __init__(self, instance_id: str, logger: Optional[Logger] = None) -> None:
         """
         Initializes the DBManager
         :param instance_id: The UUID of the instance (aka the Workflow run to be analyzed)
@@ -20,10 +21,9 @@ class DBManager(ABC):
         :type logger: Optional[Logger]
         :raises TypeError: If the logger is not an instance of Logger or None.
         """
-        
+
         # Initialize variables with sensible defaults that get also used by other classes which import subclasses of this class. We want to make sure that those DB related variables are always set.
         self.page_size = 100  # Default page size for pagination
-
 
         self.instance_id = instance_id
 
@@ -36,7 +36,6 @@ class DBManager(ABC):
         else:
             raise TypeError("logger must be an instance of Logger or None.")
 
-
     @abstractmethod
     def get_findings(self, page_num: Optional[int] = None) -> List[any]:
         """
@@ -48,29 +47,29 @@ class DBManager(ABC):
         """
 
         raise NotImplementedError("This method should be implemented by subclasses.")
-    
+
     @abstractmethod
     def update_findings(self, findings: List[any]) -> bool:
         """
         Updates the findings in the database.
-        
+
         :param findings: A list of findings to be updated in the database.
         :type findings: List[any]
         :return: True if the update was successful, False otherwise.
         :rtype: bool
         """
-        
+
         raise NotImplementedError("This method should be implemented by subclasses.")
-    
+
     @abstractmethod
     def create_findings(self, findings: List[any]) -> bool:
         """
         Creates new findings in the database.
-        
+
         :param findings: A list of findings to be created in the database.
         :type findings: List[any]
         :return: True if the creation was successful, False otherwise.
         :rtype: bool
         """
-        
+
         raise NotImplementedError("This method should be implemented by subclasses.")

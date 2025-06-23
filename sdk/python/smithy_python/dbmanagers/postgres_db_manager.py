@@ -2,6 +2,7 @@ from typing import List, override, Union, Optional
 from logging import Logger
 from smithy_python.dbmanagers.db_manager import DBManager
 
+
 class PostgresDBManager(DBManager):
     """
     A class to manage PostgreSQL database connections and operations.
@@ -22,7 +23,6 @@ class PostgresDBManager(DBManager):
 
         raise NotImplementedError("PostgresDBManager is not yet implemented.")
 
-
     @override
     def get_findings(self, page_num: Optional[int] = None) -> List[any]:
         """
@@ -31,13 +31,12 @@ class PostgresDBManager(DBManager):
         :param page_num: Optional parameter to specify the page number for pagination. If not provided, all findings will be retrieved. Otherwise it will retrieve the `SMITHY_REMOTE_CLIENT_PAGE_SIZE`(default 100) findings for the given page number.
         :type page_num: Optional[int]
 
-                
+
         :return: A list of findings retrieved from the postgres database.
         """
 
         pass
 
-        
     def __del__(self):
         """
         Cleans up the PostgresDBManager instance.

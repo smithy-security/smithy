@@ -7,12 +7,18 @@ from smithy_python.dbmanagers import RemoteDBManager, PostgresDBManager, SqliteD
 from abc import ABC
 from smithy_python.enums.db_type_enum import DBTypeEnum
 
+
 class Component(ABC):
     """
     A component in the Smithy Python SDK that represents a component in the smithy framework.
     """
 
-    def __init__(self, instance_id: Union[uuid.UUID, str], db_type: DBTypeEnum, logger: Optional[Logger] = None) -> None:
+    def __init__(
+        self,
+        instance_id: Union[uuid.UUID, str],
+        db_type: DBTypeEnum,
+        logger: Optional[Logger] = None,
+    ) -> None:
         """
         Initializes a new instance of the Component class.
         **ATTENTION**: Currently only the `remote` database type is supported, all other types will raise a `NotImplementedError`.
@@ -33,21 +39,22 @@ class Component(ABC):
         else:
             raise TypeError("logger must be an instance of Logger or None.")
 
-        if instance_id is None or (not isinstance(instance_id, str) and not isinstance(instance_id, uuid.UUID)):
+        if instance_id is None or (
+            not isinstance(instance_id, str) and not isinstance(instance_id, uuid.UUID)
+        ):
             raise TypeError("instance_id must be a string or UUID object.")
-        
+
         if isinstance(instance_id, uuid.UUID):
             instance_id = str(instance_id)
 
         if not self._validate_uuid(instance_id):
             raise ValueError(f"Invalid UUID: {instance_id}")
-        
+
         self.instance_id = instance_id
 
         if not db_type or not isinstance(db_type, DBTypeEnum):
             raise TypeError("db_type must be a DBTypeEnum.")
-        
-        
+
         match db_type:
             case DBTypeEnum.SQLITE:
                 self.db_manager = SqliteDBManager()
@@ -56,14 +63,17 @@ class Component(ABC):
             case DBTypeEnum.REMOTE:
                 self.db_manager = RemoteDBManager(instance_id=self.instance_id)
             case _:
-                raise ValueError("db_type must be one of DBTypeEnum.SQLITE, DBTypeEnum.POSTGRES, or DBTypeEnum.REMOTE.")
+                raise ValueError(
+                    "db_type must be one of DBTypeEnum.SQLITE, DBTypeEnum.POSTGRES, or DBTypeEnum.REMOTE."
+                )
 
-
-    def get_findings(self, page_num: Optional[int] = None) -> Union[List[findings_service_pb2.Finding], List[any]]:
+    def get_findings(
+        self, page_num: Optional[int] = None
+    ) -> Union[List[findings_service_pb2.Finding], List[any]]:
         """
         This method helps you to retrieve findings from the database.
         It will use the database mode set in the component instance to determine how to retrieve the findings.
-        
+
         :param page_num: Optional parameter to specify the page number for pagination. If not provided, all findings will be retrieved. Otherwise it will retrieve the `SMITHY_REMOTE_CLIENT_PAGE_SIZE`(default 100) findings for the given page number.
         :type page_num: Optional[int]
 
@@ -72,12 +82,11 @@ class Component(ABC):
 
         return self.db_manager.get_findings(page_num=page_num)
 
-
     def update_findings(self, findings: List[any]) -> bool:
         """
         This method helps you to update findings in the database.
         It will use the database mode set in the component instance to determine how to update the findings.
-        
+
         :param findings: A list of findings to be updated in the database. The format of the findings should match the expected format of the specific database manager being used.
         :type findings: List[any]
         :return: True if the update was successful, False otherwise.
@@ -86,12 +95,11 @@ class Component(ABC):
 
         return self.db_manager.update_findings(findings)
 
-
     def create_findings(self, findings: List[any]) -> bool:
         """
         This method helps you to create new findings in the database.
         It will use the database mode set in the component instance to determine how to create the findings.
-        
+
         :param findings: A list of findings to be created in the database. The format of the findings should match the expected format of the specific database manager being used.
         :type findings: List[any]
         :return: True if the creation was successful, False otherwise.
@@ -100,15 +108,13 @@ class Component(ABC):
 
         return self.db_manager.create_findings(findings)
 
-
     def __del__(self):
         """
         Destructor for the Component class.
         Closes the gRPC channel if it is open.
         """
-        if hasattr(self, 'db_manager') and self.db_manager:
+        if hasattr(self, "db_manager") and self.db_manager:
             del self.db_manager
-        
 
     def _validate_uuid(self, instance_id: str) -> bool:
         """
@@ -122,5 +128,5 @@ class Component(ABC):
             val = uuid.UUID(instance_id, version=4)
         except ValueError:
             return False
-        
+
         return str(val) == instance_id.lower()
