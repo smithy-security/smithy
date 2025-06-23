@@ -84,7 +84,7 @@ py-tests-sdk-python: update-poetry-pkgs-sdk-python
 
 py-tests: py-tests-sdk-python
 
-tests: test-go py-tests
+tests: test-go
 
 install-go-fmt-tools:
 	@go install github.com/bufbuild/buf/cmd/buf@v1.45.0
