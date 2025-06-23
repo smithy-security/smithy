@@ -1,0 +1,37 @@
+---
+name: Test Python
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+    paths:
+    - 'sdk/python/**'
+
+permissions:
+  # Grant the ability to check out the repository
+  contents: read
+
+jobs:
+  test:
+    name: Test Python
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-test
+      cancel-in-progress: true
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install poetry
+      run: pip install poetry
+
+    - name: Run Python tests
+      run: make py-tests

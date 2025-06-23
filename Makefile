@@ -33,7 +33,7 @@ export
 ########################################
 ######### CODE QUALITY TARGETS #########
 ########################################
-.PHONY: lint install-lint-tools tests test-go fmt fmt-proto fmt-go install-go-fmt-tools
+.PHONY: lint install-lint-tools tests test-go fmt fmt-proto fmt-go install-go-fmt-tools py-tests py-tests-sdk-python update-poetry-pkgs-sdk-python
 install-misspell:
 	@go install github.com/client9/misspell/cmd/misspell@latest
 
