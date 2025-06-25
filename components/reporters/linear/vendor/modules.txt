@@ -140,8 +140,8 @@ github.com/shopspring/decimal
 # github.com/smithy-security/pkg/env v0.0.3
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/pkg/retry v0.0.2
-## explicit; go 1.24.0
+# github.com/smithy-security/pkg/retry v0.0.3
+## explicit; go 1.23
 github.com/smithy-security/pkg/retry
 # github.com/smithy-security/pkg/utils v0.0.2
 ## explicit; go 1.23.2

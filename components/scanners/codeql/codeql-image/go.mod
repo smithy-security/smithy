@@ -1,10 +1,10 @@
 module github.com/smithy-security/smithy/components/producers/codeql/codeql-runner
 
-go 1.24
+go 1.23.4
 
 require (
 	github.com/go-errors/errors v1.5.1
-	github.com/smithy-security/pkg/detect-repo-languages v0.0.1
+	github.com/smithy-security/pkg/detect-repo-languages v0.0.2
 )
 
 require (

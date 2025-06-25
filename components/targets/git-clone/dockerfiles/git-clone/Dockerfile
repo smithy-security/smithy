@@ -1,5 +1,5 @@
 # Used only to build Go binaries.
-FROM golang:1.24 AS builder
+FROM golang:1.23 AS builder
 
 WORKDIR /wrk
 

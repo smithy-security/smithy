@@ -145,8 +145,8 @@ github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
 github.com/smithy-security/pkg/env v0.0.3 h1:eZYRzzFAzWkAJ2OMMhEQr0xSL2mk6cOGpEqcR28QWXM=
 github.com/smithy-security/pkg/env v0.0.3/go.mod h1:VIJfDqeAbQQcmohaXcZI6grjeJC9Y8CmqR4ITpdngZE=
-github.com/smithy-security/pkg/retry v0.0.2 h1:zfKAxRstSmNzaOX58Vs/5FKdDw2K9luVI5bPnF31NWs=
-github.com/smithy-security/pkg/retry v0.0.2/go.mod h1:sM07AAnXzJswi/tX/a7rvD11SVe/rcA5tBrzmwd4lmM=
+github.com/smithy-security/pkg/retry v0.0.3 h1:Zcea0m13C7tO+OehN3bU9Spz4wW6P0Ok6pqNi52qCg4=
+github.com/smithy-security/pkg/retry v0.0.3/go.mod h1:etMizy7PyMKk6EFDRAjjTEwqCEriuNmIrhV/aSs6Xho=
 github.com/smithy-security/pkg/utils v0.0.2 h1:r1Gz5eki8xUJXShw4i5ZaizkiKgZlYNYtKE2PDwpoHQ=
 github.com/smithy-security/pkg/utils v0.0.2/go.mod h1:bzCtRv/q9BdCrALRkcWWW3y8DzugbZrEQPwgZ/iepig=
 github.com/smithy-security/smithy/sdk v0.0.18-alpha h1:daf4bkZY6cNzb21dxJR++3uf7wfsKX8zg+Yfuv+y9J0=

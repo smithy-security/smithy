@@ -1,6 +1,6 @@
 FROM docker.io/sonatypecommunity/nancy:latest AS nancy
 
-FROM golang:1.24
+FROM golang:1.23.4
 
 COPY --from=nancy /nancy /nancy
 COPY ./entrypoint.sh /entrypoint.sh
