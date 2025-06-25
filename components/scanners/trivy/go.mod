@@ -1,6 +1,6 @@
 module github.com/smithy-security/smithy/components/scanners/trivy
 
-go 1.24
+go 1.23.4
 
 require (
 	github.com/go-errors/errors v1.5.1
