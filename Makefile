@@ -168,7 +168,7 @@ $(component_major_tags): check-branch check-tag-message
 ############## SDK HELPERS #############
 ########################################
 # new targets for components and smithyctl
-.PHONY: smithyctl/bin component-sdk-version bump-sdk-version
+.PHONY: smithyctl/bin component-sdk-version bump-sdk-version list-component-tags bump-components
 
 smithyctl/bin:
 	$(eval GOOS:=linux)
@@ -212,3 +212,71 @@ $(go_sdk_lib_update):
 # the github.com/smithy-security/smithy/sdk module as well as the root one.
 bump-sdk-version: $(go_sdk_lib_update)
 	@echo "============== SDK version update complete =============="
+
+list-component-tags:
+	@echo "Latest tags per component:"
+	@for component_type in reporters enrichers filters scanners targets; do \
+		if [ -d "components/$$component_type" ]; then \
+			for component in components/$$component_type/*/; do \
+				if [ -d "$$component" ]; then \
+					component_name=$$(basename "$$component"); \
+					component_path="components/$$component_type/$$component_name"; \
+					latest_tag=$$(git tag -l | grep "^$$component_path/v" | sort -V | tail -n 1); \
+					if [ -n "$$latest_tag" ]; then \
+						printf "%-50s %s\n" "$$component_path" "$$latest_tag"; \
+					else \
+						printf "%-50s %s\n" "$$component_path" "No tag found"; \
+					fi; \
+				fi; \
+			done; \
+		fi; \
+	done | sort
+
+# make tag-bump TAG_MSG="Fix minor bug" BUMP=patch
+# Bump minor version
+# make tag-bump TAG_MSG="Add new feature" BUMP=minor
+# Bump major version
+# make tag-bump TAG_MSG="Breaking change" BUMP=major
+# the extra option DRY_RUN=1 just prints the intended changes.
+bump-components:
+	@if [ -z "$(TAG_MSG)" ]; then \
+		echo "❌ Please provide a tag message using TAG_MSG=\"Your message here\""; \
+		exit 1; \
+	fi; \
+	if [ -z "$(BUMP)" ]; then \
+		BUMP=patch; \
+	fi; \
+	echo "🔧 Bumping '$${BUMP}' version for components with existing tags..."; \
+	for component_type in reporters enrichers filters scanners targets; do \
+		if [ -d "components/$$component_type" ]; then \
+			for component in components/$$component_type/*/; do \
+				if [ -d "$$component" ]; then \
+					component_name=$$(basename "$$component"); \
+					component_path="components/$$component_type/$$component_name"; \
+					latest_tag=$$(git tag -l | grep "^$$component_path/v" | sort -V | tail -n 1); \
+					if [ -n "$$latest_tag" ]; then \
+						version=$$(echo "$$latest_tag" | sed -E 's|.*/v([0-9]+)\.([0-9]+)\.([0-9]+)$$|\1 \2 \3|'); \
+						major=$$(echo "$$version" | cut -d' ' -f1); \
+						minor=$$(echo "$$version" | cut -d' ' -f2); \
+						patch=$$(echo "$$version" | cut -d' ' -f3); \
+						case "$(BUMP)" in \
+							major) major=$$((major + 1)); minor=0; patch=0 ;; \
+							minor) minor=$$((minor + 1)); patch=0 ;; \
+							patch) patch=$$((patch + 1)) ;; \
+							*) echo "❌ Invalid BUMP value: '$(BUMP)'. Use major, minor, or patch."; exit 1 ;; \
+						esac; \
+						new_tag="$$component_path/v$$major.$$minor.$$patch"; \
+						if [ "$(DRY_RUN)" = "1" ]; then \
+							echo "🔍 Would tag: $$new_tag"; \
+						else \
+							echo "🏷️  Tagging $$new_tag"; \
+							git tag "$$new_tag" -m "$(TAG_MSG)"; \
+						fi; \
+					else \
+						echo "⚠️  No existing tag for $$component_path — skipping."; \
+					fi; \
+				fi; \
+			done; \
+		fi; \
+	done
+
