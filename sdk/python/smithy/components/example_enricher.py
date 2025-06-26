@@ -1,8 +1,9 @@
-from smithy_python.components.enricher import Enricher
-from smithy_python.enums.db_type_enum import DBTypeEnum
+import uuid
 from logging import Logger
 from typing import Union, Optional
-import uuid
+
+from smithy.components.enricher import Enricher
+from smithy.enums.db_type_enum import DBTypeEnum
 
 
 class ExampleEnricher(Enricher):

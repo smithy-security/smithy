@@ -1,5 +1,5 @@
-from .enricher_context import EnricherContext
-from smithy_python.enums.db_type_enum import DBTypeEnum
+from smithy.components.enricher_context import EnricherContext
+from smithy.enums.db_type_enum import DBTypeEnum
 
 
 def main():

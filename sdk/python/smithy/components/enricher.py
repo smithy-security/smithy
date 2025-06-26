@@ -1,9 +1,10 @@
-from .component import Component
-from logging import Logger
-from typing import Optional, Union
 import uuid
 from abc import abstractmethod
-from smithy_python.enums.db_type_enum import DBTypeEnum
+from logging import Logger
+from typing import Optional, Union
+
+from smithy.enums.db_type_enum import DBTypeEnum
+from smithy.components.component import Component
 
 
 class Enricher(Component):

@@ -2,6 +2,7 @@ import logging
 
 from pythonjsonlogger.json import JsonFormatter
 
+
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 

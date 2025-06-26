@@ -1,7 +1,7 @@
-from .db_manager import DBManager
-import os
-from typing import List, override, Optional
 from logging import Logger
+from typing import List, Optional, override
+
+from smithy.dbmanagers.db_manager import DBManager
 
 
 class SqliteDBManager(DBManager):

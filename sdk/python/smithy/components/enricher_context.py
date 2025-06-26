@@ -1,10 +1,11 @@
 from contextlib import AbstractContextManager
-from smithy_python.components.component import Component
+from logging import Logger
 from typing import Iterator, List, Optional, Union
 import uuid
-from logging import Logger
-from smithy_python.enums.db_type_enum import DBTypeEnum
-from smithy_python.remote_store.findings_service.v1 import findings_service_pb2 as pb2
+
+from smithy.components.component import Component
+from smithy.enums.db_type_enum import DBTypeEnum
+from smithy.remote_store.findings_service.v1 import findings_service_pb2 as pb2
 
 
 class EnricherContext(AbstractContextManager, Component, Iterator):

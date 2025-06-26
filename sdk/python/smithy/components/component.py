@@ -1,11 +1,12 @@
-import uuid
-from smithy_python.helpers.logger import log
 from typing import Union, List, Optional
 from logging import Logger
-from smithy_python.remote_store.findings_service.v1 import findings_service_pb2
-from smithy_python.dbmanagers import RemoteDBManager, PostgresDBManager, SqliteDBManager
 from abc import ABC
-from smithy_python.enums.db_type_enum import DBTypeEnum
+import uuid
+
+from smithy.helpers.logger import log
+from smithy.remote_store.findings_service.v1 import findings_service_pb2
+from smithy.dbmanagers import RemoteDBManager, PostgresDBManager, SqliteDBManager
+from smithy.enums.db_type_enum import DBTypeEnum
 
 
 class Component(ABC):

@@ -1,7 +1,8 @@
-from typing import List, Optional
-from smithy_python.helpers.logger import log
 from abc import ABC, abstractmethod
 from logging import Logger
+from typing import List, Optional
+
+from smithy.helpers.logger import log
 
 
 class DBManager(ABC):

@@ -27,6 +27,8 @@ SMITHY_VERSION=$(shell (echo $(CONTAINER_REPO) | grep -q '^ghcr' && echo $(lates
 
 CTR_CLI=docker
 BUF_CONTAINER=buf:local
+REVIEWDOG_EXTRA_FLAGS=
+
 
 export
 
@@ -74,8 +76,6 @@ test-go: $(go_test_paths)
 cover-go: test-go
 	@go tool cover -html=tests/output/cover.out -o=tests/output/cover.html && open tests/output/cover.html
 
-REVIEWDOG_EXTRA_FLAGS=
-
 update-poetry-pkgs-sdk-python:
 	@poetry --directory sdk/python install --with dev
 
@@ -97,6 +97,12 @@ $(go_fmt_paths):
 
 fmt-go: $(go_fmt_paths)
 
+fmt-py-sdk-python: update-poetry-pkgs-sdk-python
+	@echo "Tidying up Python files"
+	@poetry --directory sdk/python run -- black .
+
+fmt-py: fmt-py-sdk-python
+
 install-md-fmt-tools:
 	@npm ci
 
@@ -104,7 +110,7 @@ fmt-md:
 	@echo "Tidying up MD files"
 	@npm run format
 
-fmt: fmt-go fmt-proto fmt-md
+fmt: fmt-go fmt-proto fmt-md fmt-py
 
 build-buf-container:
 	$(CTR_CLI) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf

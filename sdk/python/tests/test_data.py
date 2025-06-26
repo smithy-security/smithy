@@ -2,11 +2,13 @@
 This file contains test data for the Smithy Python SDK.
 """
 
-from smithy_python.remote_store.findings_service.v1 import findings_service_pb2 as pb
 import time
-from google.protobuf.timestamp_pb2 import Timestamp
-import smithy_python.ocsf.ocsf_schema.v1.ocsf_schema_pb2 as ocsf
 from typing import Dict, List
+
+from google.protobuf.timestamp_pb2 import Timestamp
+
+from smithy.remote_store.findings_service.v1 import findings_service_pb2 as pb
+import smithy.ocsf.ocsf_schema.v1.ocsf_schema_pb2 as ocsf
 
 
 def now() -> tuple[int, Timestamp]:

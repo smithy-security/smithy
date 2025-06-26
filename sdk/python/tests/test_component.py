@@ -1,13 +1,16 @@
-import unittest, grpc
-from smithy_python.components.component import Component
-from smithy_python.helpers.logger import log
-from .server import DummyFindingsService
+import unittest
 from concurrent import futures
-from smithy_python.remote_store.findings_service.v1 import (
+
+import grpc
+
+from smithy.components.component import Component
+from smithy.helpers.logger import log
+from tests.server import DummyFindingsService
+from smithy.remote_store.findings_service.v1 import (
     findings_service_pb2_grpc as pb_grpc,
 )
-from smithy_python.enums.db_type_enum import DBTypeEnum
-from .test_data import finding_table
+from smithy.enums.db_type_enum import DBTypeEnum
+from tests.test_data import finding_table
 
 
 class ComponentTest(unittest.TestCase):

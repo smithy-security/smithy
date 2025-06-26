@@ -33,14 +33,10 @@ DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(
-    DESCRIPTOR, "ocsf.ocsf_schema.v1.ocsf_schema_pb2", _globals
-)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "ocsf.ocsf_schema.v1.ocsf_schema_pb2", _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
     _globals["DESCRIPTOR"]._loaded_options = None
-    _globals["DESCRIPTOR"]._serialized_options = (
-        b"Z8github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
-    )
+    _globals["DESCRIPTOR"]._serialized_options = b"Z8github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
     _globals["_FILEACTIVITY"]._serialized_start = 121
     _globals["_FILEACTIVITY"]._serialized_end = 4159
     _globals["_FILEACTIVITY_ACTIONID"]._serialized_start = 1914

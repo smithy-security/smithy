@@ -23,7 +23,7 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
-from smithy_python.ocsf.ocsf_schema.v1 import (
+from smithy.ocsf.ocsf_schema.v1 import (
     ocsf_schema_pb2 as ocsf_dot_ocsf__schema_dot_v1_dot_ocsf__schema__pb2,
 )
 
@@ -34,14 +34,10 @@ DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
-_builder.BuildTopDescriptorsAndMessages(
-    DESCRIPTOR, "remote_store.findings_service.v1.findings_service_pb2", _globals
-)
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, "remote_store.findings_service.v1.findings_service_pb2", _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
     _globals["DESCRIPTOR"]._loaded_options = None
-    _globals["DESCRIPTOR"]._serialized_options = (
-        b"Z=github.com/smithy-security/smithy/sdk/gen/findings_service/v1"
-    )
+    _globals["DESCRIPTOR"]._serialized_options = b"Z=github.com/smithy-security/smithy/sdk/gen/findings_service/v1"
     _globals["_FINDING"]._serialized_start = 119
     _globals["_FINDING"]._serialized_end = 195
     _globals["_GETFINDINGSREQUEST"]._serialized_start = 197

@@ -1,16 +1,19 @@
-from smithy_python.components.example_enricher_context import (
+import os
+import unittest
+from concurrent import futures
+
+import grpc
+
+from smithy.components.example_enricher_context import (
     main as example_enricher_context_main,
 )
-import unittest, grpc
-from .server import DummyFindingsService
-from concurrent import futures
-from smithy_python.remote_store.findings_service.v1 import (
+from smithy.remote_store.findings_service.v1 import (
     findings_service_pb2_grpc as pb_grpc,
 )
-from smithy_python.enums.db_type_enum import DBTypeEnum
-from .test_data import finding_table
-from smithy_python.components.component import Component
-import os
+from smithy.enums.db_type_enum import DBTypeEnum
+from smithy.components.component import Component
+from tests.server import DummyFindingsService
+from tests.test_data import finding_table
 
 
 class ExampleEnricherContextTest(unittest.TestCase):

@@ -1,17 +1,20 @@
-from .db_manager import DBManager
-import grpc, os
-from typing import List, override, Optional, Union
+import os
 from logging import Logger
-from smithy_python.remote_store.findings_service.v1.findings_service_pb2_grpc import (
+from typing import List, Optional, Union, override
+
+import grpc
+
+from smithy.dbmanagers.db_manager import DBManager
+from smithy.remote_store.findings_service.v1.findings_service_pb2_grpc import (
     FindingsServiceStub,
 )
-from smithy_python.remote_store.findings_service.v1.findings_service_pb2 import (
+from smithy.remote_store.findings_service.v1.findings_service_pb2 import (
     GetFindingsRequest,
     Finding,
     UpdateFindingsRequest,
     CreateFindingsRequest,
 )
-from smithy_python.ocsf.ocsf_schema.v1.ocsf_schema_pb2 import VulnerabilityFinding
+from smithy.ocsf.ocsf_schema.v1.ocsf_schema_pb2 import VulnerabilityFinding
 
 
 class RemoteDBManager(DBManager):

@@ -1,6 +1,7 @@
-from typing import List, override, Union, Optional
+from typing import List, override, Optional
 from logging import Logger
-from smithy_python.dbmanagers.db_manager import DBManager
+
+from smithy.dbmanagers.db_manager import DBManager
 
 
 class PostgresDBManager(DBManager):

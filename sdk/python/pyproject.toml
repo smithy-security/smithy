@@ -1,9 +1,9 @@
 [project]
-name = "smithy-python"
+name = "smithy"
 version = "0.1.0"
-description = ""
+description = "Library to offer SDK for Smithy Components such as Enrichers, Targets, Filters, Reporters or Scanners for Python development."
 authors = [
-    {name = "Your Name",email = "you@example.com"}
+    {name = "Smithy Security",email = "info@smithy.security"}
 ]
 readme = "README.md"
 requires-python = ">=3.12"
@@ -22,3 +22,11 @@ build-backend = "poetry.core.masonry.api"
 pytest = "^8.4.0"
 black = "^25.1.0"
 
+[tool.black]
+extend-exclude = '''
+/(
+    ocsf
+  | remote_store
+  | .venv
+)/
+'''
