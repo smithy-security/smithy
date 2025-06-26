@@ -110,7 +110,7 @@ fmt-md:
 	@echo "Tidying up MD files"
 	@npm run format
 
-fmt: fmt-go fmt-proto fmt-md fmt-py
+fmt: fmt-go fmt-proto fmt-md
 
 build-buf-container:
 	$(CTR_CLI) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf
