@@ -48,10 +48,7 @@ class Component(ABC):
         if isinstance(instance_id, uuid.UUID):
             instance_id = str(instance_id)
 
-        if not self._validate_uuid(instance_id):
-            raise ValueError(f"Invalid UUID: {instance_id}")
-
-        self.instance_id = instance_id
+        self.instance_id = uuid.UUID(instance_id, version=4)
 
         if not db_type or not isinstance(db_type, DBTypeEnum):
             raise TypeError("db_type must be a DBTypeEnum.")
@@ -62,7 +59,9 @@ class Component(ABC):
             case DBTypeEnum.POSTGRES:
                 self.db_manager = PostgresDBManager()
             case DBTypeEnum.REMOTE:
-                self.db_manager = RemoteDBManager(instance_id=self.instance_id)
+                self.db_manager = RemoteDBManager(
+                    instance_id=str(self.instance_id), logger=self.log
+                )
             case _:
                 raise ValueError(
                     "db_type must be one of DBTypeEnum.SQLITE, DBTypeEnum.POSTGRES, or DBTypeEnum.REMOTE."
@@ -116,18 +115,3 @@ class Component(ABC):
         """
         if hasattr(self, "db_manager") and self.db_manager:
             del self.db_manager
-
-    def _validate_uuid(self, instance_id: str) -> bool:
-        """
-        Validates the UUID of the component instance.
-
-        :param instance_id: The string representing a UUID to validate.
-        :return: True if the UUID is valid, False otherwise.
-        """
-
-        try:
-            val = uuid.UUID(instance_id, version=4)
-        except ValueError:
-            return False
-
-        return str(val) == instance_id.lower()
