@@ -1,5 +1,5 @@
 name: "pdf"
-description: "Logs findings in JSON format"
+description: "Logs findings into a PDF document"
 type: "reporter"
 parameters:
   - name: "aws_access_key_id"
