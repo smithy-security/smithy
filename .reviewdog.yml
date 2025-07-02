@@ -40,6 +40,16 @@ runner:
     cmd: npm run lint | sed 's/\x1b\[[0-9;]*m//g'
     format: remark-lint
 
+  misspell:
+    cmd: git ls-files | grep -v '.lock' | grep -v vendor | xargs misspell -- -error -locale UK -i "color"
+    errorformat:
+      - '%E%f:%l:%c: %m'
+    level: info
+
+  black:
+    cmd: poetry --directory sdk/python run -- black --check .
+    format: black
+
   # TODO: figure out how to set errorformat to parse the error output
   # actionlint:
   #   cmd: actionlint
