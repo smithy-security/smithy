@@ -1,0 +1,22 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: dracon-machine-learning-project-
+spec:
+  pipelineRef:
+    name: dracon-machine-learning-project
+  params:
+  - name: git-clone-url
+    value: https://github.com/ocurity/e2e-monorepo.git
+  - name: producer-modelscan-relative-path-to-model
+    value: "vulnerable-ml-models/unsafe_xgboost_model.pkl"
+  workspaces:
+  - name: output
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
