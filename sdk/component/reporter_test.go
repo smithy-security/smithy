@@ -3,6 +3,7 @@ package component_test
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -137,7 +138,25 @@ func TestRunReporter(t *testing.T) {
 
 		require.NoError(t, runReporterHelper(t, ctx, instanceID, mockReporter, mockStore))
 	})
-
+	t.Run("it should NOT return early when no findings were found if the environment variable 'envVarKeyRunReportersWithoutFindings' is set", func(t *testing.T) {
+		os.Setenv("SMITHY_RUN_REPORTER_WITHOUT_FINDINGS", "true")
+		gomock.InOrder(
+			mockStore.
+				EXPECT().
+				Read(mockCtx, instanceID, nil).
+				Return(make([]*vf.VulnerabilityFinding, 0), nil),
+			mockReporter.
+				EXPECT().
+				Report(mockCtx, []*vf.VulnerabilityFinding{}).
+				Return(nil),
+			mockStore.
+				EXPECT().
+				Close(mockCtx).
+				Return(nil),
+		)
+		require.NoError(t, runReporterHelper(t, ctx, instanceID, mockReporter, mockStore))
+		os.Unsetenv("SMITHY_RUN_REPORTER_WITHOUT_FINDINGS")
+	})
 	t.Run("it should return early when reporting errors", func(t *testing.T) {
 		var errReporting = errors.New("reporting-is-sad")
 
