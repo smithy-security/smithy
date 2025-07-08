@@ -34,11 +34,8 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
 
-      - name: Setup reviewdog
-        run: go install github.com/reviewdog/reviewdog/cmd/reviewdog@latest
-
-      - name: Install linters
-        run: make install-lint-tools
+      - name: Install linters & reviewdog
+        run: make install-lint-tools install-reviewdog
 
       - name: Lint
         env:
