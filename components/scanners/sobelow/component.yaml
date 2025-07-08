@@ -1,0 +1,15 @@
+name: sobelow
+description: "Runs ncc sobelow for elixir and parses findings into OCSF format"
+type: scanner
+steps:
+  - name: scanner
+    image: components/scanners/sobelow/scanner
+    executable: /bin/bash
+    args:
+      - -c
+      - /entrypoint.sh {{ sourceCodeWorkspace }} {{ scratchWorkspace }}/sobelow.out.sarif.json
+  - name: parser
+    image: components/scanners/sobelow
+    env_vars:
+      SOBELOW_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/sobelow.out.sarif.json"
+    executable: /bin/app
