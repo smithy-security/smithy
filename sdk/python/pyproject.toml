@@ -1,0 +1,32 @@
+[project]
+name = "smithy"
+version = "0.1.0"
+description = "Library to offer SDK for Smithy Components such as Enrichers, Targets, Filters, Reporters or Scanners for Python development."
+authors = [
+    {name = "Smithy Security",email = "info@smithy.security"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "grpcio (>=1.73.0,<2.0.0)",
+    "grpcio-tools (>=1.73.0,<2.0.0)",
+    "python-json-logger (>=3.3.0,<4.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.0"
+black = "^25.1.0"
+
+[tool.black]
+extend-exclude = '''
+/(
+    ocsf
+  | remote_store
+  | .venv
+)/
+'''
