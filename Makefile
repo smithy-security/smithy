@@ -27,13 +27,28 @@ SMITHY_VERSION=$(shell (echo $(CONTAINER_REPO) | grep -q '^ghcr' && echo $(lates
 
 CTR_CLI=docker
 BUF_CONTAINER=buf:local
+REVIEWDOG_EXTRA_FLAGS=
+
 
 export
 
 ########################################
 ######### CODE QUALITY TARGETS #########
 ########################################
-.PHONY: lint install-lint-tools tests test-go fmt fmt-proto fmt-go install-go-fmt-tools py-tests py-tests-sdk-python update-poetry-pkgs-sdk-python
+
+.PHONY: lint install-lint-tools tests test-go fmt fmt-proto fmt-go install-go-fmt-tools py-tests py-tests-sdk-python update-poetry-pkgs-sdk-python fmt-py-sdk-python py-lint py-lint-sdk-python 
+
+install-misspell:
+	@go install github.com/client9/misspell/cmd/misspell@latest
+
+install-reviewdog:
+	@go install github.com/reviewdog/reviewdog/cmd/reviewdog@latest
+
+py-lint-sdk-python: update-poetry-pkgs-sdk-python install-misspell install-reviewdog
+	@reviewdog -fail-level=error $$([ "${CI}" = "true" ] && echo "-reporter=github-pr-review") -diff="git diff origin/main" -filter-mode=added -tee -runners black,misspell $(REVIEWDOG_EXTRA_FLAGS)
+
+
+py-lint: py-lint-sdk-python
 
 lint:
 # we need to redirect stderr to stdout because Github actions don't capture the stderr lolz
@@ -63,6 +78,14 @@ test-go: $(go_test_paths)
 cover-go: test-go
 	@go tool cover -html=tests/output/cover.out -o=tests/output/cover.html && open tests/output/cover.html
 
+update-poetry-pkgs-sdk-python:
+	@poetry --directory sdk/python install --with dev
+
+py-tests-sdk-python: update-poetry-pkgs-sdk-python
+	@poetry --directory sdk/python run -- pytest --capture no ./tests
+
+py-tests: py-tests-sdk-python
+
 tests: test-go
 
 install-go-fmt-tools:
@@ -75,6 +98,12 @@ $(go_fmt_paths):
 	@find $$(dirname $@) -type f -name "*.go" -not -name "*.pb.*" -not -path "*/vendor/*" -not -name "*mock*.go" -exec goimports -local github.com/smithy-security/smithy/$$(dirname $@) -w {} \;
 
 fmt-go: $(go_fmt_paths)
+
+fmt-py-sdk-python: update-poetry-pkgs-sdk-python
+	@echo "Tidying up Python files"
+	@poetry --directory sdk/python run -- black .
+
+fmt-py: fmt-py-sdk-python
 
 install-md-fmt-tools:
 	@npm ci
