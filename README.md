@@ -49,4 +49,4 @@ Please check the docs over [here](./docs/developing-components/README.md)
 
 ## Contacts
 
-Join our [Discord server](https://discord.gg/xzsHxUxK) to get support and ask questions.
+Join our [Discord server](https://discord.gg/kuNnnVq9) to get support and ask questions.
