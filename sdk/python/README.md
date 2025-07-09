@@ -37,7 +37,13 @@ The Smithy Python SDK provides:
 Install the Smithy Python SDK using Poetry:
 
 ```bash
-poetry add smithy
+poetry add "git+https://github.com/smithy-security/smithy.git@main#subdirectory=sdk/python"
+```
+
+or add it using `pip`:
+
+```bash
+pip install "git+https://github.com/smithy-security/smithy.git@main#subdirectory=sdk/python"
 ```
 
 ## Usage
