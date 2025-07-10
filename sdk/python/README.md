@@ -56,16 +56,16 @@ We will refrain from implementing the actual logic of checking for exploits, but
 
 ```python
 from logging import Logger
-from typing import Union, Optional
+from typing import Union, Optional, override
 
 from google.protobuf import json_format
 
-from smithy.components.enricher import Enricher
-from smithy.components.runner import Runner
-from smithy.enums.db_type_enum import DBTypeEnum
-from smithy.remote_store.findings_service.v1 import findings_service_pb2 as pb2
-from smithy.ocsf.ocsf_ext.finding_info.v1 import finding_info_pb2 as ext_pb2
-from smithy.ocsf.ocsf_schema.v1 import ocsf_schema_pb2 as ocsf_pb2
+from smithy import Enricher
+from smithy import Runner
+from smithy import DBTypeEnum
+from smithy import findings_service
+from smithy import ocsf_ext
+from smithy import ocsf_schema
 
 
 class ExploitExistsEnricher(Enricher):
@@ -86,14 +86,15 @@ class ExploitExistsEnricher(Enricher):
 
         super().__init__(logger)
 
-    def enrich(self, finding: pb2.Finding) -> pb2.Finding:
+    @override
+    def enrich(self, finding: findings_service.Finding) -> findings_service.Finding:
         """
         Enriches the findings in the database with annotations.
         This method gets findings from the database and adds annotations to them.
         The actual annotation logic should be implemented in this method.
         """
 
-        exploit_exists_enrichment = ext_pb2.Enrichment.ExploitsExistsEnrichment(
+        exploit_exists_enrichment = ocsf_ext.Enrichment.ExploitsExistsEnrichment(
             exploit_url = "https://www.exploit-db.com/exploits/",  # Example URL, replace with actual logic
             references = ["CVE-2023-12345", "CVE-2023-67890"],  # Example CVEs, replace with actual logic
             is_exploitable = True,  # Example value, replace with actual logic
@@ -107,10 +108,10 @@ class ExploitExistsEnricher(Enricher):
         )
         
         finding.details.enrichments.append(
-            ocsf_pb2.Enrichment(
+            ocsf_schema.Enrichment(
                 name = "Exploit Exists Enrichment", # Optional
                 provider = "ExploitsExistsEnricher", # Optional
-                type = str(ext_pb2.Enrichment.EnrichmentType.ENRICHMENT_TYPE_EXPLOIT_EXISTS), # Optional
+                type = str(ocsf_ext.Enrichment.EnrichmentType.ENRICHMENT_TYPE_EXPLOIT_EXISTS), # Optional
                 value = enrichment_str,
             )
         )
