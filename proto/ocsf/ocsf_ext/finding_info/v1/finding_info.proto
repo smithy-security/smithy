@@ -85,7 +85,7 @@ message Enrichment {
     ENRICHMENT_TYPE_EXPLOIT_EXISTS = 4;
     ENRICHMENT_TYPE_REACHABILITY = 5;
     ENRICHMENT_TYPE_PR_DIFF = 6;
-    ENRICHMENT_TYPE_GIT_INTELLIGENCE = 7;
+    ENRICHMENT_TYPE_GIT_HISTORY = 7;
   }
 
   // if it has this enrichment at all, the finding is a duplicate
