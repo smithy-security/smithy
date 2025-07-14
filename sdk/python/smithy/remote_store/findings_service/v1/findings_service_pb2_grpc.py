@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from smithy.remote_store.findings_service.v1 import findings_service_pb2 as remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2
+from smithy.remote_store.findings_service.v1 import findings_service_pb2 as findings__service_dot_v1_dot_findings__service__pb2
 
 GRPC_GENERATED_VERSION = '1.73.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in remote_store/findings_service/v1/findings_service_pb2_grpc.py depends on'
+        + f' but the generated code in findings_service/v1/findings_service_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -37,18 +37,18 @@ class FindingsServiceStub(object):
         """
         self.GetFindings = channel.unary_unary(
                 '/findings_service.v1.FindingsService/GetFindings',
-                request_serializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.GetFindingsRequest.SerializeToString,
-                response_deserializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.GetFindingsResponse.FromString,
+                request_serializer=findings__service_dot_v1_dot_findings__service__pb2.GetFindingsRequest.SerializeToString,
+                response_deserializer=findings__service_dot_v1_dot_findings__service__pb2.GetFindingsResponse.FromString,
                 _registered_method=True)
         self.UpdateFindings = channel.unary_unary(
                 '/findings_service.v1.FindingsService/UpdateFindings',
-                request_serializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsRequest.SerializeToString,
-                response_deserializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsResponse.FromString,
+                request_serializer=findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsRequest.SerializeToString,
+                response_deserializer=findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsResponse.FromString,
                 _registered_method=True)
         self.CreateFindings = channel.unary_unary(
                 '/findings_service.v1.FindingsService/CreateFindings',
-                request_serializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsRequest.SerializeToString,
-                response_deserializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsResponse.FromString,
+                request_serializer=findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsRequest.SerializeToString,
+                response_deserializer=findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsResponse.FromString,
                 _registered_method=True)
 
 
@@ -82,18 +82,18 @@ def add_FindingsServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetFindings': grpc.unary_unary_rpc_method_handler(
                     servicer.GetFindings,
-                    request_deserializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.GetFindingsRequest.FromString,
-                    response_serializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.GetFindingsResponse.SerializeToString,
+                    request_deserializer=findings__service_dot_v1_dot_findings__service__pb2.GetFindingsRequest.FromString,
+                    response_serializer=findings__service_dot_v1_dot_findings__service__pb2.GetFindingsResponse.SerializeToString,
             ),
             'UpdateFindings': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateFindings,
-                    request_deserializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsRequest.FromString,
-                    response_serializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsResponse.SerializeToString,
+                    request_deserializer=findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsRequest.FromString,
+                    response_serializer=findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsResponse.SerializeToString,
             ),
             'CreateFindings': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateFindings,
-                    request_deserializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsRequest.FromString,
-                    response_serializer=remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsResponse.SerializeToString,
+                    request_deserializer=findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsRequest.FromString,
+                    response_serializer=findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -122,8 +122,8 @@ class FindingsService(object):
             request,
             target,
             '/findings_service.v1.FindingsService/GetFindings',
-            remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.GetFindingsRequest.SerializeToString,
-            remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.GetFindingsResponse.FromString,
+            findings__service_dot_v1_dot_findings__service__pb2.GetFindingsRequest.SerializeToString,
+            findings__service_dot_v1_dot_findings__service__pb2.GetFindingsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -149,8 +149,8 @@ class FindingsService(object):
             request,
             target,
             '/findings_service.v1.FindingsService/UpdateFindings',
-            remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsRequest.SerializeToString,
-            remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsResponse.FromString,
+            findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsRequest.SerializeToString,
+            findings__service_dot_v1_dot_findings__service__pb2.UpdateFindingsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -176,8 +176,8 @@ class FindingsService(object):
             request,
             target,
             '/findings_service.v1.FindingsService/CreateFindings',
-            remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsRequest.SerializeToString,
-            remote__store_dot_findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsResponse.FromString,
+            findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsRequest.SerializeToString,
+            findings__service_dot_v1_dot_findings__service__pb2.CreateFindingsResponse.FromString,
             options,
             channel_credentials,
             insecure,
