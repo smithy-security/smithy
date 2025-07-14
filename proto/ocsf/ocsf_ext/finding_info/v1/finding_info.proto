@@ -131,8 +131,8 @@ message Enrichment {
     uint32 end_line = 3;
   }
 
-  // GitIntelligenceEnrichment is an enrichment that adds data from git intelligence to a finding.
-  message GitIntelligenceEnrichment {
+  // GitHistory is an enrichment that adds data from git intelligence to a finding representing the historic sourcecode location of a finding.
+  message GitHistory {
     SourceCodeLocation previous_location = 1;
   }
 
@@ -144,6 +144,6 @@ message Enrichment {
     ExploitExistsEnrichment exploit_exists = 5;
     ReachabilityEnrichment reachability = 6;
     PRDiffEnrichment pr_diff = 7;
-    GitIntelligenceEnrichment git_intelligence = 8;
+    GitHistory git_history = 8;
   }
 }
