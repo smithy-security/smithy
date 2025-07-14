@@ -21,6 +21,7 @@ smithyctl component package
 | `registry-auth-enabled`  | enables authentication to push artifact to an OCI registry. | `false`                            |
 | `registry-auth-username` | the username for authenticating to the OCI registry.        | `""`                               |
 | `registry-auth-password` | the password for authenticating to the OCI registry.        | `""`                               |
+| `registry-plain-http`    | if true, it enables plain http. Useful for local setups.    | `false`                            |
 | `namespace`              | repository context path                                     | `smithy-security/smithy/manifests` |
 | `sdk-version`            | specifies the sdk version used to package the component.    | `latest`                           |
 | `version`                | is the version used to package the component.               | `latest`                           |

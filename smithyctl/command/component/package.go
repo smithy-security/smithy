@@ -31,6 +31,7 @@ type (
 		registryAuthEnabled  bool
 		registryAuthUsername string
 		registryAuthPassword string
+		registryPlainHTTP    bool
 		imageRegistryURL     string
 		imageNamespace       string
 		imageTag             string
@@ -112,6 +113,14 @@ func NewPackageCommand() *cobra.Command {
 		)
 	cmd.
 		Flags().
+		BoolVar(
+			&packageCmdFlags.registryPlainHTTP,
+			"registry-plain-http",
+			false,
+			"if true, the plain http registry will be used",
+		)
+	cmd.
+		Flags().
 		StringVar(
 			&packageCmdFlags.imageRegistryURL,
 			"image-registry-url",
@@ -165,12 +174,16 @@ func packageComponent(ctx context.Context, flags packageFlags, componentPath str
 	var credsStore credentials.Store
 	if flags.registryAuthEnabled {
 		credsStore, err = creds.NewStaticStore(
-			flags.registryURL, flags.registryAuthUsername, flags.registryAuthPassword,
+			flags.registryURL,
+			flags.registryAuthUsername,
+			flags.registryAuthPassword,
 		)
 	} else {
-		credsStore, err = credentials.NewStoreFromDocker(credentials.StoreOptions{
-			DetectDefaultNativeStore: true,
-		})
+		credsStore, err = credentials.NewStoreFromDocker(
+			credentials.StoreOptions{
+				DetectDefaultNativeStore: true,
+			},
+		)
 	}
 	if err != nil {
 		return errors.Errorf("could not initialise credential store: %w", err)
@@ -179,7 +192,7 @@ func packageComponent(ctx context.Context, flags packageFlags, componentPath str
 	reg, err := registry.New(
 		flags.registryURL,
 		flags.namespace,
-		false,
+		flags.registryPlainHTTP,
 		credsStore,
 	)
 	if err != nil {
