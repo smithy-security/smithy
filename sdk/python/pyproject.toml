@@ -1,6 +1,6 @@
 [project]
 name = "smithy"
-version = "0.1.0"
+version = "0.1.1"
 description = "Library to offer SDK for Smithy Components such as Enrichers, Targets, Filters, Reporters or Scanners for Python development."
 authors = [
     {name = "Smithy Security",email = "info@smithy.security"}
