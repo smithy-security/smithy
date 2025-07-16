@@ -118,15 +118,12 @@ build-buf-container:
 	$(CTR_CLI) build . -t $(BUF_CONTAINER) -f containers/Dockerfile.buf
 
 run-buf: build-buf-container
-	$(eval BUF_TMP_DP_FOLDER:=buf-tmp)
-	@if [ ! -d "$(BUF_TMP_DP_FOLDER)" ]; then mkdir $(BUF_TMP_DP_FOLDER); fi
 	$(CTR_CLI) run \
 		--volume "$(shell pwd):/workspace" \
-		--volume $(BUF_TMP_DP_FOLDER):/tmp \
 		--workdir /workspace \
+		--user $(shell id -u) \
 		$(BUF_CONTAINER) \
 		$(ARGS)
-	@rm -rf $(BUF_TMP_DP_FOLDER)
 
 fmt-proto: build-buf-container
 	@echo "Tidying up Proto files"
