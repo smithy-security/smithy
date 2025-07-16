@@ -1,6 +1,8 @@
 FROM golang:alpine AS golang
 
-RUN go install github.com/bufbuild/buf/cmd/buf@v1.45.0
-RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.35.1
+RUN go install github.com/bufbuild/buf/cmd/buf@v1.45.0 && \
+    go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.35.1 && \
+    mkdir /.cache && \
+    chmod 0777 /.cache
 
 ENTRYPOINT ["/go/bin/buf"]
