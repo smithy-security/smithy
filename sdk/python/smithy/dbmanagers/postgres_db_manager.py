@@ -2,7 +2,7 @@ from typing import List, override, Optional
 from logging import Logger
 
 from smithy.dbmanagers.db_manager import DBManager
-from smithy.remote_store.findings_service.v1 import findings_service_pb2
+from findings_service.v1 import findings_service_pb2
 
 
 class PostgresDBManager(DBManager):

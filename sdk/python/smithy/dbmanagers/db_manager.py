@@ -3,7 +3,7 @@ from logging import Logger
 from typing import List, Optional
 
 from smithy.helpers.logger import log
-from smithy.remote_store.findings_service.v1 import findings_service_pb2
+from findings_service.v1 import findings_service_pb2
 
 
 class DBManager(ABC):
