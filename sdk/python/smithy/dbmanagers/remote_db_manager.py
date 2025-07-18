@@ -70,10 +70,10 @@ class RemoteDBManager(DBManager):
         page = 0
         get_findings_page_size = self.page_size
 
-        if page_num is not None and isinstance(page_num, int) and page_num >= 0:
+        if isinstance(page_num, int) and page_num >= 0:
             page = page_num
            
-        if page_size is not None and isinstance(page_size, int) and page_size > 0:
+        if isinstance(page_size, int) and page_size > 0:
             get_findings_page_size = page_size
 
         if page_size and page_num is None:
