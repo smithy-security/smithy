@@ -38,8 +38,10 @@ class RemoteDBManager(DBManager):
         """
 
         super().__init__(instance_id, logger)
+        self._log.debug(f"RemoteDBManager initialized with instance_id: {instance_id}")
         self._load_remote_db_env_vars()
         self._channel = grpc.insecure_channel(self.findings_address)
+        self._log.debug(f"gRPC channel created for address: {self.findings_address}")
 
         self.stub = FindingsServiceStub(self._channel)
 
@@ -48,9 +50,12 @@ class RemoteDBManager(DBManager):
         self, page_num: Optional[int] = None, page_size: Optional[int] = None
     ) -> List[Finding]:
         """
-        Retrieves **all** findings from the remote database (unless `page_num` is used) which are associated to the class variable `instance_id`.
+        Retrieves findings from the remote database which are associated with the class variable `instance_id`.
 
-        :param page_num: Optional parameter to specify the page number for pagination. If not provided, all findings will be retrieved. Otherwise it will retrieve the `SMITHY_REMOTE_CLIENT_PAGE_SIZE`(default 100) findings for the given page number.
+        If `page_num` is provided, it retrieves a single page of findings.
+        If `page_num` is not provided, it retrieves all findings by paginating through all available pages.
+
+        :param page_num: Optional parameter to specify the page number for pagination. If provided, only this page will be retrieved.
         :type page_num: Optional[int]
 
         :param page_size: Optional parameter to specify the number of findings per page. If not provided, the page size specified by the ENV variable `SMITHY_REMOTE_CLIENT_PAGE_SIZE` will be used (default is 100).
@@ -58,17 +63,20 @@ class RemoteDBManager(DBManager):
 
         :return: A list of findings retrieved from the remote database.
         """
+        self._log.debug(
+            f"get_findings called with page_num: {page_num}, page_size: {page_size}"
+        )
 
         page = 0
-
         get_findings_page_size = self.page_size
-        if page_num and isinstance(page_num, int) and page_num >= 0:
-            page = page_num
 
-        if page_size and isinstance(page_size, int) and page_size > 0:
+        if isinstance(page_num, int) and page_num >= 0:
+            page = page_num
+           
+        if isinstance(page_size, int) and page_size > 0:
             get_findings_page_size = page_size
 
-        if page_size and not page_num:
+        if page_size and page_num is None:
             self._log.warning(
                 "page_size is provided but page_num is not. Defaulting to page_num 0."
             )
@@ -76,22 +84,29 @@ class RemoteDBManager(DBManager):
         all_findings = []
         try:
             while True:
-                resp = self.stub.GetFindings(
-                    GetFindingsRequest(
-                        id=self.instance_id, page=page, page_size=get_findings_page_size
-                    )
+                self._log.debug(f"Requesting page {page} with page_size {get_findings_page_size}")
+                request = GetFindingsRequest(
+                    id=self.instance_id, page=page, page_size=get_findings_page_size
                 )
+
+                resp = self.stub.GetFindings(request)
+                self._log.debug(f"Received {len(resp.findings)} findings in response for page {page}.")
+
                 all_findings.extend(resp.findings)
-                if (
-                    not resp.findings
-                    or len(resp.findings) < get_findings_page_size
-                    or page == page_num
-                ):
+
+                # Break conditions
+                if page_num is not None:
+                    self._log.debug(f"page_num ({page_num}) was specified, breaking loop after one page.")
                     break
+                if not resp.findings or len(resp.findings) < get_findings_page_size:
+                    self._log.debug("No more findings or last page reached. Breaking loop.")
+                    break
+
                 page += 1
         except grpc.RpcError as e:
             self._log.error(f"Failed to retrieve findings from remote database: {e}")
 
+        self._log.debug(f"get_findings returning {len(all_findings)} total findings.")
         return all_findings
 
     @override
