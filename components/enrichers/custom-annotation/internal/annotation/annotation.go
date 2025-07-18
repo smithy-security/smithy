@@ -2,8 +2,8 @@ package annotation
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
+	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
@@ -16,8 +16,8 @@ import (
 type (
 	// Conf contains the annotation configuration.
 	Conf struct {
-		AnnotationName       string
-		AnnotationValuesJSON string
+		AnnotationName   string
+		AnnotationValues map[string]string
 	}
 
 	customAnnotator struct {
@@ -25,7 +25,7 @@ type (
 	}
 )
 
-const defaultEmptyJsonObject = "{}"
+const defaultEmpty = ""
 
 // NewConf initialises the enricher configuration from environment variables.
 func NewConf() (*Conf, error) {
@@ -45,19 +45,23 @@ func NewConf() (*Conf, error) {
 
 	annotationValues, err := env.GetOrDefault(
 		"CUSTOM_ANNOTATION_VALUES",
-		"{}",
+		"",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	if annotationValues != defaultEmptyJsonObject {
-		var m = make(map[string]any)
-		if err := json.Unmarshal([]byte(annotationValues), &m); err != nil {
-			return nil, errors.Errorf("invalid JSON values supplied '%s': %w", annotationValues, err)
+	if annotationValues != defaultEmpty {
+		var m = make(map[string]string)
+		for _, kv := range strings.Split(annotationValues, ",") {
+			parts := strings.SplitN(kv, ":", 2)
+			if len(parts) != 2 {
+				return nil, errors.Errorf("invalid key:value pair '%s': %w", kv, err)
+			}
+			m[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 		}
-		cfg.AnnotationValuesJSON = annotationValues
+		cfg.AnnotationValues = m
 	}
 
 	return cfg, nil
@@ -76,6 +80,20 @@ func NewCustomAnnotator(conf *Conf) (*customAnnotator, error) {
 	}, nil
 }
 
+func (ca *customAnnotator) flattenMap() string {
+	var flattened []string
+	if ca.conf.AnnotationValues == nil {
+		return ""
+	}
+	for k, v := range ca.conf.AnnotationValues {
+		if v == "" {
+			ca.conf.AnnotationValues[k] = defaultEmpty
+		}
+		flattened = append(flattened, k+": "+v)
+	}
+	return strings.Join(flattened, ", ")
+}
+
 // Annotate adds annotated values to passed findings.
 func (ca *customAnnotator) Annotate(
 	ctx context.Context,
@@ -87,17 +105,17 @@ func (ca *customAnnotator) Annotate(
 				With(slog.Int("num_findings", len(findings))).
 				With(slog.String("provider_name", providerName)).
 				With(slog.String("annotation_name", ca.conf.AnnotationName)).
-				With(slog.Any("annotation_values", ca.conf.AnnotationValuesJSON))
+				With(slog.Any("annotation_values", ca.conf.AnnotationValues))
 	)
 
 	logger.Debug("preparing to annotate findings...")
-
+	flattenedValues := ca.flattenMap()
 	for idx := range findings {
 		findings[idx].Finding.Enrichments = append(
 			findings[idx].Finding.Enrichments,
 			&ocsf.Enrichment{
 				Name:     ca.conf.AnnotationName,
-				Value:    ca.conf.AnnotationValuesJSON,
+				Value:    flattenedValues,
 				Type:     &providerName,
 				Provider: &providerName,
 			},

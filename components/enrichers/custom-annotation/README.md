@@ -1,18 +1,37 @@
-# custom-annotation
+# Custom Annotation Enricher
 
-This component implements an [enricher](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
-that adds a custom json annotation to the fetched vulnerability findings
-associated with the workflow.
+## Overview
 
-## Environment variables
+The **custom-annotation** enricher is a Smithy component that allows you to add custom metadata (annotations) to vulnerability findings during a workflow. This is useful for tagging findings with additional context, such as environment, team, severity overrides, or any other custom information relevant to your organization.
 
-The component uses environment variables for configuration.
+## Features
 
-It requires the component
-environment variables defined [here](https://github.com/smithy-security/smithy/blob/main/sdk/README.md#component)
-as well as the following:
+* Adds custom annotations to findings
+* Flexible input parameters for annotation names and values
+* Integrates seamlessly into Smithy workflows
 
-| Environment Variable       | Type   | Required | Default | Description                                                             |
-|----------------------------|--------|----------|---------|-------------------------------------------------------------------------|
-| CUSTOM\_ANNOTATION\_NAME     | string | yes      | -       | The name of the annotation to be added.                                 |
-| CUSTOM\_ANNOTATION\_VALUES   | string | no       | {}      | Json annotations to be added as annotation. For example '{"foo":"bar"}' |
+## Input Parameter Examples
+
+The `params` section allows you to specify any number of custom annotations. Example:
+
+```yaml
+params:
+  annotations: "environment:staging, owner:devops, ticket:JIRA-1234"
+```
+
+You can use any key-value pairs that make sense for your workflow. These will be added to each finding as enrichments.
+
+## How It Works
+
+The enricher reads the `annotations` input parameters and attaches them to each finding processed in the workflow. This metadata is then available to downstream reporters and other components.
+
+## Testing
+
+Unit tests for the custom-annotation enricher should cover:
+
+* Correct attachment of annotations to findings
+* Handling of various input parameter formats
+
+## Contributing
+
+Contributions are welcome! Please submit issues or pull requests via GitHub.

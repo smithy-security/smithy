@@ -1,0 +1,7 @@
+description: Nancy based workflow
+name: nancy
+components:
+- component: file://components/targets/git-clone/component.yaml
+- component: file://components/scanners/bandit/component.yaml
+- component: file://components/enrichers/custom-annotation/component.yaml
+- component: file://components/reporters/json-logger/component.yaml
