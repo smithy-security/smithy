@@ -2,11 +2,11 @@ from concurrent import futures
 
 import grpc
 
-from smithy.remote_store.findings_service.v1 import (
+from findings_service.v1 import (
     findings_service_pb2 as pb,
     findings_service_pb2_grpc as pb_grpc,
 )
-from smithy.remote_store.findings_service.v1.findings_service_pb2 import Finding
+from findings_service.v1.findings_service_pb2 import Finding
 from tests.test_data import finding_table
 
 
