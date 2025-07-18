@@ -22,10 +22,13 @@ func TestCustomAnnotator_Annotate(t *testing.T) {
 	var (
 		ctx, cancel      = context.WithTimeout(context.Background(), time.Second)
 		now              = time.Now().Unix()
-		annotationValues = `{"paths" : {main.go": true, "internal/hacky.go": "true"}}`
-		conf             = &annotation.Conf{
-			AnnotationName:       annotationName,
-			AnnotationValuesJSON: annotationValues,
+		annotationValues = map[string]string{
+			"paths":             "main.go",
+			"internal/hacky.go": "true",
+		}
+		conf = &annotation.Conf{
+			AnnotationName:   annotationName,
+			AnnotationValues: annotationValues,
 		}
 		vulns = []*vf.VulnerabilityFinding{
 			{
