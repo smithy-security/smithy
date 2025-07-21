@@ -83,8 +83,9 @@ func (s sourceCodeTarget) Prepare(ctx context.Context) error {
 		With(
 			slog.String("source_code_path", s.cfg.SourceCodePath),
 			slog.String("archive_path", s.cfg.ArchivePath),
+			slog.String("artifact_url", s.cfg.ArtifactURL),
 		)
-	l.Debug("executing Prepare step...")
+	l.Debug("executing prepare step...")
 
 	l.Debug("fetching artifact...")
 	artifactReader, err := s.fetcher.FetchArtifact(ctx)

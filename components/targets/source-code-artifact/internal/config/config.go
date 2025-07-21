@@ -81,6 +81,7 @@ func New() (Config, error) {
 
 	cfg.Fetcher.ArtifactURL = artifactURL
 	cfg.Metadata.ArtifactURL = artifactURL
+	cfg.Target.ArtifactURL = artifactURL
 
 	cfg.Metadata.Reference, err = env.GetOrDefault(
 		"ARTIFACT_REFERENCE",

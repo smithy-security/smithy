@@ -163,6 +163,11 @@ func newS3Options(
 	}
 
 	if cfg.AuthID != "" && cfg.AuthSecret != "" {
+		logger.LoggerFromContext(ctx).Debug(
+			"authenticating with auth id and secret",
+			slog.String("auth_id", fetcher.Redact(cfg.AuthID)),
+			slog.String("auth_secret", fetcher.Redact(cfg.AuthSecret)),
+		)
 		awsOpts = append(awsOpts, awsConf.WithCredentialsProvider(
 			aws.CredentialsProviderFunc(
 				func(ctx context.Context) (aws.Credentials, error) {
