@@ -147,39 +147,21 @@ func TestGetFileType(t *testing.T) {
 			wantErr:  false,
 		},
 		{
-			name:     "Unsupported extension",
-			fileName: "archive.rar",
-			expected: artifact.FileTypeUnsupported,
-			wantErr:  true,
-		},
-		{
-			name:     "No extension",
-			fileName: "archive",
-			expected: artifact.FileTypeUnsupported,
-			wantErr:  true,
-		},
-		{
-			name:     "TXT file",
-			fileName: "file.txt",
-			expected: artifact.FileTypeUnsupported,
-			wantErr:  true,
-		},
-		{
-			name:     "Multiple dots but unsupported",
-			fileName: "file.backup.old",
-			expected: artifact.FileTypeUnsupported,
-			wantErr:  true,
-		},
-		{
 			name:     "Empty string",
 			fileName: "",
 			expected: artifact.FileTypeUnsupported,
-			wantErr:  true,
+			wantErr:  false,
 		},
 		{
 			name:     "Just tar.gz extension",
 			fileName: ".tar.gz",
 			expected: artifact.FileTypeTarGz,
+			wantErr:  false,
+		},
+		{
+			name:     "Not archived",
+			fileName: "SBOM.json",
+			expected: artifact.FileTypeUnarchived,
 			wantErr:  false,
 		},
 	}

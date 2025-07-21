@@ -6,6 +6,7 @@ import (
 	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact"
+	plaincopy "github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/plain-copy"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/tar"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/targz"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/zip"
@@ -68,6 +69,8 @@ func GetExtractor(fileName string) (Extractor, artifact.FileType, error) {
 		extractor = tar.NewExtractor()
 	case artifact.FileTypeTarGz:
 		extractor = targz.NewExtractor()
+	case artifact.FileTypeUnarchived:
+		extractor = plaincopy.NewExtractor()
 	default:
 		return nil, artifact.FileTypeUnsupported, errors.Errorf("unsupported file type '%s' for file: '%s'", fileType, fileName)
 	}
