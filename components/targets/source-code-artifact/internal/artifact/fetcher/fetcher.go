@@ -10,6 +10,7 @@ type (
 	Doer interface {
 		Do(*http.Request) (*http.Response, error)
 	}
+	// Config contains fetcher's config.
 	Config struct {
 		Region          string
 		AuthID          string
@@ -21,3 +22,11 @@ type (
 		KeyName         string
 	}
 )
+
+// Redact redacts strings.
+func Redact(s string) string {
+	if len(s) <= 3 {
+		return "***"
+	}
+	return s[:3] + "***"
+}

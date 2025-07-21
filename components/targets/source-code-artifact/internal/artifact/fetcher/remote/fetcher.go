@@ -3,9 +3,11 @@ package remote
 import (
 	"context"
 	"io"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-errors/errors"
+	"github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/fetcher"
 )
@@ -48,6 +50,11 @@ func (f remoteFetcher) FetchArtifact(ctx context.Context) (io.ReadCloser, error)
 	}
 
 	if f.cfg.AuthID != "" && f.cfg.AuthSecret != "" {
+		logger.LoggerFromContext(ctx).Debug(
+			"authenticating with auth id and secret",
+			slog.String("auth_id", fetcher.Redact(f.cfg.AuthID)),
+			slog.String("auth_secret", fetcher.Redact(f.cfg.AuthSecret)),
+		)
 		req.SetBasicAuth(f.cfg.AuthID, f.cfg.AuthSecret)
 	}
 
