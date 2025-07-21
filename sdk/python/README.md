@@ -46,6 +46,29 @@ or add it using `pip`:
 pip install "git+https://github.com/smithy-security/smithy.git@main#subdirectory=sdk/python"
 ```
 
+We recommend using a tagged version instead of just checking out the `main` branch.
+As GitHub does not support search/filter functionality for tags natively, you can list all sdk related tags using the following command:
+
+```bash
+git ls-remote --tags --refs https://github.com/smithy-security/smithy.git 'refs/tags/sdk/*'
+```
+
+This will list all the tags that start with `sdk/`. You can then choose the latest tag that fits your needs and use it in the installation command.
+
+Alternatively, you can use the following snippet to automatically sort for and use the latest tag:
+
+```bash
+latest_tag=$(                           
+  git ls-remote --tags --refs https://github.com/smithy-security/smithy.git 'refs/tags/sdk/*' |
+  cut -f2 |
+  sed 's#refs/tags/##' |
+  sort -V | tail -n1
+)
+poetry add "git+https://github.com/smithy-security/smithy.git@$latest_tag#subdirectory=sdk/python"
+```
+
+(exchange `poetry add` with `pip install` if you prefer pip)
+
 ## Usage
 
 To use the SDK you first need to create a Class inheriting from the component-type you want to have. In this example we will create a custom enricher by extending the `Enricher` base class then pass your enricher to the `Runner` which will execute it and handle the database operations.

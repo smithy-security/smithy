@@ -4,9 +4,9 @@ from typing import Optional
 
 from smithy.components.component import Component
 from smithy.helpers.logger import log
-from smithy.remote_store.findings_service.v1 import findings_service_pb2 as pb2
-from smithy.ocsf.ocsf_schema.v1 import ocsf_schema_pb2 as ocsf_pb2
-from smithy.ocsf.ocsf_ext.finding_info.v1 import finding_info_pb2 as ext_pb2
+from findings_service.v1 import findings_service_pb2 as pb2
+from ocsf_schema.v1 import ocsf_schema_pb2 as ocsf_pb2
+from ocsf_ext.finding_info.v1 import finding_info_pb2 as ext_pb2
 
 
 class Enricher(Component, ABC):

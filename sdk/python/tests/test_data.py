@@ -7,8 +7,8 @@ from typing import Dict, List
 
 from google.protobuf.timestamp_pb2 import Timestamp
 
-from smithy.remote_store.findings_service.v1 import findings_service_pb2 as pb
-import smithy.ocsf.ocsf_schema.v1.ocsf_schema_pb2 as ocsf
+from findings_service.v1 import findings_service_pb2 as pb
+import ocsf_schema.v1.ocsf_schema_pb2 as ocsf
 
 
 def now() -> tuple[int, Timestamp]:
