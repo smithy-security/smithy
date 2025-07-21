@@ -125,7 +125,7 @@ run-buf: build-buf-container
 		$(BUF_CONTAINER) \
 		$(ARGS)
 
-fmt-proto: build-buf-container
+fmt-proto: build-buf-container generate-proto
 	@echo "Tidying up Proto files"
 	$(MAKE) run-buf ARGS="format -w $(EXCLUDE_VENDOR_PATHS)"
 
