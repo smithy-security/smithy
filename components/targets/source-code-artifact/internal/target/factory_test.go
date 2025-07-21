@@ -19,7 +19,7 @@ func TestGetExtractor(t *testing.T) {
 	}{
 		{
 			name:        "file type not supported",
-			fileName:    "not_supported",
+			fileName:    "",
 			expFileType: artifact.FileTypeUnsupported,
 			expError:    true,
 		},
@@ -37,6 +37,11 @@ func TestGetExtractor(t *testing.T) {
 			name:        "tar gz type",
 			fileName:    "s3://my-bucket/my-archive.tar.gz",
 			expFileType: artifact.FileTypeTarGz,
+		},
+		{
+			name:        "any type",
+			fileName:    "s3://my-bucket/SBOM.json",
+			expFileType: artifact.FileTypeUnarchived,
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
