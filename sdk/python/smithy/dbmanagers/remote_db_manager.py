@@ -5,16 +5,16 @@ from typing import List, Optional, Union, override
 import grpc
 
 from smithy.dbmanagers.db_manager import DBManager
-from smithy.remote_store.findings_service.v1.findings_service_pb2_grpc import (
+from findings_service.v1.findings_service_pb2_grpc import (
     FindingsServiceStub,
 )
-from smithy.remote_store.findings_service.v1.findings_service_pb2 import (
+from findings_service.v1.findings_service_pb2 import (
     GetFindingsRequest,
     Finding,
     UpdateFindingsRequest,
     CreateFindingsRequest,
 )
-from smithy.ocsf.ocsf_schema.v1.ocsf_schema_pb2 import VulnerabilityFinding
+from ocsf_schema.v1.ocsf_schema_pb2 import VulnerabilityFinding
 
 
 class RemoteDBManager(DBManager):

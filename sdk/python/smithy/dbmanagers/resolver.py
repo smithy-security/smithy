@@ -1,5 +1,4 @@
 from logging import Logger
-import os
 
 from smithy.dbmanagers.remote_db_manager import RemoteDBManager
 from smithy.dbmanagers.postgres_db_manager import PostgresDBManager

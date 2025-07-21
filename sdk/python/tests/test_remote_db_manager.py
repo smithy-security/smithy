@@ -6,12 +6,12 @@ from typing import List
 import grpc
 
 from smithy.dbmanagers.remote_db_manager import RemoteDBManager
-from smithy.remote_store.findings_service.v1 import (
+from findings_service.v1 import (
     findings_service_pb2 as pb,
     findings_service_pb2_grpc as pb_grpc,
 )
-from smithy.remote_store.findings_service.v1.findings_service_pb2 import Finding
-from smithy.ocsf.ocsf_schema.v1.ocsf_schema_pb2 import VulnerabilityFinding
+from findings_service.v1.findings_service_pb2 import Finding
+from ocsf_schema.v1.ocsf_schema_pb2 import VulnerabilityFinding
 from smithy.helpers.logger import log
 from tests.server import DummyFindingsService
 from tests.test_data import finding_table, _vuln1, _vuln2, _vuln3
