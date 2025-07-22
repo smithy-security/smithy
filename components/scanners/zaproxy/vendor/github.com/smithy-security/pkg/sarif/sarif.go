@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -21,18 +22,17 @@ import (
 	"github.com/smithy-security/pkg/utils"
 )
 
-type (
-	SarifTransformer struct {
-		findingsEcosystem string
-		clock             clockwork.Clock
-		guidProvider      StableUUIDProvider
-		sarifResult       sarif.SchemaJson
-		ruleToTools       map[string]sarif.ReportingDescriptor
-		taxasByCWEID      map[string]sarif.ReportingDescriptor
-		ruleToEcosystem   map[string]string
-		richDescription   bool
-	}
-)
+type SarifTransformer struct {
+	findingsEcosystem string
+	clock             clockwork.Clock
+	guidProvider      StableUUIDProvider
+	sarifResult       sarif.SchemaJson
+	ruleToTools       map[string]sarif.ReportingDescriptor
+	taxasByCWEID      map[string]sarif.ReportingDescriptor
+	ruleToEcosystem   map[string]string
+	richDescription   bool
+	dataSource        *ocsffindinginfo.DataSource
+}
 
 var typeName = map[int64]string{
 	200200: "Unknown",
@@ -42,14 +42,45 @@ var typeName = map[int64]string{
 	200299: "Other",
 }
 
-func NewTransformer(scanResult *sarif.SchemaJson,
+func validateDataSource(dataSource *ocsffindinginfo.DataSource) error {
+	if dataSource == nil {
+		return errors.Errorf("no data source info provided to transformer")
+	}
+
+	switch {
+	case dataSource.TargetType == ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE && dataSource.OciPackageMetadata == nil:
+		return errors.Errorf("target metadata document doesn't have oci package metadata")
+	case dataSource.TargetType == ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY && dataSource.SourceCodeMetadata == nil:
+		return errors.Errorf("target metadata document doesn't have source code metadata")
+	case dataSource.TargetType == ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE:
+		if dataSource.WebsiteMetadata == nil {
+			return errors.Errorf("target metadata document doesn't website metadata")
+		}
+
+		websiteURL, err := url.Parse(dataSource.WebsiteMetadata.Url)
+		if err != nil {
+			return errors.Errorf("could not parse the finding website URL: %w", err)
+		}
+
+		websiteURL.Path = ""
+		dataSource.WebsiteMetadata.Url = websiteURL.String()
+	}
+
+	return nil
+}
+
+func NewTransformer(
+	scanResult *sarif.SchemaJson,
 	findingsEcosystem string,
 	clock clockwork.Clock,
 	guidProvider StableUUIDProvider,
-	richDescription bool) (*SarifTransformer, error) {
+	richDescription bool,
+	dataSource *ocsffindinginfo.DataSource,
+) (*SarifTransformer, error) {
 	if scanResult == nil {
 		return nil, errors.Errorf("method 'NewTransformer called with nil scanResult")
 	}
+
 	if clock == nil {
 		clock = clockwork.NewRealClock()
 	}
@@ -62,6 +93,10 @@ func NewTransformer(scanResult *sarif.SchemaJson,
 		}
 	}
 
+	if err := validateDataSource(dataSource); err != nil {
+		return nil, errors.Errorf("invalid data source provider: %w", err)
+	}
+
 	return &SarifTransformer{
 		clock:             clock,
 		sarifResult:       *scanResult,
@@ -70,10 +105,11 @@ func NewTransformer(scanResult *sarif.SchemaJson,
 		ruleToTools:       make(map[string]sarif.ReportingDescriptor),
 		taxasByCWEID:      make(map[string]sarif.ReportingDescriptor),
 		richDescription:   richDescription,
+		dataSource:        dataSource,
 	}, nil
 }
 
-func (s *SarifTransformer) ToOCSF(ctx context.Context, datasource *ocsffindinginfo.DataSource) ([]*ocsf.VulnerabilityFinding, error) {
+func (s *SarifTransformer) ToOCSF(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	slog.Debug(
 		"working with",
 		slog.Int("num_sarif_runs", len(s.sarifResult.Runs)),
@@ -109,7 +145,7 @@ func (s *SarifTransformer) ToOCSF(ctx context.Context, datasource *ocsffindingin
 	for _, run := range s.sarifResult.Runs {
 		toolName := run.Tool.Driver.Name
 		for _, res := range run.Results {
-			finding, err := s.transformToOCSF(toolName, &res, datasource)
+			finding, err := s.transformToOCSF(toolName, &res)
 			if err != nil {
 				errors.Join(parseErr, err)
 			}
@@ -122,10 +158,9 @@ func (s *SarifTransformer) ToOCSF(ctx context.Context, datasource *ocsffindingin
 func (s *SarifTransformer) transformToOCSF(
 	toolName string,
 	res *sarif.Result,
-	datasource *ocsffindinginfo.DataSource,
 ) (*ocsf.VulnerabilityFinding, error) {
 	slog.Debug("parsing run from", slog.String("toolname", toolName))
-	affectedCode, affectedPackages := s.mapAffected(res, datasource)
+	affectedCode, affectedPackages := s.mapAffected(res)
 
 	var (
 		ruleID           *string
@@ -192,16 +227,19 @@ func (s *SarifTransformer) transformToOCSF(
 
 	// Location
 	var fixAvailable = utils.Ptr(len(res.Fixes) > 0)
-
-	if err := s.mergeDatasources(res, datasource); err != nil {
-		return nil, err
-	}
-	ds, err := protojson.Marshal(datasource)
+	dataSource, err := s.mergeDataSources(res)
 	if err != nil {
 		return nil, err
 	}
+
+	ds, err := protojson.Marshal(dataSource)
+	if err != nil {
+		return nil, err
+	}
+
 	activityID := ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE
 	classID := ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING
+
 	return &ocsf.VulnerabilityFinding{
 		ActivityId:   activityID,
 		ActivityName: utils.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
@@ -325,42 +363,53 @@ func (s *SarifTransformer) mapAffectedPackage(fixes []sarif.Fix, purl packageurl
 	return affectedPackage
 }
 
-func (s *SarifTransformer) detectPackageFromPhysicalLocation(physicalLocation sarif.PhysicalLocation, ecosyststem string, datasource *ocsffindinginfo.DataSource) *packageurl.PackageURL {
+func (s *SarifTransformer) detectPackageFromPhysicalLocation(
+	physicalLocation sarif.PhysicalLocation,
+	ecosyststem string,
+) *packageurl.PackageURL {
 	if s.isSnykURI(*physicalLocation.ArtifactLocation.Uri) {
 		return nil
 	}
+
 	if p, e := packageurl.FromString(*physicalLocation.ArtifactLocation.Uri); e == nil {
 		return &p
 	}
+
 	// if we get hinted that this scan is for dependencies and the deps have a specific ecosystem we can assume more things
 	if s.findingsEcosystem != "" || ecosyststem != "" {
 		pkgManager := s.findingsEcosystem
 		if ecosyststem != "" {
 			pkgManager = ecosyststem
 		}
-		switch datasource.TargetType {
+
+		switch s.dataSource.TargetType {
 		case ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY:
 			purl := fmt.Sprintf("pkg:%s/%s", pkgManager, *physicalLocation.ArtifactLocation.Uri)
 			if p, e := packageurl.FromString(purl); e == nil {
 				return &p
 			}
 		case ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE:
-			purl := datasource.OciPackageMetadata.PackageUrl
+			purl := s.dataSource.OciPackageMetadata.PackageUrl
 			if p, e := packageurl.FromString(purl); e == nil {
 				return &p
 			}
 		}
 	}
+
 	return nil
 }
 
 // this method is to get around Snyk's weird Sarif parsing
-func (s *SarifTransformer) detectPackageFromLogicalLocation(logicalLocation sarif.LogicalLocation, pkgType string, datasource *ocsffindinginfo.DataSource) *packageurl.PackageURL {
+func (s *SarifTransformer) detectPackageFromLogicalLocation(
+	logicalLocation sarif.LogicalLocation,
+	pkgType string,
+) *packageurl.PackageURL {
 	if p, e := packageurl.FromString(*logicalLocation.FullyQualifiedName); e == nil {
 		return &p
 	}
+
 	// if we get hinted that this scan is for dependencies and the deps have a specific ecosystem we can assume more things
-	if datasource.TargetType == ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY && (s.findingsEcosystem != "" || pkgType != "") {
+	if s.dataSource.TargetType == ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY && (s.findingsEcosystem != "" || pkgType != "") {
 		// snyk puts parts of the purl in logical locations
 		pkgNamespace := s.findingsEcosystem
 		if pkgType != "" {
@@ -390,12 +439,13 @@ func (s *SarifTransformer) rulesToEcosystem() map[string]string {
 	return result
 }
 
-func (s *SarifTransformer) mapAffected(res *sarif.Result, datasource *ocsffindinginfo.DataSource) ([]*ocsf.AffectedCode, []*ocsf.AffectedPackage) {
+func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode, []*ocsf.AffectedPackage) {
 	var affectedCode []*ocsf.AffectedCode
 	var affectedPackages []*ocsf.AffectedPackage
-	if datasource.TargetType == ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE { // websites do not carry code or package info
+	if s.dataSource.TargetType == ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE { // websites do not carry code or package info
 		return nil, nil
 	}
+
 	for _, location := range res.Locations {
 		if location.PhysicalLocation == nil {
 			continue
@@ -417,7 +467,7 @@ func (s *SarifTransformer) mapAffected(res *sarif.Result, datasource *ocsffindin
 			pkgType = eco
 		}
 		if physicalLocation.ArtifactLocation != nil && physicalLocation.ArtifactLocation.Uri != nil {
-			if p := s.detectPackageFromPhysicalLocation(*physicalLocation, pkgType, datasource); p != nil {
+			if p := s.detectPackageFromPhysicalLocation(*physicalLocation, pkgType); p != nil {
 				affectedPackages = append(affectedPackages, s.mapAffectedPackage(res.Fixes, *p))
 			} else if !s.isSnykURI(*location.PhysicalLocation.ArtifactLocation.Uri) {
 				// Snyk special case, they use the repo url with some weird replacement as the artifact location
@@ -437,7 +487,7 @@ func (s *SarifTransformer) mapAffected(res *sarif.Result, datasource *ocsffindin
 			affectedCode = append(affectedCode, ac)
 		}
 		for _, logicalLocation := range location.LogicalLocations {
-			if p := s.detectPackageFromLogicalLocation(logicalLocation, pkgType, datasource); p != nil {
+			if p := s.detectPackageFromLogicalLocation(logicalLocation, pkgType); p != nil {
 				affectedPackages = append(affectedPackages, s.mapAffectedPackage(res.Fixes, *p))
 			}
 		}
@@ -540,75 +590,117 @@ func (s *SarifTransformer) mapTitleDesc(res *sarif.Result, ruleToTools map[strin
 	return
 }
 
-func (s *SarifTransformer) mergeDatasources(res *sarif.Result, datasource *ocsffindinginfo.DataSource) error {
-
-	for _, location := range res.Locations {
-		if location.PhysicalLocation == nil ||
-			location.PhysicalLocation.ArtifactLocation == nil ||
-			location.PhysicalLocation.ArtifactLocation.Uri == nil {
-			continue
-		}
-
-		var dataSourceURI string
-		if _, err := filepath.Abs(*location.PhysicalLocation.ArtifactLocation.Uri); err == nil {
-			dataSourceURI = "file://" + *location.PhysicalLocation.ArtifactLocation.Uri
-		}
-
-		switch datasource.TargetType {
-		case ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE:
-			purl, err := packageurl.FromString("pkg:" + s.findingsEcosystem + "/" + *location.PhysicalLocation.ArtifactLocation.Uri)
-			if err != nil {
-				return errors.Errorf("failed to parse package url:'%s', %v", *location.PhysicalLocation.ArtifactLocation.Uri, err)
-			}
-			datasource.Uri = &ocsffindinginfo.DataSource_URI{
-				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_PURL,
-				Path:      purl.String(),
-			}
-		case ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY:
-			datasource.Uri = &ocsffindinginfo.DataSource_URI{
-				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
-				Path:      dataSourceURI,
-			}
-		case ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE:
-			datasource.Uri = &ocsffindinginfo.DataSource_URI{
-				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_WEBSITE,
-				Path:      *location.PhysicalLocation.ArtifactLocation.Uri,
-			}
-		}
-
-		// snyk special handling, snyk sets the repo as artifact location instead of the dependencies file
-		//  this is invalid in our case
-		if s.isSnykURI(*location.PhysicalLocation.ArtifactLocation.Uri) {
-			datasource.Uri = nil
-		}
-
-		if location.PhysicalLocation.Region != nil {
-			startLine := 0
-			endLine := 0
-			startColumn := 0
-			endColumn := 0
-			if location.PhysicalLocation.Region.StartLine != nil {
-				startLine = *location.PhysicalLocation.Region.StartLine
-			}
-			if location.PhysicalLocation.Region.EndLine != nil {
-				endLine = *location.PhysicalLocation.Region.EndLine
-			}
-			if location.PhysicalLocation.Region.StartColumn != nil {
-				startColumn = *location.PhysicalLocation.Region.StartColumn
-			}
-			if location.PhysicalLocation.Region.EndColumn != nil {
-				endColumn = *location.PhysicalLocation.Region.EndColumn
-			}
-			datasource.LocationData = &ocsffindinginfo.DataSource_FileFindingLocationData_{
-				FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
-					StartLine:   uint32(startLine),
-					EndLine:     uint32(endLine),
-					StartColumn: uint32(startColumn),
-					EndColumn:   uint32(endColumn),
-				},
-			}
-		}
-		return nil
+func (s *SarifTransformer) mergeDataSources(
+	res *sarif.Result,
+) (*ocsffindinginfo.DataSource, error) {
+	dataSource := &ocsffindinginfo.DataSource{
+		TargetType:   s.dataSource.TargetType,
+		LocationData: s.dataSource.LocationData,
 	}
-	return errors.New("missing location information in finding")
+
+	if len(res.Locations) == 0 {
+		return nil, errors.New("missing location information in finding")
+	} else if len(res.Locations) > 1 {
+		return nil, errors.Errorf("there are more than one locations in the finding")
+	}
+
+	location := res.Locations[0]
+	if location.PhysicalLocation == nil ||
+		location.PhysicalLocation.ArtifactLocation == nil ||
+		location.PhysicalLocation.ArtifactLocation.Uri == nil {
+		return nil, errors.New("sarif finding location is nil")
+	}
+
+	switch dataSource.TargetType {
+	case ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE:
+		purl, err := packageurl.FromString("pkg:" + s.findingsEcosystem + "/" + *location.PhysicalLocation.ArtifactLocation.Uri)
+		if err != nil {
+			return nil, errors.Errorf("failed to parse package url:'%s', %v", *location.PhysicalLocation.ArtifactLocation.Uri, err)
+		}
+
+		dataSource.Uri = &ocsffindinginfo.DataSource_URI{
+			UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_PURL,
+			Path:      purl.String(),
+		}
+
+		dataSource.OciPackageMetadata = &ocsffindinginfo.DataSource_OCIPackageMetadata{
+			PackageUrl: s.dataSource.OciPackageMetadata.PackageUrl,
+			Tag:        s.dataSource.OciPackageMetadata.Tag,
+		}
+	case ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY:
+		// snyk special handling, snyk sets the repo as artifact location instead of the dependencies file
+		// this is invalid in our case
+		if s.isSnykURI(*location.PhysicalLocation.ArtifactLocation.Uri) {
+			dataSource.Uri = nil
+		} else {
+			dataSource.Uri = &ocsffindinginfo.DataSource_URI{
+				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
+				Path:      "file://" + filepath.Clean(*location.PhysicalLocation.ArtifactLocation.Uri),
+			}
+		}
+
+		_, isPurlLocationData := s.dataSource.LocationData.(*ocsffindinginfo.DataSource_PurlFindingLocationData_)
+		if isPurlLocationData {
+			dataSource.LocationData = &ocsffindinginfo.DataSource_PurlFindingLocationData_{
+				PurlFindingLocationData: &ocsffindinginfo.DataSource_PurlFindingLocationData{},
+			}
+		}
+
+		dataSource.SourceCodeMetadata = &ocsffindinginfo.DataSource_SourceCodeMetadata{
+			RepositoryUrl: s.dataSource.SourceCodeMetadata.RepositoryUrl,
+			Reference:     s.dataSource.SourceCodeMetadata.Reference,
+		}
+	case ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE:
+		parsedURL, err := url.Parse(*location.PhysicalLocation.ArtifactLocation.Uri)
+		if err != nil {
+			return nil, errors.Errorf("could not parse finding URL: %w", err)
+		}
+
+		parsedURL.Host = ""
+		parsedURL.Scheme = ""
+		dataSource.Uri = &ocsffindinginfo.DataSource_URI{
+			UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_WEBSITE,
+			Path:      parsedURL.String(),
+		}
+
+		dataSource.WebsiteMetadata = &ocsffindinginfo.DataSource_WebsiteMetadata{
+			Url: s.dataSource.WebsiteMetadata.Url,
+		}
+	default:
+		return nil, errors.Errorf("can't process data source type %s", dataSource.TargetType)
+	}
+
+	if location.PhysicalLocation.Region != nil {
+		startLine := 0
+		endLine := 0
+		startColumn := 0
+		endColumn := 0
+
+		if location.PhysicalLocation.Region.StartLine != nil {
+			startLine = *location.PhysicalLocation.Region.StartLine
+		}
+
+		if location.PhysicalLocation.Region.EndLine != nil {
+			endLine = *location.PhysicalLocation.Region.EndLine
+		}
+
+		if location.PhysicalLocation.Region.StartColumn != nil {
+			startColumn = *location.PhysicalLocation.Region.StartColumn
+		}
+
+		if location.PhysicalLocation.Region.EndColumn != nil {
+			endColumn = *location.PhysicalLocation.Region.EndColumn
+		}
+
+		dataSource.LocationData = &ocsffindinginfo.DataSource_FileFindingLocationData_{
+			FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
+				StartLine:   uint32(startLine),
+				EndLine:     uint32(endLine),
+				StartColumn: uint32(startColumn),
+				EndColumn:   uint32(endColumn),
+			},
+		}
+	}
+
+	return dataSource, nil
 }
