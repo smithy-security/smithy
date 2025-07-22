@@ -165,7 +165,7 @@ $(component_patch_tags): check-branch check-tag-message
 	$(shell \
 		component_dir=$$(dirname $@); \
 		read -a number <<< $$(git tag -l | grep -E "^$${component_dir}" | sort -Vr | head -n 1 | sed -E "s@^$${component_dir}/v([0-9]+)\.([0-9]+)\.([0-9]+)@\1 \2 \3@"); \
-		commit_tag="$${component_dir}/v$${number[0]}.$${number[1]}.$$(($${number[2]}+1))"; \
+		commit_tag="$${component_dir}/v$${number[0]:-0}.$${number[1]:-0}.$$(($${number[2]}+1))"; \
 		echo "tagging commit with $${commit_tag}" > /dev/stderr; \
 		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
@@ -175,7 +175,7 @@ $(component_minor_tags): check-branch check-tag-message
 	$(shell \
 		component_dir=$$(dirname $@); \
 		read -a number <<< $$(git tag -l | grep -E "^$${component_dir}" | sort -Vr | head -n 1 | sed -E "s@^$${component_dir}/v([0-9]+)\.([0-9]+)\.([0-9]+)@\1 \2 \3@"); \
-		commit_tag="$${component_dir}/v$${number[0]}.$$(($${number[1]}+1)).0"; \
+		commit_tag="$${component_dir}/v$${number[0]:-0}.$$(($${number[1]}+1)).0"; \
 		echo "tagging commit with $${commit_tag}" > /dev/stderr; \
 		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
