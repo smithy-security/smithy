@@ -143,9 +143,11 @@ func (g *zapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFi
 	)
 
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
-	transformer, err := sarif.NewTransformer(&report, "", g.clock, nil, true)
+	transformer, err := sarif.NewTransformer(
+		&report, "", g.clock, nil, true, component.TargetMetadataFromCtx(ctx),
+	)
 	if err != nil {
 		return nil, err
 	}
-	return transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
+	return transformer.ToOCSF(ctx)
 }
