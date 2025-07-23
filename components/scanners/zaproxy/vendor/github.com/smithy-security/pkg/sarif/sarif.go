@@ -658,6 +658,9 @@ func (s *SarifTransformer) mergeDataSources(
 
 		parsedURL.Host = ""
 		parsedURL.Scheme = ""
+		if parsedURL.Path == "" {
+			parsedURL.Path = "/"
+		}
 		dataSource.Uri = &ocsffindinginfo.DataSource_URI{
 			UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_WEBSITE,
 			Path:      parsedURL.String(),
