@@ -15,8 +15,8 @@ import (
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
-	playwright "github.com/smithy-security/smithy/pkg/playwright"
-	s3client "github.com/smithy-security/smithy/pkg/s3"
+	playwright "github.com/smithy-security/smithy/components/reporters/pdf/internal/reporter/pkg/playwright"
+	s3client "github.com/smithy-security/smithy/components/reporters/pdf/internal/reporter/pkg/s3"
 )
 
 // NewReporter returns a new PDF reporter.
@@ -35,6 +35,7 @@ type (
 		InstanceId   string
 		Bucket       string
 		Region       string
+		Endpoint     string
 		SkipS3Upload bool
 	}
 )
@@ -57,8 +58,8 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 
 	skipS3Upload, err := env.GetOrDefault(
 		"SKIP_S3_UPLOAD",
-		true,
-		append(envOpts, env.WithDefaultOnError(false))...,
+		false,
+		append(envOpts, env.WithDefaultOnError(true))...,
 	)
 	if err != nil {
 		return nil, errors.Errorf("could not get env variable for SKIP_S3_UPLOAD: %w", err)
@@ -76,16 +77,24 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	region, err := env.GetOrDefault(
 		"BUCKET_REGION",
 		"",
-		append(envOpts, env.WithDefaultOnError(false))...,
+		append(envOpts, env.WithDefaultOnError(true))...,
 	)
 	if err != nil {
 		return nil, errors.Errorf("could not get env variable for BUCKET_REGION: %w", err)
+	}
+	s3Endpoint, err := env.GetOrDefault(
+		"BUCKET_ENDPOINT",
+		"",
+	)
+	if err != nil {
+		return nil, errors.Errorf("could not get BUCKET_ENDPOINT: %w", err)
 	}
 
 	return &Conf{
 		InstanceId:   instanceId,
 		Bucket:       bucket,
 		Region:       region,
+		Endpoint:     s3Endpoint,
 		SkipS3Upload: skipS3Upload,
 	}, nil
 }
@@ -117,7 +126,7 @@ func (p PdfReporter) Report(
 	}
 
 	// start the s3 client
-	s3, err := getS3Client(p.conf.Region)
+	s3, err := getS3Client(ctx, p.conf)
 	if err != nil {
 		return fmt.Errorf("could not initialise s3 client: %w", err)
 	}
@@ -224,14 +233,15 @@ func FormatTime(timestamp *int64) string {
 }
 
 // getS3Client initializes the s3 client, so we can upload the PDF there
-func getS3Client(region string) (*s3client.Client, error) {
-	if region == "" {
-		err := errors.New("region is empty, you need to provide a region name")
-		return nil, err
-	}
+func getS3Client(ctx context.Context, conf *Conf) (*s3client.Client, error) {
+	logger := componentlogger.LoggerFromContext(ctx)
+	clientOpts := []s3client.Option{}
 
-	client, err := s3client.NewClient(region)
+	logger.Debug("using endpoint for S3", slog.String("endpoint", conf.Endpoint))
+	clientOpts = append(clientOpts, s3client.WithEndpoint(conf.Endpoint))
+	clientOpts = append(clientOpts, s3client.WithRegion(conf.Region))
 
+	client, err := s3client.NewClient(clientOpts...)
 	if err != nil {
 		slog.Error("could not launch s3 client: %s", slog.String("err", err.Error()))
 		return nil, err
@@ -250,6 +260,6 @@ func (p PdfReporter) uploadToS3(resultFilename string, pdfBytes []byte, s3client
 	}
 
 	filenameSuffix := p.conf.InstanceId
-	slog.Info("uploading pdf to s3", slog.String("filename", resultFilename), slog.String("bucket", p.conf.Bucket), slog.String("region", p.conf.Region))
+	slog.Info("uploading pdf to s3", slog.String("filename", resultFilename), slog.String("bucket", p.conf.Bucket), slog.String("region", p.conf.Region), slog.String("endpoint", p.conf.Endpoint))
 	return s3client.UpsertFile(resultFilename, p.conf.Bucket, filenameSuffix, pdfBytes)
 }

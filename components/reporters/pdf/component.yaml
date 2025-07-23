@@ -14,6 +14,9 @@ parameters:
   - name: "bucket_region"
     type: "string"
     value: ""
+  - name: "bucket_endpoint"
+    type: "string"
+    value: ""
 steps:
   - name: "upload-pdf"
     image: "components/reporters/pdf"
@@ -23,3 +26,4 @@ steps:
       AWS_SECRET_ACCESS_KEY: "{{ .parameters.aws_secret_access_key }}"
       BUCKET_NAME: "{{ .parameters.bucket_name }}"
       BUCKET_REGION  : "{{ .parameters.bucket_region }}"
+      BUCKET_ENDPOINT: "{{ .parameters.bucket_endpoint }}"
