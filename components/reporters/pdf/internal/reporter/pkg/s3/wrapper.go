@@ -3,6 +3,7 @@ package wrapper
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -23,27 +24,43 @@ type Wrapper interface {
 type Client struct {
 	session *session.Session
 }
-type ClientOption func(*aws.Config)
+type Option func(aws.Config) aws.Config
 
-func WithRegion(region string) ClientOption {
-	return func(cfg *aws.Config) {
-		cfg.Region = aws.String(region)
+// WithRegion allows providing a custom AWS region.
+func WithRegion(region string) Option {
+	return func(c aws.Config) aws.Config {
+		region = strings.TrimSpace(region)
+		if region != "" {
+			c.Region = aws.String(region)
+		}
+		return c
 	}
 }
 
-func WithEndpoint(endpoint string) ClientOption {
-	return func(cfg *aws.Config) {
-		cfg.Endpoint = aws.String(endpoint)
+// WithEndpoint allows providing a custom AWS endpoint.
+// useful for localstack or other S3-compatible services.
+func WithEndpoint(endpoint string) Option {
+	return func(c aws.Config) aws.Config {
+		endpoint = strings.TrimSpace(endpoint)
+		if endpoint != "" {
+			c.Endpoint = aws.String(endpoint)
+		}
+		return c
 	}
 }
 
-// NewClient returns a client with optional configuration
-func NewClient(opts ...ClientOption) (Client, error) {
-	cfg := &aws.Config{}
+// NewClient returns an AWS Client.
+func NewClient(opts ...Option) (Client, error) {
+	config := aws.Config{}
 	for _, opt := range opts {
-		opt(cfg)
+		config = opt(config)
 	}
-	sess, err := session.NewSession(cfg)
+	if config.Endpoint != nil {
+		log.Printf("Using custom S3 endpoint: %s and setting PathStyle over SubdomainStyle", *config.Endpoint)
+		// a lot of local/testing S3 implementations that need custom endoints do not support the default subdomain style
+		config.S3ForcePathStyle = aws.Bool(true)
+	}
+	sess, err := session.NewSession(&config)
 	if err != nil {
 		return Client{}, fmt.Errorf("unable to start session with AWS API: %w", err)
 	}
@@ -51,7 +68,6 @@ func NewClient(opts ...ClientOption) (Client, error) {
 		session: sess,
 	}, nil
 }
-
 
 // FormatFilename prepares a filename for S3:
 // - removes the filepath
