@@ -94,9 +94,7 @@ class DBContext(AbstractContextManager, Iterator):
         """
 
         results = self.db_manager.get_findings(page_num=self._page)
-        self._has_more = (
-            len(results) == self.db_manager.page_size if results else False
-        )
+        self._has_more = len(results) == self.db_manager.page_size if results else False
         self._iter = iter(results)
         self._page += 1
 

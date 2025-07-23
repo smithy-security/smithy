@@ -12,3 +12,4 @@ components/consumers/pdf/report.html
 new-components/targets/git-clone/pkg/git/testdata/gitea
 **/.DS_STORE
 .smithy/
+poetry.lock
