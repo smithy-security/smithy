@@ -72,7 +72,7 @@ class RemoteDBManager(DBManager):
 
         if isinstance(page_num, int) and page_num >= 0:
             page = page_num
-           
+
         if isinstance(page_size, int) and page_size > 0:
             get_findings_page_size = page_size
 
@@ -84,22 +84,30 @@ class RemoteDBManager(DBManager):
         all_findings = []
         try:
             while True:
-                self._log.debug(f"Requesting page {page} with page_size {get_findings_page_size}")
+                self._log.debug(
+                    f"Requesting page {page} with page_size {get_findings_page_size}"
+                )
                 request = GetFindingsRequest(
                     id=self.instance_id, page=page, page_size=get_findings_page_size
                 )
 
                 resp = self.stub.GetFindings(request)
-                self._log.debug(f"Received {len(resp.findings)} findings in response for page {page}.")
+                self._log.debug(
+                    f"Received {len(resp.findings)} findings in response for page {page}."
+                )
 
                 all_findings.extend(resp.findings)
 
                 # Break conditions
                 if page_num is not None:
-                    self._log.debug(f"page_num ({page_num}) was specified, breaking loop after one page.")
+                    self._log.debug(
+                        f"page_num ({page_num}) was specified, breaking loop after one page."
+                    )
                     break
                 if not resp.findings or len(resp.findings) < get_findings_page_size:
-                    self._log.debug("No more findings or last page reached. Breaking loop.")
+                    self._log.debug(
+                        "No more findings or last page reached. Breaking loop."
+                    )
                     break
 
                 page += 1
