@@ -22,12 +22,14 @@ var (
 type rootT struct {
 	FileNames         cli.StringSlice
 	NoPrefix          bool
+	NoIota            bool
 	Lowercase         bool
 	NoCase            bool
 	Marshal           bool
 	SQL               bool
 	SQLInt            bool
 	Flag              bool
+	JsonPkg           string
 	Prefix            string
 	Names             bool
 	Values            bool
@@ -101,6 +103,11 @@ func main() {
 				Name:        "flag",
 				Usage:       "Adds golang flag functions.",
 				Destination: &argv.Flag,
+			},
+			&cli.StringFlag{
+				Name:        "jsonpkg",
+				Usage:       "Custom json package for imports instead encoding/json.",
+				Destination: &argv.JsonPkg,
 			},
 			&cli.StringFlag{
 				Name:        "prefix",
@@ -180,6 +187,11 @@ func main() {
 				Usage:       "Changes the default filename suffix of _enum to something else.  `.go` will be appended to the end of the string no matter what, so that `_test.go` cases can be accommodated ",
 				Destination: &argv.OutputSuffix,
 			},
+			&cli.BoolFlag{
+				Name:        "no-iota",
+				Usage:       "Disables the use of iota in generated enums.",
+				Destination: &argv.NoIota,
+			},
 		},
 		Action: func(ctx *cli.Context) error {
 			aliases, err := generator.ParseAliases(argv.Aliases.Value())
@@ -188,78 +200,55 @@ func main() {
 			}
 			for _, fileOption := range argv.FileNames.Value() {
 
-				g := generator.NewGenerator()
-				g.Version = version
-				g.Revision = commit
-				g.BuildDate = date
-				g.BuiltBy = builtBy
+				// Build configuration structure
+				jsonPkg := argv.JsonPkg
+				if jsonPkg == "" {
+					jsonPkg = "encoding/json"
+				}
 
-				g.WithBuildTags(argv.BuildTags.Value()...)
-				g.WithAliases(aliases)
-
-				if argv.NoPrefix {
-					g.WithNoPrefix()
-				}
-				if argv.Lowercase {
-					g.WithLowercaseVariant()
-				}
-				if argv.NoCase {
-					g.WithCaseInsensitiveParse()
-				}
-				if argv.Marshal {
-					g.WithMarshal()
-				}
-				if argv.SQL {
-					g.WithSQLDriver()
-				}
-				if argv.SQLInt {
-					g.WithSQLInt()
-				}
-				if argv.Flag {
-					g.WithFlag()
-				}
-				if argv.Names {
-					g.WithNames()
-				}
-				if argv.Values {
-					g.WithValues()
-				}
-				if argv.LeaveSnakeCase {
-					g.WithoutSnakeToCamel()
-				}
-				if argv.Prefix != "" {
-					g.WithPrefix(argv.Prefix)
-				}
-				if argv.Ptr {
-					g.WithPtr()
-				}
-				if argv.SQLNullInt {
-					g.WithSQLNullInt()
-				}
-				if argv.SQLNullStr {
-					g.WithSQLNullStr()
-				}
-				if argv.MustParse {
-					g.WithMustParse()
-				}
-				if argv.ForceLower {
-					g.WithForceLower()
-				}
-				if argv.ForceUpper {
-					g.WithForceUpper()
-				}
-				if argv.NoComments {
-					g.WithNoComments()
-				}
+				var templateFileNames []string
 				if templates := []string(argv.TemplateFileNames.Value()); len(templates) > 0 {
 					for _, t := range templates {
 						if fn, err := globFilenames(t); err != nil {
 							return err
 						} else {
-							g.WithTemplates(fn...)
+							templateFileNames = append(templateFileNames, fn...)
 						}
 					}
 				}
+
+				config := generator.GeneratorConfig{
+					NoPrefix:          argv.NoPrefix,
+					NoIota:            argv.NoIota,
+					LowercaseLookup:   argv.Lowercase || argv.NoCase,
+					CaseInsensitive:   argv.NoCase,
+					Marshal:           argv.Marshal,
+					SQL:               argv.SQL,
+					SQLInt:            argv.SQLInt,
+					Flag:              argv.Flag,
+					Names:             argv.Names,
+					Values:            argv.Values,
+					LeaveSnakeCase:    argv.LeaveSnakeCase,
+					JSONPkg:           jsonPkg,
+					Prefix:            argv.Prefix,
+					SQLNullInt:        argv.SQLNullInt,
+					SQLNullStr:        argv.SQLNullStr,
+					Ptr:               argv.Ptr,
+					MustParse:         argv.MustParse,
+					ForceLower:        argv.ForceLower,
+					ForceUpper:        argv.ForceUpper,
+					NoComments:        argv.NoComments,
+					BuildTags:         argv.BuildTags.Value(),
+					ReplacementNames:  aliases,
+					TemplateFileNames: templateFileNames,
+				}
+
+				// Create generator with configuration
+				g := generator.NewGeneratorWithConfig(config)
+				g.Version = version
+				g.Revision = commit
+				g.BuildDate = date
+				g.BuiltBy = builtBy
 
 				var filenames []string
 				if fn, err := globFilenames(fileOption); err != nil {
