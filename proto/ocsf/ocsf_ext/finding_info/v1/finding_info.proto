@@ -132,6 +132,7 @@ message Enrichment {
     uint32 start_line = 2;
     uint32 end_line = 3;
     string reference = 4;
+    string note = 5;
   }
 
   // Remediation is an enrichment showing a refactored code snippet for a piece of vulnerable
