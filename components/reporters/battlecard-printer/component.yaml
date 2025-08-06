@@ -1,0 +1,7 @@
+name: battlecard-printer
+description: "Logs a summary of vulnerability findings in a battlecard format."
+type: reporter
+steps:
+  - name: battlecard-printer
+    image: components/reporters/battlecard-printer
+    executable: /bin/app
