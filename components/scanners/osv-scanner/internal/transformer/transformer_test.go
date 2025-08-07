@@ -40,6 +40,28 @@ func TestTransformer_Transform(t *testing.T) {
 		require.NoError(t, err)
 		transformMethodTest(t, ocsfTransformer.Transform, nil, 11)
 	})
+	t.Run("it should exit cleanly when there are no results", func(t *testing.T) {
+		path, err := os.Getwd()
+		require.NoError(t, err)
+		os.Setenv("RAW_OUT_FILE", "./testdata/empty.json")
+		ocsfTransformer, err := New(
+			OSVScannerTransformerWithClock(clock),
+			OSVScannerTransformerWithProjectRoot(filepath.Join(path, ".")),
+		)
+		require.NoError(t, err)
+		transformMethodTest(t, ocsfTransformer.Transform, nil, 0)
+	})
+	t.Run("it should return an error when there are malformed results", func(t *testing.T) {
+		path, err := os.Getwd()
+		require.NoError(t, err)
+		os.Setenv("RAW_OUT_FILE", "./testdata/malformed.json")
+		ocsfTransformer, err := New(
+			OSVScannerTransformerWithClock(clock),
+			OSVScannerTransformerWithProjectRoot(filepath.Join(path, ".")),
+		)
+		require.NoError(t, err)
+		transformMethodTest(t, ocsfTransformer.Transform, ErrMalformedSARIFfile, 0)
+	})
 }
 
 func assertValid(t *testing.T, finding *ocsf.VulnerabilityFinding, idx int, nowUnix, typeUID int64) {
@@ -147,7 +169,10 @@ func assertValid(t *testing.T, finding *ocsf.VulnerabilityFinding, idx int, nowU
 	assert.NotEmptyf(t, affectedCode.File.Name, "Unexpected empty file name for vulnerability for finding %d", idx)
 }
 
-func transformMethodTest(t *testing.T, transformCallback func(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error), expectedError error, expectedNumFindings int) {
+func transformMethodTest(t *testing.T,
+	transformCallback func(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error),
+	expectedError error,
+	expectedNumFindings int) {
 	var (
 		ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
@@ -178,7 +203,6 @@ func transformMethodTest(t *testing.T, transformCallback func(ctx context.Contex
 		return
 	}
 	require.NoError(t, err)
-	require.NotEmpty(t, findings)
 	require.Equal(t, expectedNumFindings, len(findings))
 	for idx, finding := range findings {
 		assertValid(t, finding, idx, nowUnix, typeUID)

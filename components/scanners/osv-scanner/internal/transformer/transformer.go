@@ -38,15 +38,11 @@ var (
 
 	// ErrNilClock is thrown when the option setclock is called with empty clock
 	ErrNilClock = errors.Errorf("invalid nil clock")
-	// ErrEmptyTarget is thrown when the option set target is called with empty target
-	ErrEmptyTarget = errors.Errorf("invalid empty target")
-	// ErrEmptyRawOutfilePath is thrown when the option raw outfile path is called with empty path
-	ErrEmptyRawOutfilePath = errors.Errorf("invalid raw out file path")
 	// ErrEmptyRawOutfileContents is thrown when the option raw outfile contents is called with empty contents
 	ErrEmptyRawOutfileContents = errors.Errorf("empty raw out file contents")
-	// ErrBadTargetType is thrown when the option set target type is called with an unspecified or empty target type
-	ErrBadTargetType = errors.New("invalid empty target type")
 
+	// ErrMalformedSARIFfile is returned when the SARIF file given to this transformer is not valid JSON
+	ErrMalformedSARIFfile = errors.Errorf("failed to parse raw SARIF output")
 	// OSVScanner Parser Specific Errors
 	// ErrEmptyPath is thrown when called with an empty project root
 	ErrEmptyPath = errors.Errorf("called with an empty project root")
@@ -125,9 +121,13 @@ func (b *OSVScannerTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 	if err != nil {
 		return nil, errors.Errorf("could not read file %s", b.rawOutFile)
 	}
+	if len(fileContents) == 0 {
+		logger.Info("Scanner SARIF file is empty, exiting")
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(fileContents); err != nil {
-		return nil, errors.Errorf("failed to parse raw semgrep output: %w", err)
+		return nil, errors.Errorf("%w: %w", ErrMalformedSARIFfile, err)
 	}
 
 	guidProvider, err := sarif.NewBasicStableUUIDProvider()
