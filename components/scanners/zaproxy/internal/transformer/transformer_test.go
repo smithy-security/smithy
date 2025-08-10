@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/jonboulle/clockwork"
+	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
@@ -230,4 +231,35 @@ func TestZapTransformer_Transform(t *testing.T) {
 			assert.Equal(t, expectedMetadataUIDs[idx], *finding.Metadata.Uid, "Unexpected metadata uid for finding %d", idx)
 		}
 	})
+}
+func TestZapTransformer_Metrics(t *testing.T) {
+	clock := clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
+	ocsfTransformer, err := transformer.New(
+		transformer.ZapRawOutFilePath("./testdata/zap.sarif.json"),
+		transformer.ZapTransformerWithTarget(transformer.TargetTypeWebsite),
+		transformer.ZapTransformerWithClock(clock),
+	)
+	require.NoError(t, err)
+
+	b, err := ocsfTransformer.ReadFile("./testdata/zap.sarif.json")
+	require.NoError(t, err)
+	require.NotEmpty(t, b)
+
+	var report sarifschemav210.SchemaJson
+	require.NoError(t, report.UnmarshalJSON(b))
+	metrics := ocsfTransformer.Metrics(context.Background(), &report)
+	assert.NotEmpty(t, metrics)
+	assert.Contains(t, metrics, "zap-transformer:\nruns=1\nresults=3")
+	assert.Contains(t, metrics, "Paths=[http://bodgeit.com:8080")
+	assert.Contains(t, metrics, "RuleIDs=[")
+	assert.Contains(t, metrics, "40012")
+	assert.Contains(t, metrics, "40018")
+}
+
+func TestZapTransformer_ReadFile_NotFound(t *testing.T) {
+	tr, err := transformer.New(transformer.ZapRawOutFilePath("./testdata/nonexistent.json"))
+	require.NoError(t, err)
+	_, err = tr.ReadFile("./testdata/nonexistent.json")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "not found")
 }
