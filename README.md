@@ -73,6 +73,7 @@ components:
 ```
 
 ```yaml
+# overrides.yaml
 git-clone:
 - name: "repo_url"
   type: "string"
