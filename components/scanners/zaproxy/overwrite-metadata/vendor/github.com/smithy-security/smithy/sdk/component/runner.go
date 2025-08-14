@@ -6,9 +6,10 @@ import (
 	"syscall"
 
 	"github.com/go-errors/errors"
+	"github.com/smithy-security/pkg/utils"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/smithy-security/smithy/sdk/component/internal/utils"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 type (
@@ -80,14 +81,14 @@ func run(
 		conf   = r.config
 		logger = r.
 			config.Logging.Logger.
-			With(logKeySDKVersion, conf.SDKVersion).
-			With(logKeyInstanceID, conf.InstanceID.String()).
-			With(logKeyComponentName, conf.ComponentName)
+			With(sdklogger.LogKeySDKVersion, conf.SDKVersion).
+			With(sdklogger.LogKeyInstanceID, conf.InstanceID.String()).
+			With(sdklogger.LogKeyComponentName, conf.ComponentName)
 		syncErrs = make(chan error, 1)
 	)
 
 	ctx, cancel := signal.NotifyContext(
-		ContextWithLogger(ctx, logger),
+		sdklogger.ContextWithLogger(ctx, logger),
 		syscall.SIGINT,
 		syscall.SIGTERM,
 		syscall.SIGQUIT,

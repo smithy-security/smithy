@@ -1,0 +1,4 @@
+source-code-artifact:
+- name: "artifact_url"
+  type: "string"
+  value: "https://github.com/0c34/govwa/archive/refs/heads/master.zip"

@@ -132,17 +132,17 @@ github.com/russross/blackfriday/v2
 # github.com/shopspring/decimal v1.2.0
 ## explicit; go 1.13
 github.com/shopspring/decimal
-# github.com/smithy-security/pkg/env v0.0.2
+# github.com/smithy-security/pkg/env v0.0.3
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/pkg/sarif v0.0.8
+# github.com/smithy-security/pkg/sarif v0.0.10
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/sarif
 github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0
 # github.com/smithy-security/pkg/utils v0.0.2
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/utils
-# github.com/smithy-security/smithy/sdk v0.0.16-alpha
+# github.com/smithy-security/smithy/sdk v0.0.18-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component

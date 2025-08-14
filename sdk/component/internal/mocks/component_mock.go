@@ -13,11 +13,11 @@ import (
 	context "context"
 	reflect "reflect"
 
-	gomock "go.uber.org/mock/gomock"
-
+	store "github.com/smithy-security/smithy/sdk/component/store"
 	uuid "github.com/smithy-security/smithy/sdk/component/uuid"
 	vulnerability_finding "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	v1 "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockValidator is a mock of Validator interface.
@@ -83,18 +83,18 @@ func (m *MockReader) EXPECT() *MockReaderMockRecorder {
 }
 
 // Read mocks base method.
-func (m *MockReader) Read(ctx context.Context, instanceID uuid.UUID) ([]*vulnerability_finding.VulnerabilityFinding, error) {
+func (m *MockReader) Read(ctx context.Context, instanceID uuid.UUID, queryOpts *store.QueryOpts) ([]*vulnerability_finding.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, instanceID)
+	ret := m.ctrl.Call(m, "Read", ctx, instanceID, queryOpts)
 	ret0, _ := ret[0].([]*vulnerability_finding.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Read indicates an expected call of Read.
-func (mr *MockReaderMockRecorder) Read(ctx, instanceID any) *gomock.Call {
+func (mr *MockReaderMockRecorder) Read(ctx, instanceID, queryOpts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockReader)(nil).Read), ctx, instanceID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockReader)(nil).Read), ctx, instanceID, queryOpts)
 }
 
 // MockUpdater is a mock of Updater interface.
@@ -250,18 +250,18 @@ func (mr *MockStorerMockRecorder) Close(arg0 any) *gomock.Call {
 }
 
 // Read mocks base method.
-func (m *MockStorer) Read(ctx context.Context, instanceID uuid.UUID) ([]*vulnerability_finding.VulnerabilityFinding, error) {
+func (m *MockStorer) Read(ctx context.Context, instanceID uuid.UUID, queryOpts *store.QueryOpts) ([]*vulnerability_finding.VulnerabilityFinding, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read", ctx, instanceID)
+	ret := m.ctrl.Call(m, "Read", ctx, instanceID, queryOpts)
 	ret0, _ := ret[0].([]*vulnerability_finding.VulnerabilityFinding)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Read indicates an expected call of Read.
-func (mr *MockStorerMockRecorder) Read(ctx, instanceID any) *gomock.Call {
+func (mr *MockStorerMockRecorder) Read(ctx, instanceID, queryOpts any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockStorer)(nil).Read), ctx, instanceID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockStorer)(nil).Read), ctx, instanceID, queryOpts)
 }
 
 // Update mocks base method.

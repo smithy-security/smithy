@@ -180,9 +180,12 @@ class ZapRunner:
                 "-daemon",
                 "-silent",
                 "-notel",
-                "-config", f"api.key={self.api_key}",
-                "-host", self.host,
-                "-port", str(self.port),
+                "-config",
+                f"api.key={self.api_key}",
+                "-host",
+                self.host,
+                "-port",
+                str(self.port),
             ],
             stdout=sys.stdout,
             stderr=sys.stderr,
@@ -196,18 +199,22 @@ class ZapRunner:
             try:
                 self.check_connection()
                 print("connection to ZAP daemon established")
-            except Exception as e:  
+            except Exception as e:
                 print(f"there was an issue connecting to Zap: {e}")
                 if i == 0:
-                    print("not waiting any more for zap subprocess to finish bootstraping")
+                    print(
+                        "not waiting any more for zap subprocess to finish bootstraping"
+                    )
                     raise e
-                
+
                 exit_code = self.zap_process.poll()
                 if exit_code:
                     print(f"zap subprocess exited with exit code: {exit_code}")
                     raise e
 
-                print(f"sleeping {interval.seconds}s until next retry, retries left: {i-1}/{max_retries}")
+                print(
+                    f"sleeping {interval.seconds}s until next retry, retries left: {i-1}/{max_retries}"
+                )
                 sleep(interval.seconds)
 
     def stop_zap(self: "ZapRunner") -> int:
@@ -232,7 +239,9 @@ class ZapRunner:
         print(f"context is {self.zap.context.context(self.context_name)}")
 
     def set_include_in_context(self: "ZapRunner", target_url: str) -> None:
-        include_url = f"{target_url}.*"
+        urlparsed = urlparse(target_url)
+        without_scheme = f"{urlparsed.netloc}{urlparsed.path.rstrip('/')}"
+        include_url = f".*{without_scheme}.*"
         print(
             f"Configured include regexp {include_url}, response: {self.zap.context.include_in_context(self.context_name, include_url)}"
         )
@@ -319,7 +328,8 @@ class ZapRunner:
             apikey=self.api_key,
         )
 
-    def active_scan(self: "ZapRunner", scan_duration):
+    def active_scan(self: "ZapRunner", scan_duration: int = 0):
+        print(f"setting scan max duration to {scan_duration} minutes")
         self.zap.ascan.set_option_max_scan_duration_in_mins(scan_duration)
         return self.zap.ascan.scan(
             url=self.target_url,
@@ -328,8 +338,14 @@ class ZapRunner:
             apikey=self.api_key,
         )
 
-    def get_scan_status(self: "ZapRunner", scanID):
+    def get_active_scan_status(self: "ZapRunner", scanID):
         return self.zap.ascan.status(scanid=scanID)
+
+    def get_passive_scan_status(self: "ZapRunner"):
+        """Get the status of a passive scan.
+        It returns -1 when there are no more record to scan so it is finished.
+        """
+        return self.zap.pscan.records_to_scan
 
     def run_automation_framework_scan(
         self: "ZapRunner",
@@ -545,11 +561,11 @@ def run_zap_authenticated_scan(args, runner: ZapRunner):
         spider_status = runner.get_spider_status(spider_id)
 
     scan_id = runner.active_authenticated_scan(args.max_scan_duration)
-    scan_status = runner.get_scan_status(scanID=scan_id)
+    scan_status = runner.get_active_scan_status(scanID=scan_id)
     while "100" not in scan_status:
         print(f"active scan status: {scan_status}%")
         time.sleep(10)
-        scan_status = runner.get_scan_status(scanID=scan_id)
+        scan_status = runner.get_active_scan_status(scanID=scan_id)
 
     print(
         f"report stored successfully at: {runner.get_report(report_dir=args.report_dir,filename=args.report_name)}"
@@ -575,14 +591,29 @@ def run_zap_baseline_scan(args, runner: ZapRunner):
         raise RuntimeError("scan url is not in context")
 
     print(f"started scan with id {scan_id}")
-    scan_status = runner.get_scan_status(scanID=scan_id)
+    scan_status = runner.get_active_scan_status(scanID=scan_id)
     while "100" not in scan_status:
         if "DOES_NOT_EXIST" in scan_status:
             raise RuntimeError("scan was never started")
         print(f"active scan status: {scan_status}%")
         time.sleep(10)
-        scan_status = runner.get_scan_status(scanID=scan_id)
+        scan_status = runner.get_active_scan_status(scanID=scan_id)
     print("finished active scan")
+
+    print("waiting for passive scan to finish")
+    scan_status = runner.get_passive_scan_status()
+    try:
+        while int(scan_status) >= 1:
+            if "DOES_NOT_EXIST" in scan_status:
+                raise RuntimeError("scan was never started")
+            print(f"records left for passive scan to finish: {scan_status}")
+            time.sleep(10)
+            scan_status = runner.get_passive_scan_status()
+    except ValueError as ve:
+        print(f"error while checking passive scan status: {ve}, continuing")
+
+    print(f"finished passive scan, records left: {scan_status}")
+
     print(
         f"report stored successfully at: {runner.get_report(report_dir=args.report_dir,filename=args.report_name)}"
     )

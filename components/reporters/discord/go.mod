@@ -1,17 +1,15 @@
 module github.com/smithy-security/smithy/components/reporters/discord
 
-go 1.24.0
-
-tool github.com/golang/mock/mockgen
+go 1.23.4
 
 require (
 	github.com/bwmarrin/discordgo v0.28.1
 	github.com/go-errors/errors v1.5.1
-	github.com/smithy-security/pkg/env v0.0.1
-	github.com/smithy-security/pkg/retry v0.0.2
-	github.com/smithy-security/pkg/utils v0.0.1
-	github.com/smithy-security/smithy/sdk v0.0.14-alpha
-	github.com/stretchr/testify v1.9.0
+	github.com/smithy-security/pkg/env v0.0.3
+	github.com/smithy-security/pkg/retry v0.0.3
+	github.com/smithy-security/pkg/utils v0.0.2
+	github.com/smithy-security/smithy/sdk v0.0.18-alpha
+	github.com/stretchr/testify v1.10.0
 	go.uber.org/mock v0.5.0
 	google.golang.org/protobuf v1.35.1
 )

@@ -1,0 +1,53 @@
+---
+name: Test Go
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  # Grant the ability to checkout the repository
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      dind:
+        image: docker:23.0-rc-dind-rootless
+        ports:
+          - 2375:2375
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-test
+      cancel-in-progress: true
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install Go Test Tools
+        run: make install-go-test-tools
+
+      - name: Run Go tests
+        run: make tests
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          format: golang
+          file: tests/output/cover.out
+
+      - name: Test Summary
+        uses: test-summary/action@v2
+        with:
+          paths: "tests/output/*-tests.xml"
+        if: always()

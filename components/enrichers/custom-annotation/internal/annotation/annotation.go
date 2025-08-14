@@ -8,9 +8,9 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
 
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 type (
@@ -36,7 +36,7 @@ func NewConf() (*Conf, error) {
 
 	cfg.AnnotationName, err = env.GetOrDefault(
 		"CUSTOM_ANNOTATION_NAME",
-		"",
+		"custom-annotation",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
@@ -83,7 +83,7 @@ func (ca *customAnnotator) Annotate(
 ) ([]*vf.VulnerabilityFinding, error) {
 	var (
 		providerName = "custom-annotation-enricher"
-		logger       = component.LoggerFromContext(ctx).
+		logger       = componentlogger.LoggerFromContext(ctx).
 				With(slog.Int("num_findings", len(findings))).
 				With(slog.String("provider_name", providerName)).
 				With(slog.String("annotation_name", ca.conf.AnnotationName)).
@@ -98,6 +98,7 @@ func (ca *customAnnotator) Annotate(
 			&ocsf.Enrichment{
 				Name:     ca.conf.AnnotationName,
 				Value:    ca.conf.AnnotationValuesJSON,
+				Type:     &providerName,
 				Provider: &providerName,
 			},
 		)

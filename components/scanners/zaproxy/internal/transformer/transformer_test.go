@@ -3,7 +3,6 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
-	"strings"
 	"testing"
 	"time"
 
@@ -65,6 +64,11 @@ func TestZapTransformer_Transform(t *testing.T) {
 			"d12d62ce-a615-527c-8e13-e79655e31a7d",
 			"be3749a7-3e6f-512c-9cd6-f6fd40dea190",
 			"cf72f5da-0b15-5607-9da9-73175addad99",
+		}
+		expectedPaths := []string{
+			"/bodgeit/search.jsp?q=%3C%2Ffont%3E%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E%3Cfont%3E",
+			"/bodgeit/contact.jsp",
+			"/bodgeit/basket.jsp",
 		}
 
 		for idx, finding := range findings {
@@ -201,7 +205,7 @@ func TestZapTransformer_Transform(t *testing.T) {
 			)
 			assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
 			require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
-			assert.True(t, strings.HasPrefix(dataSource.Uri.Path, target))
+			assert.Equal(t, expectedPaths[idx], dataSource.Uri.Path)
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 			vulnerability := finding.Vulnerabilities[0]

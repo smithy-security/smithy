@@ -1,9 +1,0 @@
-auth:
-  usernames: [consumer-mongodb]
-  passwords: [consumer-mongodb]
-  databases: [consumer-mongodb]
-  rootUser: root
-  rootPassword: "root"
-fullnameOverride: consumer-mongodb
-
-architecture: standalone

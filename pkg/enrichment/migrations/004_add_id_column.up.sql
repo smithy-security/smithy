@@ -1,1 +1,0 @@
-ALTER TABLE issues ADD COLUMN uuid text;

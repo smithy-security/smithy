@@ -85,6 +85,8 @@ message Enrichment {
     ENRICHMENT_TYPE_EXPLOIT_EXISTS = 4;
     ENRICHMENT_TYPE_REACHABILITY = 5;
     ENRICHMENT_TYPE_PR_DIFF = 6;
+    ENRICHMENT_TYPE_GIT_HISTORY = 7;
+    ENRICHMENT_TYPE_REMEDIATION = 8;
   }
 
   // if it has this enrichment at all, the finding is a duplicate
@@ -123,6 +125,23 @@ message Enrichment {
     string pr_link = 3;
   }
 
+  // GitHistory is an enrichment that adds data from to a finding representing the historic
+  // location of a finding in the source code at another point in history.
+  message GitHistory {
+    string path = 1;
+    uint32 start_line = 2;
+    uint32 end_line = 3;
+    string reference = 4;
+    string note = 5;
+  }
+
+  // Remediation is an enrichment showing a refactored code snippet for a piece of vulnerable
+  // code
+  message Remediation {
+    string code_snippet = 1;
+    string backend = 2;
+  }
+
   // enrichment represents the enrichment annotation raw value.
   oneof enrichment {
     DuplicateEnrichment duplicate = 2;
@@ -131,5 +150,7 @@ message Enrichment {
     ExploitExistsEnrichment exploit_exists = 5;
     ReachabilityEnrichment reachability = 6;
     PRDiffEnrichment pr_diff = 7;
+    GitHistory git_history = 8;
+    Remediation remediation = 9;
   }
 }

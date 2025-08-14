@@ -8,9 +8,9 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/retry"
 	"github.com/smithy-security/pkg/utils"
-	"github.com/smithy-security/smithy/sdk/component"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 
 	"github.com/smithy-security/smithy/components/reporters/linear/internal/config"
 	"github.com/smithy-security/smithy/components/reporters/linear/internal/linear/client"
@@ -27,7 +27,7 @@ func main() {
 }
 
 func Main(ctx context.Context) error {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	cfg, err := config.New()
 	if err != nil {

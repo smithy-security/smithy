@@ -26,4 +26,6 @@ jobs:
           go-version-file: go.mod
 
       - name: Format
-        run: make install-go-fmt-tools install-md-fmt-tools fmt && test $(git diff -p | wc -l) -eq 0
+        run: |
+          make install-go-fmt-tools install-md-fmt-tools fmt
+          (test $(git diff -p | wc -l) -eq 0 && echo "no changes from formatting target") || (printf "there are files that need formatting:\n$(git diff -p)" && exit 1)

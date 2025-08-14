@@ -5,10 +5,11 @@ import (
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
+	"github.com/smithy-security/pkg/utils"
 
 	"github.com/smithy-security/smithy/sdk"
-	"github.com/smithy-security/smithy/sdk/component/internal/utils"
 	"github.com/smithy-security/smithy/sdk/component/uuid"
+	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 const (
@@ -49,8 +50,8 @@ type (
 
 	// RunnerConfigLogging contains the configuration related with the runner logger.
 	RunnerConfigLogging struct {
-		Level  RunnerConfigLoggingLevel
-		Logger Logger
+		Level  sdklogger.RunnerConfigLoggingLevel
+		Logger sdklogger.Logger
 	}
 
 	// RunnerConfigOption can be used to override runner configuration defaults.
@@ -128,7 +129,7 @@ func runnerWithDisabledStoreCheck() RunnerOption {
 }
 
 // RunnerWithLogger allows customising the runner logger.
-func RunnerWithLogger(logger Logger) RunnerOption {
+func RunnerWithLogger(logger sdklogger.Logger) RunnerOption {
 	return func(r *runner) error {
 		if utils.IsNil(logger) {
 			return ErrRunnerOption{
@@ -211,14 +212,14 @@ func newRunnerConfig() (*RunnerConfig, error) {
 	// --- BEGIN - LOGGING ENV - BEGIN ---
 	logLevel, err := env.GetOrDefault(
 		envVarKeyLoggingLogLevel,
-		RunnerConfigLoggingLevelDebug.String(),
+		sdklogger.RunnerConfigLoggingLevelDebug.String(),
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
 		return nil, errors.Errorf("could not lookup environment for '%s': %w", envVarKeyLoggingLogLevel, err)
 	}
 
-	logger, err := newDefaultLogger(RunnerConfigLoggingLevel(logLevel))
+	logger, err := sdklogger.NewDefaultLogger(sdklogger.RunnerConfigLoggingLevel(logLevel))
 	if err != nil {
 		return nil, errors.Errorf("could not initialised default logger for '%s': %w", envVarKeyLoggingLogLevel, err)
 	}
@@ -234,7 +235,7 @@ func newRunnerConfig() (*RunnerConfig, error) {
 		SDKVersion:    sdk.Version,
 		InstanceID:    instanceID,
 		Logging: RunnerConfigLogging{
-			Level:  RunnerConfigLoggingLevel(logLevel),
+			Level:  sdklogger.RunnerConfigLoggingLevel(logLevel),
 			Logger: logger,
 		},
 		PanicHandler: panicHandler,

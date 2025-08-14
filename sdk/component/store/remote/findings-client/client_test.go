@@ -67,7 +67,7 @@ func (ffs *fakeFindingsService) GetFindings(_ context.Context, req *v1.GetFindin
 		} else {
 			requestedFindingIDs = slices.Sorted(maps.Keys(findings))
 			if offset+int(*req.PageSize) < len(requestedFindingIDs) {
-				requestedFindingIDs = requestedFindingIDs[offset:int(*req.PageSize)]
+				requestedFindingIDs = requestedFindingIDs[offset:(offset + int(*req.PageSize))]
 			} else {
 				requestedFindingIDs = requestedFindingIDs[offset:]
 			}
@@ -158,7 +158,7 @@ func (s *FindingsClientTestSuite) SetupSuite() {
 }
 
 func (s *FindingsClientTestSuite) TearDownSuite() {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	require.NoError(s.T(), s.findingsServiceClient.Close(ctx))
 	s.fakeFindingsService.grpcServer.GracefulStop()
@@ -177,11 +177,14 @@ func (s *FindingsClientTestSuite) TestClient() {
 			{
 				ActivityId: ocsf.VulnerabilityFinding_ACTIVITY_ID_UPDATE,
 			},
+			{
+				ActivityId: ocsf.VulnerabilityFinding_ACTIVITY_ID_UPDATE,
+			},
 		}
 	)
 
 	s.T().Run("it should return a not found error when no findings are associated with the instance id", func(t *testing.T) {
-		ffs, err := s.findingsServiceClient.Read(ctx, instanceID)
+		ffs, err := s.findingsServiceClient.Read(ctx, instanceID, nil)
 		require.ErrorIs(s.T(), err, store.ErrNoFindingsFound)
 		assert.Empty(t, ffs)
 	})
@@ -191,9 +194,9 @@ func (s *FindingsClientTestSuite) TestClient() {
 	})
 
 	s.T().Run("and after retrieving them", func(t *testing.T) {
-		ffs, err := s.findingsServiceClient.Read(ctx, instanceID)
+		ffs, err := s.findingsServiceClient.Read(ctx, instanceID, nil)
 		require.NoError(s.T(), err)
-		require.Len(t, ffs, 2)
+		require.Len(t, ffs, 3)
 	})
 
 	s.T().Run("it should successfully update existing findings", func(t *testing.T) {
@@ -212,13 +215,57 @@ func (s *FindingsClientTestSuite) TestClient() {
 					ID:      2,
 					Finding: findings[1],
 				},
+				{
+					ID:      3,
+					Finding: findings[2],
+				},
 			}),
 		)
 	})
 
 	s.T().Run("it should returns the created findings", func(t *testing.T) {
-		ffs, err := s.findingsServiceClient.Read(ctx, instanceID)
+		ffs, err := s.findingsServiceClient.Read(ctx, instanceID, nil)
 		require.NoError(s.T(), err)
-		assert.Len(t, ffs, 2)
+		assert.Len(t, ffs, 3)
+	})
+
+	s.T().Run("it should return the expected page of findings", func(t *testing.T) {
+		ffs, err := s.findingsServiceClient.Read(ctx, instanceID, &store.QueryOpts{
+			Page:     0,
+			PageSize: 2,
+		})
+		require.NoError(s.T(), err)
+		require.Len(t, ffs, 2)
+		require.NoError(s.T(), s.findingsServiceClient.Update(
+			ctx,
+			instanceID,
+			[]*vf.VulnerabilityFinding{
+				{
+					ID:      1,
+					Finding: findings[0],
+				},
+				{
+					ID:      2,
+					Finding: findings[1],
+				},
+			}),
+		)
+
+		ffs, err = s.findingsServiceClient.Read(ctx, instanceID, &store.QueryOpts{
+			Page:     1,
+			PageSize: 2,
+		})
+		require.NoError(s.T(), err)
+		require.Len(t, ffs, 1)
+		require.NoError(s.T(), s.findingsServiceClient.Update(
+			ctx,
+			instanceID,
+			[]*vf.VulnerabilityFinding{
+				{
+					ID:      3,
+					Finding: findings[0],
+				},
+			}),
+		)
 	})
 }

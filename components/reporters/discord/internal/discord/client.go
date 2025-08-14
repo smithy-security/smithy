@@ -7,7 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/go-errors/errors"
-	"github.com/smithy-security/smithy/sdk/component"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
 type (
@@ -57,7 +57,7 @@ func NewClient(c Config) (client, error) {
 
 // CreateThread creates a thread in a channel by sending a message.
 func (c client) CreateThread(ctx context.Context, msg string) (string, error) {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	logger.Debug("sending thread message to channel...")
 	firstMsg, err := c.sess.ChannelMessageSend(c.channelID, msg)
@@ -86,7 +86,7 @@ func (c client) CreateThread(ctx context.Context, msg string) (string, error) {
 func (c client) SendMessages(ctx context.Context, threadID string, messages []string) error {
 	var (
 		errs   error
-		logger = component.
+		logger = componentlogger.
 			LoggerFromContext(ctx).
 			With(slog.String("thread_id", threadID))
 	)

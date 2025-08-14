@@ -12,6 +12,7 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/package-url/packageurl-go"
+	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/pkg/env"
@@ -61,7 +62,7 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 }
 
 func WriteTargetMetadata(ctx context.Context, conf *Conf) error {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	purl, err := packageUrlFromImage(conf.Image)
 	if err != nil {
@@ -153,7 +154,7 @@ func main() {
 }
 
 func Main(ctx context.Context) error {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	conf, err := NewConf(nil)
 	if err != nil {
@@ -189,7 +190,7 @@ func NewTarget(conf *Conf) (*imageMetadataWriterTarget, error) {
 }
 
 func (t *imageMetadataWriterTarget) Prepare(ctx context.Context) error {
-	logger := component.LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
 	if t.conf == nil {
 		return errors.New("conf cannot be nil")

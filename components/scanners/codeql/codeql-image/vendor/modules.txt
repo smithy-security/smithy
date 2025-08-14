@@ -12,6 +12,6 @@ github.com/go-enry/go-oniguruma
 # github.com/go-errors/errors v1.5.1
 ## explicit; go 1.14
 github.com/go-errors/errors
-# github.com/smithy-security/pkg/detect-repo-languages v0.0.1
+# github.com/smithy-security/pkg/detect-repo-languages v0.0.2
 ## explicit; go 1.23.3
 github.com/smithy-security/pkg/detect-repo-languages
