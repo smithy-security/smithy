@@ -228,6 +228,7 @@ class ZapRunner:
         target_url: str,
         host: str = "localhost",
         port: int = 8090,
+        shutdown_timeout:int = 10
     ) -> None:
         if not target_url:
             raise ZapInvalidAPIKeyError(target="no target provided")
@@ -247,6 +248,7 @@ class ZapRunner:
         self.zap_api_url = f"http://{host}:{port}"
         self.request_proxies = {"http": self.zap_api_url, "https": self.zap_api_url}
         self.zap = ZAPv2(apikey=api_key, proxies=self.request_proxies)
+        self.shutdown_timeout = shutdown_timeout
 
     def start_zap(
         self: "ZapRunner",
@@ -303,7 +305,7 @@ class ZapRunner:
             f"shutting down zap, {self.zap.core.shutdown(apikey=self.api_key)}"
         )  # stop zap
         self.zap_process.terminate()
-        return self.zap_process.wait(timeout=10)
+        return self.zap_process.wait(timeout=self.shutdown_timeout)
 
     def check_connection(self: "ZapRunner") -> None:
         version = self.zap.core.version
@@ -487,11 +489,22 @@ def main():
         type=int,
         help="how many seconds to wait before successive ZAP liveness checks",
     )
+    parser.add_argument(
+        "--shutdown-timeout",
+        default=get_env_or_default("", "SHUTDOWN_TIMEOUT", default=10),
+        type=int,
+        help="how many seconds to wait for ZAP to shutdown",
+    )
     args = parser.parse_args()
 
     target_url = args.target.strip("/")
     print(f"starting zap scanning target: {target_url}")
-    runner = ZapRunner(api_key=args.api_key, target_url=target_url)
+
+    shutdown_timeout = None
+    if args.shutdown_timeout and str(args.shutdown_timeout).isdecimal():
+        shutdown_timeout = int(args.shutdown_timeout)
+
+    runner = ZapRunner(api_key=args.api_key, target_url=target_url,shutdown_timeout=shutdown_timeout)
     if not args.no_start_zap:
         runner.start_zap(
             max_retries=args.startup_check_retries,
