@@ -29,6 +29,9 @@ parameters:
   - name: startup_check_interval
     type: string
     value: "10"
+  - name: shutdown_timeout
+    type: string
+    value: "10"
 steps:
   - name: write-metadata
     image: components/scanners/zaproxy/overwrite-metadata
@@ -52,6 +55,7 @@ steps:
       SPIDER_DURATION_MINS: "{{ .parameters.spider_duration_mins }}"
       STARTUP_CHECK_RETRIES: "{{ .parameters.startup_check_retries }}"
       STARTUP_CHECK_INTERVAL: "{{ .parameters.startup_check_interval }}"
+      SHUTDOWN_TIMEOUT: "{{ .parameters.shutdown_timeout }}"
   - name: parser
     image: components/scanners/zaproxy
     executable: /bin/app
