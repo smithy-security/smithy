@@ -23,9 +23,7 @@ func (j battlecardLogger) Report(
 	ctx context.Context,
 	findings []*vf.VulnerabilityFinding,
 ) error {
-	logger := componentlogger.
-		LoggerFromContext(ctx).
-		With(slog.Int("num_findings", len(findings)))
+	logger := componentlogger.LoggerFromContext(ctx)
 	enrichments := map[string]int{}
 	for _, finding := range findings {
 		for _, enrichment := range finding.Finding.Enrichments {
@@ -37,22 +35,19 @@ func (j battlecardLogger) Report(
 		slog.Any("enrichments", enrichments),
 	)
 
-	logger.Info("scan finished with", slog.Int("num_findings", len(findings)))
+	logger.Info("scan finished")
 	for enrichmentName, count := range enrichments {
 		logger.Info("enrichment",
 			slog.String("name", enrichmentName),
 			slog.Int("count", count),
 		)
 	}
-	logger.Info("generated battlecard", slog.String("battlecard", generateBattlecard(ctx, findings)))
+	logger.Info(generateBattlecard(ctx, findings))
 	return nil
 }
 
 func generateBattlecard(ctx context.Context, findings []*vf.VulnerabilityFinding) string {
-	logger := componentlogger.
-		LoggerFromContext(ctx).
-		With(slog.Int("num_findings", len(findings)))
-
+	logger := componentlogger.LoggerFromContext(ctx)
 	enrichments := map[string]int{}
 	tools := map[string]int{}
 	for _, finding := range findings {
