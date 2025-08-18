@@ -83,7 +83,7 @@ git-clone:
 Then run the following command to run your workflow
 
 ```shell
-smithyctl workflow run --overrides=./overrides.yaml ./workflow.yaml
+smithyctl workflow run --build-component-images=true --overrides=./overrides.yaml ./workflow.yaml
 ```
 
 Check the findings in the logs.
