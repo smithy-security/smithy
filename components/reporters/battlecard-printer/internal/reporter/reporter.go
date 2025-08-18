@@ -44,6 +44,7 @@ func (j battlecardLogger) Report(
 			slog.Int("count", count),
 		)
 	}
+	logger.Info("generated battlecard", slog.String("battlecard", generateBattlecard(ctx, findings)))
 	return nil
 }
 
