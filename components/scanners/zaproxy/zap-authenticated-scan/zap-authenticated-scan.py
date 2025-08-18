@@ -228,7 +228,7 @@ class ZapRunner:
         target_url: str,
         host: str = "localhost",
         port: int = 8090,
-        shutdown_timeout:int = 10
+        shutdown_timeout: int = 10,
     ) -> None:
         if not target_url:
             raise ZapInvalidAPIKeyError(target="no target provided")
@@ -504,7 +504,16 @@ def main():
     if args.shutdown_timeout and str(args.shutdown_timeout).isdecimal():
         shutdown_timeout = int(args.shutdown_timeout)
 
-    runner = ZapRunner(api_key=args.api_key, target_url=target_url,shutdown_timeout=shutdown_timeout)
+    if any([args.username, args.password, args.login_url]) and not all(
+        [args.username, args.password, args.login_url]
+    ):
+        raise ValueError(
+            "if any of username, password or login-url are provided, all must be provided in order to run an authenticated scan"
+        )
+
+    runner = ZapRunner(
+        api_key=args.api_key, target_url=target_url, shutdown_timeout=shutdown_timeout
+    )
     if not args.no_start_zap:
         runner.start_zap(
             max_retries=args.startup_check_retries,
@@ -527,7 +536,6 @@ def main():
         print(
             f"max spider duration had unsupported value '{args.max_spider_duration}' setting to default '{max_spider_duration}'"
         )
-
     try:
         if args.username and args.password:
             print("running automation framework scan")
