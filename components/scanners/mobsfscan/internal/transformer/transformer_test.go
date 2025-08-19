@@ -211,4 +211,22 @@ func TestMobSFScanTransformer_Transform(t *testing.T) {
 			assert.NotNilf(t, affectedCode.EndLine, "Unexpected nil end line for vulnerability for finding %d", idx)
 		}
 	})
+	t.Run("it should return empty findings when the input file is empty", func(t *testing.T) {
+		// Set up an empty file for testing
+		emptyFilePath := "./testdata/empty_mobsf.sarif.json"
+		require.NoError(t, os.WriteFile(emptyFilePath, []byte{}, 0644))
+		defer os.Remove(emptyFilePath)
+
+		os.Setenv("MOBSF_RAW_OUT_FILE_PATH", emptyFilePath)
+
+		ocsfTransformer, err := transformer.New(
+			transformer.MobSFTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.MobSFTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings, "Expected no findings for empty input file")
+	})
 }
