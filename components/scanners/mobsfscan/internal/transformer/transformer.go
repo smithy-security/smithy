@@ -127,6 +127,11 @@ func (g *mobSFTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
 	}
 
+	if len(b) == 0 {
+		logger.Debug("input file is empty, skipping parsing")
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
+
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw mobSF output: %w", err)
