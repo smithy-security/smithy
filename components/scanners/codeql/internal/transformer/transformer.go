@@ -140,7 +140,10 @@ func (g *codeqlTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 			}
 			return nil, errors.Errorf("failed to read raw output file '%s': %w", file, err)
 		}
-
+		if len(b) == 0 {
+			logger.Info("Scanner SARIF file is empty, continuing")
+			continue
+		}
 		var report sarifschemav210.SchemaJson
 		if err := report.UnmarshalJSON(b); err != nil {
 			return nil, errors.Errorf("failed to parse raw codeql output: %w", err)
