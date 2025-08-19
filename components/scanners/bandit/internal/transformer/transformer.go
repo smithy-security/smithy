@@ -78,6 +78,8 @@ var (
 	ErrEmptyRawOutfileContents = errors.Errorf("empty raw out file contents")
 	// ErrBadTargetType is thrown when the option set target type is called with an unspecified or empty target type
 	ErrBadTargetType = errors.New("invalid empty target type")
+	// ErrFileNotFound is thrown when the raw output file is not found
+	ErrFileNotFound = errors.Errorf("raw output file not found")
 
 	// Bandit Parser Specific Errors
 
@@ -174,10 +176,16 @@ func (b *BanditTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 		inFile, err := os.ReadFile(b.rawOutFilePath)
 		if err != nil {
 			if os.IsNotExist(err) {
-				return nil, errors.Errorf("raw output file '%s' not found", b.rawOutFilePath)
+				return nil, errors.Errorf("%w: %s Original Error: %w", ErrFileNotFound, b.rawOutFilePath, err)
 			}
 			return nil, errors.Errorf("failed to read raw output file '%s': %w", b.rawOutFilePath, err)
 		}
+
+		if len(inFile) == 0 {
+			logger.Info("Scanner SARIF file is empty, exiting")
+			return []*ocsf.VulnerabilityFinding{}, nil
+		}
+
 		b.fileContents = inFile
 	}
 	var results BanditOut
