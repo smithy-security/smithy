@@ -3,6 +3,7 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"os"
 	"testing"
 	"time"
 
@@ -213,5 +214,21 @@ func TestSemgrepTransformer_Transform(t *testing.T) {
 			assert.NotNilf(t, affectedCode.StartLine, "Unexpected nil start line for vulnerability for finding %d", idx)
 			assert.NotNilf(t, affectedCode.EndLine, "Unexpected nil end line for vulnerability for finding %d", idx)
 		}
+	})
+	t.Run("it should return an empty finding array when the input file is empty", func(t *testing.T) {
+		require.NoError(t, os.WriteFile("./testdata/empty.sarif.json", []byte{}, 0644))
+		defer func() {
+			require.NoError(t, os.Remove("./testdata/empty.sarif.json"))
+		}()
+		ocsfTransformer, err := transformer.New(
+			transformer.SemgrepRawOutFilePath("./testdata/empty.sarif.json"),
+			transformer.SemgrepTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.SemgrepTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings, "Expected no findings when the input file is empty")
 	})
 }
