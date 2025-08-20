@@ -3,6 +3,7 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"os"
 	"testing"
 	"time"
 
@@ -221,5 +222,21 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			assert.NotNilf(t, affectedCode.StartLine, "Unexpected nil start line for vulnerability for finding %d", idx)
 			assert.NotNilf(t, affectedCode.EndLine, "Unexpected nil end line for vulnerability for finding %d", idx)
 		}
+	})
+	t.Run("it should return an empty finding array when the input file is empty", func(t *testing.T) {
+		emptyFilePath := "./testdata/empty_trivy.sarif.json"
+		require.NoError(t, os.WriteFile(emptyFilePath, []byte{}, 0644))
+		defer func() { require.NoError(t, os.Remove(emptyFilePath)) }()
+
+		ocsfTransformer, err := transformer.New(
+			transformer.TrivyRawOutFilePath(emptyFilePath),
+			transformer.TrivyTransformerWithTarget(transformer.TargetTypeContainer),
+			transformer.TrivyTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings, "Expected no findings for an empty input file")
 	})
 }
