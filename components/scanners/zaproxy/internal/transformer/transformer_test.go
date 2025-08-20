@@ -3,6 +3,7 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"os"
 	"testing"
 	"time"
 
@@ -229,5 +230,29 @@ func TestZapTransformer_Transform(t *testing.T) {
 			require.NotNil(t, finding.Metadata, "finding metadata are nil")
 			assert.Equal(t, expectedMetadataUIDs[idx], *finding.Metadata.Uid, "Unexpected metadata uid for finding %d", idx)
 		}
+	})
+	t.Run("it should return an empty finding array when the input file is empty", func(t *testing.T) {
+		emptyFilePath := "./testdata/empty.sarif.json"
+		require.NoError(t, os.WriteFile(emptyFilePath, []byte{}, 0644))
+		defer func() {
+			require.NoError(t, os.Remove(emptyFilePath))
+		}()
+
+		ocsfTransformer, err := transformer.New(
+			transformer.ZapRawOutFilePath(emptyFilePath),
+			transformer.ZapTransformerWithTarget(transformer.TargetTypeWebsite),
+			transformer.ZapTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		ctx := context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, &ocsffindinginfo.DataSource{
+			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE,
+		})
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings, "Expected no findings for an empty input file")
 	})
 }
