@@ -7,9 +7,12 @@ commits_since_latest_tag=$(shell git log --oneline $(latest_tag)..HEAD | wc -l)
 go_mod_paths=$(shell find . -not -path './deprecated-components/*' -name 'go.mod' | sort -u)
 go_test_paths=$(go_mod_paths:go.mod=go-tests)
 go_fmt_paths=$(go_mod_paths:go.mod=go-fmt)
-go_component_mod_paths=$(shell find ./components -not -path './deprecated-components/*' -name 'go.mod' | sort -u)
+go_component_mod_paths=$(shell find -E ./components -not -path './deprecated-components/*' -name 'go.mod' | sort -u)
 go_sdk_lib_update=$(go_component_mod_paths:go.mod=go-sdk-update)
-component_root_directories=$(shell find ./components -type d -regextype posix-extended -regex "./components/(targets|scanners|enrichers|filters|reporters)/[a-z-]+")
+component_root_directories := $(shell \
+    find -E ./components -type d \
+    -regex './components/(targets|scanners|enrichers|filters|reporters)/[a-z-]+' \
+)
 component_patch_tags=$(component_root_directories:=/patch-tag)
 component_minor_tags=$(component_root_directories:=/minor-tag)
 component_major_tags=$(component_root_directories:=/major-tag)
