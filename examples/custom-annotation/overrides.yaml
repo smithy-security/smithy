@@ -1,0 +1,8 @@
+git-clone:
+- name: "repo_url"
+  type: "string"
+  value: "https://github.com/fportantier/vulpy.git"
+custom-annotation:
+- name: "annotations_key_vals"
+  type: "string"
+  value: "foo:bar,baz:qux"
