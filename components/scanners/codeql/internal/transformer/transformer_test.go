@@ -3,6 +3,7 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"os"
 	"testing"
 	"time"
 
@@ -213,4 +214,41 @@ func TestCodeQLTransformer_Transform(t *testing.T) {
 			assert.NotNilf(t, affectedCode.StartLine, "Unexpected nil start line for vulnerability for finding %d", idx)
 		}
 	})
+	t.Run("it should return 0 findings when the output file exists but is empty", func(t *testing.T) {
+		// Create an empty SARIF file for testing
+		emptyFilePath := "./testdata/empty_results_sarif.sarif"
+		err := os.WriteFile(emptyFilePath, []byte{}, 0644)
+		require.NoError(t, err)
+		defer os.Remove(emptyFilePath)
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CodeqlRawOutDirGlob(emptyFilePath),
+			transformer.CodeqlTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CodeqlTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings, "Expected no findings for an empty SARIF file")
+	})
+	t.Run("it should parse globs with files that are potentially empty but also have files with results", func(t *testing.T) {
+		// Create an empty SARIF file for testing
+		emptyFilePath := "./testdata/empty_results_sarif.json"
+		err := os.WriteFile(emptyFilePath, []byte{}, 0644)
+		require.NoError(t, err)
+		defer os.Remove(emptyFilePath)
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CodeqlRawOutDirGlob("testdata/*.json"),
+			transformer.CodeqlTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CodeqlTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Equal(t, 111, len(findings))
+	})
+
 }

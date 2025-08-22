@@ -38,6 +38,24 @@ func TestNancyTransformer_Transform(t *testing.T) {
 		require.NoError(t, err)
 		transformMethodTest(t, ocsfTransformer.Transform, nil, 4)
 	})
+	t.Run("it should return an empty finding array when the input file is empty", func(t *testing.T) {
+		path, err := os.Getwd()
+		require.NoError(t, err)
+		// Create an empty file for testing
+		require.NoError(t, os.WriteFile("./testdata/empty_nancy.json", []byte{}, 0644))
+		defer func() {
+			require.NoError(t, os.Remove("./testdata/empty_nancy.json"))
+		}()
+		ocsfTransformer, err := New(
+			NancyRawOutFilePath("./testdata/empty_nancy.json"),
+			NancyTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
+			NancyTransformerWithClock(clock),
+			NancyTransformerWithProjectRoot(filepath.Join(path, "../../")),
+		)
+		require.NoError(t, err)
+
+		transformMethodTest(t, ocsfTransformer.Transform, nil, 0)
+	})
 }
 
 func assertValid(t *testing.T, finding *ocsf.VulnerabilityFinding, idx int, nowUnix, typeUID int64) {
@@ -223,7 +241,6 @@ func transformMethodTest(t *testing.T, transformCallback func(ctx context.Contex
 		return
 	}
 	require.NoError(t, err)
-	require.NotEmpty(t, findings)
 	require.Equal(t, expectedNumFindings, len(findings))
 	for idx, finding := range findings {
 		assertValid(t, finding, idx, nowUnix, typeUID)

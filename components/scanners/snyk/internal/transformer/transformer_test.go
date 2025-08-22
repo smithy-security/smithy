@@ -196,4 +196,21 @@ func TestSnykTransformer_Transform(t *testing.T) {
 
 		}
 	})
+	t.Run("it should return an empty finding array when the input file is empty", func(t *testing.T) {
+		emptyFilePath := "./testdata/empty.sarif.json"
+		require.NoError(t, os.WriteFile(emptyFilePath, []byte{}, 0644))
+		defer func() {
+			require.NoError(t, os.Remove(emptyFilePath))
+		}()
+
+		os.Setenv("RAW_OUT_FILE_PATH", emptyFilePath)
+		ocsfTransformer, err := New(
+			SnykTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		require.Empty(t, findings)
+	})
 }
