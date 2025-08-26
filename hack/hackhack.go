@@ -28,16 +28,6 @@ func getUserByID(userID string) (*User, error) {
 	return &user, nil
 }
 
-// VULNERABLE: String formatting in SQL query
-func loginUser(username, password string) bool {
-	// This is vulnerable to SQL injection!
-	query := fmt.Sprintf("SELECT id FROM users WHERE username = '%s' AND password = '%s'", username, password)
-
-	var userID int
-	err := db.QueryRow(query).Scan(&userID)
-	return err == nil
-}
-
 // VULNERABLE: Dynamic WHERE clause construction
 func searchUsers(searchTerm, orderBy string) ([]User, error) {
 	var users []User
@@ -173,6 +163,16 @@ func executeCustomQuery(customSQL string) ([]map[string]interface{}, error) {
 	}
 
 	return results, nil
+}
+
+// VULNERABLE: String formatting in SQL query
+func loginUser(username, password string) bool {
+	// This is vulnerable to SQL injection!
+	query := fmt.Sprintf("SELECT id FROM users WHERE username = '%s' AND password = '%s'", username, password)
+
+	var userID int
+	err := db.QueryRow(query).Scan(&userID)
+	return err == nil
 }
 
 type User struct {
