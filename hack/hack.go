@@ -12,7 +12,7 @@ import (
 var db *sql.DB
 
 // FORCE TEST
-// FORCE TEST 3
+// FORCE TEST
 
 // VULNERABLE: Direct string concatenation in SQL query
 func getUserByID(userID string) (*User, error) {
