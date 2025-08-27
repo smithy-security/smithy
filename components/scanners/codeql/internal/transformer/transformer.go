@@ -163,11 +163,11 @@ func (g *codeqlTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 			return nil, errors.Errorf("failed to create guid provider: %w", err)
 		}
 
-		transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true)
+		transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true, component.TargetMetadataFromCtx(ctx))
 		if err != nil {
 			return nil, err
 		}
-		vulns, err := transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
+		vulns, err := transformer.ToOCSF(ctx)
 		if err != nil {
 			return nil, err
 		}
