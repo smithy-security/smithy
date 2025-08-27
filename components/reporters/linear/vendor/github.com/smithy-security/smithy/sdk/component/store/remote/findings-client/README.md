@@ -11,3 +11,4 @@ This implementation of `component.Storer` interacts with a findings client via G
 | SMITHY\_REMOTE\_CLIENT\_INITIAL\_BACKOFF\_SECONDS    | duration in seconds | no       | 5s              | -                        |
 | SMITHY\_REMOTE\_CLIENT\_MAX\_BACKOFF\_SECONDS    | duration in seconds | no       | 60s             | -                        |
 | SMITHY\_REMOTE\_CLIENT\_BACKOFF\_MULTIPLIER    | float               | no       | 1.5             | -                        |
+| SMITHY\_REMOTE\_CLIENT\_PAGE\_SIZE | int | no | 100 | - |
