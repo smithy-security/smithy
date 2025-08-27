@@ -106,25 +106,13 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 			)
 			assert.NotNilf(t, finding.Count, "Unexpected count for finding %d", idx)
 			assert.NotEmptyf(t, finding.Message, "Unexpected empty message for finding %d", idx)
-			assert.Containsf(
-				t,
-				[]ocsf.VulnerabilityFinding_SeverityId{
-					ocsf.VulnerabilityFinding_SEVERITY_ID_MEDIUM,
-					ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH,
-					ocsf.VulnerabilityFinding_SEVERITY_ID_INFORMATIONAL,
-					ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN,
-				},
-				finding.SeverityId,
+			assert.Equalf(
+				t, ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH, finding.SeverityId,
 				"Unexpected severity id for finding %d", idx,
 			)
-			assert.Containsf(
+			assert.Equalf(
 				t,
-				[]string{
-					ocsf.VulnerabilityFinding_SEVERITY_ID_MEDIUM.String(),
-					ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH.String(),
-					ocsf.VulnerabilityFinding_SEVERITY_ID_INFORMATIONAL.String(),
-					ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN.String(),
-				},
+				ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH.String(),
 				*finding.Severity,
 				"Unexpected severity for finding %d", idx,
 			)
@@ -191,14 +179,9 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 			vulnerability := finding.Vulnerabilities[0]
 			assert.Equalf(t, nowUnix, *vulnerability.FirstSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
 			assert.Equalf(t, nowUnix, *vulnerability.LastSeenTime, "Unexpected vulnerability firsy time seen time for finding %d", idx)
-			assert.Containsf(
+			assert.Equalf(
 				t,
-				[]string{
-					ocsf.VulnerabilityFinding_SEVERITY_ID_MEDIUM.String(),
-					ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH.String(),
-					ocsf.VulnerabilityFinding_SEVERITY_ID_INFORMATIONAL.String(),
-					ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN.String(),
-				},
+				ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH.String(),
 				*vulnerability.Severity,
 				"Unexpected severity for vulnerability for finding %d", idx,
 			)

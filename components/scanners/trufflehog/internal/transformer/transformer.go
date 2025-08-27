@@ -262,8 +262,8 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 					Title:         fmt.Sprintf("%s\n%s:%s", finding.SourceName, finding.DecoderName, finding.DetectorName),
 					Uid:           fmt.Sprintf("%d:%d:%d", finding.SourceID, finding.SourceType, finding.DetectorType),
 				},
-				Severity:   utils.Ptr(ocsf.VulnerabilityFinding_SeverityId_name[int32(ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN)]),
-				SeverityId: ocsf.VulnerabilityFinding_SeverityId(ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN),
+				Severity:   utils.Ptr(ocsf.VulnerabilityFinding_SeverityId_name[int32(ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH)]),
+				SeverityId: ocsf.VulnerabilityFinding_SeverityId(ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH),
 				StartTime:  &now,
 				Status:     utils.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW.String()),
 				StatusId:   utils.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW),
@@ -276,7 +276,7 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 				Vulnerabilities: []*ocsf.Vulnerability{
 					{
 
-						Severity:     utils.Ptr(ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN.String()),
+						Severity:     utils.Ptr(ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH.String()),
 						AffectedCode: []*ocsf.AffectedCode{affectedCode},
 						Cwe: &ocsf.Cwe{
 							SrcUrl:  utils.Ptr("https://cwe.mitre.org/data/definitions/798.html"),
