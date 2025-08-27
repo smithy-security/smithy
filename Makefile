@@ -1,15 +1,15 @@
-go_mod_paths=$(shell find . -name 'go.mod' | sort -u)
-go_test_paths=$(go_mod_paths:go.mod=go-tests)
-go_fmt_paths=$(go_mod_paths:go.mod=go-fmt)
-go_component_mod_paths=$(shell find ./components -name 'go.mod' | sort -u)
-go_sdk_lib_update=$(go_component_mod_paths:go.mod=go-sdk-update)
-component_root_directories := $(shell find ./components/{targets,scanners,enrichers,reporters} -maxdepth 1 -mindepth 1 -type d)
-component_patch_tags=$(component_root_directories:=/patch-tag)
-component_minor_tags=$(component_root_directories:=/minor-tag)
-component_major_tags=$(component_root_directories:=/major-tag)
-VENDOR_DIRS=$(shell find . -type d -name "vendor")
-EXCLUDE_VENDOR_PATHS := $(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "--exclude-path \""$$i"\""}' | tr '\n' ' ')
-go_test_out_dir=$(shell pwd)/tests/output
+go_mod_paths:=$(shell find . -name 'go.mod' | sort -u)
+go_test_paths:=$(go_mod_paths:go.mod=go-tests)
+go_fmt_paths:=$(go_mod_paths:go.mod=go-fmt)
+go_component_mod_paths:=$(shell find ./components -name 'go.mod' | sort -u)
+go_sdk_lib_update:=$(go_component_mod_paths:go.mod=go-sdk-update)
+component_root_directories:=$(shell find ./components/targets ./components/scanners ./components/enrichers ./components/reporters -maxdepth 1 -mindepth 1 -type d )
+component_patch_tags:=$(component_root_directories:=/patch-tag)
+component_minor_tags:=$(component_root_directories:=/minor-tag)
+component_major_tags:=$(component_root_directories:=/major-tag)
+VENDOR_DIRS:=$(shell find . -type d -name "vendor")
+EXCLUDE_VENDOR_PATHS:=$(shell echo $(VENDOR_DIRS) | awk '{for (i=1; i<=NF; i++) print "--exclude-path \""$$i"\""}' | tr '\n' ' ')
+go_test_out_dir:=$(shell pwd)/tests/output
 
 # Deployment vars
 # The following variables are used to define the deployment environment
