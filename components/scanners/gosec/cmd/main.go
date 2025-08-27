@@ -6,11 +6,9 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/smithy/sdk/component"
 
 	"github.com/smithy-security/smithy/components/scanners/gosec/internal/config"
-	"github.com/smithy-security/smithy/components/scanners/gosec/internal/sarif"
 	"github.com/smithy-security/smithy/components/scanners/gosec/internal/transformer"
 )
 
@@ -29,12 +27,7 @@ func Main(ctx context.Context) error {
 		return errors.Errorf("failed to initialize config: %w", err)
 	}
 
-	st, err := sarif.NewTransformer(cfg.RawOutFilePath, clockwork.NewRealClock())
-	if err != nil {
-		return errors.Errorf("could not create sarif transformer: %w", err)
-	}
-
-	ocsfTransformer, err := transformer.New(st, cfg)
+	ocsfTransformer, err := transformer.New(cfg)
 	if err != nil {
 		return errors.Errorf("could not create transformer: %w", err)
 	}
