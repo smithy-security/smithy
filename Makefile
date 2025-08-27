@@ -4,10 +4,10 @@
 latest_tag=$(shell git tag --list --sort="-version:refname" | head -n 1)
 commits_since_latest_tag=$(shell git log --oneline $(latest_tag)..HEAD | wc -l)
 # /components/producers/golang-nancy/examples is ignored as it's an example of a vulnerable go.mod.
-go_mod_paths=$(shell find . -not -path './deprecated-components/*' -name 'go.mod' | sort -u)
+go_mod_paths=$(shell find . -name 'go.mod' | sort -u)
 go_test_paths=$(go_mod_paths:go.mod=go-tests)
 go_fmt_paths=$(go_mod_paths:go.mod=go-fmt)
-go_component_mod_paths=$(shell find ./components -not -path './deprecated-components/*' -name 'go.mod' | sort -u)
+go_component_mod_paths=$(shell find ./components -name 'go.mod' | sort -u)
 go_sdk_lib_update=$(go_component_mod_paths:go.mod=go-sdk-update)
 component_root_directories := $(shell find ./components/{targets,scanners,enrichers,reporters} -maxdepth 1 -mindepth 1 -type d)
 component_patch_tags=$(component_root_directories:=/patch-tag)
