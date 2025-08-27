@@ -150,11 +150,11 @@ func (g *trivyTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 		return nil, errors.Errorf("failed to create guid provider: %w", err)
 	}
 
-	transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true)
+	transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true, component.TargetMetadataFromCtx(ctx))
 	if err != nil {
 		return nil, err
 	}
-	ocsfVulns, err := transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
+	ocsfVulns, err := transformer.ToOCSF(ctx)
 	if err != nil {
 		return nil, err
 	}

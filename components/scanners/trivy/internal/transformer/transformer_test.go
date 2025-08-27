@@ -20,7 +20,7 @@ import (
 
 func TestTrivyTransformer_Transform(t *testing.T) {
 	var (
-		ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
+		ctx, cancel = context.WithTimeout(context.Background(), time.Second)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
 		nowUnix     = clock.Now().Unix()
 		typeUid     = int64(
@@ -30,17 +30,11 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 		)
 	)
 	defer cancel()
-	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
-	repositoryURL := "https://github.com/smithy-security/test"
 	targetMetadata := &ocsffindinginfo.DataSource{
 		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE,
 		OciPackageMetadata: &ocsffindinginfo.DataSource_OCIPackageMetadata{
 			PackageUrl: "pkg:docker/example/myapp@1.0",
 			Tag:        "1.0",
-		},
-		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
-			RepositoryUrl: repositoryURL,
-			Reference:     commitRef,
 		},
 	}
 
@@ -192,7 +186,6 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			)
 			assert.NotEmptyf(t, dataSource.Uri.Path, "Unexpected empty data source path for finding %d", idx)
 			require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
-			require.NotNilf(t, dataSource.SourceCodeMetadata, "Unexpected nil data source source code metadata for finding %d", idx)
 			require.NotNilf(t, dataSource.OciPackageMetadata, "Unexpected nil data source OCI PACKAGE METADATA %d", idx)
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
