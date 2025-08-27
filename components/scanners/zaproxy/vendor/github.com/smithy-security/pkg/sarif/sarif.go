@@ -147,9 +147,10 @@ func (s *SarifTransformer) ToOCSF(ctx context.Context) ([]*ocsf.VulnerabilityFin
 		for _, res := range run.Results {
 			finding, err := s.transformToOCSF(toolName, &res)
 			if err != nil {
-				errors.Join(parseErr, err)
+				parseErr = errors.Join(parseErr, err)
+			} else {
+				vulns = append(vulns, finding)
 			}
-			vulns = append(vulns, finding)
 		}
 	}
 	return vulns, parseErr

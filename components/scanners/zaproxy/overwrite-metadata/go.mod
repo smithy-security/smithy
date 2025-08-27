@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/go-errors/errors v1.5.1
-	github.com/smithy-security/smithy/sdk v0.0.18-alpha
+	github.com/smithy-security/smithy/sdk v0.0.19-alpha
 	google.golang.org/protobuf v1.36.6
 )
 
