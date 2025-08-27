@@ -5,6 +5,8 @@ import (
 
 	"github.com/go-errors/errors"
 
+	"github.com/smithy-security/pkg/env"
+
 	"github.com/smithy-security/smithy/sdk/component/store"
 	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
@@ -29,17 +31,25 @@ func RunReporter(ctx context.Context, reporter Reporter, opts ...RunnerOption) e
 			logger.Debug("preparing to execute component...")
 			logger.Debug("preparing to execute read step...")
 
+			envRunWithoutFindings, err := env.GetOrDefault(envVarKeyRunReportersWithoutFindings, "false", env.WithDefaultOnError(true))
+			if err != nil {
+				return errors.Errorf("could not get env var %s: %w", envVarKeyRunReportersWithoutFindings, err)
+			}
+
 			findings, err := storer.Read(ctx, instanceID, nil)
 			if err != nil {
 				if errors.Is(err, store.ErrNoFindingsFound) {
-					logger.Debug("no findings found, skipping reporter step...")
-					return nil
+					if envRunWithoutFindings != "true" {
+						logger.Debug("no findings found, skipping reporter step...")
+						return nil
+					}
+				} else {
+					logger.With(sdklogger.LogKeyError, err.Error()).Error("reading step failed")
+					return errors.Errorf("could not read: %w", err)
 				}
-				logger.With(sdklogger.LogKeyError, err.Error()).Error("reading step failed")
-				return errors.Errorf("could not read: %w", err)
 			}
 
-			if len(findings) == 0 {
+			if len(findings) == 0 && envRunWithoutFindings != "true" {
 				logger.Debug("no findings found, skipping reporter step...")
 				return nil
 			}

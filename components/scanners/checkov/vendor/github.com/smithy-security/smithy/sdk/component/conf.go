@@ -23,6 +23,9 @@ const (
 	envVarKeyInstanceID    = "SMITHY_INSTANCE_ID"
 	// -- LOGGING
 	envVarKeyLoggingLogLevel = "SMITHY_LOG_LEVEL"
+
+	// -- Run Reporters Without findings
+	envVarKeyRunReportersWithoutFindings = "SMITHY_RUN_REPORTER_WITHOUT_FINDINGS"
 )
 
 type (
