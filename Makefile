@@ -3,6 +3,7 @@ go_test_paths:=$(go_mod_paths:go.mod=go-tests)
 go_fmt_paths:=$(go_mod_paths:go.mod=go-fmt)
 go_component_mod_paths:=$(shell find ./components -name 'go.mod' | sort -u)
 go_sdk_lib_update:=$(go_component_mod_paths:go.mod=go-sdk-update)
+go_dep_update:=$(go_component_mod_paths:go.mod=go-dep-update)
 component_root_directories:=$(shell find ./components/targets ./components/scanners ./components/enrichers ./components/reporters -maxdepth 1 -mindepth 1 -type d )
 component_patch_tags:=$(component_root_directories:=/patch-tag)
 component_minor_tags:=$(component_root_directories:=/minor-tag)
@@ -206,101 +207,37 @@ smithyctl/bin:
 				-trimpath \
 				-o ../bin/smithyctl/cmd/$(GOOS)/$(GOARCH)/smithyctl main.go
 
-component-sdk-version:
-	@if [ -z "$(COMPONENT_DIR)" ]; then \
-		echo "Error: COMPONENT_DIR is not set"; \
+check-lib-url:
+	@if [ -z "${LIB_URL}" ]; \
+	then \
+		echo >&2 "❌ Error: LIB_URL environment variable is an empty string"; \
 		false; \
-	fi
-	@if [ -f  $(COMPONENT_DIR)/go.mod ]; then \
-		grep 'github.com/smithy-security/smithy/sdk' $(COMPONENT_DIR)/go.mod | awk '{print $$2}'; \
-	else \
-		git tag -l | grep sdk | sort -r | head -n 1 | sed 's/sdk\///'; \
 	fi
 
-$(go_sdk_lib_update):
-	@if [ -z "$(SDK_VERSION)" ]; then \
-		echo "Error: SDK_VERSION is not set. Use SDK_VERSION=vX.X.X make bump-sdk-version"; \
+check-lib-version:
+	@if [ -z "${LIB_VERSION}" ]; \
+	then \
+		echo >&2 "❌ Error: LIB_VERSION environment variable is an empty string"; \
 		false; \
 	fi
-	@echo "============== Updating SDK library for $@ to $(SDK_VERSION) =============="
-	@if ! $$(grep "github.com/smithy-security/smithy/sdk" $$(dirname $@)/go.mod > /dev/null); then \
-		echo "component $$(dirname $@) doesn't have a dependency on the Smithy SDK"; \
-	else \
+
+$(go_dep_update): check-lib-url check-lib-version
+	@if $$(grep "${LIB_URL}" $$(dirname $@)/go.mod > /dev/null); \
+	then \
 		cd $$(dirname $@); \
-		go get github.com/smithy-security/smithy/sdk@$(SDK_VERSION); \
+		go get ${LIB_URL}@${LIB_VERSION}; \
 		go mod tidy; \
 		go mod vendor; \
+		echo "✅ updating $$(dirname $@) dependency ${LIB_URL} to ${LIB_VERSION}"; \
+	else \
+		echo "⚠️ component $$(dirname $@) has no dependency on ${LIB_URL}"; \
 	fi
+
+bump-go-dep: $(go_dep_update)
+	@echo "✅✅ Finished updating ${LIB_URL} to version ${LIB_VERSION} everywhere"	
 
 # Bumps the SDK to a specified version and skips
 # the github.com/smithy-security/smithy/sdk module as well as the root one.
-bump-sdk-version: $(go_sdk_lib_update)
-	@echo "============== SDK version update complete =============="
-
-list-component-tags:
-	@echo "Latest tags per component:"
-	@for component_type in reporters enrichers filters scanners targets; do \
-		if [ -d "components/$$component_type" ]; then \
-			for component in components/$$component_type/*/; do \
-				if [ -d "$$component" ]; then \
-					component_name=$$(basename "$$component"); \
-					component_path="components/$$component_type/$$component_name"; \
-					latest_tag=$$(git tag -l | grep "^$$component_path/v" | sort -V | tail -n 1); \
-					if [ -n "$$latest_tag" ]; then \
-						printf "%-50s %s\n" "$$component_path" "$$latest_tag"; \
-					else \
-						printf "%-50s %s\n" "$$component_path" "No tag found"; \
-					fi; \
-				fi; \
-			done; \
-		fi; \
-	done | sort
-
-# make tag-bump TAG_MSG="Fix minor bug" BUMP=patch
-# Bump minor version
-# make tag-bump TAG_MSG="Add new feature" BUMP=minor
-# Bump major version
-# make tag-bump TAG_MSG="Breaking change" BUMP=major
-# the extra option DRY_RUN=1 just prints the intended changes.
-bump-components:
-	@if [ -z "$(TAG_MSG)" ]; then \
-		echo "❌ Please provide a tag message using TAG_MSG=\"Your message here\""; \
-		exit 1; \
-	fi; \
-	if [ -z "$(BUMP)" ]; then \
-		BUMP=patch; \
-	fi; \
-	echo "🔧 Bumping '$${BUMP}' version for components with existing tags..."; \
-	for component_type in reporters enrichers filters scanners targets; do \
-		if [ -d "components/$$component_type" ]; then \
-			for component in components/$$component_type/*/; do \
-				if [ -d "$$component" ]; then \
-					component_name=$$(basename "$$component"); \
-					component_path="components/$$component_type/$$component_name"; \
-					latest_tag=$$(git tag -l | grep "^$$component_path/v" | sort -V | tail -n 1); \
-					if [ -n "$$latest_tag" ]; then \
-						version=$$(echo "$$latest_tag" | sed -E 's|.*/v([0-9]+)\.([0-9]+)\.([0-9]+)$$|\1 \2 \3|'); \
-						major=$$(echo "$$version" | cut -d' ' -f1); \
-						minor=$$(echo "$$version" | cut -d' ' -f2); \
-						patch=$$(echo "$$version" | cut -d' ' -f3); \
-						case "$(BUMP)" in \
-							major) major=$$((major + 1)); minor=0; patch=0 ;; \
-							minor) minor=$$((minor + 1)); patch=0 ;; \
-							patch) patch=$$((patch + 1)) ;; \
-							*) echo "❌ Invalid BUMP value: '$(BUMP)'. Use major, minor, or patch."; exit 1 ;; \
-						esac; \
-						new_tag="$$component_path/v$$major.$$minor.$$patch"; \
-						if [ "$(DRY_RUN)" = "1" ]; then \
-							echo "🔍 Would tag: $$new_tag"; \
-						else \
-							echo "🏷️  Tagging $$new_tag"; \
-							git tag "$$new_tag" -m "$(TAG_MSG)"; \
-						fi; \
-					else \
-						echo "⚠️  No existing tag for $$component_path — skipping."; \
-					fi; \
-				fi; \
-			done; \
-		fi; \
-	done
-
+bump-sdk-version:
+	$(MAKE) bump-go-dep LIB_VERSION=$$(git tag --list --sort="-version:refname" | grep sdk | head -n 1 | sed 's/sdk\///') LIB_URL="github.com/smithy-security/smithy/sdk"
+	@echo "✅✅ Smithy Go SDK version update complete"
