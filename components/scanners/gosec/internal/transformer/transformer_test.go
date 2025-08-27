@@ -15,20 +15,15 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/smithy-security/smithy/components/scanners/gosec/internal/config"
-	"github.com/smithy-security/smithy/components/scanners/gosec/internal/sarif"
 	"github.com/smithy-security/smithy/components/scanners/gosec/internal/transformer"
 )
 
 func TestGosecTransformer_Transform(t *testing.T) {
 	var (
-		ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
+		ctx, cancel = context.WithTimeout(context.Background(), time.Second)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
-		cfg         = config.Config{
-			RawOutFilePath: "./testdata/gosec.json",
-			TargetType:     transformer.TargetTypeRepository.String(),
-		}
-		nowUnix = clock.Now().Unix()
-		typeUid = int64(
+		nowUnix     = clock.Now().Unix()
+		typeUid     = int64(
 			ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
 				100 +
 				ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.Number(),
@@ -37,14 +32,25 @@ func TestGosecTransformer_Transform(t *testing.T) {
 
 	defer cancel()
 
-	sarifTransformer, err := sarif.NewTransformer("./testdata/gosec.json", clock)
-	require.NoError(t, err)
-	require.NotNil(t, sarifTransformer)
+	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
+	repositoryURL := "https://github.com/smithy-security/test"
+	targetMetadata := &ocsffindinginfo.DataSource{
+		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+			RepositoryUrl: repositoryURL,
+			Reference:     commitRef,
+		},
+	}
 
-	ocsfTransformer, err := transformer.New(sarifTransformer, cfg)
-	require.NoError(t, err)
+	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
 
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
+		cfg := config.Config{RawOutFilePath: "./testdata/gosec.json"}
+		cfg.Clock = clock
+
+		ocsfTransformer, err := transformer.New(cfg)
+		require.NoError(t, err)
+
 		findings, err := ocsfTransformer.Transform(ctx)
 		require.NoError(t, err)
 		require.NotEmpty(t, findings)
@@ -150,20 +156,10 @@ func TestGosecTransformer_Transform(t *testing.T) {
 			assert.NotEmptyf(t, findingInfo.Title, "Unexpected empty title for finding %d", idx)
 			assert.NotEmptyf(t, findingInfo.Uid, "Unexpected empty uid for finding %d", idx)
 
-			var dataSource ocsffindinginfo.DataSource
-			require.Lenf(
-				t,
-				findingInfo.DataSources,
-				1, "Unexpected number of data sources for finding %d. Expected 1",
-				idx,
-			)
-			require.NoErrorf(
-				t,
-				protojson.Unmarshal([]byte(findingInfo.DataSources[0]), &dataSource),
-				"Unexpected error unmarshaling data source for finding %d",
-				idx,
-			)
-			require.NotNilf(t, dataSource.LocationData, "Unexpected nil data source location data for finding %d", idx)
+			dataSource := ocsffindinginfo.DataSource{}
+			require.NoError(t, protojson.Unmarshal([]byte(finding.FindingInfo.DataSources[0]), &dataSource))
+			assert.Equal(t, repositoryURL, dataSource.SourceCodeMetadata.RepositoryUrl)
+			assert.Equal(t, commitRef, dataSource.SourceCodeMetadata.Reference)
 
 			require.Lenf(t, finding.Vulnerabilities, 1, "Unexpected number of vulnerabilities for finding %d. Expected 1", idx)
 			vulnerability := finding.Vulnerabilities[0]
@@ -197,28 +193,23 @@ func TestGosecTransformer_Transform(t *testing.T) {
 		}
 	})
 
-	t.Run("it should add target metadata to each finding when they are available", func(t *testing.T) {
-		commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
-		repositoryURL := "https://github.com/smithy-security/test"
-		targetMetadata := &ocsffindinginfo.DataSource{
-			SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
-				RepositoryUrl: repositoryURL,
-				Reference:     commitRef,
-			},
-		}
+	t.Run("it should not return an error if the results file is empty", func(t *testing.T) {
+		cfg := config.Config{RawOutFilePath: "./testdata/gosec.empty.json"}
+		cfg.Clock = clock
 
-		ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
+		ocsfTransformer, err := transformer.New(cfg)
+		require.NoError(t, err)
 
 		findings, err := ocsfTransformer.Transform(ctx)
-		require.NoError(t, err)
-		require.NotEmpty(t, findings)
-		require.Len(t, findings, 21)
+		assert.NoError(t, err)
+		assert.Empty(t, findings)
+	})
 
-		for _, finding := range findings {
-			dataSource := ocsffindinginfo.DataSource{}
-			require.NoError(t, protojson.Unmarshal([]byte(finding.FindingInfo.DataSources[0]), &dataSource))
-			assert.Equal(t, repositoryURL, dataSource.SourceCodeMetadata.RepositoryUrl)
-			assert.Equal(t, commitRef, dataSource.SourceCodeMetadata.Reference)
-		}
+	t.Run("it should return an error if the results file doesn't exit", func(t *testing.T) {
+		cfg := config.Config{RawOutFilePath: "./testdata/gosec.non.existent.json"}
+		cfg.Clock = clock
+
+		_, err := transformer.New(cfg)
+		require.Error(t, err)
 	})
 }

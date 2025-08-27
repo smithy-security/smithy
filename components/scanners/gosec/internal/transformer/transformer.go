@@ -3,8 +3,11 @@ package transformer
 import (
 	"context"
 	"log/slog"
+	"os"
 
 	"github.com/go-errors/errors"
+	"github.com/smithy-security/pkg/sarif"
+	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
@@ -12,8 +15,6 @@ import (
 
 	"github.com/smithy-security/smithy/components/scanners/gosec/internal/config"
 )
-
-const TargetTypeRepository TargetType = "repository"
 
 type (
 	// FindingsConverter abstracts how to convert sarif findings to OCSF.
@@ -25,9 +26,7 @@ type (
 	TargetType string
 
 	gosecTransformer struct {
-		targetType     TargetType
-		rawOutFilePath string
-		converter      FindingsConverter
+		cfg config.Config
 	}
 )
 
@@ -36,23 +35,16 @@ func (tt TargetType) String() string {
 }
 
 // New returns a new gosec transformer.
-func New(converter FindingsConverter, cfg config.Config) (*gosecTransformer, error) {
-	switch {
-	case cfg.RawOutFilePath == "":
+func New(cfg config.Config) (*gosecTransformer, error) {
+	if cfg.RawOutFilePath == "" {
 		return nil, errors.New("invalid empty raw output file")
-	case cfg.TargetType == "":
-		return nil, errors.New("invalid empty target type")
-	case converter == nil:
-		return nil, errors.New("invalid nil converter")
 	}
 
-	t := gosecTransformer{
-		converter:      converter,
-		rawOutFilePath: cfg.RawOutFilePath,
-		targetType:     TargetType(cfg.TargetType),
+	if _, err := os.Stat(cfg.RawOutFilePath); errors.Is(err, os.ErrNotExist) {
+		return nil, errors.Errorf("%s: %w", cfg.RawOutFilePath, err)
 	}
 
-	return &t, nil
+	return &gosecTransformer{cfg: cfg}, nil
 }
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
@@ -62,7 +54,38 @@ func (g *gosecTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
 
-	vulns, err := g.converter.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
+	guidProvider, err := sarif.NewBasicStableUUIDProvider()
+	if err != nil {
+		return nil, errors.Errorf("failed to initialize uuid provider: %w", err)
+	}
+
+	fileContents, err := os.ReadFile(g.cfg.RawOutFilePath)
+	if err != nil {
+		return nil, errors.Errorf("could not read file %s", g.cfg.RawOutFilePath)
+	}
+
+	if len(fileContents) == 0 {
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
+
+	var report sarifschemav210.SchemaJson
+	if err := report.UnmarshalJSON(fileContents); err != nil {
+		return nil, errors.Errorf("failed to parse raw findings output: %w", err)
+	}
+
+	converter, err := sarif.NewTransformer(
+		&report,
+		"",
+		g.cfg.Clock,
+		guidProvider,
+		true,
+		component.TargetMetadataFromCtx(ctx),
+	)
+	if err != nil {
+		return nil, errors.Errorf("could not initialise Sarif to OCSF transformer: %w", err)
+	}
+
+	vulns, err := converter.ToOCSF(ctx)
 	switch {
 	case err != nil:
 		return nil, errors.Errorf("failed to parse raw gosec findings: %w", err)
