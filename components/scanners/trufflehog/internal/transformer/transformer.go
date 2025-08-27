@@ -13,13 +13,12 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/pkg/env"
+	"github.com/smithy-security/pkg/utils"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
-
-	"github.com/smithy-security/smithy/components/scanners/trufflehog/internal/util/ptr"
 )
 
 type (
@@ -240,15 +239,15 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 
 		vulns = append(vulns,
 			&ocsf.VulnerabilityFinding{
-				ActivityName: ptr.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
+				ActivityName: utils.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
 				ActivityId:   ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
 				CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
 				ClassUid:     ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING,
-				ClassName:    ptr.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
+				ClassName:    utils.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
 
 				Confidence:   &confidence,
-				ConfidenceId: ptr.Ptr(ocsf.VulnerabilityFinding_ConfidenceId(confidenceID)),
-				Count:        ptr.Ptr(int32(1)),
+				ConfidenceId: utils.Ptr(ocsf.VulnerabilityFinding_ConfidenceId(confidenceID)),
+				Count:        utils.Ptr(int32(1)),
 				Message:      &description,
 				FindingInfo: &ocsf.FindingInfo{
 					CreatedTime: &now,
@@ -259,15 +258,15 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 					FirstSeenTime: &now,
 					LastSeenTime:  &now,
 					ModifiedTime:  &now,
-					ProductUid:    ptr.Ptr("trufflehog"),
+					ProductUid:    utils.Ptr("trufflehog"),
 					Title:         fmt.Sprintf("%s\n%s:%s", finding.SourceName, finding.DecoderName, finding.DetectorName),
 					Uid:           fmt.Sprintf("%d:%d:%d", finding.SourceID, finding.SourceType, finding.DetectorType),
 				},
-				Severity:   ptr.Ptr(ocsf.VulnerabilityFinding_SeverityId_name[int32(ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN)]),
+				Severity:   utils.Ptr(ocsf.VulnerabilityFinding_SeverityId_name[int32(ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN)]),
 				SeverityId: ocsf.VulnerabilityFinding_SeverityId(ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN),
 				StartTime:  &now,
-				Status:     ptr.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW.String()),
-				StatusId:   ptr.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW),
+				Status:     utils.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW.String()),
+				StatusId:   utils.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW),
 				Time:       now,
 				TypeUid: int64(
 					ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
@@ -277,17 +276,17 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 				Vulnerabilities: []*ocsf.Vulnerability{
 					{
 
-						Severity:     ptr.Ptr(ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN.String()),
+						Severity:     utils.Ptr(ocsf.VulnerabilityFinding_SEVERITY_ID_UNKNOWN.String()),
 						AffectedCode: []*ocsf.AffectedCode{affectedCode},
 						Cwe: &ocsf.Cwe{
-							SrcUrl:  ptr.Ptr("https://cwe.mitre.org/data/definitions/798.html"),
+							SrcUrl:  utils.Ptr("https://cwe.mitre.org/data/definitions/798.html"),
 							Uid:     "798",
-							Caption: ptr.Ptr("Use of Hard-coded Credentials"),
+							Caption: utils.Ptr("Use of Hard-coded Credentials"),
 						},
 						Desc:          &description,
 						FirstSeenTime: &now,
 						LastSeenTime:  &now,
-						Title:         ptr.Ptr(fmt.Sprintf("%s\n%s:%s", finding.SourceName, finding.DecoderName, finding.DetectorName)),
+						Title:         utils.Ptr(fmt.Sprintf("%s\n%s:%s", finding.SourceName, finding.DecoderName, finding.DetectorName)),
 					},
 				},
 			})
@@ -325,9 +324,9 @@ func (t *trufflehogTransformer) mapAffectedCode(location TrufflehogOut) *ocsf.Af
 	if location.SourceMetadata.Data.Filesystem.File != "" {
 		result.File = &ocsf.File{
 			Name: filepath.Base(location.SourceMetadata.Data.Filesystem.File),
-			Path: ptr.Ptr(fmt.Sprintf("file://%s", location.SourceMetadata.Data.Filesystem.File)),
+			Path: utils.Ptr(fmt.Sprintf("file://%s", location.SourceMetadata.Data.Filesystem.File)),
 		}
-		result.StartLine = ptr.Ptr(int32(location.SourceMetadata.Data.Filesystem.Line))
+		result.StartLine = utils.Ptr(int32(location.SourceMetadata.Data.Filesystem.Line))
 	}
 	return &result
 }
