@@ -1,9 +1,3 @@
-# Developer vars
-# The following variables are used to define the developer environment
-# e.g. what are the test packages, or the latest tag, these are used by make targets that build things
-latest_tag=$(shell git tag --list --sort="-version:refname" | head -n 1)
-commits_since_latest_tag=$(shell git log --oneline $(latest_tag)..HEAD | wc -l)
-# /components/producers/golang-nancy/examples is ignored as it's an example of a vulnerable go.mod.
 go_mod_paths=$(shell find . -name 'go.mod' | sort -u)
 go_test_paths=$(go_mod_paths:go.mod=go-tests)
 go_fmt_paths=$(go_mod_paths:go.mod=go-fmt)
@@ -22,8 +16,6 @@ go_test_out_dir=$(shell pwd)/tests/output
 # e.g. what are the versions of the components, or the container registry, these are used by make targets that deploy things
 CONTAINER_REPO=ghcr.io/smithy-security/smithy
 SOURCE_CODE_REPO=https://github.com/smithy-security/smithy
-SMITHY_DEV_VERSION=$(shell echo $(latest_tag)$$([ $(commits_since_latest_tag) -eq 0 ] || echo "-$$(git log -n 1 --pretty='format:%h')" )$$([ -z "$$(git status --porcelain=v1 2>/dev/null)" ] || echo "-dirty" ))
-SMITHY_VERSION=$(shell (echo $(CONTAINER_REPO) | grep -q '^ghcr' && echo $(latest_tag)) || echo $(SMITHY_DEV_VERSION) )
 
 CTR_CLI=docker
 BUF_CONTAINER=buf:local
