@@ -148,9 +148,17 @@ func (g *sobelowTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabili
 		return nil, errors.Errorf("failed to create guid provider: %w", err)
 	}
 
-	transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true)
+	transformer, err := sarif.NewTransformer(
+		&report,
+		"",
+		g.clock,
+		guidProvider,
+		true,
+		component.TargetMetadataFromCtx(ctx),
+	)
 	if err != nil {
 		return nil, err
 	}
-	return transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
+
+	return transformer.ToOCSF(ctx)
 }
