@@ -202,7 +202,7 @@ type UpdateFindingsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// id is the uuid associated with a  group of findings.
+	// id is the uuid associated with a group of findings.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// findings is an array of vulnerability findings.
 	Findings []*Finding `protobuf:"bytes,2,rep,name=findings,proto3" json:"findings,omitempty"`
