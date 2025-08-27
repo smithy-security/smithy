@@ -157,11 +157,12 @@ func (g *mobSFTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 		g.clock,
 		guidProvider,
 		true,
+		component.TargetMetadataFromCtx(ctx),
 	)
 	if err != nil {
 		return nil, err
 	}
-	ocsfVulns, err := transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
+	ocsfVulns, err := transformer.ToOCSF(ctx)
 	if err != nil {
 		return nil, err
 	}
