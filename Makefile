@@ -162,6 +162,8 @@ $(component_patch_tags): check-branch check-tag-message
 		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
 
+bump-all-patch-tags: check-branch check-tag-message $(component_patch_tags)
+
 $(component_minor_tags): SHELL:=/bin/bash
 $(component_minor_tags): check-branch check-tag-message
 	$(shell \
@@ -172,6 +174,8 @@ $(component_minor_tags): check-branch check-tag-message
 		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
 
+bump-all-minor-tags: check-branch check-tag-message $(component_minor_tags)
+
 $(component_major_tags): SHELL:=/bin/bash
 $(component_major_tags): check-branch check-tag-message
 	$(shell \
@@ -181,6 +185,8 @@ $(component_major_tags): check-branch check-tag-message
 		echo "tagging commit with $${commit_tag}" > /dev/stderr; \
 		git tag "$${commit_tag}" -m "${TAG_MESSAGE}"; \
 	)
+
+bump-all-major-tags: check-branch check-tag-message $(component_major_tags)
 
 ########################################
 ############## SDK HELPERS #############
