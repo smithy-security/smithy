@@ -126,7 +126,7 @@ github.com/smithy-security/pkg/env
 # github.com/smithy-security/pkg/utils v0.0.2
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/utils
-# github.com/smithy-security/smithy/sdk v0.0.18-alpha
+# github.com/smithy-security/smithy/sdk v0.0.19-alpha
 ## explicit; go 1.23.2
 github.com/smithy-security/smithy/sdk
 github.com/smithy-security/smithy/sdk/component
