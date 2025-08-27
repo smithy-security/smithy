@@ -6,8 +6,8 @@ require (
 	github.com/go-errors/errors v1.5.1
 	github.com/jonboulle/clockwork v0.5.0
 	github.com/smithy-security/pkg/env v0.0.3
-	github.com/smithy-security/pkg/sarif v0.0.8
-	github.com/smithy-security/smithy/sdk v0.0.18-alpha
+	github.com/smithy-security/pkg/sarif v0.0.11
+	github.com/smithy-security/smithy/sdk v0.0.19-alpha
 	github.com/stretchr/testify v1.10.0
 	google.golang.org/protobuf v1.36.6
 )

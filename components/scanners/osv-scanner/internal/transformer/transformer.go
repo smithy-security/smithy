@@ -141,12 +141,13 @@ func (b *OSVScannerTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 		b.clock,
 		guidProvider,
 		false,
+		component.TargetMetadataFromCtx(ctx),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	vulns, err := transformer.ToOCSF(ctx, component.TargetMetadataFromCtx(ctx))
+	vulns, err := transformer.ToOCSF(ctx)
 	if err != nil {
 		return nil, err
 	}
