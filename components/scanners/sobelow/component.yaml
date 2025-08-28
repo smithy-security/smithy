@@ -9,7 +9,7 @@ steps:
       - -c
       - /entrypoint.sh {{ sourceCodeWorkspace }} {{ scratchWorkspace }}/sobelow.out.sarif.json
   - name: parser
-    image: components/scanners/sobelow
+    image: components/scanners/sobelow/parser
     env_vars:
       SOBELOW_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/sobelow.out.sarif.json"
     executable: /bin/app

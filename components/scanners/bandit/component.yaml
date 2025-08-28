@@ -12,7 +12,7 @@ steps:
       -  --output={{ scratchWorkspace }}/bandit.json
       - --exit-zero   
   - name: parser
-    image: components/scanners/bandit
+    image: components/scanners/bandit/parser
     executable: /bin/app
     env_vars:
       BANDIT_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/bandit.json"

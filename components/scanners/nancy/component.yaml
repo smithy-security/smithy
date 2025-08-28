@@ -9,7 +9,7 @@ steps:
       - -c
       - /entrypoint.sh {{ sourceCodeWorkspace }} {{ scratchWorkspace }}/nancy.out.json
   - name: parser
-    image: components/scanners/nancy
+    image: components/scanners/nancy/parser
     env_vars:
       NANCY_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/nancy.out.json"
       NANCY_SCANNED_PROJECT_ROOT: "{{ sourceCodeWorkspace }}"

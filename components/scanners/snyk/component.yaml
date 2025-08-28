@@ -30,7 +30,7 @@ steps:
       - --sarif-file-output={{scratchWorkspace}}/snyk.out
       - "{{sourceCodeWorkspace}}/"
   - name: parser
-    image: "components/scanners/snyk"
+    image: "components/scanners/snyk/parser"
     executable: /bin/app
     env_vars:
       RAW_OUT_FILE_PATH: "{{scratchWorkspace}}/snyk.out"

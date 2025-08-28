@@ -9,7 +9,7 @@ steps:
       - -c
       - /entrypoint.sh {{ sourceCodeWorkspace }} {{ scratchWorkspace }}/credo.out.sarif.json
   - name: parser
-    image: components/scanners/credo
+    image: components/scanners/credo/parser
     env_vars:
       CREDO_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/credo.out.sarif.json"
     executable: /bin/app
