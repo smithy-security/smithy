@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-errors/errors"
 
-	"github.com/smithy-security/smithy/components/scanner/nancy/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanner/nancy/parser/internal/transformer"
 	"github.com/smithy-security/smithy/sdk/component"
 )
 
