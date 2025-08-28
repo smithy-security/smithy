@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/smithy-security/smithy/components/scanners/zaproxy/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/zaproxy/parser/internal/transformer"
 )
 
 func TestZapTransformer_Transform(t *testing.T) {

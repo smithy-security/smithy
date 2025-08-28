@@ -50,7 +50,7 @@ steps:
       STARTUP_CHECK_RETRIES: "{{ .parameters.startup_check_retries }}"
       STARTUP_CHECK_INTERVAL: "{{ .parameters.startup_check_interval }}"
   - name: parser
-    image: components/scanners/zaproxy
+    image: components/scanners/zaproxy/parser
     executable: /bin/app
     env_vars:
       ZAP_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/zap-report.json"
