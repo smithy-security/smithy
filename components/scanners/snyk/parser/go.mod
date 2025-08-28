@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/components/scanners/snyk
+module github.com/smithy-security/smithy/components/scanners/snyk/parser
 
 go 1.23.4
 
