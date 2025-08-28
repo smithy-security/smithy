@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/components/scanners/sobelow
+module github.com/smithy-security/smithy/components/scanners/sobelow/parser
 
 go 1.23.4
 
