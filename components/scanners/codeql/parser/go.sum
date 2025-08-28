@@ -143,6 +143,8 @@ github.com/smithy-security/pkg/sarif v0.0.11 h1:mzUR1iGgyLum//t1hrecdnz25S4KCRRf
 github.com/smithy-security/pkg/sarif v0.0.11/go.mod h1:fMNL2Uk1fxAAPd4uLUH+zTZ8Fc56rzRmUY2PX2t0X2c=
 github.com/smithy-security/pkg/utils v0.0.2 h1:r1Gz5eki8xUJXShw4i5ZaizkiKgZlYNYtKE2PDwpoHQ=
 github.com/smithy-security/pkg/utils v0.0.2/go.mod h1:bzCtRv/q9BdCrALRkcWWW3y8DzugbZrEQPwgZ/iepig=
+github.com/smithy-security/smithy/components/scanners/codeql v1.4.5 h1:/bPdE5NlK+6IH6yky4I2GLseVdOKsFa+UKWxPFuXLYk=
+github.com/smithy-security/smithy/components/scanners/codeql v1.4.5/go.mod h1:W3/98Pl15S+9vTQNtrIYJKfcynKrs657f6z+KcdYrKY=
 github.com/smithy-security/smithy/sdk v0.0.19-alpha h1:c+DKDLMNmv6dMu2QQyLUou/Rxx+4c73aO8jmEEK16Pw=
 github.com/smithy-security/smithy/sdk v0.0.19-alpha/go.mod h1:LCAaXngqSGyozw+MzZpdF/lj6TwB3JPjNm2euOh9kb0=
 github.com/spf13/cast v1.3.1/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=

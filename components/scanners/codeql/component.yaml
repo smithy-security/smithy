@@ -10,7 +10,7 @@ steps:
       - -scratch-location={{ scratchWorkspace }}
       - -source-location={{ sourceCodeWorkspace }}
   - name: parser
-    image: components/scanners/codeql
+    image: components/scanners/codeql/parser
     env_vars:
       CODEQL_RAW_OUT_FILE_GLOB: "{{ scratchWorkspace }}/*.sarif.json"
     executable: /bin/app
