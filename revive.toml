@@ -11,3 +11,5 @@ enableAllRules = true
     arguments = [150,0]
 [rule.cognitive-complexity]
     arguments = [20]
+[directive.exclude-dirs]
+    directories = ["vendor", "generated", "testdata", "gen"]
