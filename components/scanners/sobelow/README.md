@@ -1,7 +1,7 @@
-# Credo
+# Sobelow
 
 This component implements a [scanner](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
-that parses json reports output by [credo](https://github.com/rrrene/credo/) into [ocsf](https://github.com/ocsf) format.
+that parses json reports output by [sobelow](https://github.com/nccgroup/sobelow) into [ocsf](https://github.com/ocsf) format.
 
 ## Environment variables
 
@@ -13,4 +13,4 @@ as the following:
 
 | Environment Variable     | Type   | Required | Default    | Description                                             |
 |--------------------------|--------|----------|------------|---------------------------------------------------------|
-| CREDO\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the sarif report                 |
+| SOBELOW\_RAW\_OUT\_FILE\_PATH | string | yes      | -          | The path where to find the sarif report                 |
