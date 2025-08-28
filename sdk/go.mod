@@ -1,6 +1,6 @@
 module github.com/smithy-security/smithy/sdk
 
-go 1.23.2
+go 1.23.4
 
 require (
 	ariga.io/atlas v0.29.0
