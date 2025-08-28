@@ -11,7 +11,7 @@ steps:
       - -c
       - /entrypoint.sh scan source -r --format=sarif --call-analysis=true {{ sourceCodeWorkspace }}
   - name: parser
-    image: components/scanners/osv-scanner
+    image: components/scanners/osv-scanner/parser
     env_vars:
       RAW_OUT_FILE: "{{ scratchWorkspace }}/output.json"
       SCANNED_PROJECT_ROOT: "{{ sourceCodeWorkspace }}"

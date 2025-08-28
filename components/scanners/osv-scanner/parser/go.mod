@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/components/scanners/osv-scanner
+module github.com/smithy-security/smithy/components/scanners/osv-scanner/parser
 
 go 1.23.4
 

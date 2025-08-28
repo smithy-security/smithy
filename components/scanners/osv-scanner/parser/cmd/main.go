@@ -9,7 +9,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 
-	"github.com/smithy-security/smithy/components/scanners/osv-scanner/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/osv-scanner/parser/internal/transformer"
 )
 
 func main() {
