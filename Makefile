@@ -242,3 +242,15 @@ bump-go-dep: $(go_dep_update)
 bump-sdk-version:
 	$(MAKE) bump-go-dep LIB_VERSION=$$(git tag --list --sort="-version:refname" | grep sdk | head -n 1 | sed 's/sdk\///') LIB_URL="github.com/smithy-security/smithy/sdk"
 	@echo "✅✅ Smithy Go SDK version update complete"
+
+component-sdk-version:
+	@if [ -z "$(COMPONENT_DIR)" ]; then \
+		echo "Error: COMPONENT_DIR is not set"; \
+		false; \
+	fi
+
+	@if [ -f  $(COMPONENT_DIR)/go.mod ]; then \
+		grep 'github.com/smithy-security/smithy/sdk' $(COMPONENT_DIR)/go.mod | awk '{print $$2}'; \
+	else \
+		git tag -l | grep sdk | sort -r | head -n 1 | sed 's/sdk\///'; \
+	fi
