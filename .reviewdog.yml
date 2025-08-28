@@ -1,37 +1,35 @@
 ---
 runner:
   go/vet:
-    cmd: go vet $(go list ./... | grep -v vendor | grep -v smithy/deprecated-components | grep -v smithy/api/proto)
+    cmd: make --quiet go-lint-vet
     format: govet
 
   go/staticcheck:
-    cmd: staticcheck -checks "all,-SA1019,-ST1000" $(go list ./... | grep -v vendor | grep -v smithy/deprecated-components | grep -v smithy/api/proto)
+    cmd: make --quiet go-lint-staticcheck
     format: staticcheck
 
   go/revive:
-    cmd: |
-      CONFIG_FILE="$(pwd)/revive.toml" find ./components/ -name go.mod -type f -exec bash -c 'cd $(dirname {}) &&
-      revive -exclude ./vendor/... -config ${CONFIG_FILE} ./...' \;
+    cmd: make --quiet go-lint-revive
     errorformat:
       - '%f:%l:%c: %m'
  
   go/containedctx:
-    cmd: go vet -vettool=$(which containedctx) $(go list ./... | grep -v vendor | grep -v smithy/deprecated-components | grep -v smithy/api/proto)
+    cmd: make --quiet go-lint-containedctx
     errorformat:
       - '%f:%l:%c: %m'
 
   go/ineffassign:
-    cmd: ineffassign $(go list ./... | grep -v vendor | grep -v smithy/deprecated-components | grep -v smithy/api/proto)
+    cmd: make --quiet go-lint-ineffassign
     errorformat:
       - '%f:%l:%c: %m'
 
   go/errorlint:
-    cmd: go-errorlint -errorf-multi -errorf -test $(go list ./... | grep -v vendor | grep -v smithy/deprecated-components | grep -v smithy/api/proto)
+    cmd:  make --quiet go-lint-errorlint
     errorformat:
       - '%f:%l:%c: %m'
 
   go/errcheck:
-    cmd: errcheck -asserts -blank $(go list ./... | grep -v vendor | grep -v smithy/deprecated-components | grep -v smithy/api/proto)
+    cmd: make --quiet go-lint-errchecks
     errorformat:
       - '%f:%l:%c:%m'
 
@@ -41,7 +39,7 @@ runner:
     format: remark-lint
 
   misspell:
-    cmd: git ls-files | grep -v '.lock' | grep -v vendor | xargs misspell -- -error -locale UK -i "color"
+    cmd: git ls-files | grep -v '.lock' | grep -v vendor | grep -v gen | grep -v testdata | xargs misspell -- -error -locale UK -i "color"
     errorformat:
       - '%E%f:%l:%c: %m'
     level: info

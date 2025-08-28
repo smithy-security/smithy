@@ -1,6 +1,4 @@
 go_mod_paths:=$(shell find . -name 'go.mod' | sort -u)
-go_test_paths:=$(go_mod_paths:go.mod=go-tests)
-go_fmt_paths:=$(go_mod_paths:go.mod=go-fmt)
 go_component_mod_paths:=$(shell find ./components -name 'go.mod' | sort -u)
 go_sdk_lib_update:=$(go_component_mod_paths:go.mod=go-sdk-update)
 go_dep_update:=$(go_component_mod_paths:go.mod=go-dep-update)
@@ -29,9 +27,14 @@ export
 ######### CODE QUALITY TARGETS #########
 ########################################
 
-.PHONY: lint install-lint-tools tests test-go fmt fmt-proto fmt-go install-go-fmt-tools py-tests py-tests-sdk-python update-poetry-pkgs-sdk-python fmt-py-sdk-python py-lint py-lint-sdk-python 
+.PHONY: lint install-lint-tools tests test-go fmt fmt-proto fmt-go install-go-fmt-tools \
+		py-tests py-tests-sdk-python update-poetry-pkgs-sdk-python fmt-py-sdk-python \
+		py-lint py-lint-sdk-python
 
-install-misspell:
+list-module-paths:
+	@find . -name 'go.mod' | tr ' ' '\n' | sed 's/^\.\///' | sed 's/go.mod//' | sort -u | xargs -I{} echo "$$(pwd)/{}"
+
+install-misspell:w
 	@go install github.com/client9/misspell/cmd/misspell@latest
 
 install-reviewdog:
@@ -40,26 +43,76 @@ install-reviewdog:
 py-lint-sdk-python: update-poetry-pkgs-sdk-python install-misspell install-reviewdog
 	@reviewdog -fail-level=error $$([ "${CI}" = "true" ] && echo "-reporter=github-pr-review") -diff="git diff origin/main" -filter-mode=added -tee -runners black,misspell $(REVIEWDOG_EXTRA_FLAGS)
 
-
 py-lint: py-lint-sdk-python
 
+go_errchecks:=$(go_mod_paths:go.mod=go-errcheck)
+
+$(go_errchecks):
+	@cd $$(dirname $@) && errcheck -asserts -blank $$(go list ./... | grep -v "/gen/") | xargs -r -0 -d'\n' -I{} echo "$$(dirname $@)/{}"
+
+go-lint-errchecks: $(go_errchecks)
+
+go_errorlint:=$(go_mod_paths:go.mod=go-errorlint)
+
+$(go_errorlint):
+	@cd $$(dirname $@) && go-errorlint -errorf-multi -errorf -test $$(go list ./... | grep -v "/gen/") || true
+
+go-lint-errorlint: $(go_errorlint)
+
+go_ineffassign:=$(go_mod_paths:go.mod=go-ineffassign)
+
+$(go_ineffassign):
+	@cd $$(dirname $@) && ineffassign $$(go list ./... | grep -v "/gen/") || true
+
+go-lint-ineffassign: $(go_ineffassign)
+
+go_containedctx:=$(go_mod_paths:go.mod=go-containedctx)
+
+$(go_containedctx):
+	@cd $$(dirname $@) && go vet -vettool=$$(which containedctx) $$(go list ./... | grep -v "/gen/")
+
+go-lint-containedctx: $(go_containedctx)
+
+go_vet:=$(go_mod_paths:go.mod=go-vet)
+
+$(go_vet):
+	@cd $$(dirname $@) && go vet $$(go list ./... | grep -v "/gen/") 2>&1 | grep -v '#' | xargs -r -0 -d'\n' -I{} echo "$$(dirname $@)/{}" || true
+
+go-lint-vet: $(go_vet)
+
+go_staticcheck:=$(go_mod_paths:go.mod=go-staticcheck)
+
+$(go_staticcheck):
+	@cd $$(dirname $@) && staticcheck -checks "all,-SA1019,-ST1000" $$(go list ./... | grep -v "/gen/") | sed 's/\t//' | xargs -r -0 -d'\n' -I{} echo "$$(dirname $@)/{}" || true
+
+go-lint-staticcheck: $(go_staticcheck)
+
+go_revive:=$(go_mod_paths:go.mod=go-revive)
+
+$(go_revive):
+	CONFIG_FILE="$$(pwd)/revive.toml" && cd $$(dirname $@) && revive -config $${CONFIG_FILE} ./... | grep -v "^$$" | xargs -r -0 -d'\n' -I{} echo "$$(dirname $@)/{}" || true
+
+go-lint-revive: $(go_revive)
+
 lint:
-# we need to redirect stderr to stdout because Github actions don't capture the stderr lolz
-	@reviewdog -fail-level=any -diff="git diff origin/main" -filter-mode=added 2>&1
+# we need to redirect stderr to stdout because GitHub actions don't capture the stderr lolz
+	@reviewdog -fail-level=any -diff="git diff origin/main" -tee -filter-mode=added 2>&1
 
 install-lint-tools:
-	GOTOOLCHAIN=$$(go env GOVERSION) go install honnef.co/go/tools/cmd/staticcheck@2024.1.1
+	GOTOOLCHAIN=$$(go env GOVERSION) go install honnef.co/go/tools/cmd/staticcheck@2025.1.1
 	@go install github.com/mgechev/revive@v1.6.0
-	@go install github.com/sivchari/containedctx/cmd/containedctx@latest
-	@go install github.com/gordonklaus/ineffassign@latest
-	@go install github.com/polyfloyd/go-errorlint@latest
-	@go install github.com/kisielk/errcheck@latest
-	@go install github.com/rhysd/actionlint/cmd/actionlint@latest
-	@go install github.com/client9/misspell/cmd/misspell@latest
+	@go install github.com/sivchari/containedctx/cmd/containedctx@v1.0.3
+	@go install github.com/gordonklaus/ineffassign@v0.2.0
+	@go install github.com/polyfloyd/go-errorlint@v1.8.0
+	@go install github.com/kisielk/errcheck@v1.9.0
+	@go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+	@go install github.com/client9/misspell/cmd/misspell@v0.3.4
 	@npm ci
 
 install-go-test-tools:
 	@go install gotest.tools/gotestsum@latest
+
+go_test_paths:=$(go_mod_paths:go.mod=go-tests)
 
 $(go_test_paths):
 	@mkdir -p tests/output
@@ -84,6 +137,8 @@ tests: test-go
 install-go-fmt-tools:
 	@go install github.com/bufbuild/buf/cmd/buf@v1.45.0
 	@go install golang.org/x/tools/cmd/goimports@v0.31.0
+
+go_fmt_paths:=$(go_mod_paths:go.mod=go-fmt)
 
 $(go_fmt_paths):
 	@echo "============== Tidying up Go files for package $$(dirname $@) =============="
