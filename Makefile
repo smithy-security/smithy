@@ -137,7 +137,8 @@ dep-update-proto: build-buf-container
 ########################################
 ########### RELEASE UTILITIES ##########
 ########################################
-.PHONY: check-branch check-tag-message
+
+.PHONY: check-branch check-tag-message bump-all-patch-tags bump-all-minor-tags bump-all-major-tags
 
 check-branch:
 	@if [ $$(git branch --show-current | tr -d '\n') != "main" ]; \
@@ -192,8 +193,8 @@ bump-all-major-tags: check-branch check-tag-message $(component_major_tags)
 ########################################
 ############## SDK HELPERS #############
 ########################################
-# new targets for components and smithyctl
-.PHONY: smithyctl/bin component-sdk-version bump-sdk-version list-component-tags bump-components
+
+.PHONY: smithyctl/bin check-lib-url check-lib-version bump-go-dep bump-sdk-version
 
 smithyctl/bin:
 	$(eval GOOS:=linux)
@@ -233,11 +234,11 @@ $(go_dep_update): check-lib-url check-lib-version
 		echo "⚠️ component $$(dirname $@) has no dependency on ${LIB_URL}"; \
 	fi
 
+# Bumps a specific dependency to a version for all components that use it
 bump-go-dep: $(go_dep_update)
 	@echo "✅✅ Finished updating ${LIB_URL} to version ${LIB_VERSION} everywhere"	
 
-# Bumps the SDK to a specified version and skips
-# the github.com/smithy-security/smithy/sdk module as well as the root one.
+# Bumps the SDK dependencies to the latest version of the Smithy SDK based on the tags present in the repo
 bump-sdk-version:
 	$(MAKE) bump-go-dep LIB_VERSION=$$(git tag --list --sort="-version:refname" | grep sdk | head -n 1 | sed 's/sdk\///') LIB_URL="github.com/smithy-security/smithy/sdk"
 	@echo "✅✅ Smithy Go SDK version update complete"
