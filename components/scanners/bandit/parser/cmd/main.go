@@ -9,7 +9,7 @@ import (
 
 	"github.com/smithy-security/smithy/sdk/component"
 
-	"github.com/smithy-security/smithy/components/scanners/bandit/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/bandit/parser/internal/transformer"
 )
 
 func main() {

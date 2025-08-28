@@ -12,13 +12,12 @@ import (
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/pkg/env"
+	"github.com/smithy-security/pkg/utils"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
-
-	"github.com/smithy-security/smithy/components/scanners/bandit/internal/util/ptr"
 )
 
 type (
@@ -78,6 +77,8 @@ var (
 	ErrEmptyRawOutfileContents = errors.Errorf("empty raw out file contents")
 	// ErrBadTargetType is thrown when the option set target type is called with an unspecified or empty target type
 	ErrBadTargetType = errors.New("invalid empty target type")
+	// ErrFileNotFound is thrown when the raw output file is not found
+	ErrFileNotFound = errors.Errorf("raw output file not found")
 
 	// Bandit Parser Specific Errors
 
@@ -174,10 +175,16 @@ func (b *BanditTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 		inFile, err := os.ReadFile(b.rawOutFilePath)
 		if err != nil {
 			if os.IsNotExist(err) {
-				return nil, errors.Errorf("raw output file '%s' not found", b.rawOutFilePath)
+				return nil, errors.Errorf("%w: %s Original Error: %w", ErrFileNotFound, b.rawOutFilePath, err)
 			}
 			return nil, errors.Errorf("failed to read raw output file '%s': %w", b.rawOutFilePath, err)
 		}
+
+		if len(inFile) == 0 {
+			logger.Info("Scanner SARIF file is empty, exiting")
+			return []*ocsf.VulnerabilityFinding{}, nil
+		}
+
 		b.fileContents = inFile
 	}
 	var results BanditOut
@@ -218,25 +225,25 @@ func (b *BanditTransformer) parseResult(ctx context.Context, r *BanditResult) (*
 	}
 
 	return &ocsf.VulnerabilityFinding{
-		ActivityName: ptr.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
+		ActivityName: utils.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
 		ActivityId:   ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE,
 		CategoryUid:  ocsf.VulnerabilityFinding_CATEGORY_UID_FINDINGS,
 		ClassUid:     ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING,
-		ClassName:    ptr.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
+		ClassName:    utils.Ptr(ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.String()),
 
 		Confidence:   &confidence,
-		ConfidenceId: ptr.Ptr(ocsf.VulnerabilityFinding_ConfidenceId(confidenceID)),
-		Count:        ptr.Ptr(int32(1)),
+		ConfidenceId: utils.Ptr(ocsf.VulnerabilityFinding_ConfidenceId(confidenceID)),
+		Count:        utils.Ptr(int32(1)),
 		FindingInfo: &ocsf.FindingInfo{
 			CreatedTime: &now,
 			DataSources: []string{
 				dataSource,
 			},
-			Desc:          ptr.Ptr(fmt.Sprintf("%s:%s", r.TestName, r.IssueText)),
+			Desc:          utils.Ptr(fmt.Sprintf("%s:%s", r.TestName, r.IssueText)),
 			FirstSeenTime: &now,
 			LastSeenTime:  &now,
 			ModifiedTime:  &now,
-			ProductUid:    ptr.Ptr("bandit"),
+			ProductUid:    utils.Ptr("bandit"),
 			Title:         r.IssueText,
 			Uid:           r.TestID,
 		},
@@ -244,8 +251,8 @@ func (b *BanditTransformer) parseResult(ctx context.Context, r *BanditResult) (*
 		Severity:   &severity,
 		SeverityId: ocsf.VulnerabilityFinding_SeverityId(severityID),
 		StartTime:  &now,
-		Status:     ptr.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW.String()),
-		StatusId:   ptr.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW),
+		Status:     utils.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW.String()),
+		StatusId:   utils.Ptr(ocsf.VulnerabilityFinding_STATUS_ID_NEW),
 		Time:       now,
 		TypeUid: int64(
 			ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
@@ -261,7 +268,7 @@ func (b *BanditTransformer) parseResult(ctx context.Context, r *BanditResult) (*
 				LastSeenTime:  &now,
 				Severity:      &severity,
 				Title:         &r.IssueText,
-				VendorName:    ptr.Ptr("bandit"),
+				VendorName:    utils.Ptr("bandit"),
 			},
 		},
 	}, nil
@@ -274,11 +281,11 @@ func (*BanditTransformer) mapCode(r *BanditResult) ([]*ocsf.AffectedCode, error)
 	}
 	ac = append(ac,
 		&ocsf.AffectedCode{
-			EndLine:   ptr.Ptr(int32(r.LineRange[0])),
-			StartLine: ptr.Ptr(int32(r.LineRange[len(r.LineRange)-1])),
+			EndLine:   utils.Ptr(int32(r.LineRange[0])),
+			StartLine: utils.Ptr(int32(r.LineRange[len(r.LineRange)-1])),
 			File: &ocsf.File{
 				Name: filepath.Base(r.Filename),
-				Path: ptr.Ptr(fmt.Sprintf("file://%s", r.Filename)),
+				Path: utils.Ptr(fmt.Sprintf("file://%s", r.Filename)),
 			},
 		},
 	)
