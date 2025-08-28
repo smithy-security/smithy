@@ -126,6 +126,11 @@ func (g *kicsTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityF
 		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
 	}
 
+	if len(b) == 0 {
+		logger.Debug("no findings to parse, skipping")
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
+
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw kics output: %w", err)

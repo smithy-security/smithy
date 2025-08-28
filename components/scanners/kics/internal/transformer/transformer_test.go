@@ -3,6 +3,8 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -212,5 +214,35 @@ func TestKicsTransformer_Transform(t *testing.T) {
 			assert.NotEmptyf(t, affectedCode.File.Name, "Unexpected empty file name for vulnerability for finding %d", idx)
 			assert.NotNilf(t, affectedCode.StartLine, "Unexpected nil start line for vulnerability for finding %d", idx)
 		}
+	})
+	t.Run("it should NOT return an error if the raw output file is empty", func(t *testing.T) {
+		emptyFilePath := filepath.Join(t.TempDir(), "empty-output.json.sarif")
+		require.NoError(t, os.WriteFile(emptyFilePath, []byte(""), 0o644))
+
+		ocsfTransformer, err := transformer.New(
+			transformer.KicsRawOutFilePath(emptyFilePath),
+			transformer.KicsTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.KicsTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings)
+	})
+
+	t.Run("it should return an error if the raw output file does not exist", func(t *testing.T) {
+		nonExistentFilePath := "./testdata/nonexistent-output.json.sarif"
+		ocsfTransformer, err := transformer.New(
+			transformer.KicsRawOutFilePath(nonExistentFilePath),
+			transformer.KicsTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.KicsTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.Error(t, err)
+		assert.Nil(t, findings)
+		assert.Contains(t, err.Error(), "raw output file './testdata/nonexistent-output.json.sarif' not found")
 	})
 }
