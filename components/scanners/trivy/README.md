@@ -1,4 +1,4 @@
-# trivy
+# trivy v0.65.0 Scanner
 
 This component implements a [scanner](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
 that parses [sarif](https://sarifweb.azurewebsites.net/) reports output
