@@ -1,4 +1,4 @@
-# Snyk
+# Snyk v1.1296.1 Scanner
 
 This component implements a [scanner](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
 that parses [sarif](https://sarifweb.azurewebsites.net/) reports output
