@@ -2,8 +2,6 @@ module github.com/smithy-security/smithy
 
 go 1.23.4
 
-toolchain go1.23.7
-
 require (
 	github.com/abice/go-enum v0.6.0
 	github.com/go-errors/errors v1.5.1
