@@ -3,7 +3,7 @@ description: "Runs Kics then parses findings into the OCSF format"
 type: "scanner"
 steps:
   - name: "run-kics"
-    image: "checkmarx/kics:latest"
+    image: "checkmarx/kics:v2.1.13"
     executable: "/app/bin/kics"
     args:
       - "scan"
