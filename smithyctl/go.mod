@@ -2,8 +2,6 @@ module github.com/smithy-security/smithy/smithyctl
 
 go 1.23.4
 
-toolchain go1.24.0
-
 require (
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v28.0.1+incompatible
