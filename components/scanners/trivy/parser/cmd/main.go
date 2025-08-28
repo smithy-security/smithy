@@ -6,10 +6,9 @@ import (
 	"time"
 
 	"github.com/go-errors/errors"
-
 	"github.com/smithy-security/smithy/sdk/component"
 
-	"github.com/smithy-security/smithy/components/scanners/trivy/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/trivy/parser/internal/transformer"
 )
 
 func main() {
@@ -21,6 +20,7 @@ func main() {
 	}
 }
 
+// Main is the entrypoint for the scanner
 func Main(ctx context.Context, opts ...component.RunnerOption) error {
 	opts = append(opts, component.RunnerWithComponentName("trivy"))
 

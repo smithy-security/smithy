@@ -11,22 +11,25 @@ import (
 	"github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+// TargetTypeContainer refers to the type of asset scanned by trivy that
+// produced the results
 const TargetTypeContainer TargetType = "container"
 
 type (
 	// TrivyTransformerOption allows customising the transformer.
-	TrivyTransformerOption func(g *trivyTransformer) error
+	TrivyTransformerOption func(g *TrivyTransformer) error
 
 	// TargetType represents the target type.
 	TargetType string
 
-	trivyTransformer struct {
+	// TrivyTransformer parses results from a Trivy scan and converts them into
+	// OCSF
+	TrivyTransformer struct {
 		targetType     TargetType
 		clock          clockwork.Clock
 		rawOutFilePath string
@@ -39,7 +42,7 @@ func (tt TargetType) String() string {
 
 // TrivyTransformerWithClock allows customising the underlying clock.
 func TrivyTransformerWithClock(clock clockwork.Clock) TrivyTransformerOption {
-	return func(g *trivyTransformer) error {
+	return func(g *TrivyTransformer) error {
 		if clock == nil {
 			return errors.Errorf("invalid nil clock")
 		}
@@ -50,7 +53,7 @@ func TrivyTransformerWithClock(clock clockwork.Clock) TrivyTransformerOption {
 
 // TrivyTransformerWithTarget allows customising the underlying target type.
 func TrivyTransformerWithTarget(target TargetType) TrivyTransformerOption {
-	return func(g *trivyTransformer) error {
+	return func(g *TrivyTransformer) error {
 		if target == "" {
 			return errors.Errorf("invalid empty target")
 		}
@@ -61,7 +64,7 @@ func TrivyTransformerWithTarget(target TargetType) TrivyTransformerOption {
 
 // TrivyRawOutFilePath allows customising the underlying raw out file path.
 func TrivyRawOutFilePath(path string) TrivyTransformerOption {
-	return func(g *trivyTransformer) error {
+	return func(g *TrivyTransformer) error {
 		if path == "" {
 			return errors.Errorf("invalid raw out file path")
 		}
@@ -71,7 +74,7 @@ func TrivyRawOutFilePath(path string) TrivyTransformerOption {
 }
 
 // New returns a new trivy transformer.
-func New(opts ...TrivyTransformerOption) (*trivyTransformer, error) {
+func New(opts ...TrivyTransformerOption) (*TrivyTransformer, error) {
 	rawOutFilePath, err := env.GetOrDefault(
 		"TRIVY_RAW_OUT_FILE_PATH",
 		"trivy.sarif.json",
@@ -90,7 +93,7 @@ func New(opts ...TrivyTransformerOption) (*trivyTransformer, error) {
 		return nil, err
 	}
 
-	t := trivyTransformer{
+	t := TrivyTransformer{
 		rawOutFilePath: rawOutFilePath,
 		targetType:     TargetType(target),
 		clock:          clockwork.NewRealClock(),
@@ -113,18 +116,19 @@ func New(opts ...TrivyTransformerOption) (*trivyTransformer, error) {
 }
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
-func (g *trivyTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+func (t *TrivyTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	logger := componentlogger.
 		LoggerFromContext(ctx)
 
 	logger.Debug("preparing to parse raw trivy output...")
 
-	b, err := os.ReadFile(g.rawOutFilePath)
+	b, err := os.ReadFile(t.rawOutFilePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, errors.Errorf("raw output file '%s' not found", g.rawOutFilePath)
+			return nil, errors.Errorf("raw output file '%s' not found", t.rawOutFilePath)
 		}
-		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
+
+		return nil, errors.Errorf("failed to read raw output file '%s': %w", t.rawOutFilePath, err)
 	}
 
 	var report sarifschemav210.SchemaJson
@@ -140,6 +144,7 @@ func (g *trivyTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 			for _, run := range runs {
 				countRes += len(run.Results)
 			}
+
 			return countRes
 		}(report.Runs)),
 	)
@@ -150,35 +155,17 @@ func (g *trivyTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 		return nil, errors.Errorf("failed to create guid provider: %w", err)
 	}
 
-	transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true, component.TargetMetadataFromCtx(ctx))
+	datasource := component.TargetMetadataFromCtx(ctx)
+	datasourceJSON, err := protojson.Marshal(datasource)
 	if err != nil {
-		return nil, err
+		return nil, errors.Errorf("failed to marshal datasource to JSON: %w", err)
 	}
-	ocsfVulns, err := transformer.ToOCSF(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return g.PostProcessing(ctx, ocsfVulns)
-}
+	logger.Debug("datasource details", slog.String("datasource_json", string(datasourceJSON)))
 
-func (g *trivyTransformer) PostProcessing(ctx context.Context, vulns []*ocsf.VulnerabilityFinding) ([]*ocsf.VulnerabilityFinding, error) {
-	for _, vuln := range vulns {
-		if vuln == nil {
-			continue
-		}
-		if vuln.FindingInfo == nil {
-			return nil, errors.Errorf("nil findingInfo for finding: %#v", vuln)
-		}
-		var datasource ocsffindinginfo.DataSource
-		protojson.Unmarshal([]byte(vuln.FindingInfo.DataSources[0]), &datasource)
-		purl := datasource.OciPackageMetadata.PackageUrl
-		for _, v := range vuln.Vulnerabilities {
-			if len(v.AffectedPackages) == 0 {
-				v.AffectedPackages = append(v.AffectedPackages, &ocsf.AffectedPackage{
-					Purl: &purl,
-				})
-			}
-		}
+	transformer, err := sarif.NewTransformer(&report, "docker", t.clock, guidProvider, true, datasource)
+	if err != nil {
+		return nil, err
 	}
-	return vulns, nil
+
+	return transformer.ToOCSF(ctx)
 }
