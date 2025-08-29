@@ -41,7 +41,7 @@ install-reviewdog:
 	@go install github.com/reviewdog/reviewdog/cmd/reviewdog@latest
 
 py-lint-sdk-python: update-poetry-pkgs-sdk-python install-misspell install-reviewdog
-	@reviewdog -fail-level=error $$([ "${CI}" = "true" ] && echo "-reporter=github-pr-review") -diff="git diff origin/main" -filter-mode=added -tee -runners black,misspell $(REVIEWDOG_EXTRA_FLAGS)
+	@reviewdog -fail-level=error $$([ "$${CI}" = "true" ] && echo "-reporter=github-pr-review") -diff="git diff origin/main" -filter-mode=added -tee -runners black,misspell $(REVIEWDOG_EXTRA_FLAGS)
 
 py-lint: py-lint-sdk-python
 
@@ -96,7 +96,7 @@ go-lint-revive: $(go_revive)
 
 lint:
 # we need to redirect stderr to stdout because GitHub actions don't capture the stderr lolz
-	@reviewdog -fail-level=any -diff="git diff origin/main" -tee -filter-mode=added 2>&1
+	@reviewdog -fail-level=any $$([ "$${CI}" = "true" ] && echo "-reporter=github-pr-review") -diff="git diff origin/main" -tee -filter-mode=added 2>&1
 
 install-lint-tools:
 	GOTOOLCHAIN=$$(go env GOVERSION) go install honnef.co/go/tools/cmd/staticcheck@2025.1.1

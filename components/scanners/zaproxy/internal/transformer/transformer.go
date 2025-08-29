@@ -2,6 +2,7 @@ package transformer
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -111,20 +112,27 @@ func New(opts ...ZapTransformerOption) (*zapTransformer, error) {
 	return &t, nil
 }
 
+func (g *zapTransformer) ReadFile(file string) ([]byte, error) {
+	b, err := os.ReadFile(file)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, errors.Errorf("raw output file '%s' not found : %w", g.rawOutFilePath, err)
+		}
+		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
+	}
+	return b, nil
+}
+
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *zapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	logger := sdklogger.LoggerFromContext(ctx)
 
 	logger.Debug("preparing to parse raw zap output...")
 
-	b, err := os.ReadFile(g.rawOutFilePath)
+	b, err := g.ReadFile(g.rawOutFilePath)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, errors.Errorf("raw output file '%s' not found", g.rawOutFilePath)
-		}
-		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
+		return nil, err
 	}
-
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw zap output: %w", err)
@@ -149,5 +157,39 @@ func (g *zapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFi
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(g.Metrics(ctx, &report))
 	return transformer.ToOCSF(ctx)
+}
+
+func (s *zapTransformer) Metrics(ctx context.Context, input *sarifschemav210.SchemaJson) string {
+	var paths = make(map[string]struct{})
+	var ruleIDs = make(map[string]struct{})
+	var resultCount int
+
+	for _, run := range input.Runs {
+		for _, res := range run.Results {
+			resultCount++
+			if res.RuleId != nil {
+				ruleIDs[*res.RuleId] = struct{}{}
+			}
+			for _, loc := range res.Locations {
+				if loc.PhysicalLocation != nil && loc.PhysicalLocation.ArtifactLocation != nil && loc.PhysicalLocation.ArtifactLocation.Uri != nil {
+					paths[*loc.PhysicalLocation.ArtifactLocation.Uri] = struct{}{}
+				}
+			}
+		}
+	}
+	// Convert sets to slices for display
+	var pathList, ruleIDList []string
+	for p := range paths {
+		pathList = append(pathList, p)
+	}
+	for r := range ruleIDs {
+		ruleIDList = append(ruleIDList, r)
+	}
+
+	return fmt.Sprintf(
+		"zap-transformer:\nruns=%d\nresults=%d\nPaths=%v\nRuleIDs=%v",
+		len(input.Runs), resultCount, pathList, ruleIDList,
+	)
 }
