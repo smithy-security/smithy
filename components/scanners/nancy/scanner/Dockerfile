@@ -1,4 +1,4 @@
-FROM docker.io/sonatypecommunity/nancy:latest AS nancy
+FROM docker.io/sonatypecommunity/nancy:v1.0 AS nancy
 
 FROM golang:1.23.4
 

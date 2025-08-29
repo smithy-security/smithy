@@ -1,4 +1,4 @@
-# trufflehog
+# trufflehog v3.88.23 Scanner
 
 This component implements a
 [scanner](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)

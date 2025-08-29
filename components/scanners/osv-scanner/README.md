@@ -1,4 +1,4 @@
-# osv-scanner
+# osv-scanner v2.0.3 Scanner
 
 This component implements a [scanner](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
 that parses json reports output by [osv-scan](https://google.github.io/osv-scanner/) into [ocsf](https://github.com/ocsf) format.

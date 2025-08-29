@@ -41,9 +41,11 @@ func TestTransformer_Transform(t *testing.T) {
 		transformMethodTest(t, ocsfTransformer.Transform, nil, 11)
 	})
 	t.Run("it should exit cleanly when there are no results", func(t *testing.T) {
-		path, err := os.Getwd()
-		require.NoError(t, err)
-		os.Setenv("RAW_OUT_FILE", "./testdata/empty.json")
+
+		path := filepath.Join(t.TempDir(), "empty.sarif.json")
+		require.NoError(t, os.WriteFile(path, []byte(""), 0644))
+		os.Setenv("RAW_OUT_FILE", path)
+
 		ocsfTransformer, err := New(
 			OSVScannerTransformerWithClock(clock),
 			OSVScannerTransformerWithProjectRoot(filepath.Join(path, ".")),

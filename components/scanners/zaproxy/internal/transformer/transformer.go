@@ -125,6 +125,11 @@ func (g *zapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFi
 		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
 	}
 
+	if len(b) == 0 {
+		logger.Info("input file is empty, exiting without findings")
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
+
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw zap output: %w", err)

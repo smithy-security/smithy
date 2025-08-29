@@ -115,8 +115,6 @@ func New(opts ...CodeqlTransformerOption) (*codeqlTransformer, error) {
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *codeqlTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	logger := componentlogger.LoggerFromContext(ctx)
-	logger.Debug("preparing to parse raw codeql output...")
-
 	var result []*ocsf.VulnerabilityFinding
 
 	matches, err := filepath.Glob(g.rawOutDirPathGlob)
@@ -133,12 +131,19 @@ func (g *codeqlTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabilit
 	}
 
 	for _, file := range fileNames {
+		logger.Debug("preparing to parse raw codeql output...", slog.String("filename", file))
+
 		b, err := os.ReadFile(file)
 		if err != nil {
 			if os.IsNotExist(err) {
 				return nil, errors.Errorf("raw output file '%s' not found", file)
 			}
 			return nil, errors.Errorf("failed to read raw output file '%s': %w", file, err)
+		}
+
+		if len(b) == 0 {
+			logger.Info("Scanner SARIF file is empty, continuing")
+			continue
 		}
 
 		var report sarifschemav210.SchemaJson

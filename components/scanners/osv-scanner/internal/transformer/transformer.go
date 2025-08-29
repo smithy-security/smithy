@@ -121,10 +121,12 @@ func (b *OSVScannerTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 	if err != nil {
 		return nil, errors.Errorf("could not read file %s", b.rawOutFile)
 	}
+
 	if len(fileContents) == 0 {
 		logger.Info("Scanner SARIF file is empty, exiting")
 		return []*ocsf.VulnerabilityFinding{}, nil
 	}
+
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(fileContents); err != nil {
 		return nil, errors.Errorf("%w: %w", ErrMalformedSARIFfile, err)

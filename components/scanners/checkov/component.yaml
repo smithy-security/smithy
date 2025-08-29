@@ -3,7 +3,7 @@ description: "Runs Checkov then parses findings into the OCSF format"
 type: "scanner"
 steps:
   - name: "run-checkov"
-    image: "bridgecrew/checkov"
+    image: "bridgecrew/checkov:3.2.467"
     executable: "/usr/local/bin/checkov"
     args:
     - "-d={{ sourceCodeWorkspace }}"

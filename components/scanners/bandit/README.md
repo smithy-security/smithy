@@ -1,4 +1,4 @@
-# bandit
+# bandit 1.8.6 scanner component
 
 This component implements a [scanner](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
 that parses json reports output by [bandit](https://github.com/securego/gosec) into [ocsf](https://github.com/ocsf) format.

@@ -3,6 +3,8 @@ package transformer
 import (
 	"context"
 	_ "embed"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -200,5 +202,20 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 			assert.NotEmptyf(t, vulnerability.Cwe.Uid, "Unexpected empty value for uid in vulnerability for finding %d", idx)
 			assert.NotEmptyf(t, vulnerability.Cwe.Caption, "Unexpected empty value for caption in vulnerability for finding %d", idx)
 		}
+	})
+	t.Run("it should return an empty finding array when the input file is empty", func(t *testing.T) {
+		emptyFilePath := filepath.Join(t.TempDir(), "empty_trufflehog.sarif")
+		require.NoError(t, os.WriteFile(emptyFilePath, []byte{}, 0644))
+
+		ocsfTransformer, err := New(
+			TrufflehogRawOutFilePath(emptyFilePath),
+			TrufflehogTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
+			TrufflehogTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings, "Expected no findings for an empty input file")
 	})
 }

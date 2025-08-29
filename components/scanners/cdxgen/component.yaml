@@ -16,8 +16,7 @@ parameters:
     value: ""
 steps:
   - name: run-cdxgen
-    image: ghcr.io/cyclonedx/cdxgen:latest
-
+    image: ghcr.io/cyclonedx/cdxgen:v11.6.0
     executable: "/bin/bash"
     args:
      - -c

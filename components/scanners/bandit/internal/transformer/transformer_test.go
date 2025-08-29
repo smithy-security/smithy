@@ -3,6 +3,7 @@ package transformer
 import (
 	_ "embed"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -33,7 +34,7 @@ func TestBanditTransformer_Transform(t *testing.T) {
 			BanditTransformerWithClock(&clock),
 		)
 		require.NoError(t, err)
-		transformMethodTest(t, ocsfTransformer.Transform, nil)
+		transformMethodTest(t, ocsfTransformer.Transform, nil, 10)
 	})
 
 	t.Run("it should error for findings without a line range", func(t *testing.T) {
@@ -44,7 +45,7 @@ func TestBanditTransformer_Transform(t *testing.T) {
 			BanditRawOutFileContents([]byte(noLineRangeInput)),
 		)
 		require.NoError(t, err)
-		transformMethodTest(t, ocsfTransformer.Transform, ErrNoLineRange)
+		transformMethodTest(t, ocsfTransformer.Transform, ErrNoLineRange, 0)
 	})
 
 	t.Run("it should error for findings with an invalid data source", func(t *testing.T) {
@@ -55,7 +56,27 @@ func TestBanditTransformer_Transform(t *testing.T) {
 			BanditRawOutFileContents([]byte(noDataSourceInput)),
 		)
 		require.NoError(t, err)
-		transformMethodTest(t, ocsfTransformer.Transform, ErrBadDataSource)
+		transformMethodTest(t, ocsfTransformer.Transform, ErrBadDataSource, 0)
+	})
+	t.Run("it should not error when receiving an empty inFile", func(t *testing.T) {
+		emptyFilePath := filepath.Join(t.TempDir(), "empty.sarif")
+		os.Setenv("BANDIT_RAW_OUT_FILE_PATH", emptyFilePath)
+		require.NoError(t, os.WriteFile(os.Getenv("BANDIT_RAW_OUT_FILE_PATH"), []byte("{}"), 0644))
+		ocsfTransformer, err := New(
+			BanditTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
+			BanditTransformerWithClock(&clock),
+		)
+		require.NoError(t, err)
+		transformMethodTest(t, ocsfTransformer.Transform, nil, 0)
+	})
+	t.Run("it should error when receiving a non existing inFile", func(t *testing.T) {
+		os.Setenv("BANDIT_RAW_OUT_FILE_PATH", "./testdata/foobar.json")
+		ocsfTransformer, err := New(
+			BanditTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
+			BanditTransformerWithClock(&clock),
+		)
+		require.NoError(t, err)
+		transformMethodTest(t, ocsfTransformer.Transform, ErrFileNotFound, 0)
 	})
 }
 
@@ -224,7 +245,7 @@ func assertValid(t *testing.T, finding *ocsf.VulnerabilityFinding, idx int, nowU
 	assert.NotEmptyf(t, vulnerability.Cwe.Uid, "Unexpected empty value for uid in vulnerability for finding %d", idx)
 }
 
-func transformMethodTest(t *testing.T, transformCallback func(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error), expectedError error) {
+func transformMethodTest(t *testing.T, transformCallback func(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error), expectedError error, expectedFindingsLength int) {
 	var (
 		ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
@@ -253,7 +274,7 @@ func transformMethodTest(t *testing.T, transformCallback func(ctx context.Contex
 		return
 	}
 	require.NoError(t, err)
-	require.NotEmpty(t, findings)
+	require.Equal(t, expectedFindingsLength, len(findings))
 
 	for idx, finding := range findings {
 		assertValid(t, finding, idx, nowUnix, typeUID)

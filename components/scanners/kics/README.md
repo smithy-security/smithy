@@ -1,17 +1,15 @@
-# semgrep
+# KICS Scanner
 
-This component implements a [scanner](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
-that parses [sarif](https://sarifweb.azurewebsites.net/) reports output
-by [semgrep](https://github.com/semgrep/semgrep) into [ocsf](https://github.com/ocsf) format.
+## Overview
 
-## Parser Environment variables
+KICS (Keeping Infrastructure as Code Secure) is a static code analysis tool designed to detect security vulnerabilities, compliance issues, and misconfigurations in infrastructure-as-code (IaC) files. This component integrates KICS and parses its findings into the OCSF format.
 
-The component uses environment variables for configuration.
+## Version
 
-It requires the component
-environment variables defined [here](https://github.com/smithy-security/smithy/blob/main/sdk/README.md#component) as well
-as the following:
+This component uses KICS version `v2.1.13`.
 
-| Environment Variable     | Type   | Required | Default    | Description                                             |
-|--------------------------|--------|----------|------------|---------------------------------------------------------|
-| SEMGREP\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the semgrep sarif report   |
+## How to Run or Test
+
+```bash
+smithyctl workflow run  --build-component-images=true --overrides=./examples/kics/overrides.yaml ./examples/kics/workflow.yaml
+```

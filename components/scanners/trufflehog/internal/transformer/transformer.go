@@ -207,6 +207,11 @@ func (g *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
 	}
 
+	if len(b) == 0 {
+		logger.Info("input file is empty, exiting without findings")
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
+
 	truffleResults, err := ParseMultiJSONMessages(b)
 	if err != nil {
 		return nil, errors.Errorf("could not parse trufflehog file with multiple messages, err: %w", err)

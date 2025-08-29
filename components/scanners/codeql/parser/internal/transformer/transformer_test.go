@@ -3,6 +3,8 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -15,7 +17,7 @@ import (
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
-	"github.com/smithy-security/smithy/components/scanners/codeql/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/codeql/parser/internal/transformer"
 )
 
 func TestCodeQLTransformer_Transform(t *testing.T) {
@@ -213,4 +215,41 @@ func TestCodeQLTransformer_Transform(t *testing.T) {
 			assert.NotNilf(t, affectedCode.StartLine, "Unexpected nil start line for vulnerability for finding %d", idx)
 		}
 	})
+	t.Run("it should return 0 findings when the output file exists but is empty", func(t *testing.T) {
+		// Create an empty SARIF file for testing
+		emptyFilePath := filepath.Join(t.TempDir(), "empty_results_sarif.json")
+		err := os.WriteFile(emptyFilePath, []byte{}, 0644)
+		require.NoError(t, err)
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CodeqlRawOutDirGlob(emptyFilePath),
+			transformer.CodeqlTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CodeqlTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings, "Expected no findings for an empty SARIF file")
+	})
+	t.Run("it should parse globs with files that are potentially empty but also have files with results", func(t *testing.T) {
+		// Create an empty SARIF file for testing
+		tmpDir := t.TempDir()
+		emptyFilePath := filepath.Join(tmpDir, "empty_results_sarif.json")
+		err := os.WriteFile(emptyFilePath, []byte{}, 0644)
+		require.NoError(t, err)
+		os.CopyFS(tmpDir, os.DirFS("testdata/"))
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CodeqlRawOutDirGlob(filepath.Join(tmpDir, "/*.json")),
+			transformer.CodeqlTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CodeqlTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Equal(t, 111, len(findings))
+	})
+
 }

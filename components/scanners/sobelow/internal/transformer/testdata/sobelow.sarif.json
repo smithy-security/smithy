@@ -1,0 +1,653 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "message": {
+            "text": "CI.System: Command Injection via `System` function"
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe_web/controllers/potion_controller.ex"
+                },
+                "region": {
+                  "endColumn": 32,
+                  "endLine": 43,
+                  "startColumn": 32,
+                  "startLine": 43
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "A475D9422FE11DD9C3A8EFDE4F560A11"
+          },
+          "ruleId": "SBLW002"
+        },
+        {
+          "message": {
+            "text": "Config.HTTPS: HTTPS Not Enabled"
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config/prod.exs"
+                },
+                "region": {
+                  "endColumn": 1,
+                  "endLine": 1,
+                  "startColumn": 1,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "C15BCE8CAF49A8448E904E375BA0C396"
+          },
+          "ruleId": "SBLW009"
+        },
+        {
+          "message": {
+            "text": "Config.CSP: Missing Content-Security-Policy"
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe_web/router.ex"
+                },
+                "region": {
+                  "endColumn": 5,
+                  "endLine": 12,
+                  "startColumn": 5,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "B89583656833931785580074AB3E1456"
+          },
+          "ruleId": "SBLW003"
+        },
+        {
+          "message": {
+            "text": "Config.CSP: Missing Content-Security-Policy"
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe_web/router.ex"
+                },
+                "region": {
+                  "endColumn": 5,
+                  "endLine": 21,
+                  "startColumn": 5,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "5550974065FBAE782CE8F7937AA89C0B"
+          },
+          "ruleId": "SBLW003"
+        },
+        {
+          "message": {
+            "text": "Config.CSRFRoute: CSRF via Action Reuse"
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe_web/router.ex"
+                },
+                "region": {
+                  "endColumn": 5,
+                  "endLine": 99,
+                  "startColumn": 5,
+                  "startLine": 99
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "135536765CD4920CB34050395BB119A3"
+          },
+          "ruleId": "SBLW004"
+        },
+        {
+          "message": {
+            "text": "Config.CSRF: Missing CSRF Protections"
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe_web/router.ex"
+                },
+                "region": {
+                  "endColumn": 3,
+                  "endLine": 16,
+                  "startColumn": 3,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "725B87092FFBE632F9E642C42BCE7D51"
+          },
+          "ruleId": "SBLW005"
+        },
+        {
+          "message": {
+            "text": "XSS.Raw: XSS"
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe_web/templates/potion/show.html.heex"
+                },
+                "region": {
+                  "endColumn": 20,
+                  "endLine": 19,
+                  "startColumn": 20,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "541EC0FEBEE552D3B80CE0BEBC19E0B8"
+          },
+          "ruleId": "SBLW030"
+        },
+        {
+          "message": {
+            "text": "SQL.Query: SQL injection"
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe/potions.ex"
+                },
+                "region": {
+                  "endColumn": 25,
+                  "endLine": 20,
+                  "startColumn": 25,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "primaryLocationLineHash": "F1FDBE430D635197228032A63A6253F2"
+          },
+          "ruleId": "SBLW017"
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "Sobelow",
+          "rules": [
+            {
+              "id": "SBLW031",
+              "name": "XSS.SendResp",
+              "help": {
+                "text": "# XSS in `send_resp`\n\nThis submodule looks for XSS vulnerabilities in the `body` argument of `Conn.send_resp`.\n\nSendResp checks can be ignored with the following command:\n\n    $ mix sobelow -i XSS.SendResp ",
+                "markdown": "# XSS in `send_resp`\n\nThis submodule looks for XSS vulnerabilities in the `body` argument of `Conn.send_resp`.\n\nSendResp checks can be ignored with the following command:\n\n    $ mix sobelow -i XSS.SendResp "
+              },
+              "fullDescription": {
+                "text": "XSS in `send_resp`"
+              },
+              "shortDescription": {
+                "text": "XSS in `send_resp`"
+              }
+            },
+            {
+              "id": "SBLW028",
+              "name": "XSS.ContentType",
+              "help": {
+                "text": "# XSS in `put_resp_content_type`\n\nIf an attacker is able to set arbitrary content types for an HTTP response containing user input, the attacker is likely to be able to leverage this for cross-site scripting (XSS).\n\nFor example, consider an endpoint that returns JSON with user input:\n\n    {\"json\": \"user_input\"}\n\nIf an attacker can control the content type set in the HTTP response, they can set it to \"text/html\" and update the JSON to the following in order to cause XSS:\n\n    {\"json\": \"<script>alert(document.domain)</script>\"}\n\nContent Type checks can be ignored with the following command:\n\n    $ mix sobelow -i XSS.ContentType ",
+                "markdown": "# XSS in `put_resp_content_type`\n\nIf an attacker is able to set arbitrary content types for an HTTP response containing user input, the attacker is likely to be able to leverage this for cross-site scripting (XSS).\n\nFor example, consider an endpoint that returns JSON with user input:\n\n    {\"json\": \"user_input\"}\n\nIf an attacker can control the content type set in the HTTP response, they can set it to \"text/html\" and update the JSON to the following in order to cause XSS:\n\n    {\"json\": \"<script>alert(document.domain)</script>\"}\n\nContent Type checks can be ignored with the following command:\n\n    $ mix sobelow -i XSS.ContentType "
+              },
+              "fullDescription": {
+                "text": "XSS in `put_resp_content_type`"
+              },
+              "shortDescription": {
+                "text": "XSS in `put_resp_content_type`"
+              }
+            },
+            {
+              "id": "SBLW030",
+              "name": "XSS.Raw",
+              "help": {
+                "text": "# XSS in `raw`\n\nThis submodule checks for the use of `raw` in templates as this can lead to XSS vulnerabilities if taking user input.\n\nRaw checks can be ignored with the following command:\n\n    $ mix sobelow -i XSS.Raw ",
+                "markdown": "# XSS in `raw`\n\nThis submodule checks for the use of `raw` in templates as this can lead to XSS vulnerabilities if taking user input.\n\nRaw checks can be ignored with the following command:\n\n    $ mix sobelow -i XSS.Raw "
+              },
+              "fullDescription": {
+                "text": "XSS"
+              },
+              "shortDescription": {
+                "text": "XSS"
+              }
+            },
+            {
+              "id": "SBLW029",
+              "name": "XSS.HTML",
+              "help": {
+                "text": "# XSS in `html`\n\nThis submodule looks for XSS vulnerabilities in `html` calls from the Phoenix Controller.\n\nHTML checks can be ignored with the following command:\n\n    $ mix sobelow -i XSS.HTML ",
+                "markdown": "# XSS in `html`\n\nThis submodule looks for XSS vulnerabilities in `html` calls from the Phoenix Controller.\n\nHTML checks can be ignored with the following command:\n\n    $ mix sobelow -i XSS.HTML "
+              },
+              "fullDescription": {
+                "text": "XSS in `html`"
+              },
+              "shortDescription": {
+                "text": "XSS in `html`"
+              }
+            },
+            {
+              "id": "SBLW017",
+              "name": "SQL.Query",
+              "help": {
+                "text": "# SQL Injection in Query\n\nThis submodule of the `SQL` module checks for SQL injection vulnerabilities through usage of the `Ecto.Adapters.SQL.query` and `Ecto.Adapters.SQL.query!`.\n\nEnsure that the query is parameterized and not user-controlled.\n\nSQLi Query checks can be ignored with the following command:\n\n    $ mix sobelow -i SQL.Query ",
+                "markdown": "# SQL Injection in Query\n\nThis submodule of the `SQL` module checks for SQL injection vulnerabilities through usage of the `Ecto.Adapters.SQL.query` and `Ecto.Adapters.SQL.query!`.\n\nEnsure that the query is parameterized and not user-controlled.\n\nSQLi Query checks can be ignored with the following command:\n\n    $ mix sobelow -i SQL.Query "
+              },
+              "fullDescription": {
+                "text": "SQL injection"
+              },
+              "shortDescription": {
+                "text": "SQL injection"
+              }
+            },
+            {
+              "id": "SBLW018",
+              "name": "SQL.Stream",
+              "help": {
+                "text": "# SQL Injection in Stream\n\nThis submodule of the `SQL` module checks for SQL injection vulnerabilities through usage of the `Ecto.Adapters.SQL.stream`.\n\nEnsure that the query is parameterized and not user-controlled.\n\nSQLi Stream checks can be ignored with the following command:\n\n    $ mix sobelow -i SQL.Stream ",
+                "markdown": "# SQL Injection in Stream\n\nThis submodule of the `SQL` module checks for SQL injection vulnerabilities through usage of the `Ecto.Adapters.SQL.stream`.\n\nEnsure that the query is parameterized and not user-controlled.\n\nSQLi Stream checks can be ignored with the following command:\n\n    $ mix sobelow -i SQL.Stream "
+              },
+              "fullDescription": {
+                "text": "SQL injection"
+              },
+              "shortDescription": {
+                "text": "SQL injection"
+              }
+            },
+            {
+              "id": "SBLW021",
+              "name": "Traversal.SendFile",
+              "help": {
+                "text": "# Directory Traversal in `send_file`\n\nThis submodule checks for directory traversal vulnerabilities in the `send_file` function.\n\nEnsure that the path passed to `send_file` is not user-controlled.\n\nSend File checks can be ignored with the following command:\n\n    $ mix sobelow -i Traversal.SendFile ",
+                "markdown": "# Directory Traversal in `send_file`\n\nThis submodule checks for directory traversal vulnerabilities in the `send_file` function.\n\nEnsure that the path passed to `send_file` is not user-controlled.\n\nSend File checks can be ignored with the following command:\n\n    $ mix sobelow -i Traversal.SendFile "
+              },
+              "fullDescription": {
+                "text": "Directory Traversal in `send_file`"
+              },
+              "shortDescription": {
+                "text": "Directory Traversal in `send_file`"
+              }
+            },
+            {
+              "id": "SBLW019",
+              "name": "Traversal.FileModule",
+              "help": {
+                "text": "# Directory Traversal in `File` function\n\nThis submodule checks for directory traversal vulnerabilities in the `File` module.\n\nEnsure that the path passed to `File` functions is not user-controlled.\n\nFile checks can be ignored with the following command:\n\n    $ mix sobelow -i Traversal.FileModule ",
+                "markdown": "# Directory Traversal in `File` function\n\nThis submodule checks for directory traversal vulnerabilities in the `File` module.\n\nEnsure that the path passed to `File` functions is not user-controlled.\n\nFile checks can be ignored with the following command:\n\n    $ mix sobelow -i Traversal.FileModule "
+              },
+              "fullDescription": {
+                "text": "Directory Traversal in `File` function"
+              },
+              "shortDescription": {
+                "text": "Directory Traversal in `File` function"
+              }
+            },
+            {
+              "id": "SBLW020",
+              "name": "Traversal.SendDownload",
+              "help": {
+                "text": "# Directory Traversal in `send_download`\n\nThis submodule checks for directory traversal vulnerabilities in the `send_download` function of a Phoenix Controller.\n\nEnsure that the path passed to `send_download` is not user-controlled.\n\nSend Download checks can be ignored with the following command:\n\n    $ mix sobelow -i Traversal.SendDownload ",
+                "markdown": "# Directory Traversal in `send_download`\n\nThis submodule checks for directory traversal vulnerabilities in the `send_download` function of a Phoenix Controller.\n\nEnsure that the path passed to `send_download` is not user-controlled.\n\nSend Download checks can be ignored with the following command:\n\n    $ mix sobelow -i Traversal.SendDownload "
+              },
+              "fullDescription": {
+                "text": "Directory Traversal in `send_download`"
+              },
+              "shortDescription": {
+                "text": "Directory Traversal in `send_download`"
+              }
+            },
+            {
+              "id": "SBLW016",
+              "name": "RCE.EEx",
+              "help": {
+                "text": "# Insecure EEx evaluation\n\nIf user input is passed to EEx eval functions, it may result in arbitrary code execution. The root cause of these issues is often directory traversal.\n\nEEx checks can be ignored with the following command:\n\n    $ mix sobelow -i RCE.EEx ",
+                "markdown": "# Insecure EEx evaluation\n\nIf user input is passed to EEx eval functions, it may result in arbitrary code execution. The root cause of these issues is often directory traversal.\n\nEEx checks can be ignored with the following command:\n\n    $ mix sobelow -i RCE.EEx "
+              },
+              "fullDescription": {
+                "text": "Code Execution in EEx template eval"
+              },
+              "shortDescription": {
+                "text": "Code Execution in EEx template eval"
+              }
+            },
+            {
+              "id": "SBLW015",
+              "name": "RCE.CodeModule",
+              "help": {
+                "text": "# Code Execution in `eval` function\n\nArbitrary strings passed to the `Code.eval_*` functions can be executed as malicious code.\n\nEnsure the the code passed to the function is not user-controlled or remove the function call completely.\n\nRead more about Elixir RCE here: https://erlef.github.io/security-wg/secure_coding_and_deployment_hardening/sandboxing\n\nCode Execution checks can be ignored with the following command:\n\n    $ mix sobelow -i RCE.CodeModule ",
+                "markdown": "# Code Execution in `eval` function\n\nArbitrary strings passed to the `Code.eval_*` functions can be executed as malicious code.\n\nEnsure the the code passed to the function is not user-controlled or remove the function call completely.\n\nRead more about Elixir RCE here: https://erlef.github.io/security-wg/secure_coding_and_deployment_hardening/sandboxing\n\nCode Execution checks can be ignored with the following command:\n\n    $ mix sobelow -i RCE.CodeModule "
+              },
+              "fullDescription": {
+                "text": "Code execution in eval function"
+              },
+              "shortDescription": {
+                "text": "Code execution in eval function"
+              }
+            },
+            {
+              "id": "SBLW014",
+              "name": "Misc.BinToTerm",
+              "help": {
+                "text": "# Insecure use of `binary_to_term`\n\nIf user input is passed to Erlang's `binary_to_term` function it may result in memory exhaustion or code execution. Even with the `:safe` option, `binary_to_term` will deserialize functions, and shouldn't be considered safe to use with untrusted input.\n\n`binary_to_term` checks can be ignored with the following command:\n\n    $ mix sobelow -i Misc.BinToTerm ",
+                "markdown": "# Insecure use of `binary_to_term`\n\nIf user input is passed to Erlang's `binary_to_term` function it may result in memory exhaustion or code execution. Even with the `:safe` option, `binary_to_term` will deserialize functions, and shouldn't be considered safe to use with untrusted input.\n\n`binary_to_term` checks can be ignored with the following command:\n\n    $ mix sobelow -i Misc.BinToTerm "
+              },
+              "fullDescription": {
+                "text": "Unsafe `binary_to_term`"
+              },
+              "shortDescription": {
+                "text": "Unsafe `binary_to_term`"
+              }
+            },
+            {
+              "id": "SBLW005",
+              "name": "Config.CSRF",
+              "help": {
+                "text": "# Cross-Site Request Forgery\n\nIn a Cross-Site Request Forgery (CSRF) attack, an untrusted application can cause a user's browser to submit requests or perform actions on the user's behalf.\n\nRead more about CSRF here: https://owasp.org/www-community/attacks/csrf\n\nCross-Site Request Forgery is flagged by `sobelow` when a pipeline fetches a session, but does not implement the `:protect_from_forgery` plug.\n\nCSRF checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.CSRF ",
+                "markdown": "# Cross-Site Request Forgery\n\nIn a Cross-Site Request Forgery (CSRF) attack, an untrusted application can cause a user's browser to submit requests or perform actions on the user's behalf.\n\nRead more about CSRF here: https://owasp.org/www-community/attacks/csrf\n\nCross-Site Request Forgery is flagged by `sobelow` when a pipeline fetches a session, but does not implement the `:protect_from_forgery` plug.\n\nCSRF checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.CSRF "
+              },
+              "fullDescription": {
+                "text": "Missing CSRF Protections"
+              },
+              "shortDescription": {
+                "text": "Missing CSRF Protections"
+              }
+            },
+            {
+              "id": "SBLW004",
+              "name": "Config.CSRFRoute",
+              "help": {
+                "text": "# Cross-Site Request Forgery\n\nIn a Cross-Site Request Forgery (CSRF) attack, an untrusted application can cause a user's browser to submit requests or perform actions on the user's behalf.\n\nRead more about CSRF here: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)\n\nThis type of CSRF is flagged by `sobelow` when state-changing routes share an action with GET-based routes. For example:\n\n    get \"/users\", UserController, :new     post \"/users\", UserController, :new\n\nIn this instance, it may be possible to trigger the POST functionality with a GET request and query parameters.\n\nCSRF checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.CSRFRoute ",
+                "markdown": "# Cross-Site Request Forgery\n\nIn a Cross-Site Request Forgery (CSRF) attack, an untrusted application can cause a user's browser to submit requests or perform actions on the user's behalf.\n\nRead more about CSRF here: https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)\n\nThis type of CSRF is flagged by `sobelow` when state-changing routes share an action with GET-based routes. For example:\n\n    get \"/users\", UserController, :new     post \"/users\", UserController, :new\n\nIn this instance, it may be possible to trigger the POST functionality with a GET request and query parameters.\n\nCSRF checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.CSRFRoute "
+              },
+              "fullDescription": {
+                "text": "CSRF via Action Reuse"
+              },
+              "shortDescription": {
+                "text": "CSRF via Action Reuse"
+              }
+            },
+            {
+              "id": "SBLW007",
+              "name": "Config.Headers",
+              "help": {
+                "text": "# Missing Secure HTTP Headers\n\nBy default, Phoenix HTTP responses contain a number of secure HTTP headers that attempt to mitigate XSS, click-jacking, and content-sniffing attacks.\n\nMissing Secure HTTP Headers is flagged by `sobelow` when a pipeline accepts \"html\" requests, but does not implement the `:put_secure_browser_headers` plug.\n\nSecure Headers checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.Headers ",
+                "markdown": "# Missing Secure HTTP Headers\n\nBy default, Phoenix HTTP responses contain a number of secure HTTP headers that attempt to mitigate XSS, click-jacking, and content-sniffing attacks.\n\nMissing Secure HTTP Headers is flagged by `sobelow` when a pipeline accepts \"html\" requests, but does not implement the `:put_secure_browser_headers` plug.\n\nSecure Headers checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.Headers "
+              },
+              "fullDescription": {
+                "text": "Missing Secure Browser Headers"
+              },
+              "shortDescription": {
+                "text": "Missing Secure Browser Headers"
+              }
+            },
+            {
+              "id": "SBLW003",
+              "name": "Config.CSP",
+              "help": {
+                "text": "# Missing Content-Security-Policy\n\nContent-Security-Policy is an HTTP header that helps mitigate a number of attacks, including Cross-Site Scripting.\n\nRead more about CSP here: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP\n\nMissing Content-Security-Policy is flagged by `sobelow` when a pipeline implements the `:put_secure_browser_headers` plug, but does not provide a Content-Security-Policy header in the custom headers map.\n\nWhen it comes to CSP, just about any policy is better than none. If you are unsure about which policy to use, the following mitigates most typical XSS vectors:\n\n`plug :put_secure_browser_headers, %{\"content-security-policy\" => \"default-src 'self'\"}`\n\nDocumentation on the `put_secure_browser_headers` plug function can be found here: https://hexdocs.pm/phoenix/Phoenix.Controller.html#put_secure_browser_headers/2\n\nContent-Security-Policy checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.CSP ",
+                "markdown": "# Missing Content-Security-Policy\n\nContent-Security-Policy is an HTTP header that helps mitigate a number of attacks, including Cross-Site Scripting.\n\nRead more about CSP here: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP\n\nMissing Content-Security-Policy is flagged by `sobelow` when a pipeline implements the `:put_secure_browser_headers` plug, but does not provide a Content-Security-Policy header in the custom headers map.\n\nWhen it comes to CSP, just about any policy is better than none. If you are unsure about which policy to use, the following mitigates most typical XSS vectors:\n\n`plug :put_secure_browser_headers, %{\"content-security-policy\" => \"default-src 'self'\"}`\n\nDocumentation on the `put_secure_browser_headers` plug function can be found here: https://hexdocs.pm/phoenix/Phoenix.Controller.html#put_secure_browser_headers/2\n\nContent-Security-Policy checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.CSP "
+              },
+              "fullDescription": {
+                "text": "Missing Content-Security-Policy"
+              },
+              "shortDescription": {
+                "text": "Missing Content-Security-Policy"
+              }
+            },
+            {
+              "id": "SBLW010",
+              "name": "Config.Secrets",
+              "help": {
+                "text": "# Hard-coded Secrets\n\nIn the event of a source-code disclosure via file read vulnerability, accidental commit, etc, hard-coded secrets may be exposed to an attacker. This may result in database access, cookie forgery, and other issues.\n\nSobelow detects missing hard-coded secrets by checking the prod configuration.\n\nHard-coded secrets checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.Secrets ",
+                "markdown": "# Hard-coded Secrets\n\nIn the event of a source-code disclosure via file read vulnerability, accidental commit, etc, hard-coded secrets may be exposed to an attacker. This may result in database access, cookie forgery, and other issues.\n\nSobelow detects missing hard-coded secrets by checking the prod configuration.\n\nHard-coded secrets checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.Secrets "
+              },
+              "fullDescription": {
+                "text": "Hardcoded Secret"
+              },
+              "shortDescription": {
+                "text": "Hardcoded Secret"
+              }
+            },
+            {
+              "id": "SBLW009",
+              "name": "Config.HTTPS",
+              "help": {
+                "text": "# HTTPS\n\nWithout HTTPS, attackers in a privileged network position can intercept and modify traffic.\n\nSobelow detects missing HTTPS by checking the prod configuration.\n\nHTTPS checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.HTTPS ",
+                "markdown": "# HTTPS\n\nWithout HTTPS, attackers in a privileged network position can intercept and modify traffic.\n\nSobelow detects missing HTTPS by checking the prod configuration.\n\nHTTPS checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.HTTPS "
+              },
+              "fullDescription": {
+                "text": "HTTPS Not Enabled"
+              },
+              "shortDescription": {
+                "text": "HTTPS Not Enabled"
+              }
+            },
+            {
+              "id": "SBLW008",
+              "name": "Config.HSTS",
+              "help": {
+                "text": "# HSTS\n\nThe HTTP Strict Transport Security (HSTS) header helps defend against man-in-the-middle attacks by preventing unencrypted connections.\n\nHSTS checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.HSTS ",
+                "markdown": "# HSTS\n\nThe HTTP Strict Transport Security (HSTS) header helps defend against man-in-the-middle attacks by preventing unencrypted connections.\n\nHSTS checks can be ignored with the following command:\n\n    $ mix sobelow -i Config.HSTS "
+              },
+              "fullDescription": {
+                "text": "HSTS Not Enabled"
+              },
+              "shortDescription": {
+                "text": "HSTS Not Enabled"
+              }
+            },
+            {
+              "id": "SBLW006",
+              "name": "Config.CSWH",
+              "help": {
+                "text": "# Cross-Site Websocket Hijacking\n\nWebsocket connections are not bound by the same-origin policy. Connections that do not validate the origin may leak information to an attacker.\n\nMore information can be found here: https://www.christian-schneider.net/CrossSiteWebSocketHijacking.html\n\nCross-Site Websocket Hijacking checks can be disabled with the following command:\n\n    $ mix sobelow -i Config.CSWH ",
+                "markdown": "# Cross-Site Websocket Hijacking\n\nWebsocket connections are not bound by the same-origin policy. Connections that do not validate the origin may leak information to an attacker.\n\nMore information can be found here: https://www.christian-schneider.net/CrossSiteWebSocketHijacking.html\n\nCross-Site Websocket Hijacking checks can be disabled with the following command:\n\n    $ mix sobelow -i Config.CSWH "
+              },
+              "fullDescription": {
+                "text": "Cross-Site Websocket Hijacking"
+              },
+              "shortDescription": {
+                "text": "Cross-Site Websocket Hijacking"
+              }
+            },
+            {
+              "id": "SBLW002",
+              "name": "CI.System",
+              "help": {
+                "text": "# Command Injection via `System`\n\nThis submodule of the `CI` module checks for Command Injection vulnerabilities through usage of the `System.cmd` function.\n\nEnsure the the command passed to `System.cmd` is not user-controlled.\n\n`System.cmd` Injection checks can be ignored with the following command:\n\n    $ mix sobelow -i CI.System ",
+                "markdown": "# Command Injection via `System`\n\nThis submodule of the `CI` module checks for Command Injection vulnerabilities through usage of the `System.cmd` function.\n\nEnsure the the command passed to `System.cmd` is not user-controlled.\n\n`System.cmd` Injection checks can be ignored with the following command:\n\n    $ mix sobelow -i CI.System "
+              },
+              "fullDescription": {
+                "text": "Command Injection via `System` function"
+              },
+              "shortDescription": {
+                "text": "Command Injection via `System` function"
+              }
+            },
+            {
+              "id": "SBLW001",
+              "name": "CI.OS",
+              "help": {
+                "text": "# Command Injection in `:os.cmd`\n\nThis submodule of the `CI` module checks for Command Injection vulnerabilities through usage of the `:os.cmd` function.\n\nEnsure the the command passed to `:os.cmd` is not user-controlled.\n\n`:os.cmd` Injection checks can be ignored with the following command:\n\n    $ mix sobelow -i CI.OS ",
+                "markdown": "# Command Injection in `:os.cmd`\n\nThis submodule of the `CI` module checks for Command Injection vulnerabilities through usage of the `:os.cmd` function.\n\nEnsure the the command passed to `:os.cmd` is not user-controlled.\n\n`:os.cmd` Injection checks can be ignored with the following command:\n\n    $ mix sobelow -i CI.OS "
+              },
+              "fullDescription": {
+                "text": "Command Injection in `:os.cmd`"
+              },
+              "shortDescription": {
+                "text": "Command Injection in `:os.cmd`"
+              }
+            },
+            {
+              "id": "SBLW013",
+              "name": "DOS.StringToAtom",
+              "help": {
+                "text": "# Denial of Service via `String.to_atom`\n\nIn Elixir, atoms are not garbage collected. As such, if user input is passed to the `String.to_atom` function, it may result in memory exhaustion. Prefer the `String.to_existing_atom` function for untrusted user input.\n\n`String.to_atom` checks can be ignored with the following command:\n\n    $ mix sobelow -i DOS.StringToAtom ",
+                "markdown": "# Denial of Service via `String.to_atom`\n\nIn Elixir, atoms are not garbage collected. As such, if user input is passed to the `String.to_atom` function, it may result in memory exhaustion. Prefer the `String.to_existing_atom` function for untrusted user input.\n\n`String.to_atom` checks can be ignored with the following command:\n\n    $ mix sobelow -i DOS.StringToAtom "
+              },
+              "fullDescription": {
+                "text": "Unsafe `String.to_atom`"
+              },
+              "shortDescription": {
+                "text": "Unsafe `String.to_atom`"
+              }
+            },
+            {
+              "id": "SBLW012",
+              "name": "DOS.ListToAtom",
+              "help": {
+                "text": "# Denial of Service via `List.to_atom`\n\nIn Elixir, atoms are not garbage collected. As such, if user input is passed to the `List.to_atom` function, it may result in memory exhaustion. Prefer the `List.to_existing_atom` function for untrusted user input.\n\n`List.to_atom` checks can be ignored with the following command:\n\n    $ mix sobelow -i DOS.ListToAtom ",
+                "markdown": "# Denial of Service via `List.to_atom`\n\nIn Elixir, atoms are not garbage collected. As such, if user input is passed to the `List.to_atom` function, it may result in memory exhaustion. Prefer the `List.to_existing_atom` function for untrusted user input.\n\n`List.to_atom` checks can be ignored with the following command:\n\n    $ mix sobelow -i DOS.ListToAtom "
+              },
+              "fullDescription": {
+                "text": "Unsafe `List.to_atom`"
+              },
+              "shortDescription": {
+                "text": "Unsafe `List.to_atom`"
+              }
+            },
+            {
+              "id": "SBLW011",
+              "name": "DOS.BinToAtom",
+              "help": {
+                "text": "# Denial of Service via Unsafe Atom Interpolation\n\nIn Elixir, atoms are not garbage collected. As such, if user input is used to create atoms (as in `:\"foo#{bar}\"`, or in `:erlang.binary_to_atom`), it may result in memory exhaustion. Prefer the `String.to_existing_atom` function for untrusted user input.\n\nAtom interpolation checks can be ignored with the following command:\n\n    $ mix sobelow -i DOS.BinToAtom ",
+                "markdown": "# Denial of Service via Unsafe Atom Interpolation\n\nIn Elixir, atoms are not garbage collected. As such, if user input is used to create atoms (as in `:\"foo#{bar}\"`, or in `:erlang.binary_to_atom`), it may result in memory exhaustion. Prefer the `String.to_existing_atom` function for untrusted user input.\n\nAtom interpolation checks can be ignored with the following command:\n\n    $ mix sobelow -i DOS.BinToAtom "
+              },
+              "fullDescription": {
+                "text": "Unsafe atom interpolation"
+              },
+              "shortDescription": {
+                "text": "Unsafe atom interpolation"
+              }
+            },
+            {
+              "id": "SBLW026",
+              "name": "Vuln.PlugNull",
+              "help": {
+                "text": "# Plug Version Vulnerable to Null Byte Injection\n\nFor more information visit: https://github.com/advisories/GHSA-2q6v-32mr-8p8x\n\nNull Byte Injection checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.PlugNull ",
+                "markdown": "# Plug Version Vulnerable to Null Byte Injection\n\nFor more information visit: https://github.com/advisories/GHSA-2q6v-32mr-8p8x\n\nNull Byte Injection checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.PlugNull "
+              },
+              "fullDescription": {
+                "text": "Known Vulnerable Dependency - Update Plug"
+              },
+              "shortDescription": {
+                "text": "Known Vulnerable Dependency - Update Plug"
+              }
+            },
+            {
+              "id": "SBLW023",
+              "name": "Vuln.Plug",
+              "help": {
+                "text": "# Plug Version Vulnerable to Arbitrary Code Execution in Cookie Serialization\n\nFor more information visit: https://github.com/advisories/GHSA-5v4m-c73v-c7gq\n\nCookie RCE checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.CookieRCE ",
+                "markdown": "# Plug Version Vulnerable to Arbitrary Code Execution in Cookie Serialization\n\nFor more information visit: https://github.com/advisories/GHSA-5v4m-c73v-c7gq\n\nCookie RCE checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.CookieRCE "
+              },
+              "fullDescription": {
+                "text": "Known Vulnerable Dependency - Update Plug"
+              },
+              "shortDescription": {
+                "text": "Known Vulnerable Dependency - Update Plug"
+              }
+            },
+            {
+              "id": "SBLW025",
+              "name": "Vuln.HeaderInject",
+              "help": {
+                "text": "# Plug Version Vulnerable to Header Injection\n\nFor more information visit: https://github.com/advisories/GHSA-9h73-w7ch-rh73\n\nHeader Injection checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.HeaderInject ",
+                "markdown": "# Plug Version Vulnerable to Header Injection\n\nFor more information visit: https://github.com/advisories/GHSA-9h73-w7ch-rh73\n\nHeader Injection checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.HeaderInject "
+              },
+              "fullDescription": {
+                "text": "Known Vulnerable Dependency - Update Plug"
+              },
+              "shortDescription": {
+                "text": "Known Vulnerable Dependency - Update Plug"
+              }
+            },
+            {
+              "id": "SBLW027",
+              "name": "Vuln.Redirect",
+              "help": {
+                "text": "# Phoenix Version Vulnerable to Arbitrary URL Redirection\n\nFor more information visit: https://github.com/advisories/GHSA-cmfh-8f8r-fj96\n\nURL Redirection checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.Redirect ",
+                "markdown": "# Phoenix Version Vulnerable to Arbitrary URL Redirection\n\nFor more information visit: https://github.com/advisories/GHSA-cmfh-8f8r-fj96\n\nURL Redirection checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.Redirect "
+              },
+              "fullDescription": {
+                "text": "Known Vulnerable Dependency - Update Phoenix"
+              },
+              "shortDescription": {
+                "text": "Known Vulnerable Dependency - Update Phoenix"
+              }
+            },
+            {
+              "id": "SBLW022",
+              "name": "Vuln.Coherence",
+              "help": {
+                "text": "# Coherence Version Vulnerable to Privilege Escalation\n\nFor more information visit: https://github.com/advisories/GHSA-mrq8-53r4-3j5m\n\nCoherence checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.Coherence ",
+                "markdown": "# Coherence Version Vulnerable to Privilege Escalation\n\nFor more information visit: https://github.com/advisories/GHSA-mrq8-53r4-3j5m\n\nCoherence checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.Coherence "
+              },
+              "fullDescription": {
+                "text": "Known Vulnerable Dependency - Update Coherence"
+              },
+              "shortDescription": {
+                "text": "Known Vulnerable Dependency - Update Coherence"
+              }
+            },
+            {
+              "id": "SBLW024",
+              "name": "Vuln.Ecto",
+              "help": {
+                "text": "# Ecto Version Lacks Protection Mechanism\n\nFor more information visit: https://github.com/advisories/GHSA-2xxx-fhc8-9qvq\n\nEcto checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.Ecto ",
+                "markdown": "# Ecto Version Lacks Protection Mechanism\n\nFor more information visit: https://github.com/advisories/GHSA-2xxx-fhc8-9qvq\n\nEcto checks can be ignored with the following command:\n\n    $ mix sobelow -i Vuln.Ecto "
+              },
+              "fullDescription": {
+                "text": "Known Vulnerable Dependency - Update Ecto"
+              },
+              "shortDescription": {
+                "text": "Known Vulnerable Dependency - Update Ecto"
+              }
+            }
+          ],
+          "informationUri": "https://sobelow.io",
+          "semanticVersion": "0.14.0"
+        }
+      }
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-FROM zaproxy/zap-stable:latest
+FROM zaproxy/zap-stable:2.16.1
 
 # zap has python so we can just copy a script here
 COPY zap-authenticated-scan.py /workdir/zap-authenticated-scan.py

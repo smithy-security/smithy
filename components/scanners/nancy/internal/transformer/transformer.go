@@ -221,6 +221,12 @@ func (b *NancyTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 			}
 			return nil, errors.Errorf("failed to read raw output file '%s': %w", b.rawOutFilePath, err)
 		}
+
+		if len(inFile) == 0 {
+			logger.Info("raw nancy output file is empty, no findings to parse, exiting")
+			return []*ocsf.VulnerabilityFinding{}, nil
+		}
+
 		b.fileContents = inFile
 	}
 

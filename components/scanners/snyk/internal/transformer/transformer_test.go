@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -195,5 +196,19 @@ func TestSnykTransformer_Transform(t *testing.T) {
 			require.Lenf(t, vulnerability.AffectedPackages, 1, "Unexpected lenght for affected code for vulnerability for finding %d. Expected 1", idx)
 
 		}
+	})
+	t.Run("it should return an empty finding array when the input file is empty", func(t *testing.T) {
+		emptyFilePath := filepath.Join(t.TempDir(), "empty.sarif.json")
+		require.NoError(t, os.WriteFile(emptyFilePath, []byte{}, 0644))
+
+		os.Setenv("RAW_OUT_FILE_PATH", emptyFilePath)
+		ocsfTransformer, err := New(
+			SnykTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		require.Empty(t, findings)
 	})
 }

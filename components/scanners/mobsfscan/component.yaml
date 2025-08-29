@@ -3,7 +3,7 @@ description: "Runs MobSF Scan then parses findings into the OCSF format"
 type: scanner
 steps:
   - name: run-mobsfscan
-    image: opensecurity/mobsfscan:latest
+    image: opensecurity/mobsfscan:0.4.5
     executable: /usr/local/bin/mobsfscan
     args:
     - --sarif

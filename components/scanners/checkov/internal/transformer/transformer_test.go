@@ -3,6 +3,8 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -48,7 +50,23 @@ func TestCheckovTransformer_Transform(t *testing.T) {
 		transformer.CheckovTransformerWithClock(clock),
 	)
 	require.NoError(t, err)
+	t.Run("it should return 0 findings when the output file exists but is empty", func(t *testing.T) {
+		// Create an empty SARIF file for testing
+		emptyFilePath := filepath.Join(t.TempDir(), "empty_results_sarif.sarif")
+		err := os.WriteFile(emptyFilePath, []byte{}, 0644)
+		require.NoError(t, err)
 
+		ocsfTransformer, err := transformer.New(
+			transformer.CheckovRawOutFilePath(emptyFilePath),
+			transformer.CheckovTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CheckovTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		assert.Empty(t, findings, "Expected no findings for an empty SARIF file")
+	})
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
 		findings, err := ocsfTransformer.Transform(ctx)
 		require.NoError(t, err)

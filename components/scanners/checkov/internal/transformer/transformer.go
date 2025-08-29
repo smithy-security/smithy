@@ -125,6 +125,11 @@ func (g *checkovTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabili
 		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
 	}
 
+	if len(b) == 0 {
+		logger.Info("Scanner SARIF file is empty, exiting")
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
+
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw checkov output: %w", err)
