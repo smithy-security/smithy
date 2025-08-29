@@ -29,6 +29,11 @@ func TestGetExtractor(t *testing.T) {
 			expFileType: artifact.FileTypeZip,
 		},
 		{
+			name:        "remote type",
+			fileName:    "https://github.com/B3nac/InjuredAndroid/releases/download/v1.0.12/InjuredAndroid-1.0.12-release.apk",
+			expFileType: artifact.FileTypeApk,
+		},
+		{
 			name:        "tar type",
 			fileName:    "gs://my-bucket/my-archive.tar",
 			expFileType: artifact.FileTypeTar,

@@ -2,7 +2,7 @@
 
 This component implements a [target](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go) that downloads and extracts archived source code from various sources including HTTP endpoints and S3-compatible storage.
 
-The component supports `.zip`, `.tar`, and `.tar.gz` archive formats from multiple protocols and automatically extracts the contents for analysis by downstream components.
+The component supports `.zip`, `.tar`,`.apk` and `.tar.gz` archive formats from multiple protocols and automatically extracts the contents for analysis by downstream components.
 
 ## Supported Sources
 
@@ -46,6 +46,7 @@ gs://my-bucket/my-archive.tar.gz
 ## Supported Archive Formats
 
 * **ZIP**: `.zip` files
+* **APK**: `.apk` files
 * **TAR**: `.tar` files
 * **TAR.GZ**: `.tar.gz` and `.tgz` files
 

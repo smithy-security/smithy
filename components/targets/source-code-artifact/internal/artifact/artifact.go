@@ -13,6 +13,7 @@ const (
 	SourceTypeUnsupported SourceType = "unsupported"
 
 	FileTypeZip         FileType = "zip"
+	FileTypeApk         FileType = "apk"
 	FileTypeTar         FileType = "tar"
 	FileTypeTarGz       FileType = "tar.gz"
 	FileTypeUnarchived  FileType = "unarchived"
@@ -59,6 +60,8 @@ func GetFileType(fileName string) (FileType, error) {
 		return FileTypeTarGz, nil
 	case strings.HasSuffix(fileName, ".zip"):
 		return FileTypeZip, nil
+	case strings.HasSuffix(fileName, ".apk"):
+		return FileTypeApk, nil
 	}
 
 	return FileTypeUnarchived, nil

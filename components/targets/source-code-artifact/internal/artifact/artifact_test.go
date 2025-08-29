@@ -141,6 +141,12 @@ func TestGetFileType(t *testing.T) {
 			wantErr:  false,
 		},
 		{
+			name:     "Full URL with APK",
+			fileName: "https://github.com/B3nac/InjuredAndroid/releases/download/v1.0.12/InjuredAndroid-1.0.12-release.apk",
+			expected: artifact.FileTypeApk,
+			wantErr:  false,
+		},
+		{
 			name:     "S3 URL with TAR.GZ",
 			fileName: "s3://bucket/path/archive.tar.gz",
 			expected: artifact.FileTypeTarGz,
@@ -192,6 +198,7 @@ func TestStringMethods(t *testing.T) {
 
 	t.Run("FileType String method", func(t *testing.T) {
 		require.Equal(t, "zip", artifact.FileTypeZip.String())
+		require.Equal(t, "apk", artifact.FileTypeApk.String())
 		require.Equal(t, "tar", artifact.FileTypeTar.String())
 		require.Equal(t, "tar.gz", artifact.FileTypeTarGz.String())
 		require.Equal(t, "unsupported", artifact.FileTypeUnsupported.String())

@@ -6,6 +6,7 @@ import (
 	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact"
+	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/apk"
 	plaincopy "github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/plain-copy"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/tar"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/targz"
@@ -65,6 +66,8 @@ func GetExtractor(fileName string) (Extractor, artifact.FileType, error) {
 	switch fileType {
 	case artifact.FileTypeZip:
 		extractor = zip.NewExtractor()
+	case artifact.FileTypeApk:
+		extractor = apk.NewExtractor()
 	case artifact.FileTypeTar:
 		extractor = tar.NewExtractor()
 	case artifact.FileTypeTarGz:
