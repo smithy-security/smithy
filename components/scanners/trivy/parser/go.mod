@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/components/scanners/trivy
+module github.com/smithy-security/smithy/components/scanners/trivy/parser
 
 go 1.23.4
 

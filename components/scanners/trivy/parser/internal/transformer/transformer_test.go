@@ -15,7 +15,7 @@ import (
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 
-	"github.com/smithy-security/smithy/components/scanners/trivy/internal/transformer"
+	"github.com/smithy-security/smithy/components/scanners/trivy/parser/internal/transformer"
 )
 
 func TestTrivyTransformer_Transform(t *testing.T) {
@@ -23,13 +23,14 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 		ctx, cancel = context.WithTimeout(context.Background(), time.Second)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
 		nowUnix     = clock.Now().Unix()
-		typeUid     = int64(
+		typeUID     = int64(
 			ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
 				100 +
 				ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.Number(),
 		)
 	)
 	defer cancel()
+
 	targetMetadata := &ocsffindinginfo.DataSource{
 		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE,
 		OciPackageMetadata: &ocsffindinginfo.DataSource_OCIPackageMetadata{
@@ -144,7 +145,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 				idx,
 			)
 			assert.Equalf(t, nowUnix, finding.Time, "Unexpected time for finding %d", idx)
-			assert.Equalf(t, typeUid, finding.TypeUid, "Unexpected type uid for finding %d", idx)
+			assert.Equalf(t, typeUID, finding.TypeUid, "Unexpected type uid for finding %d", idx)
 			require.NotNilf(t, finding.FindingInfo, "Unexpected nil finding info for finding %d", idx)
 			findingInfo := finding.FindingInfo
 			assert.Equalf(t, nowUnix, *findingInfo.CreatedTime, "Unexpected finding info created time for finding %d", idx)
@@ -205,7 +206,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			)
 			assert.NotEmptyf(t, vulnerability.Title, "Unexpected empty title for vulnerability for finding %d", idx)
 			assert.NotEmptyf(t, vulnerability.Desc, "Unexpected empty desc for vulnerability for finding %d", idx)
-			require.Lenf(t, vulnerability.AffectedCode, 1, "Unexpected lenght for affected code for vulnerability for finding %d. Expected 1", idx)
+			require.Lenf(t, vulnerability.AffectedCode, 1, "Unexpected length for affected code for vulnerability for finding %d. Expected 1", idx)
 
 			var affectedCode = vulnerability.AffectedCode[0]
 			require.NotNilf(t, affectedCode.File, "Unexpected nil file for vulnerability for finding %d", idx)

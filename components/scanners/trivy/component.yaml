@@ -23,7 +23,7 @@ steps:
       TRIVY_USERNAME: "{{ .parameters.trivy_username}}"
       TRIVY_PASSWORD: "{{ .parameters.trivy_password}}"
   - name: parser
-    image: components/scanners/trivy
+    image: components/scanners/trivy/parser
     executable: /bin/app
     env_vars:
       TRIVY_RAW_OUT_FILE_PATH: "{{ sourceCodeWorkspace }}/trivy-out.sarif.json"
