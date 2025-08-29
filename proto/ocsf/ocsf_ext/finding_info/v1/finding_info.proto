@@ -58,7 +58,7 @@ message DataSource {
     string tag = 2;
   }
 
-  // WebsiteMetadata records the metadata of the webiste that was scanned.
+  // WebsiteMetadata records the metadata of the website that was scanned.
   message WebsiteMetadata {
     string url = 1;
   }
