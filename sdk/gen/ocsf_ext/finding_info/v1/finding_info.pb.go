@@ -778,7 +778,7 @@ func (x *DataSource_OCIPackageMetadata) GetTag() string {
 	return ""
 }
 
-// WebsiteMetadata records the metadata of the webiste that was scanned.
+// WebsiteMetadata records the metadata of the website that was scanned.
 type DataSource_WebsiteMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
