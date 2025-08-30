@@ -16,108 +16,22 @@ from urllib.parse import quote, urlparse
 
 from zapv2 import ZAPv2
 
-
-plan_template = """
-{
-    "env": {
-        "contexts": [
-            {
-                "name": "Default Context",
-                "urls": [
-                    "${zap_target}"
-                ],
-                "includePaths": [
-                    "*.${zap_target}.*"
-                ],
-                "authentication": {
-                    "method": "browser",
-                    "parameters": {
-                        "browserId": "firefox-headless",
-                        "loginPageUrl": "${zap_login_path}",
-                        "loginPageWait": 5
-                    },
-                    "verification": {
-                        "method": "autodetect"
-                    }
-                },
-                "sessionManagement": {
-                    "method": "autodetect"
-                },
-                "technology": {},
-                "users": [
-                    {
-                        "name": "test-user",
-                        "credentials": {
-                            "username": "${zap_username}",
-                            "password": "${zap_password}"
-                        }
-                    }
-                ]
-            }
-        ],
-        "parameters": {}
-    },
-    "jobs": [
-        {
-            "type": "activeScan-config",
-            "rules": []
-        },
-        {
-            "type": "passiveScan-config",
-            "rules": []
-        },
-        {
-            "parameters": {},
-            "name": "spider",
-            "type": "spider"
-        },
-        {
-            "parameters": {
-                "maxDuration": 5,
-                "maxCrawlDepth": 10,
-                "runOnlyIfModern": true,
-                "inScopeOnly": true
-            },
-            "name": "spiderAjax",
-            "type": "spiderAjax"
-        },
-        {
-            "type": "requestor",
-            "parameters": {
-                "user": "test-user"
-            },
-            "requests": [
-                {
-                    "url": "${zap_target}"
-                }
-            ]
-        },
-         {
-            "name": "activeScan",
-            "type": "activeScan",
-            "parameters": {
-                "maxScanDurationInMins": 10
-            }
-        },
-        {
-            "type": "passiveScan-wait",
-            "parameters": {},
-            "name": "passiveScan-wait"
-        },
-        {
-            "name": "${zap_report_name}",
-            "type": "report",
-            "parameters": {
-                "template": "sarif-json",
-                "theme": null,
-                "reportDir": "${zap_report_dir}",
-                "reportFile": "${zap_report_file}",
-                "reportTitle": "${zap_report_title}"
-            }
-        }
-    ]
-}
-"""
+global_exclude_paths = [
+    "^data:.*",
+    ".*\\.(jpg|jpeg|png|gif|bmp|tiff|svg|webp|ico|css|js|woff|woff2|ttf|pdf|zip|mp3|mp4)(\\?.*)?$",
+    ".*/images/.*",
+    ".*/img/.*",
+    ".*/static/.*",
+    ".*/assets/.*",
+    ".*/media/.*",
+    ".*/cdn/.*",
+    ".*base64.*",
+    ".*data:image.*",
+    ".*googletagmanager.*",
+    ".*googlesyndication.*",
+    ".*facebook\\.com.*",
+    ".*twitter\\.com.*",
+]
 
 baseline_plan_template = """
 {
@@ -128,8 +42,10 @@ baseline_plan_template = """
         "urls": [
           "${zap_target}"
         ],
-        "includePaths": [],
-        "excludePaths": []
+        "includePaths": [
+            ".*${zap_target}.*"
+        ],
+        "excludePaths": ["${global_exclude_paths}"]
       }
     ],
     "parameters": {
@@ -151,7 +67,15 @@ baseline_plan_template = """
     },
     {
       "parameters": {
-        "maxDuration": "${zap_spider_duration_mins}"
+        "maxDuration": "${zap_spider_duration_mins}",
+        "maxCrawlDepth": "${zap_spider_max_crawl_depth}",
+        "numberOfThreads": 2,
+        "maxChildren": "${zap_spider_max_children}",
+        "handleParameters": "USE_ALL",
+        "maxParseTimeInSecs": 30,
+        "parseComments": false,
+        "parseRobotsTxt": false,
+        "handleODataParametersVisited": false
       },
       "name": "spider",
       "type": "spider"
@@ -165,14 +89,25 @@ baseline_plan_template = """
       "parameters": {
         "maxDuration": "${zap_spider_duration_mins}",
         "runOnlyIfModern": true,
-        "inScopeOnly": true
+        "inScopeOnly": true,
+        "maxCrawlDepth": "${zap_spider_max_crawl_depth}",
+        "numberOfBrowsers": 1,
+        "clickDefaultElems": true,
+        "clickElemsOnce": true,
+        "randomInputs": false,
+        "reloadWait": 1000,
+        "clickElemWait": 100,
+        "eventWait": 1000
       },
       "name": "spiderAjax",
       "type": "spiderAjax"
     },
     {
       "parameters": {
-        "maxScanDurationInMins": "${zap_active_scan_duration_mins}"
+        "maxScanDurationInMins": "${zap_active_scan_duration_mins}",
+        "maxRuleDurationInMins": 1,
+        "threadPerHost": 2,
+        "hostPerScan": 1
       },
       "policyDefinition": {},
       "name": "activeScan",
@@ -257,6 +192,20 @@ class ZapRunner:
         max_retries: int = 5,
     ) -> None:
         print(f"initializing zap, listening on {self.host}:{self.port}")
+        env = os.environ.copy()
+
+        # Build JAVA_OPTS string with performance/memory optimizations:
+        java_opts = [
+            "-Xmx4g",  # -Xmx4g: Allows ZAP to use up to 4GB RAM, preventing out-of-memory errors during large scans.
+            "-Xms2g",  # -Xms2g: Starts JVM with 2GB RAM, reducing time spent resizing the heap during startup.
+            "-XX:MaxMetaspaceSize=512m",  # -XX:MaxMetaspaceSize=512m: Limits class metadata memory usage, preventing excessive growth.
+            "-XX:+UseG1GC",  # -XX:+UseG1GC: Uses G1 garbage collector, which is efficient for large heaps and reduces GC pause times.
+            "-XX:G1HeapRegionSize=16m",  # -XX:G1HeapRegionSize=16m: Sets G1 region size, improving GC efficiency for large objects.
+            "-XX:+UseStringDeduplication",  # -XX:+UseStringDeduplication: Saves memory by deduplicating identical strings in the heap.
+            "-XX:+DisableExplicitGC",  # -XX:+DisableExplicitGC: Prevents explicit garbage collection calls, avoiding unnecessary GC pauses.
+        ]
+        env["JAVA_OPTS"] = " ".join(java_opts)
+
         self.zap_process = subprocess.Popen(
             [
                 "/zap/zap.sh",
@@ -272,6 +221,7 @@ class ZapRunner:
             ],
             stdout=sys.stdout,
             stderr=sys.stderr,
+            env=env,
         )
         print("zap subprocess started")
 
@@ -321,6 +271,75 @@ class ZapRunner:
             self.context_id = ctx["id"]
         print(f"context is {self.zap.context.context(self.context_name)}")
 
+    def __add_authentication_to_scan(
+        self: "ZapRunner",
+        automation_framework_script: dict,
+        login_url: str,
+        username: str,
+        password: str,
+    ) -> dict:
+        for ctx in automation_framework_script.get("env", {}).get("contexts", []):
+            name_of_zap_user = "default-user"
+            if "authentication" not in ctx:
+                ctx["authentication"] = {}
+            ctx["authentication"] = {
+                "method": "browser",
+                "parameters": {
+                    "browserId": "firefox-headless",
+                    "loginPageUrl": login_url,
+                    "loginPageWait": 5,
+                },
+                "verification": {"method": "autodetect"},
+            }
+            if (
+                "sessionManagement" not in ctx
+                or not ctx["sessionManagement"]
+                or not ctx["sessionManagement"].get("method")
+            ):
+                ctx["sessionManagement"] = {"method": "autodetect"}
+
+            if "users" not in ctx or not ctx["users"]:
+                ctx["users"] = [
+                    {
+                        "name": "default-user",
+                        "credentials": {"username": username, "password": password},
+                        "enabled": True,
+                    }
+                ]
+            elif len(ctx["users"]) != 1:
+                raise ValueError(
+                    f"if users are provided in the context, there must be exactly one user, found {len(ctx['users'])} users"
+                )
+            else:
+                for user in ctx["users"]:
+                    name_of_zap_user = user.get("name", "default-user")
+                    user["credentials"]["username"] = username
+                    user["credentials"]["password"] = password
+                    user["enabled"] = True
+        activeScanIndex = -1
+        for i, job in enumerate(automation_framework_script.get("jobs", [])):
+            if job["type"] == "activeScan":
+                activeScanIndex = i
+                break
+
+        # inject the requestor job before active scan to ensure active scan is logged in
+        requestor_job = {
+            "type": "requestor",
+            "name": "Authenticated User Requestor",
+            "context": self.context_name,
+            "user": name_of_zap_user,
+            "requests": [
+                {
+                    "url": self.target_url,
+                }
+            ],
+            "parameters": {"user": name_of_zap_user},
+        }
+        insert_index = activeScanIndex if activeScanIndex >= 0 else 0
+        automation_framework_script["jobs"].insert(insert_index, requestor_job)
+
+        return automation_framework_script
+
     def run_automation_framework_scan(
         self: "ZapRunner",
         login_url: str = None,
@@ -330,39 +349,59 @@ class ZapRunner:
         report_name: str = "Smithy Zap Report",
         report_title: str = "Smithy Zap Report",
         report_dir: str = None,
-        plan: str = None,
         scan_duration: int = 10,
         spider_duration: int = 5,
-    ):
-        automation_framework_script = json.loads(plan)
+        spider_crawl_depth: int = 5,
+        spider_max_children: int = 50,
+    ) -> dict:
+        automation_framework_script = None
+
+        print(f"preparing to load automation plan:\n```{baseline_plan_template}```")
+        try:
+            automation_framework_script = json.loads(baseline_plan_template)
+        except json.JSONDecodeError as e:
+            print(
+                f"could not parse plan provided \n```{baseline_plan_template}```\nerror: {e}"
+            )
+            raise e
+
+        # setup context
+        #   * make the urls be our target url
+        #   * setup include/exclude paths
+        #   * setup context auth if credentials were provided
+        # If loggedin scan the also setup requestor
         for context in automation_framework_script["env"]["contexts"]:
             print(f"setting zap target for context {context['name']}")
             context["urls"] = [self.target_url]
+
             urlparsed = urlparse(self.target_url)
             without_scheme = re.escape(
                 f"{urlparsed.netloc}{urlparsed.path.rstrip('/')}"
             )
             include_url = f".*{without_scheme}.*"
-
             context["includePaths"] = [f"{include_url}"]
             print(f"Configured include paths {context['includePaths']}")
-            context["excludePaths"] = [f"^((?!{without_scheme}).)*$"]
+
+            context["excludePaths"] = global_exclude_paths.copy()
+            context["excludePaths"].extend([f"^((?!{without_scheme}).)*$"])
             print(f"Configured exclude paths {context['excludePaths']}")
 
             if login_url and username and password:
-                print(
-                    f"setting authentication for context {context['name']} to login_url: {login_url}, username: {username}"
+                print("adding authentication to scan")
+                automation_framework_script = self.__add_authentication_to_scan(
+                    automation_framework_script,
+                    login_url,
+                    username,
+                    password,
                 )
-                context["authentication"]["method"] = "browser"
-                context["authentication"]["parameters"]["loginPageUrl"] = login_url
-                for user in context["users"]:
-                    user["credentials"]["username"] = username
-                    user["credentials"]["password"] = password
+
+        # setup:
+        #   activeScan scanDuration
+        #   spider maxDuration, crawlDepth, children
+        #   spiderAjax maxDuration, crawlDepth
+        #   report dir, filename, title
         for job in automation_framework_script["jobs"]:
-            if job["type"] == "requestor":
-                for req in job["requests"]:
-                    req["url"] = self.target_url
-            elif job["type"] == "activeScan":
+            if job["type"] == "activeScan":
                 if "parameters" not in job:
                     job["parameters"] = {}
                 job["parameters"]["maxScanDurationInMins"] = scan_duration
@@ -370,33 +409,44 @@ class ZapRunner:
                 if "parameters" not in job:
                     job["parameters"] = {}
                 job["parameters"]["maxDuration"] = spider_duration
+                job["parameters"]["maxCrawlDepth"] = spider_crawl_depth
+                job["parameters"]["maxChildren"] = spider_max_children
             elif job["type"] == "spiderAjax":
                 if "parameters" not in job:
                     job["parameters"] = {}
                 job["parameters"]["maxDuration"] = spider_duration
+                job["parameters"]["maxCrawlDepth"] = spider_crawl_depth
             elif job["type"] == "report":
                 job["name"] = report_name
                 job["parameters"]["reportDir"] = report_dir
                 job["parameters"]["reportFile"] = filename
                 job["parameters"]["reportTitle"] = report_title
 
+        script = yaml.safe_dump(automation_framework_script, sort_keys=False)
+        print(f"templated automation framework script:\n```{script}```")
+
         with open("/tmp/zap_auth_automation.yaml", "w") as f:
             f.write("\n---\n")
-            f.write(yaml.safe_dump(automation_framework_script, sort_keys=False))
+            f.write(script)
             f.close()
         print(
-            "running automation framework scipt located at /tmp/zap_auth_automation.yaml"
+            "running automation framework script located at /tmp/zap_auth_automation.yaml"
         )
+
         planID = self.zap.automation.run_plan("/tmp/zap_auth_automation.yaml")
         progress = self.zap.automation.plan_progress(planid=planID)
         while not progress["error"] and not progress["finished"]:
             progress = self.zap.automation.plan_progress(planid=planID)
             time.sleep(5)
             print(f"plan progress {progress}  {progress['info']}")
+
         if progress["finished"]:
             print(f"plan completed successfully at {progress['finished']}")
+
         if progress["error"]:
             print(f"plan had errors, check progress for hints")
+
+        return automation_framework_script
 
 
 def get_env_or_default(value, env_key, default=""):
@@ -405,6 +455,15 @@ def get_env_or_default(value, env_key, default=""):
 
 def main():
     parser = argparse.ArgumentParser(description="Parse input parameters")
+
+    parser.add_argument(
+        "--target",
+        type=str,
+        default=get_env_or_default("", "TARGET"),
+        help="Target URL or address",
+    )
+
+    # auth
     parser.add_argument(
         "--login-url",
         default=get_env_or_default("", "LOGIN_URL"),
@@ -429,23 +488,13 @@ def main():
         type=str,
         help="Password",
     )
-    parser.add_argument(
-        "--target",
-        type=str,
-        default=get_env_or_default("", "TARGET"),
-        help="Target URL or address",
-    )
-    parser.add_argument(
-        "--sub-targets",
-        default=get_env_or_default("", "SUB_TARGETS"),
-        type=str,
-        help="Comma-separated list of sub-targets",
-    )
+
+    # internal
     parser.add_argument(
         "--api-key",
         default=get_env_or_default("", "API_KEY"),
         type=str,
-        help="Comma-separated list of sub-targets",
+        help="API key for authentication",
     )
     parser.add_argument(
         "--report-name",
@@ -459,24 +508,7 @@ def main():
         type=str,
         help="where to put the report",
     )
-    parser.add_argument(
-        "--max-scan-duration",
-        default=get_env_or_default("", "SCAN_DURATION_MINS"),
-        type=str,
-        help="where to put the report",
-    )
-    parser.add_argument(
-        "--max-spider-duration",
-        default=get_env_or_default("", "SPIDER_DURATION_MINS"),
-        type=str,
-        help="where to put the report",
-    )
-    parser.add_argument(
-        "--no-start-zap",
-        default=False,
-        action="store_true",
-        help="(for local dev, do not attempt to start zap)",
-    )
+
     parser.add_argument(
         "--startup-check-retries",
         default=get_env_or_default("", "STARTUP_CHECK_RETRIES", default=3),
@@ -494,6 +526,40 @@ def main():
         default=get_env_or_default("", "SHUTDOWN_TIMEOUT", default=10),
         type=int,
         help="how many seconds to wait for ZAP to shutdown",
+    )
+
+    # performance
+    parser.add_argument(
+        "--max-scan-duration",
+        default=get_env_or_default("", "SCAN_DURATION_MINS"),
+        type=str,
+        help="for how long does the active scanner run, this affects how many findings will be produced",
+    )
+    parser.add_argument(
+        "--max-spider-duration",
+        default=get_env_or_default("", "SPIDER_DURATION_MINS"),
+        type=str,
+        help="for how long does the spider run, this affects how many findings will be produced",
+    )
+    parser.add_argument(
+        "--max-spider-crawl-depth",
+        default=get_env_or_default("", "SPIDER_MAX_CRAWL_DEPTH"),
+        type=str,
+        help="for how deep the spider should crawl, this affects how many findings will be produced",
+    )
+    parser.add_argument(
+        "--max-spider-children",
+        default=get_env_or_default("", "SPIDER_MAX_CHILDREN"),
+        type=str,
+        help="how many children pages the spider should crawl, this affects how many findings will be produced",
+    )
+
+    # testing/dev/debugging
+    parser.add_argument(
+        "--no-start-zap",
+        default=False,
+        action="store_true",
+        help="(for local dev, do not attempt to start zap)",
     )
     args = parser.parse_args()
 
@@ -538,18 +604,16 @@ def main():
         )
     try:
         if args.username and args.password:
-            print("running automation framework scan")
+            print("running authenticated automation framework scan")
             return runner.run_automation_framework_scan(
                 login_url=args.login_url,
                 username=args.username,
                 password=args.password,
                 report_dir=args.report_dir,
-                plan=plan_template,
             )
         print("running baseline scan using the the automation framework")
         return runner.run_automation_framework_scan(
             report_dir=args.report_dir,
-            plan=baseline_plan_template,
             scan_duration=max_scan_duration,
             spider_duration=max_spider_duration,
         )
