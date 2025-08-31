@@ -1,0 +1,31 @@
+# github.com/cenkalti/backoff/v5 v5.0.2
+## explicit; go 1.23
+github.com/cenkalti/backoff/v5
+# github.com/davecgh/go-spew v1.1.1
+## explicit
+github.com/davecgh/go-spew/spew
+# github.com/go-errors/errors v1.5.1
+## explicit; go 1.14
+github.com/go-errors/errors
+# github.com/golang/mock v1.6.0
+## explicit; go 1.11
+github.com/golang/mock/gomock
+# github.com/google/uuid v1.6.0
+## explicit
+github.com/google/uuid
+# github.com/kr/text v0.2.0
+## explicit
+# github.com/pmezard/go-difflib v1.0.0
+## explicit
+github.com/pmezard/go-difflib/difflib
+# github.com/smithy-security/pkg/retry v0.0.3
+## explicit; go 1.23
+github.com/smithy-security/pkg/retry
+# github.com/stretchr/testify v1.11.1
+## explicit; go 1.17
+github.com/stretchr/testify/assert
+github.com/stretchr/testify/assert/yaml
+github.com/stretchr/testify/require
+# gopkg.in/yaml.v3 v3.0.1
+## explicit
+gopkg.in/yaml.v3
