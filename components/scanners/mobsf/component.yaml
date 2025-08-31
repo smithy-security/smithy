@@ -1,0 +1,50 @@
+name: mobsf
+description: "Runs MobSF against an APK or IPA then parses findings into the OCSF format"
+type: scanner
+parameters:
+  - name: client_request_timeout
+    type: string
+    value: "10"
+  - name: client_max_retries
+    type: string
+    value: "5"
+  - name: client_retry_delay
+    type: string
+    value: "10"
+  - name: startup_timeout
+    type: string
+    value: "30"
+  - name: scan_completion_max_backoff
+    type: string
+    value: "200"
+steps:
+  - name: adjust-file-permissions
+    image: busybox:latest
+    executable: /bin/sh
+    args:
+      - -c
+      - |
+        chmod -R 777 {{ sourceCodeWorkspace }}
+        chmod -R 777 {{ scratchWorkspace }}
+
+  - name: run-mobsf
+    image: components/scanners/mobsf/scanner
+    executable: /usr/local/bin/mosf-orchestrator
+    env_vars:
+      MOBSF_SCANNED_FILE_DIR: "{{ sourceCodeWorkspace }}"
+      MOBSF_REPORT_OUTPUT_PATH: "{{ scratchWorkspace }}/mobsf_report.json"
+      MOBSF_ORCHESTRATOR_LOG_LEVEL: "debug"
+      MOBSF_API_KEY: ""
+      MOBSF_HOST: ""
+      MOBSF_PORT: ""
+      MOBSF_CLIENT_REQUEST_TIMEOUT: "{{ .parameters.client_request_timeout }}"
+      MOBSF_CLIENT_MAX_RETRIES: "{{ .parameters.client_max_retries }}"
+      MOBSF_CLIENT_RETRY_DELAY: "{{ .parameters.client_retry_delay }}"
+      MOBSF_STARTUP_TIMEOUT: "{{ .parameters.startup_timeout }}"
+      MOBSF_SCAN_COMPLETION_BACKOFF: "{{ .parameters.scan_completion_backoff }}"
+      MOBSF_SCAN_COMPLETION_MAX_BACKOFF: "{{ .parameters.scan_completion_max_backoff }}"
+  - name: parser
+    image: components/scanners/mobsf/parser
+    env_vars:
+      MOBSF_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/mobsf_report.json"
+    executable: /bin/app
