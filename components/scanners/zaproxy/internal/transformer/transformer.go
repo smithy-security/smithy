@@ -161,7 +161,7 @@ func (g *zapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFi
 	return transformer.ToOCSF(ctx)
 }
 
-func (s *zapTransformer) Metrics(ctx context.Context, input *sarifschemav210.SchemaJson) string {
+func (g *zapTransformer) Metrics(ctx context.Context, input *sarifschemav210.SchemaJson) string {
 	var paths = make(map[string]struct{})
 	var ruleIDs = make(map[string]struct{})
 	var resultCount int

@@ -23,7 +23,7 @@ func TestZapTransformer_Transform(t *testing.T) {
 		ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
 		nowUnix     = clock.Now().Unix()
-		typeUid     = int64(
+		typeUID     = int64(
 			ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
 				100 +
 				ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.Number(),
@@ -163,7 +163,7 @@ func TestZapTransformer_Transform(t *testing.T) {
 				idx,
 			)
 			assert.Equalf(t, nowUnix, finding.Time, "Unexpected time for finding %d", idx)
-			assert.Equalf(t, typeUid, finding.TypeUid, "Unexpected type uid for finding %d", idx)
+			assert.Equalf(t, typeUID, finding.TypeUid, "Unexpected type uid for finding %d", idx)
 			require.NotNilf(t, finding.FindingInfo, "Unexpected nil finding info for finding %d", idx)
 			findingInfo := finding.FindingInfo
 			assert.Equalf(t, nowUnix, *findingInfo.CreatedTime, "Unexpected finding info created time for finding %d", idx)
