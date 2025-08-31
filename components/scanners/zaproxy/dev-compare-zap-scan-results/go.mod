@@ -1,12 +1,10 @@
 module github.com/smithy-security/smithy/components/scanners/zaproxy/dev-compare-zap-scan-results
 
-go 1.24.0
-
-toolchain go1.24.6
+go 1.23.4
 
 require (
 	github.com/smithy-security/pkg/sarif v0.0.10
-	k8s.io/apimachinery v0.33.3
+	k8s.io/apimachinery v0.29.0
 )
 
 require (
