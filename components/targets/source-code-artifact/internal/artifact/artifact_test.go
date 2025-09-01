@@ -3,6 +3,7 @@ package artifact_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact"
@@ -96,88 +97,71 @@ func TestGetFileType(t *testing.T) {
 		name     string
 		fileName string
 		expected artifact.FileType
-		wantErr  bool
+		err      error
 	}{
 		{
 			name:     "ZIP file",
 			fileName: "archive.zip",
 			expected: artifact.FileTypeZip,
-			wantErr:  false,
 		},
 		{
 			name:     "ZIP file with path",
 			fileName: "/path/to/archive.zip",
 			expected: artifact.FileTypeZip,
-			wantErr:  false,
 		},
 		{
 			name:     "TAR file",
 			fileName: "archive.tar",
 			expected: artifact.FileTypeTar,
-			wantErr:  false,
 		},
 		{
 			name:     "TAR file with path",
 			fileName: "/path/to/archive.tar",
 			expected: artifact.FileTypeTar,
-			wantErr:  false,
 		},
 		{
 			name:     "TAR.GZ file",
 			fileName: "archive.tar.gz",
 			expected: artifact.FileTypeTarGz,
-			wantErr:  false,
 		},
 		{
 			name:     "TAR.GZ file with path",
 			fileName: "/path/to/archive.tar.gz",
 			expected: artifact.FileTypeTarGz,
-			wantErr:  false,
 		},
 		{
 			name:     "Full URL with ZIP",
 			fileName: "https://github.com/example/repo/archive/refs/heads/main.zip",
 			expected: artifact.FileTypeZip,
-			wantErr:  false,
 		},
 		{
 			name:     "S3 URL with TAR.GZ",
 			fileName: "s3://bucket/path/archive.tar.gz",
 			expected: artifact.FileTypeTarGz,
-			wantErr:  false,
 		},
 		{
 			name:     "Empty string",
 			fileName: "",
 			expected: artifact.FileTypeUnsupported,
-			wantErr:  false,
+			err:      artifact.ErrNoFileNameProvided,
 		},
 		{
 			name:     "Just tar.gz extension",
 			fileName: ".tar.gz",
 			expected: artifact.FileTypeTarGz,
-			wantErr:  false,
 		},
 		{
 			name:     "Not archived",
 			fileName: "SBOM.json",
 			expected: artifact.FileTypeUnarchived,
-			wantErr:  false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := artifact.GetFileType(tt.fileName)
-
-			if tt.wantErr {
-				require.Error(t, err)
-				require.Equal(t, tt.expected, result)
-				require.Contains(t, err.Error(), "unsupported file type")
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, tt.expected, result)
-			}
+			assert.ErrorIs(t, err, tt.err)
+			assert.Equal(t, tt.expected, result)
 		})
 	}
 }

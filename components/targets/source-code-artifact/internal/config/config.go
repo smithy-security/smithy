@@ -1,13 +1,15 @@
 package config
 
 import (
-	"fmt"
+	"net/url"
+	"os"
 	"path"
 	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
 
+	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/fetcher"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/metadata"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/target"
@@ -20,7 +22,35 @@ type Config struct {
 	Metadata metadata.Config
 }
 
+const (
+	// EnvVarArchivePath is the environment variable for the archive path
+	EnvVarArchivePath = "ARCHIVE_PATH"
+	// EnvVarSourceCodePath is the environment variable for the source code
+	// path
+	EnvVarSourceCodePath = "SOURCE_CODE_PATH"
+	// EnvVarMetadataPath is the environment variable for the metadata path
+	EnvVarMetadataPath = "METADATA_PATH"
+	// EnvVarArtifactURL is the environment variable for the archive url
+	EnvVarArtifactURL = "ARTIFACT_URL"
+	// EnvVarArchiveType is the environment variable for the archive type
+	EnvVarArchiveType = "ARCHIVE_TYPE"
+	// EnvVarArtifactReference is the environment variable for the artifact
+	// reference
+	EnvVarArtifactReference = "ARTIFACT_REFERENCE"
+	// EnvVarArtifactRegistryRegion is the environment variable for the
+	// registry region when the S3 client is used
+	EnvVarArtifactRegistryRegion = "ARTIFACT_REGISTRY_REGION"
+	// EnvVarArtifactRegistryAuthID is the environment variable for the client
+	// secret ID in the case of the S3 client
+	EnvVarArtifactRegistryAuthID = "ARTIFACT_REGISTRY_AUTH_ID"
+	// EnvVarArtifactRegistryAuthSecret is the environment variable for the
+	// secret of the S3 client
+	EnvVarArtifactRegistryAuthSecret = "ARTIFACT_REGISTRY_AUTH_SECRET"
+)
+
 // New returns a new configuration initialised by introspecting the environment variables.
+//
+//revive:disable:cyclomatic High complexity score but easy to understand
 func New() (Config, error) {
 	var (
 		err, errs error
@@ -28,30 +58,30 @@ func New() (Config, error) {
 	)
 
 	cfg.Target.ArchivePath, err = env.GetOrDefault(
-		"ARCHIVE_PATH",
+		EnvVarArchivePath,
 		"./archive",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var ARCHIVE_PATH: %w", err))
+		errs = errors.Join(errs, errors.Errorf("failed to get env var ARCHIVE_PATH: %w", err))
 	}
 
 	cfg.Target.SourceCodePath, err = env.GetOrDefault(
-		"SOURCE_CODE_PATH",
+		EnvVarSourceCodePath,
 		"./source-code",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var SOURCE_CODE_PATH: %w", err))
+		errs = errors.Join(errs, errors.Errorf("failed to get env var SOURCE_CODE_PATH: %w", err))
 	}
 
 	cfg.Metadata.MetadataPath, err = env.GetOrDefault(
-		"METADATA_PATH",
+		EnvVarMetadataPath,
 		"./metadata",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var METADATA_PATH: %w", err))
+		errs = errors.Join(errs, errors.Errorf("failed to get env var METADATA_PATH: %w", err))
 	}
 
 	if cfg.Metadata.MetadataPath != "" && !strings.HasSuffix(cfg.Metadata.MetadataPath, "target.json") {
@@ -60,23 +90,25 @@ func New() (Config, error) {
 
 	var artifactURL string
 	artifactURL, err = env.GetOrDefault(
-		"ARTIFACT_URL",
+		EnvVarArtifactURL,
 		"",
 	)
 	if err != nil {
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var ARTIFACT_URL: %w", err))
+		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_URL: %w", err))
 	}
 
-	artifactExtension, err := env.GetOrDefault(
-		"ARTIFACT_EXTENSION",
+	archiveTypeStr, err := env.GetOrDefault(
+		EnvVarArchiveType,
 		"",
 		env.WithDefaultOnError(true),
 	)
-	switch {
-	case err != nil:
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var ARTIFACT_EXTENSION: %w", err))
-	case artifactExtension != "":
-		artifactURL += fmt.Sprintf(".%s", strings.TrimSuffix(artifactExtension, "."))
+	if err != nil {
+		errs = errors.Join(errs, errors.Errorf("failed to get env var ARCHIVE_TYPE: %w", err))
+	}
+
+	archiveType, err := artifact.GetArchiveType(archiveTypeStr)
+	if err != nil {
+		errs = errors.Join(errs, err)
 	}
 
 	cfg.Fetcher.ArtifactURL = artifactURL
@@ -84,39 +116,90 @@ func New() (Config, error) {
 	cfg.Target.ArtifactURL = artifactURL
 
 	cfg.Metadata.Reference, err = env.GetOrDefault(
-		"ARTIFACT_REFERENCE",
+		EnvVarArtifactReference,
 		"",
 	)
 	if err != nil {
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var ARTIFACT_REFERENCE: %w", err))
+		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_REFERENCE: %w", err))
 	}
 
 	cfg.Fetcher.Region, err = env.GetOrDefault(
-		"ARTIFACT_REGISTRY_REGION",
+		EnvVarArtifactRegistryRegion,
 		"",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var ARTIFACT_REGISTRY_REGION: %w", err))
+		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_REGISTRY_REGION: %w", err))
 	}
 
 	cfg.Fetcher.AuthID, err = env.GetOrDefault(
-		"ARTIFACT_REGISTRY_AUTH_ID",
+		EnvVarArtifactRegistryAuthID,
 		"",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var ARTIFACT_REGISTRY_AUTH_ID: %w", err))
+		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_REGISTRY_AUTH_ID: %w", err))
 	}
 
 	cfg.Fetcher.AuthSecret, err = env.GetOrDefault(
-		"ARTIFACT_REGISTRY_AUTH_SECRET",
+		EnvVarArtifactRegistryAuthSecret,
 		"",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, fmt.Errorf("failed to get env var ARTIFACT_REGISTRY_AUTH_SECRET: %w", err))
+		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_REGISTRY_AUTH_SECRET: %w", err))
 	}
 
-	return cfg, errs
+	cfg.Metadata.FileType, err = artifact.GetFileType(cfg.Target.ArtifactURL)
+	if err != nil {
+		errs = errors.Join(errs, errors.Errorf("there was an error getting archive type: %w", err))
+	}
+
+	if errs != nil {
+		return cfg, errs
+	}
+
+	if cfg.Metadata.FileType == artifact.FileTypeUnarchived {
+		cfg.Metadata.FileType = archiveType
+	}
+
+	parsedURL, err := url.Parse(cfg.Target.ArtifactURL)
+	if err != nil {
+		return cfg, errors.Errorf("could not parse artifact URL: %w", err)
+	}
+	artifactNameComponents := strings.Split(parsedURL.Path, "/")
+	artifactFileName := artifactNameComponents[len(artifactNameComponents)-1]
+
+	if cfg.Metadata.FileType == artifact.FileTypeUnarchived {
+		cfg.Target.SourceCodePath = path.Join(
+			cfg.Target.SourceCodePath,
+			artifactFileName,
+		)
+
+		// wire the archive path to be the same as  the source code path
+		cfg.Target.ArchivePath = cfg.Target.SourceCodePath
+	} else {
+		archivePathStat, err := os.Stat(cfg.Target.ArchivePath)
+		if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return cfg, errors.Errorf("could not stat archive path: %w", err)
+		} else if errors.Is(err, os.ErrNotExist) {
+			// archive path is path to a file, make sure that its directory exists
+			archiveDir := path.Dir(cfg.Target.ArchivePath)
+			archivePathStat, err = os.Stat(archiveDir)
+			if err != nil {
+				return cfg, errors.Errorf(
+					"%s: could not stat archive directory: %w", archiveDir, err,
+				)
+			} else if !archivePathStat.IsDir() {
+				return cfg, errors.Errorf("%s is a file, not a directory", archiveDir)
+			}
+		} else if err == nil && archivePathStat.IsDir() {
+			cfg.Target.ArchivePath = path.Join(
+				cfg.Target.ArchivePath,
+				artifactFileName,
+			)
+		}
+	}
+
+	return cfg, nil
 }

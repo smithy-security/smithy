@@ -26,7 +26,7 @@ func TestNewFetcher(t *testing.T) {
 			ArtifactURL:    "https://example.com/artifact.zip",
 			AuthID:         "test-key",
 			AuthSecret:     "test-secret",
-			BaseHttpClient: mockDoer,
+			BaseHTTPClient: mockDoer,
 		}
 		emptyCfg = fetcher.Config{}
 	)
@@ -39,7 +39,7 @@ func TestNewFetcher(t *testing.T) {
 
 	t.Run("successful creation with default client", func(t *testing.T) {
 		cfg := validCfg
-		cfg.BaseHttpClient = nil
+		cfg.BaseHTTPClient = nil
 		result, err := remote.NewFetcher(cfg)
 		require.NoError(t, err)
 		assert.NotNil(t, result)
@@ -71,11 +71,11 @@ func TestRemoteFetcher_FetchArtifact(t *testing.T) {
 			ArtifactURL:    testURL,
 			AuthID:         testAccessKey,
 			AuthSecret:     testSecretKey,
-			BaseHttpClient: mockDoer,
+			BaseHTTPClient: mockDoer,
 		}
 		validCfgNoAuth = fetcher.Config{
 			ArtifactURL:    testURL,
-			BaseHttpClient: mockDoer,
+			BaseHTTPClient: mockDoer,
 		}
 	)
 

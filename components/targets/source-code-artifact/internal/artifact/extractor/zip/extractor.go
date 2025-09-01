@@ -15,15 +15,16 @@ import (
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/reader"
 )
 
-type extractor struct{}
+// Unzip is an extractor for zip archives
+type Unzip struct{}
 
 // NewExtractor returns a new extractor.
-func NewExtractor() extractor {
-	return extractor{}
+func NewExtractor() Unzip {
+	return Unzip{}
 }
 
 // ExtractArtifact extracts the archive to the destination path using unzip.
-func (e extractor) ExtractArtifact(ctx context.Context, sourcePath, destPath string) error {
+func (Unzip) ExtractArtifact(ctx context.Context, sourcePath, destPath string) error {
 	l := logger.LoggerFromContext(ctx)
 
 	tmpArchive, err := os.OpenFile(sourcePath, os.O_RDONLY, 0600)
@@ -86,7 +87,7 @@ func (e extractor) ExtractArtifact(ctx context.Context, sourcePath, destPath str
 		}
 
 		// Copy contents
-		if err := reader.SafeCopy(dstFile, srcFile); err != nil {
+		if err := reader.SafeCopy(ctx, dstFile, srcFile); err != nil {
 			return err
 		}
 

@@ -3,6 +3,7 @@ package target_test
 import (
 	"testing"
 
+	"github.com/smithy-security/pkg/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -12,49 +13,37 @@ import (
 
 func TestGetExtractor(t *testing.T) {
 	for _, tt := range []struct {
-		name        string
-		fileName    string
-		expFileType artifact.FileType
-		expError    bool
+		name     string
+		fileType artifact.FileType
+		err      error
 	}{
 		{
-			name:        "file type not supported",
-			fileName:    "",
-			expFileType: artifact.FileTypeUnsupported,
-			expError:    true,
+			name:     "file type not supported",
+			fileType: artifact.FileTypeUnsupported,
+			err:      target.ErrUnsupportedFileType,
 		},
 		{
-			name:        "remote type",
-			fileName:    "https://github.com/0c34/govwa/archive/refs/heads/master.zip",
-			expFileType: artifact.FileTypeZip,
+			name:     "remote type",
+			fileType: artifact.FileTypeZip,
 		},
 		{
-			name:        "tar type",
-			fileName:    "gs://my-bucket/my-archive.tar",
-			expFileType: artifact.FileTypeTar,
+			name:     "tar type",
+			fileType: artifact.FileTypeTar,
 		},
 		{
-			name:        "tar gz type",
-			fileName:    "s3://my-bucket/my-archive.tar.gz",
-			expFileType: artifact.FileTypeTarGz,
+			name:     "tar gz type",
+			fileType: artifact.FileTypeTarGz,
 		},
 		{
-			name:        "any type",
-			fileName:    "s3://my-bucket/SBOM.json",
-			expFileType: artifact.FileTypeUnarchived,
+			name:     "any type",
+			fileType: artifact.FileTypeUnarchived,
 		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			extractor, fileType, err := target.GetExtractor(tt.fileName)
-			if tt.expError {
-				require.Error(t, err)
-				require.Nil(t, extractor)
-				assert.Equal(t, artifact.FileTypeUnsupported, fileType)
-				return
-			}
-			require.NoError(t, err)
-			require.NotNil(t, extractor)
-			assert.Equal(t, tt.expFileType, fileType)
+			extractor, fileType, err := target.GetExtractor(tt.fileType)
+			require.ErrorIs(t, err, tt.err)
+			assert.Equal(t, tt.fileType, fileType)
+			assert.True(t, (tt.err == nil && !utils.IsNil(extractor)) || (tt.err != nil && utils.IsNil(extractor)))
 		})
 	}
 }

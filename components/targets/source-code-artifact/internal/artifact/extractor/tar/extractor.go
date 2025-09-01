@@ -10,15 +10,16 @@ import (
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/reader"
 )
 
-type extractor struct{}
+// Untar is an extractor for tar archives
+type Untar struct{}
 
-// NewExtractor returns a new extractor.
-func NewExtractor() extractor {
-	return extractor{}
+// NewExtractor returns a new tar extractor.
+func NewExtractor() Untar {
+	return Untar{}
 }
 
 // ExtractArtifact plainly uses the Untar helper.
-func (e extractor) ExtractArtifact(ctx context.Context, sourcePath, destPath string) error {
+func (Untar) ExtractArtifact(ctx context.Context, sourcePath, destPath string) error {
 	tmpArchive, err := os.OpenFile(sourcePath, os.O_RDONLY, 0600)
 	if err != nil {
 		return errors.Errorf("could not open temporary archive file for extracting: %w", err)
