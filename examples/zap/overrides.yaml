@@ -17,4 +17,3 @@ zaproxy:
   - name: password
     type: string
     value: ""
-
