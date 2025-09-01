@@ -1,0 +1,7 @@
+description: Downloads and upacks an artifact and runs go scanners on it
+name: mobsf
+components:
+- component: file://components/targets/source-code-artifact/component.yaml
+- component: file://components/scanners/mobsf/component.yaml
+- component: file://components/enrichers/custom-annotation/component.yaml
+- component: file://components/reporters/json-logger/component.yaml
