@@ -8,7 +8,7 @@ This utility is meant to be used by developers to compare ZAP reports when runni
 * Launch ZAP via its UI
 * Run a quick-scan towards the website you want to test, e.g. https://smithy.security
 * Click 'Report' in the menu and generate a Sarif report
-* Save teh SARIF report somewhere accessible by your terminal
+* Save the SARIF report somewhere accessible by your terminal
 * In your terminal:
 * `cd` in  the 'zap-authenticated-scan' directory
 * Build the image with `docker build . -t zap-test`

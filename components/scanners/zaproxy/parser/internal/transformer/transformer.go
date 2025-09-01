@@ -2,14 +2,14 @@ package transformer
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
 	"github.com/smithy-security/pkg/env"
-	sarif "github.com/smithy-security/pkg/sarif"
+	"github.com/smithy-security/pkg/sarif"
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
 
 	"github.com/smithy-security/smithy/sdk/component"
@@ -17,16 +17,19 @@ import (
 	sdklogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
+// TargetTypeWebsite is the default type of target that ZAP will scan
 const TargetTypeWebsite TargetType = "website"
 
 type (
 	// ZapTransformerOption allows customising the transformer.
-	ZapTransformerOption func(g *zapTransformer) error
+	ZapTransformerOption func(g *ZapTransformer) error
 
 	// TargetType represents the target type.
 	TargetType string
 
-	zapTransformer struct {
+	// ZapTransformer is used to convert a ZAP Sarif report into OCSF
+	// vulnerability findings.
+	ZapTransformer struct {
 		targetType     TargetType
 		clock          clockwork.Clock
 		rawOutFilePath string
@@ -39,7 +42,7 @@ func (tt TargetType) String() string {
 
 // ZapTransformerWithClock allows customising the underlying clock.
 func ZapTransformerWithClock(clock clockwork.Clock) ZapTransformerOption {
-	return func(g *zapTransformer) error {
+	return func(g *ZapTransformer) error {
 		if clock == nil {
 			return errors.Errorf("invalid nil clock")
 		}
@@ -50,7 +53,7 @@ func ZapTransformerWithClock(clock clockwork.Clock) ZapTransformerOption {
 
 // ZapTransformerWithTarget allows customising the underlying target type.
 func ZapTransformerWithTarget(target TargetType) ZapTransformerOption {
-	return func(g *zapTransformer) error {
+	return func(g *ZapTransformer) error {
 		if target == "" {
 			return errors.Errorf("invalid empty target")
 		}
@@ -61,7 +64,7 @@ func ZapTransformerWithTarget(target TargetType) ZapTransformerOption {
 
 // ZapRawOutFilePath allows customising the underlying raw out file path.
 func ZapRawOutFilePath(path string) ZapTransformerOption {
-	return func(g *zapTransformer) error {
+	return func(g *ZapTransformer) error {
 		if path == "" {
 			return errors.Errorf("invalid raw out file path")
 		}
@@ -71,7 +74,7 @@ func ZapRawOutFilePath(path string) ZapTransformerOption {
 }
 
 // New returns a new zap transformer.
-func New(opts ...ZapTransformerOption) (*zapTransformer, error) {
+func New(opts ...ZapTransformerOption) (*ZapTransformer, error) {
 	rawOutFilePath, err := env.GetOrDefault(
 		"ZAP_RAW_OUT_FILE_PATH",
 		"zap.sarif.json",
@@ -90,7 +93,7 @@ func New(opts ...ZapTransformerOption) (*zapTransformer, error) {
 		return nil, err
 	}
 
-	t := zapTransformer{
+	t := ZapTransformer{
 		rawOutFilePath: rawOutFilePath,
 		targetType:     TargetType(target),
 		clock:          clockwork.NewRealClock(),
@@ -112,27 +115,29 @@ func New(opts ...ZapTransformerOption) (*zapTransformer, error) {
 	return &t, nil
 }
 
-func (g *zapTransformer) ReadFile(file string) ([]byte, error) {
+func (z *ZapTransformer) readFile(file string) ([]byte, error) {
 	b, err := os.ReadFile(file)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, errors.Errorf("raw output file '%s' not found : %w", g.rawOutFilePath, err)
+			return nil, errors.Errorf("raw output file '%s' not found : %w", z.rawOutFilePath, err)
 		}
-		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
+
+		return nil, errors.Errorf("failed to read raw output file '%s': %w", z.rawOutFilePath, err)
 	}
+
 	return b, nil
 }
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
-func (g *zapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+func (z *ZapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	logger := sdklogger.LoggerFromContext(ctx)
-
 	logger.Debug("preparing to parse raw zap output...")
 
-	b, err := g.ReadFile(g.rawOutFilePath)
+	b, err := z.readFile(z.rawOutFilePath)
 	if err != nil {
 		return nil, err
 	}
+
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw zap output: %w", err)
@@ -152,16 +157,31 @@ func (g *zapTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFi
 
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
 	transformer, err := sarif.NewTransformer(
-		&report, "", g.clock, nil, true, component.TargetMetadataFromCtx(ctx),
+		&report, "", z.clock, nil, true, component.TargetMetadataFromCtx(ctx),
 	)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(g.Metrics(ctx, &report))
+
+	metrics := z.metrics(&report)
+	logger.Info("ZAP result parser metrics",
+		slog.Int("runs", metrics.runs),
+		slog.Int("resultCount", metrics.resultCount),
+		slog.String("paths", strings.Join(metrics.paths, ",")),
+		slog.String("ruleIDs", strings.Join(metrics.ruleIDs, ",")),
+	)
+
 	return transformer.ToOCSF(ctx)
 }
 
-func (g *zapTransformer) Metrics(ctx context.Context, input *sarifschemav210.SchemaJson) string {
+type metrics struct {
+	runs        int
+	resultCount int
+	paths       []string
+	ruleIDs     []string
+}
+
+func (*ZapTransformer) metrics(input *sarifschemav210.SchemaJson) metrics {
 	var paths = make(map[string]struct{})
 	var ruleIDs = make(map[string]struct{})
 	var resultCount int
@@ -188,8 +208,10 @@ func (g *zapTransformer) Metrics(ctx context.Context, input *sarifschemav210.Sch
 		ruleIDList = append(ruleIDList, r)
 	}
 
-	return fmt.Sprintf(
-		"zap-transformer:\nruns=%d\nresults=%d\nPaths=%v\nRuleIDs=%v",
-		len(input.Runs), resultCount, pathList, ruleIDList,
-	)
+	return metrics{
+		runs:        len(input.Runs),
+		resultCount: resultCount,
+		paths:       pathList,
+		ruleIDs:     ruleIDList,
+	}
 }

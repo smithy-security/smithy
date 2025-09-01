@@ -1,4 +1,4 @@
-module github.com/smithy-security/smithy/components/scanners/zaproxy
+module github.com/smithy-security/smithy/components/scanners/zaproxy/parser
 
 go 1.23.4
 

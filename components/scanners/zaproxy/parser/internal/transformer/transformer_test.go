@@ -1,8 +1,9 @@
-package transformer_test
+package transformer
 
 import (
 	"context"
 	_ "embed"
+	"os"
 	"testing"
 	"time"
 
@@ -14,8 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
-
-	"github.com/smithy-security/smithy/components/scanners/zaproxy/internal/transformer"
 )
 
 func TestZapTransformer_Transform(t *testing.T) {
@@ -32,10 +31,10 @@ func TestZapTransformer_Transform(t *testing.T) {
 
 	defer cancel()
 
-	ocsfTransformer, err := transformer.New(
-		transformer.ZapRawOutFilePath("./testdata/zap.sarif.json"),
-		transformer.ZapTransformerWithTarget(transformer.TargetTypeWebsite),
-		transformer.ZapTransformerWithClock(clock),
+	ocsfTransformer, err := New(
+		ZapRawOutFilePath("./testdata/zap.sarif.json"),
+		ZapTransformerWithTarget(TargetTypeWebsite),
+		ZapTransformerWithClock(clock),
 	)
 	require.NoError(t, err)
 
@@ -232,34 +231,42 @@ func TestZapTransformer_Transform(t *testing.T) {
 		}
 	})
 }
+
 func TestZapTransformer_Metrics(t *testing.T) {
 	clock := clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
-	ocsfTransformer, err := transformer.New(
-		transformer.ZapRawOutFilePath("./testdata/zap.sarif.json"),
-		transformer.ZapTransformerWithTarget(transformer.TargetTypeWebsite),
-		transformer.ZapTransformerWithClock(clock),
+	ocsfTransformer, err := New(
+		ZapRawOutFilePath("./testdata/zap.sarif.json"),
+		ZapTransformerWithTarget(TargetTypeWebsite),
+		ZapTransformerWithClock(clock),
 	)
 	require.NoError(t, err)
 
-	b, err := ocsfTransformer.ReadFile("./testdata/zap.sarif.json")
+	b, err := ocsfTransformer.readFile("./testdata/zap.sarif.json")
 	require.NoError(t, err)
 	require.NotEmpty(t, b)
 
 	var report sarifschemav210.SchemaJson
 	require.NoError(t, report.UnmarshalJSON(b))
-	metrics := ocsfTransformer.Metrics(context.Background(), &report)
-	assert.NotEmpty(t, metrics)
-	assert.Contains(t, metrics, "zap-transformer:\nruns=1\nresults=3")
-	assert.Contains(t, metrics, "Paths=[http://bodgeit.com:8080")
-	assert.Contains(t, metrics, "RuleIDs=[")
-	assert.Contains(t, metrics, "40012")
-	assert.Contains(t, metrics, "40018")
+	metricsReport := ocsfTransformer.metrics(&report)
+
+	assert.Equal(t,
+		metrics{
+			runs:        1,
+			resultCount: 3,
+			paths: []string{
+				"http://bodgeit.com:8080/bodgeit/search.jsp?q=%3C%2Ffont%3E%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E%3Cfont%3E",
+				"http://bodgeit.com:8080/bodgeit/contact.jsp",
+				"http://bodgeit.com:8080/bodgeit/basket.jsp",
+			},
+			ruleIDs: []string{"40012", "40018"},
+		},
+		metricsReport,
+	)
 }
 
 func TestZapTransformer_ReadFile_NotFound(t *testing.T) {
-	tr, err := transformer.New(transformer.ZapRawOutFilePath("./testdata/nonexistent.json"))
+	tr, err := New(ZapRawOutFilePath("./testdata/nonexistent.json"))
 	require.NoError(t, err)
-	_, err = tr.ReadFile("./testdata/nonexistent.json")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "not found")
+	_, err = tr.readFile("./testdata/nonexistent.json")
+	require.ErrorIs(t, err, os.ErrNotExist)
 }

@@ -7,6 +7,7 @@ import (
 	"maps"
 	"os"
 	"slices"
+	"strings"
 
 	"encoding/json"
 
@@ -20,60 +21,136 @@ func getFindingIDs(sarifDoc *sarifschemav210.SchemaJson) map[string]sets.Set[str
 	if sarifDoc == nil {
 		return ids
 	}
+
 	for _, run := range sarifDoc.Runs {
 		for _, res := range run.Results {
-			if res.RuleId != nil {
-				for _, loc := range res.Locations {
-					if loc.PhysicalLocation != nil && loc.PhysicalLocation.ArtifactLocation != nil && loc.PhysicalLocation.ArtifactLocation.Uri != nil {
-						if _, exists := ids[*res.RuleId]; !exists {
-							ids[*res.RuleId] = sets.Set[string]{}
-						}
-						ids[*res.RuleId].Insert(*loc.PhysicalLocation.ArtifactLocation.Uri)
-					}
+			if res.RuleId == nil {
+				continue
+			}
+
+			for _, loc := range res.Locations {
+				if loc.PhysicalLocation == nil || loc.PhysicalLocation.ArtifactLocation == nil || loc.PhysicalLocation.ArtifactLocation.Uri == nil {
+					continue
 				}
+
+				if _, exists := ids[*res.RuleId]; !exists {
+					ids[*res.RuleId] = sets.Set[string]{}
+				}
+
+				ids[*res.RuleId].Insert(*loc.PhysicalLocation.ArtifactLocation.Uri)
 			}
 		}
 	}
+
 	return ids
 }
-func compare(sarif1, sarif2 *sarifschemav210.SchemaJson) (map[string][]string, map[string]map[string][]string) {
-	result := map[string][]string{
-		"first-only":  {},
-		"second-only": {},
-		"both":        {},
+
+type ruleDiffs struct {
+	firstOnly    []string
+	secondOnly   []string
+	intersection []string
+}
+
+func (r ruleDiffs) String() (string, error) {
+	sb := strings.Builder{}
+
+	var errs error
+	_, err := sb.WriteString("rule comparison report: \n")
+	errs = errors.Join(errs, err)
+	_, err = sb.WriteString("First Document Only: ")
+	errs = errors.Join(errs, err)
+	_, err = sb.WriteString(strings.Join(r.firstOnly, ", "))
+	errs = errors.Join(errs, err)
+	_, err = sb.WriteString("\nSecond Document Only: ")
+	errs = errors.Join(errs, err)
+	_, err = sb.WriteString(strings.Join(r.secondOnly, ", "))
+	errs = errors.Join(errs, err)
+	_, err = sb.WriteString("\nIntersection: ")
+	errs = errors.Join(errs, err)
+	_, err = sb.WriteString(strings.Join(r.intersection, ", "))
+	errs = errors.Join(errs, err)
+	_, err = sb.WriteString("\n==========================")
+	errs = errors.Join(errs, err)
+
+	return sb.String(), errs
+}
+
+type pathDiffs struct {
+	firstOnly    map[string][]string
+	secondOnly   map[string][]string
+	intersection map[string][]string
+}
+
+func (p pathDiffs) String() (string, error) {
+	sb := strings.Builder{}
+
+	var errs error
+	_, err := sb.WriteString("path comparison report: \n")
+	errs = errors.Join(errs, err)
+	_, err = sb.WriteString("First Document Only:")
+	errs = errors.Join(errs, err)
+	for ruleID, paths := range p.firstOnly {
+		_, err = sb.WriteString(fmt.Sprintf("\n  RuleID - %s:\n  * ", ruleID))
+		errs = errors.Join(errs, err)
+		_, err = sb.WriteString(strings.Join(paths, "\n  * "))
+		errs = errors.Join(errs, err)
 	}
 
+	_, err = sb.WriteString("\nSecond Document Only: ")
+	errs = errors.Join(errs, err)
+	for ruleID, paths := range p.secondOnly {
+		_, err = sb.WriteString(fmt.Sprintf("\n  RuleID - %s:\n  * ", ruleID))
+		errs = errors.Join(errs, err)
+		_, err = sb.WriteString(strings.Join(paths, "\n  * "))
+		errs = errors.Join(errs, err)
+	}
+
+	_, err = sb.WriteString("\nIntersection: ")
+	errs = errors.Join(errs, err)
+	for ruleID, paths := range p.intersection {
+		_, err = sb.WriteString(fmt.Sprintf("\n  RuleID - %s:\n  * ", ruleID))
+		errs = errors.Join(errs, err)
+		_, err = sb.WriteString(strings.Join(paths, "\n  * "))
+		errs = errors.Join(errs, err)
+	}
+	_, err = sb.WriteString("\n==========================")
+	errs = errors.Join(errs, err)
+
+	return sb.String(), errs
+}
+
+func compare(sarif1, sarif2 *sarifschemav210.SchemaJson) (ruleDiffs, pathDiffs) {
 	ids1 := getFindingIDs(sarif1)
 	ids2 := getFindingIDs(sarif2)
 
-	idsSet1 := sets.Set[string]{}
-	idsSet2 := sets.Set[string]{}
-	idsSet1.Insert(slices.Collect(maps.Keys(ids1))...)
-	idsSet2.Insert(slices.Collect(maps.Keys(ids2))...)
-	result["both"] = idsSet1.Intersection(idsSet2).UnsortedList()
-	result["first-only"] = idsSet1.Difference(idsSet2).UnsortedList()
-	result["second-only"] = idsSet2.Difference(idsSet1).UnsortedList()
+	idsSet1 := sets.New(slices.Collect(maps.Keys(ids1))...)
+	idsSet2 := sets.New(slices.Collect(maps.Keys(ids2))...)
 
-	paths := map[string]map[string][]string{
-		"first-only":  {},
-		"second-only": {},
-		"both":        {},
+	result := ruleDiffs{
+		firstOnly:    idsSet1.Difference(idsSet2).UnsortedList(),
+		secondOnly:   idsSet2.Difference(idsSet1).UnsortedList(),
+		intersection: idsSet1.Intersection(idsSet2).UnsortedList(),
+	}
+
+	paths := pathDiffs{
+		firstOnly:    map[string][]string{},
+		secondOnly:   map[string][]string{},
+		intersection: map[string][]string{},
 	}
 
 	for id := range ids1 {
 		if _, ok := ids2[id]; ok {
-			// Intersection of paths
 			intersection := ids1[id].Intersection(ids2[id]).UnsortedList()
 			if len(intersection) > 0 {
-				paths["both"][id] = intersection
+				paths.intersection[id] = intersection
 			}
 
 			diffList := ids1[id].Difference(ids2[id]).UnsortedList()
 			if len(diffList) > 0 {
-				paths["first-only"][id] = diffList
+				paths.firstOnly[id] = diffList
 			}
 		} else {
-			paths["first-only"][id] = ids1[id].UnsortedList()
+			paths.firstOnly[id] = ids1[id].UnsortedList()
 		}
 	}
 
@@ -81,28 +158,32 @@ func compare(sarif1, sarif2 *sarifschemav210.SchemaJson) (map[string][]string, m
 		if _, ok := ids1[id]; ok {
 			diffList := ids2[id].Difference(ids1[id]).UnsortedList()
 			if len(diffList) > 0 {
-				paths["second-only"][id] = diffList
+				paths.secondOnly[id] = diffList
 			}
 		} else {
-			paths["second-only"][id] = ids2[id].UnsortedList()
+			paths.secondOnly[id] = ids2[id].UnsortedList()
 		}
 	}
 
-	// return both result and paths
 	return result, paths
 }
 
-func readSarif(path string) (*sarifschemav210.SchemaJson, error) {
+func readSarif(path string) (sarif *sarifschemav210.SchemaJson, err error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, errors.Errorf("failed to open file %s: %w", path, err)
 	}
-	defer f.Close()
-	var sarif sarifschemav210.SchemaJson
-	if err := json.NewDecoder(f).Decode(&sarif); err != nil {
+
+	defer func() {
+		err = errors.Join(err, f.Close())
+	}()
+
+	sarif = &sarifschemav210.SchemaJson{}
+	if err := json.NewDecoder(f).Decode(sarif); err != nil {
 		return nil, errors.Errorf("failed to decode SARIF file %s: %w", path, err)
 	}
-	return &sarif, nil
+
+	return sarif, nil
 }
 
 func main() {
@@ -114,34 +195,32 @@ func main() {
 		log.Fatal("Both --sarif1 and --sarif2 flags must be provided")
 	}
 
-	fmt.Println("comparing current sarif output with previous sarif output...")
-	fmt.Println("==========================")
+	if _, err := fmt.Println("comparing current sarif output with previous sarif output...\n=========================="); err != nil {
+		log.Fatal(err.Error())
+	}
+
 	sarif1, err := readSarif(*sarifFile1)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	sarif2, err := readSarif(*sarifFile2)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	ruleDiffs, pathDiffs := compare(sarif1, sarif2)
-	for k, v := range ruleDiffs {
-		fmt.Println("comparison result", k, len(v))
-		for _, item := range v {
-			fmt.Println(" - ", item)
-		}
-		fmt.Println("==========================")
+	ruleDiffReport, pathDiffReport := compare(sarif1, sarif2)
+	ruleDiffString, err := ruleDiffReport.String()
+	if err != nil {
+		log.Fatal(err.Error())
 	}
-	for k, v := range pathDiffs {
-		fmt.Println("path comparison result", k)
-		for ruleID, paths := range v {
-			fmt.Printf(" RuleID: %s\n", ruleID)
-			for _, p := range paths {
-				fmt.Println("   - ", p)
-			}
-		}
-		fmt.Println("==========================")
+
+	pathDiffString, err := pathDiffReport.String()
+	if err != nil {
+		log.Fatal(err.Error())
 	}
-	fmt.Println("done!")
+
+	if _, err := fmt.Println(ruleDiffString, "\n", pathDiffString, "\n", "done!"); err != nil {
+		log.Fatal(err.Error())
+	}
 }

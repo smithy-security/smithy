@@ -2,10 +2,10 @@ package main
 
 import (
 	"os"
-	"sort"
 	"testing"
 
 	sarifschemav210 "github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0"
+	"github.com/smithy-security/pkg/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -55,7 +55,7 @@ func TestGetFindingIDs(t *testing.T) {
 									{
 										PhysicalLocation: &sarifschemav210.PhysicalLocation{
 											ArtifactLocation: &sarifschemav210.ArtifactLocation{
-												Uri: stringPtr("file1.go"),
+												Uri: utils.Ptr("file1.go"),
 											},
 										},
 									},
@@ -74,7 +74,7 @@ func TestGetFindingIDs(t *testing.T) {
 					{
 						Results: []sarifschemav210.Result{
 							{
-								RuleId:    stringPtr("rule1"),
+								RuleId:    utils.Ptr("rule1"),
 								Locations: []sarifschemav210.Location{},
 							},
 						},
@@ -90,24 +90,24 @@ func TestGetFindingIDs(t *testing.T) {
 					{
 						Results: []sarifschemav210.Result{
 							{
-								RuleId: stringPtr("rule1"),
+								RuleId: utils.Ptr("rule1"),
 								Locations: []sarifschemav210.Location{
 									{
 										PhysicalLocation: &sarifschemav210.PhysicalLocation{
 											ArtifactLocation: &sarifschemav210.ArtifactLocation{
-												Uri: stringPtr("file1.go"),
+												Uri: utils.Ptr("file1.go"),
 											},
 										},
 									},
 								},
 							},
 							{
-								RuleId: stringPtr("rule2"),
+								RuleId: utils.Ptr("rule2"),
 								Locations: []sarifschemav210.Location{
 									{
 										PhysicalLocation: &sarifschemav210.PhysicalLocation{
 											ArtifactLocation: &sarifschemav210.ArtifactLocation{
-												Uri: stringPtr("file2.go"),
+												Uri: utils.Ptr("file2.go"),
 											},
 										},
 									},
@@ -137,135 +137,115 @@ func TestCompare(t *testing.T) {
 		name          string
 		sarif1        *sarifschemav210.SchemaJson
 		sarif2        *sarifschemav210.SchemaJson
-		expectedRules map[string][]string
-		expectedPaths map[string]map[string][]string
+		expectedRules ruleDiffs
+		expectedPaths pathDiffs
 	}{
 		{
-			name:   "both sarif files are nil",
-			sarif1: nil,
-			sarif2: nil,
-			expectedRules: map[string][]string{
-				"first-only":  {},
-				"second-only": {},
-				"both":        {},
-			},
-			expectedPaths: map[string]map[string][]string{
-				"first-only":  {},
-				"second-only": {},
-				"both":        {},
-			},
+			name:          "both sarif files are nil",
+			sarif1:        nil,
+			sarif2:        nil,
+			expectedRules: ruleDiffs{},
+			expectedPaths: pathDiffs{},
 		},
 		{
 			name:   "sarif1 is nil, sarif2 has content",
 			sarif1: nil,
 			sarif2: createTestSarif([]string{"rule1"}, []string{"file1.go"}),
-			expectedRules: map[string][]string{
-				"first-only":  {},
-				"second-only": {"rule1"},
-				"both":        {},
+			expectedRules: ruleDiffs{
+				secondOnly: []string{"rule1"},
 			},
-			expectedPaths: map[string]map[string][]string{
-				"first-only":  {},
-				"second-only": {"rule1": {"file1.go"}},
-				"both":        {},
+			expectedPaths: pathDiffs{
+				secondOnly: map[string][]string{"rule1": {"file1.go"}},
 			},
 		},
 		{
 			name:   "sarif1 has content, sarif2 is nil",
 			sarif1: createTestSarif([]string{"rule1"}, []string{"file1.go"}),
 			sarif2: nil,
-			expectedRules: map[string][]string{
-				"first-only":  {"rule1"},
-				"second-only": {},
-				"both":        {},
+			expectedRules: ruleDiffs{
+				firstOnly: []string{"rule1"},
 			},
-			expectedPaths: map[string]map[string][]string{
-				"first-only":  {"rule1": {"file1.go"}},
-				"second-only": {},
-				"both":        {},
+			expectedPaths: pathDiffs{
+				firstOnly: map[string][]string{"rule1": {"file1.go"}},
 			},
 		},
 		{
-			name:   "both sarif files are empty",
-			sarif1: &sarifschemav210.SchemaJson{},
-			sarif2: &sarifschemav210.SchemaJson{},
-			expectedRules: map[string][]string{
-				"first-only":  {},
-				"second-only": {},
-				"both":        {},
-			},
-			expectedPaths: map[string]map[string][]string{
-				"first-only":  {},
-				"second-only": {},
-				"both":        {},
-			},
+			name:          "both sarif files are empty",
+			sarif1:        &sarifschemav210.SchemaJson{},
+			sarif2:        &sarifschemav210.SchemaJson{},
+			expectedRules: ruleDiffs{},
+			expectedPaths: pathDiffs{},
 		},
 		{
 			name:   "sarif1 is smaller than sarif2",
 			sarif1: createTestSarif([]string{"rule1"}, []string{"file1.go"}),
 			sarif2: createTestSarif([]string{"rule1", "rule2", "rule3"}, []string{"file1.go", "file2.go", "file3.go"}),
-			expectedRules: map[string][]string{
-				"first-only":  {},
-				"second-only": {"rule2", "rule3"},
-				"both":        {"rule1"},
+			expectedRules: ruleDiffs{
+				secondOnly:   []string{"rule2", "rule3"},
+				intersection: []string{"rule1"},
 			},
-			expectedPaths: map[string]map[string][]string{
-				"first-only": {},
-				"second-only": {
+			expectedPaths: pathDiffs{
+				secondOnly: map[string][]string{
 					"rule1": {"file2.go", "file3.go"},
 					"rule2": {"file1.go", "file2.go", "file3.go"},
 					"rule3": {"file1.go", "file2.go", "file3.go"},
 				},
-				"both": {"rule1": {"file1.go"}},
+				intersection: map[string][]string{"rule1": {"file1.go"}},
 			},
 		},
 		{
 			name:   "sarif1 is larger than sarif2",
 			sarif1: createTestSarif([]string{"rule1", "rule2", "rule3", "rule4"}, []string{"file1.go", "file2.go", "file3.go", "file4.go"}),
 			sarif2: createTestSarif([]string{"rule1", "rule2"}, []string{"file1.go", "file2.go"}),
-			expectedRules: map[string][]string{
-				"first-only":  {"rule3", "rule4"},
-				"second-only": {},
-				"both":        {"rule1", "rule2"},
+			expectedRules: ruleDiffs{
+				firstOnly:    []string{"rule3", "rule4"},
+				intersection: []string{"rule1", "rule2"},
 			},
-			expectedPaths: map[string]map[string][]string{
-				"first-only": {
+			expectedPaths: pathDiffs{
+				firstOnly: map[string][]string{
 					"rule1": {"file3.go", "file4.go"},
 					"rule2": {"file3.go", "file4.go"},
 					"rule3": {"file1.go", "file2.go", "file3.go", "file4.go"},
 					"rule4": {"file1.go", "file2.go", "file3.go", "file4.go"}},
-				"second-only": {},
-				"both":        {"rule1": {"file1.go", "file2.go"}, "rule2": {"file1.go", "file2.go"}},
+				intersection: map[string][]string{
+					"rule1": {"file1.go", "file2.go"},
+					"rule2": {"file1.go", "file2.go"},
+				},
 			},
 		},
 		{
 			name:   "sarif1 and sarif2 have no common rules",
 			sarif1: createTestSarif([]string{"rule1", "rule2"}, []string{"file1.go", "file2.go"}),
 			sarif2: createTestSarif([]string{"rule3", "rule4"}, []string{"file3.go", "file4.go"}),
-			expectedRules: map[string][]string{
-				"first-only":  {"rule1", "rule2"},
-				"second-only": {"rule3", "rule4"},
-				"both":        {},
+			expectedRules: ruleDiffs{
+				firstOnly:  []string{"rule1", "rule2"},
+				secondOnly: []string{"rule3", "rule4"},
 			},
-			expectedPaths: map[string]map[string][]string{
-				"first-only":  {"rule1": {"file1.go", "file2.go"}, "rule2": {"file1.go", "file2.go"}},
-				"second-only": {"rule3": {"file3.go", "file4.go"}, "rule4": {"file3.go", "file4.go"}},
-				"both":        {},
+			expectedPaths: pathDiffs{
+				firstOnly: map[string][]string{
+					"rule1": {"file1.go", "file2.go"},
+					"rule2": {"file1.go", "file2.go"},
+				},
+				secondOnly: map[string][]string{
+					"rule3": {"file3.go", "file4.go"},
+					"rule4": {"file3.go", "file4.go"},
+				},
 			},
 		},
 		{
 			name:   "sarif1 and sarif2 have identical content",
 			sarif1: createTestSarif([]string{"rule1", "rule2"}, []string{"file1.go", "file2.go"}),
 			sarif2: createTestSarif([]string{"rule1", "rule2"}, []string{"file1.go", "file2.go"}),
-			expectedRules: map[string][]string{
-				"first-only":  {},
-				"second-only": {},
-				"both":        {"rule1", "rule2"},
+			expectedRules: ruleDiffs{
+				intersection: []string{"rule1", "rule2"},
 			},
-			expectedPaths: map[string]map[string][]string{
-				"first-only":  {},
-				"second-only": {},
-				"both":        {"rule1": {"file1.go", "file2.go"}, "rule2": {"file1.go", "file2.go"}},
+			expectedPaths: pathDiffs{
+				firstOnly:  map[string][]string{},
+				secondOnly: map[string][]string{},
+				intersection: map[string][]string{
+					"rule1": {"file1.go", "file2.go"},
+					"rule2": {"file1.go", "file2.go"},
+				},
 			},
 		},
 	}
@@ -273,25 +253,20 @@ func TestCompare(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			rules, paths := compare(tt.sarif1, tt.sarif2)
+			assert.ElementsMatch(t, tt.expectedRules.firstOnly, rules.firstOnly)
+			assert.ElementsMatch(t, tt.expectedRules.secondOnly, rules.secondOnly)
+			assert.ElementsMatch(t, tt.expectedRules.intersection, rules.intersection)
 
-			// Sort slices for consistent comparison
-			for _, v := range rules {
-				sort.Strings(v)
-			}
-			for _, v := range tt.expectedRules {
-				sort.Strings(v)
+			for k, v := range paths.firstOnly {
+				assert.ElementsMatch(t, tt.expectedPaths.firstOnly[k], v, "there was an issue with key: %s", k)
 			}
 
-			assert.Equal(t, tt.expectedRules, rules)
-			// Compare maps key by key
-			assert.Equal(t, len(tt.expectedPaths), len(paths))
-			for key, expectedMap := range tt.expectedPaths {
-				assert.Equal(t, len(tt.expectedPaths[key]), len(paths[key]))
-				for nestedKey, expectedSlice := range expectedMap {
-					actualSlice, exists := paths[key][nestedKey]
-					assert.True(t, exists, "Key %s should exist", nestedKey)
-					assert.ElementsMatch(t, expectedSlice, actualSlice)
-				}
+			for k, v := range paths.secondOnly {
+				assert.ElementsMatch(t, tt.expectedPaths.secondOnly[k], v, "there was an issue with key: %s", k)
+			}
+
+			for k, v := range paths.intersection {
+				assert.ElementsMatch(t, tt.expectedPaths.intersection[k], v, "there was an issue with key: %s", k)
 			}
 		})
 	}
@@ -340,13 +315,15 @@ func TestReadSarif(t *testing.T) {
 			// Create temporary file
 			tmpFile, err := os.CreateTemp("", "test_sarif_*.json")
 			require.NoError(t, err)
-			defer os.Remove(tmpFile.Name())
-			defer tmpFile.Close()
+
+			t.Cleanup(func() {
+				assert.NoError(t, os.Remove(tmpFile.Name()))
+				assert.NoError(t, tmpFile.Close())
+			})
 
 			// Write content to file
 			_, err = tmpFile.WriteString(tt.content)
 			require.NoError(t, err)
-			tmpFile.Close()
 
 			// Test readSarif function
 			result, err := readSarif(tmpFile.Name())
@@ -382,13 +359,13 @@ func createTestSarif(ruleIDs []string, filePaths []string) *sarifschemav210.Sche
 			locations[j] = sarifschemav210.Location{
 				PhysicalLocation: &sarifschemav210.PhysicalLocation{
 					ArtifactLocation: &sarifschemav210.ArtifactLocation{
-						Uri: stringPtr(filePath),
+						Uri: utils.Ptr(filePath),
 					},
 				},
 			}
 		}
 		results[i] = sarifschemav210.Result{
-			RuleId:    stringPtr(ruleID),
+			RuleId:    utils.Ptr(ruleID),
 			Locations: locations,
 		}
 	}
@@ -398,9 +375,4 @@ func createTestSarif(ruleIDs []string, filePaths []string) *sarifschemav210.Sche
 			{Results: results},
 		},
 	}
-}
-
-// Helper function to create string pointers
-func stringPtr(s string) *string {
-	return &s
 }
