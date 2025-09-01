@@ -13,15 +13,16 @@ import (
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/reader"
 )
 
-type extractor struct{}
+// Copier copies a file from one place in the filesystem to another
+type Copier struct{}
 
 // NewExtractor returns a new extractor.
-func NewExtractor() extractor {
-	return extractor{}
+func NewExtractor() Copier {
+	return Copier{}
 }
 
 // ExtractArtifact copies all contents from source path to destination path.
-func (e extractor) ExtractArtifact(ctx context.Context, sourcePath, destPath string) error {
+func (Copier) ExtractArtifact(ctx context.Context, sourcePath, destPath string) error {
 	slogger := logger.
 		LoggerFromContext(ctx).
 		With(

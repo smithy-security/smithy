@@ -25,6 +25,7 @@ func main() {
 	}
 }
 
+// Main is the entrypoint to the source code artefact fetcher
 func Main(ctx context.Context) error {
 	l := logger.LoggerFromContext(ctx)
 
@@ -34,7 +35,7 @@ func Main(ctx context.Context) error {
 	}
 
 	l.Debug("configuring extractor...")
-	extractor, fileType, err := target.GetExtractor(cfg.Fetcher.ArtifactURL)
+	extractor, fileType, err := target.GetExtractor(cfg.Metadata.FileType)
 	if err != nil {
 		return errors.Errorf("could not get extractor: %w", err)
 	}
@@ -49,7 +50,13 @@ func Main(ctx context.Context) error {
 	l = l.With(slog.String("source_type", sourceType.String()))
 	l.Debug("successfully configured source code artifact fetcher!")
 
-	t, err := target.New(cfg.Target, fetcher, persister.New(), extractor, metadata.NewWriter(cfg.Metadata))
+	t, err := target.New(
+		cfg.Target,
+		fetcher,
+		persister.New(),
+		extractor,
+		metadata.NewWriter(cfg.Metadata),
+	)
 	if err != nil {
 		return errors.Errorf("could not initialize target: %w", err)
 	}

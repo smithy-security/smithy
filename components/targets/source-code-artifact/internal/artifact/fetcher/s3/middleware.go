@@ -23,11 +23,7 @@ func signForGCP(opts *s3.Options) {
 				return err
 			}
 
-			if err := stack.Finalize.Insert(replaceAcceptEncodingHeader, "Signing", middleware.After); err != nil {
-				return err
-			}
-
-			return nil
+			return stack.Finalize.Insert(replaceAcceptEncodingHeader, "Signing", middleware.After)
 		},
 	)
 }

@@ -13,15 +13,16 @@ import (
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/reader"
 )
 
-type extractor struct{}
+// ArchiveExtractor extracts the contents of TAR GZ archives
+type ArchiveExtractor struct{}
 
 // NewExtractor returns a new extractor.
-func NewExtractor() extractor {
-	return extractor{}
+func NewExtractor() ArchiveExtractor {
+	return ArchiveExtractor{}
 }
 
 // ExtractArtifact extracts a targz archive in the supplied destination.
-func (e extractor) ExtractArtifact(ctx context.Context, sourcePath, destPath string) error {
+func (ArchiveExtractor) ExtractArtifact(ctx context.Context, sourcePath, destPath string) error {
 	tmpArchive, err := os.OpenFile(sourcePath, os.O_RDONLY, 0600)
 	if err != nil {
 		return errors.Errorf("could not open temporary archive file for extracting: %w", err)

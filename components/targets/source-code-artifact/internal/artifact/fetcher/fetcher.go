@@ -16,7 +16,7 @@ type (
 		AuthID          string
 		AuthSecret      string
 		ArtifactURL     string
-		BaseHttpClient  Doer
+		BaseHTTPClient  Doer
 		ArtifactBaseURL string
 		BucketName      string
 		KeyName         string

@@ -17,9 +17,9 @@ type (
 		FetchArtifact(ctx context.Context) (io.ReadCloser, error)
 	}
 
-	// Persister abstracts artifact persistance.
+	// Persister abstracts artifact persistence.
 	Persister interface {
-		Persist(ctx context.Context, dest string, reader io.Reader) error
+		Persist(ctx context.Context, dest string, ioReader io.Reader) error
 	}
 
 	// Extractor abstracts artifact extraction.
@@ -39,7 +39,9 @@ type (
 		ArtifactURL    string
 	}
 
-	sourceCodeTarget struct {
+	// SourceCodeTarget is a target that downloads an artefact and extracts it
+	// in order for it to be scanned
+	SourceCodeTarget struct {
 		cfg       Config
 		fetcher   Fetcher
 		extractor Extractor
@@ -55,19 +57,19 @@ func New(
 	persister Persister,
 	extractor Extractor,
 	writer MetadataWriter,
-) (sourceCodeTarget, error) {
+) (SourceCodeTarget, error) {
 	switch {
 	case fetcher == nil:
-		return sourceCodeTarget{}, errors.New("fetcher cannot be nil")
+		return SourceCodeTarget{}, errors.New("fetcher cannot be nil")
 	case persister == nil:
-		return sourceCodeTarget{}, errors.New("persister cannot be nil")
+		return SourceCodeTarget{}, errors.New("persister cannot be nil")
 	case extractor == nil:
-		return sourceCodeTarget{}, errors.New("extractor cannot be nil")
+		return SourceCodeTarget{}, errors.New("extractor cannot be nil")
 	case writer == nil:
-		return sourceCodeTarget{}, errors.New("writer cannot be nil")
+		return SourceCodeTarget{}, errors.New("writer cannot be nil")
 	}
 
-	return sourceCodeTarget{
+	return SourceCodeTarget{
 		cfg:       cfg,
 		fetcher:   fetcher,
 		persister: persister,
@@ -77,7 +79,7 @@ func New(
 }
 
 // Prepare fetches a source code bundle from a selected source.
-func (s sourceCodeTarget) Prepare(ctx context.Context) error {
+func (s SourceCodeTarget) Prepare(ctx context.Context) error {
 	l := logger.
 		LoggerFromContext(ctx).
 		With(

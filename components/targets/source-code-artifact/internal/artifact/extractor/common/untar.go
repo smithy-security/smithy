@@ -62,7 +62,7 @@ func Untar(ctx context.Context, tarReader io.Reader, destPath string) error {
 			}
 
 			// copy over contents
-			if err := reader.SafeCopy(fd, tr); err != nil {
+			if err := reader.SafeCopy(ctx, fd, tr); err != nil {
 				reader.CloseReader(ctx, fd)
 				return errors.Errorf("could not copy data into file: %w", err)
 			}

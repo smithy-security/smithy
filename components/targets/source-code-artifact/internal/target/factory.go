@@ -6,7 +6,6 @@ import (
 	"github.com/go-errors/errors"
 
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact"
-	plaincopy "github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/plain-copy"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/tar"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/targz"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact/extractor/zip"
@@ -31,7 +30,7 @@ func GetFetcher(ctx context.Context, cfg fetcher.Config) (Fetcher, artifact.Sour
 
 	switch sourceType {
 	case artifact.SourceTypeS3:
-		f, fetcherErr = s3.NewFetcher(ctx, sourceType, cfg, s3.S3DetailsConstructor)
+		f, fetcherErr = s3.NewFetcher(ctx, sourceType, cfg, s3.DetailsConstructor)
 	case artifact.SourceTypeGCS:
 		f, fetcherErr = s3.NewFetcher(ctx, sourceType, cfg, s3.GCSDetailsConstructor)
 	case artifact.SourceTypeRemote:
@@ -52,15 +51,16 @@ func GetFetcher(ctx context.Context, cfg fetcher.Config) (Fetcher, artifact.Sour
 	return f, sourceType, nil
 }
 
-// GetExtractor returns the configured extractor based on the supplied artifact url.
-func GetExtractor(fileName string) (Extractor, artifact.FileType, error) {
-	fileType, err := artifact.GetFileType(fileName)
-	if err != nil {
-		return nil,
-			artifact.FileTypeUnsupported,
-			errors.Errorf("could not determine file type for file: '%s'", fileName)
-	}
+var (
+	// ErrUnsupportedFileType is returned when the file type is not supported
+	// by the system
+	ErrUnsupportedFileType = errors.New("unsupported file type")
+	// ErrNoExtractor is returned when no extractor could be determined
+	ErrNoExtractor = errors.New("could not determine extractor")
+)
 
+// GetExtractor returns the configured extractor based on the supplied artifact url.
+func GetExtractor(fileType artifact.FileType) (Extractor, artifact.FileType, error) {
 	var extractor Extractor
 	switch fileType {
 	case artifact.FileTypeZip:
@@ -70,14 +70,22 @@ func GetExtractor(fileName string) (Extractor, artifact.FileType, error) {
 	case artifact.FileTypeTarGz:
 		extractor = targz.NewExtractor()
 	case artifact.FileTypeUnarchived:
-		extractor = plaincopy.NewExtractor()
+		extractor = NoopExtractor{}
 	default:
-		return nil, artifact.FileTypeUnsupported, errors.Errorf("unsupported file type '%s' for file: '%s'", fileType, fileName)
+		return nil, artifact.FileTypeUnsupported, errors.Errorf("%s: %w", fileType, ErrUnsupportedFileType)
 	}
 
 	if extractor == nil {
-		return nil, fileType, errors.New("could not determine extractor")
+		return nil, fileType, ErrNoExtractor
 	}
 
 	return extractor, fileType, nil
+}
+
+// NoopExtractor is a noop extractor that does no changes to the file
+type NoopExtractor struct{}
+
+// ExtractArtifact is a no-op
+func (NoopExtractor) ExtractArtifact(_ context.Context, _, _ string) error {
+	return nil
 }

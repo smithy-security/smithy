@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	awsConf "github.com/aws/aws-sdk-go-v2/config"
+	awsconf "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/aws/smithy-go/logging"
@@ -33,7 +33,7 @@ type (
 )
 
 // Logf implements the aws Logger interface.
-func (a awsLoggerProxy) Logf(classification logging.Classification, format string, v ...interface{}) {
+func (a awsLoggerProxy) Logf(classification logging.Classification, format string, v ...any) {
 	if classification == logging.Debug {
 		a().Debug(format, v...)
 	} else {
@@ -71,8 +71,8 @@ func GCSDetailsConstructor(artifactURLStr string) (string, string, string, error
 	return "https://storage.googleapis.com", bucketName, keyName, err
 }
 
-// S3DetailsConstructor doesn't specify an endpoint as the SDK is able to auto-resolve it.
-func S3DetailsConstructor(artifactURLStr string) (string, string, string, error) {
+// DetailsConstructor doesn't specify an endpoint as the SDK is able to auto-resolve it.
+func DetailsConstructor(artifactURLStr string) (string, string, string, error) {
 	bucketName, keyName, err := getDetails(strings.TrimPrefix(artifactURLStr, "s3://"))
 	return "", bucketName, keyName, err
 }
@@ -125,7 +125,7 @@ func (f s3Fetcher) FetchArtifact(ctx context.Context) (io.ReadCloser, error) {
 func newS3Client(ctx context.Context, sourceType artifact.SourceType, cfg fetcher.Config) (*s3.Client, error) {
 	awsOpts, s3Opts := newS3Options(ctx, sourceType, cfg)
 
-	c, err := awsConf.LoadDefaultConfig(ctx, awsOpts...)
+	c, err := awsconf.LoadDefaultConfig(ctx, awsOpts...)
 	if err != nil {
 		return nil, errors.Errorf("could not create s3 client: %w", err)
 	}
@@ -137,10 +137,10 @@ func newS3Options(
 	ctx context.Context,
 	sourceType artifact.SourceType,
 	cfg fetcher.Config,
-) ([]func(*awsConf.LoadOptions) error, []func(*s3.Options)) {
+) ([]func(*awsconf.LoadOptions) error, []func(*s3.Options)) {
 	var (
-		awsOpts = []func(*awsConf.LoadOptions) error{
-			awsConf.WithLogger(
+		awsOpts = []func(*awsconf.LoadOptions) error{
+			awsconf.WithLogger(
 				awsLoggerProxy(
 					func() logger.Logger {
 						return logger.LoggerFromContext(ctx)
@@ -155,11 +155,11 @@ func newS3Options(
 	if cfg.Region != "" {
 		region = cfg.Region
 	}
-	awsOpts = append(awsOpts, awsConf.WithRegion(region))
+	awsOpts = append(awsOpts, awsconf.WithRegion(region))
 
 	if sourceType == artifact.SourceTypeGCS {
 		s3Opts = append(s3Opts, signForGCP)
-		awsOpts = append(awsOpts, awsConf.WithBaseEndpoint(cfg.ArtifactBaseURL))
+		awsOpts = append(awsOpts, awsconf.WithBaseEndpoint(cfg.ArtifactBaseURL))
 	}
 
 	if cfg.AuthID != "" && cfg.AuthSecret != "" {
@@ -168,9 +168,9 @@ func newS3Options(
 			slog.String("auth_id", fetcher.Redact(cfg.AuthID)),
 			slog.String("auth_secret", fetcher.Redact(cfg.AuthSecret)),
 		)
-		awsOpts = append(awsOpts, awsConf.WithCredentialsProvider(
+		awsOpts = append(awsOpts, awsconf.WithCredentialsProvider(
 			aws.CredentialsProviderFunc(
-				func(ctx context.Context) (aws.Credentials, error) {
+				func(_ context.Context) (aws.Credentials, error) {
 					return aws.Credentials{
 						AccessKeyID:     cfg.AuthID,
 						SecretAccessKey: cfg.AuthSecret,
@@ -179,11 +179,11 @@ func newS3Options(
 			),
 		))
 	} else {
-		awsOpts = append(awsOpts, awsConf.WithCredentialsProvider(aws.AnonymousCredentials{}))
+		awsOpts = append(awsOpts, awsconf.WithCredentialsProvider(aws.AnonymousCredentials{}))
 	}
 
-	if cfg.BaseHttpClient != nil {
-		awsOpts = append(awsOpts, awsConf.WithHTTPClient(cfg.BaseHttpClient))
+	if cfg.BaseHTTPClient != nil {
+		awsOpts = append(awsOpts, awsconf.WithHTTPClient(cfg.BaseHTTPClient))
 	}
 
 	return awsOpts, s3Opts

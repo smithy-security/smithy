@@ -18,47 +18,47 @@ type (
 		Do(*http.Request) (*http.Response, error)
 	}
 
-	remoteFetcher struct {
+	// HTTPFetcher uses HTTP to fetch an artefact
+	HTTPFetcher struct {
 		doer Doer
 		cfg  fetcher.Config
 	}
 )
 
 // NewFetcher returns a new http fetcher.
-func NewFetcher(cfg fetcher.Config) (remoteFetcher, error) {
-	switch {
-	case cfg.ArtifactURL == "":
-		return remoteFetcher{}, errors.New("invalid empty artifact url")
+func NewFetcher(cfg fetcher.Config) (HTTPFetcher, error) {
+	if cfg.ArtifactURL == "" {
+		return HTTPFetcher{}, errors.New("invalid empty artifact url")
 	}
 
-	var doer = cfg.BaseHttpClient
+	var doer = cfg.BaseHTTPClient
 	if doer == nil {
 		doer = http.DefaultClient
 	}
 
-	return remoteFetcher{
+	return HTTPFetcher{
 		doer: doer,
 		cfg:  cfg,
 	}, nil
 }
 
 // FetchArtifact fetches an artifact using BasicAuth, if provided.
-func (f remoteFetcher) FetchArtifact(ctx context.Context) (io.ReadCloser, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, f.cfg.ArtifactURL, nil)
+func (h HTTPFetcher) FetchArtifact(ctx context.Context) (io.ReadCloser, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, h.cfg.ArtifactURL, nil)
 	if err != nil {
 		return nil, errors.Errorf("could not create request: %w", err)
 	}
 
-	if f.cfg.AuthID != "" && f.cfg.AuthSecret != "" {
+	if h.cfg.AuthID != "" && h.cfg.AuthSecret != "" {
 		logger.LoggerFromContext(ctx).Debug(
 			"authenticating with auth id and secret",
-			slog.String("auth_id", fetcher.Redact(f.cfg.AuthID)),
-			slog.String("auth_secret", fetcher.Redact(f.cfg.AuthSecret)),
+			slog.String("auth_id", fetcher.Redact(h.cfg.AuthID)),
+			slog.String("auth_secret", fetcher.Redact(h.cfg.AuthSecret)),
 		)
-		req.SetBasicAuth(f.cfg.AuthID, f.cfg.AuthSecret)
+		req.SetBasicAuth(h.cfg.AuthID, h.cfg.AuthSecret)
 	}
 
-	resp, err := f.doer.Do(req)
+	resp, err := h.doer.Do(req)
 	switch {
 	case err != nil:
 		return nil, errors.Errorf("could not fetch artifact: %w", err)

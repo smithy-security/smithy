@@ -26,7 +26,7 @@ parameters:
 steps:
   - name: "download-and-unpack"
     env_vars:
-      ARCHIVE_PATH: "{{ scratchWorkspace }}/archive"
+      ARCHIVE_PATH: "{{ scratchWorkspace }}"
       SOURCE_CODE_PATH: "{{ sourceCodeWorkspace }}"
       METADATA_PATH: "{{ targetMetadataWorkspace }}/target.json"
       ARTIFACT_URL: "{{ .parameters.artifact_url }}"

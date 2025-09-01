@@ -8,6 +8,7 @@ import (
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/artifact"
 	"github.com/smithy-security/smithy/components/targets/source-code-artifact/internal/reader"
 )
 
@@ -17,19 +18,23 @@ type (
 		ArtifactURL  string
 		Reference    string
 		MetadataPath string
+		FileType     artifact.FileType
 	}
-	writer struct {
+
+	// JSONWriter writes the metadata provided to it as a JSON document to the
+	// filesystem
+	JSONWriter struct {
 		cfg Config
 	}
 )
 
 // NewWriter returns a new metadata writer.
-func NewWriter(cfg Config) writer {
-	return writer{cfg: cfg}
+func NewWriter(cfg Config) JSONWriter {
+	return JSONWriter{cfg: cfg}
 }
 
 // WriteMetadata writes target metadata.
-func (w writer) WriteMetadata(ctx context.Context) error {
+func (w JSONWriter) WriteMetadata(ctx context.Context) error {
 	dataSource := &ocsffindinginfo.DataSource{
 		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
 		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
