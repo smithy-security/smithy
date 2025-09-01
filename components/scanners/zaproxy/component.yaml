@@ -47,7 +47,7 @@ parameters:
     value: "10"
 steps:
   - name: write-metadata
-    image: components/scanners/zaproxy/overwrite-metadata
+    image: components/scanners/zaproxy/write-metadata
     executable: /bin/app
     env_vars:
       TARGET: "{{ .parameters.target }}"
@@ -76,8 +76,9 @@ steps:
       STARTUP_CHECK_RETRIES: "{{ .parameters.startup_check_retries }}"
       STARTUP_CHECK_INTERVAL: "{{ .parameters.startup_check_interval }}"
       SHUTDOWN_TIMEOUT: "{{ .parameters.shutdown_timeout }}"
+
   - name: parser
-    image: components/scanners/zaproxy
+    image: components/scanners/zaproxy/parser
     executable: /bin/app
     env_vars:
       ZAP_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/zap-report.json"
