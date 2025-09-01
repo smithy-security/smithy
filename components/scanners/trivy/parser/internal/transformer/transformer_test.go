@@ -206,14 +206,7 @@ func TestTrivyTransformer_Transform(t *testing.T) {
 			)
 			assert.NotEmptyf(t, vulnerability.Title, "Unexpected empty title for vulnerability for finding %d", idx)
 			assert.NotEmptyf(t, vulnerability.Desc, "Unexpected empty desc for vulnerability for finding %d", idx)
-			require.Lenf(t, vulnerability.AffectedCode, 1, "Unexpected length for affected code for vulnerability for finding %d. Expected 1", idx)
-
-			var affectedCode = vulnerability.AffectedCode[0]
-			require.NotNilf(t, affectedCode.File, "Unexpected nil file for vulnerability for finding %d", idx)
-			assert.NotEmptyf(t, affectedCode.File.Path, "Unexpected empty file path for vulnerability for finding %d", idx)
-			assert.NotEmptyf(t, affectedCode.File.Name, "Unexpected empty file name for vulnerability for finding %d", idx)
-			assert.NotNilf(t, affectedCode.StartLine, "Unexpected nil start line for vulnerability for finding %d", idx)
-			assert.NotNilf(t, affectedCode.EndLine, "Unexpected nil end line for vulnerability for finding %d", idx)
+			require.Lenf(t, vulnerability.AffectedCode, 0, "Unexpected length for affected code for vulnerability for finding %d. Expected 1", idx)
 		}
 	})
 }

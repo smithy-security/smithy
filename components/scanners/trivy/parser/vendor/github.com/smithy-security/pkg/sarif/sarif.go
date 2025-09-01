@@ -451,42 +451,48 @@ func (s *SarifTransformer) mapAffected(res *sarif.Result) ([]*ocsf.AffectedCode,
 		if location.PhysicalLocation == nil {
 			continue
 		}
+
 		var (
-			ac = &ocsf.AffectedCode{
-				File: &ocsf.File{},
-			}
 			physicalLocation = location.PhysicalLocation
+			pkgType          = s.findingsEcosystem
+			ruleID           = ""
 		)
-		pkgType := s.findingsEcosystem
-		ruleID := ""
+
 		if res.RuleId != nil {
 			ruleID = *res.RuleId
 		} else if res.Rule != nil && res.Rule.Id != nil {
 			ruleID = *res.Rule.Id
 		}
+
 		if eco, ok := s.ruleToEcosystem[ruleID]; ok {
 			pkgType = eco
 		}
+
 		if physicalLocation.ArtifactLocation != nil && physicalLocation.ArtifactLocation.Uri != nil {
 			if p := s.detectPackageFromPhysicalLocation(*physicalLocation, pkgType); p != nil {
 				affectedPackages = append(affectedPackages, s.mapAffectedPackage(res.Fixes, *p))
 			} else if !s.isSnykURI(*location.PhysicalLocation.ArtifactLocation.Uri) {
 				// Snyk special case, they use the repo url with some weird replacement as the artifact location
-				ac.File.Name = *location.PhysicalLocation.ArtifactLocation.Uri
-				ac.File.Path = utils.Ptr(fmt.Sprintf("file://%s", *location.PhysicalLocation.ArtifactLocation.Uri))
+				ac := &ocsf.AffectedCode{
+					File: &ocsf.File{
+						Name: *location.PhysicalLocation.ArtifactLocation.Uri,
+						Path: utils.Ptr(fmt.Sprintf("file://%s", *location.PhysicalLocation.ArtifactLocation.Uri)),
+					},
+				}
+
+				if physicalLocation.Region != nil {
+					if location.PhysicalLocation.Region.StartLine != nil {
+						ac.StartLine = utils.Ptr(int32(*location.PhysicalLocation.Region.StartLine))
+					}
+					if location.PhysicalLocation.Region.EndLine != nil {
+						ac.EndLine = utils.Ptr(int32(*location.PhysicalLocation.Region.EndLine))
+					}
+				}
+
+				affectedCode = append(affectedCode, ac)
 			}
 		}
-		if physicalLocation.Region != nil {
-			if location.PhysicalLocation.Region.StartLine != nil {
-				ac.StartLine = utils.Ptr(int32(*location.PhysicalLocation.Region.StartLine))
-			}
-			if location.PhysicalLocation.Region.EndLine != nil {
-				ac.EndLine = utils.Ptr(int32(*location.PhysicalLocation.Region.EndLine))
-			}
-		}
-		if ac != (&ocsf.AffectedCode{}) {
-			affectedCode = append(affectedCode, ac)
-		}
+
 		for _, logicalLocation := range location.LogicalLocations {
 			if p := s.detectPackageFromLogicalLocation(logicalLocation, pkgType); p != nil {
 				affectedPackages = append(affectedPackages, s.mapAffectedPackage(res.Fixes, *p))
@@ -616,7 +622,24 @@ func (s *SarifTransformer) mergeDataSources(
 	case ocsffindinginfo.DataSource_TARGET_TYPE_CONTAINER_IMAGE:
 		purl, err := packageurl.FromString("pkg:" + s.findingsEcosystem + "/" + *location.PhysicalLocation.ArtifactLocation.Uri)
 		if err != nil {
-			return nil, errors.Errorf("failed to parse package url:'%s', %v", *location.PhysicalLocation.ArtifactLocation.Uri, err)
+			slog.Error("failed to parse artifact location pURL, falling back to datasource pURL",
+				slog.String("artifact_location_uri", *location.PhysicalLocation.ArtifactLocation.Uri),
+				slog.String("finding_ecosystem", s.findingsEcosystem),
+			)
+
+			if s.dataSource.OciPackageMetadata == nil || s.dataSource.OciPackageMetadata.PackageUrl == "" {
+				return nil, errors.Errorf(
+					"could not parse pURL based on the artifact location URI and no datasource provided: %w",
+					err,
+				)
+			}
+
+			slog.Info("falling back to datasource pURL, this will lead to findings pointing to the artifact itself as finding location")
+			var otherErr error
+			purl, otherErr = packageurl.FromString(s.dataSource.OciPackageMetadata.PackageUrl)
+			if otherErr != nil {
+				return nil, errors.Errorf("could not parse artifact location or datasource pURL: %w: %w", otherErr, err)
+			}
 		}
 
 		dataSource.Uri = &ocsffindinginfo.DataSource_URI{

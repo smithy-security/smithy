@@ -135,7 +135,7 @@ github.com/shopspring/decimal
 # github.com/smithy-security/pkg/env v0.0.3
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
-# github.com/smithy-security/pkg/sarif v0.0.11
+# github.com/smithy-security/pkg/sarif v0.0.13
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/sarif
 github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0
