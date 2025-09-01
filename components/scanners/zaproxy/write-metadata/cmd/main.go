@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -17,7 +18,10 @@ import (
 func main() {
 	target := os.Getenv("TARGET")
 	if target == "" {
-		fmt.Println("Error: TARGET environment variable is not set")
+		if _, err := fmt.Println("Error: TARGET environment variable is not set"); err != nil {
+			log.Fatal(err.Error())
+		}
+
 		os.Exit(1)
 	}
 
@@ -26,9 +30,13 @@ func main() {
 		if !strings.HasSuffix(metadataPath, "target.json") {
 			metadataPath = filepath.Join(metadataPath, "target.json")
 		}
+
 		if err := overwriteMetadata(metadataPath, target); err != nil {
-			fmt.Println(errors.Errorf("could not write metadata: %w", err))
-			os.Exit(1)
+			if _, err := fmt.Println(errors.Errorf("could not write metadata: %w", err)); err != nil {
+				log.Fatal(err.Error())
+			}
+
+			log.Fatal(err.Error())
 		}
 	}
 }
