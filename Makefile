@@ -38,7 +38,7 @@ install-misspell:w
 	@go install github.com/client9/misspell/cmd/misspell@latest
 
 install-reviewdog:
-	@go install github.com/reviewdog/reviewdog/cmd/reviewdog@latest
+	@go install github.com/reviewdog/reviewdog/cmd/reviewdog@v0.20.3
 
 py-lint-sdk-python: update-poetry-pkgs-sdk-python install-misspell install-reviewdog
 	@reviewdog -fail-level=error $$([ "$${CI}" = "true" ] && echo "-reporter=github-pr-review") -diff="git diff origin/main" -filter-mode=added -tee -runners black,misspell $(REVIEWDOG_EXTRA_FLAGS)
