@@ -7,6 +7,8 @@ require (
 	k8s.io/apimachinery v0.29.0
 )
 
+require github.com/smithy-security/pkg/utils v0.0.2
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

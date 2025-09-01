@@ -13,6 +13,9 @@ github.com/pmezard/go-difflib/difflib
 # github.com/smithy-security/pkg/sarif v0.0.10
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/sarif/spec/gen/sarif-schema/v2-1-0
+# github.com/smithy-security/pkg/utils v0.0.2
+## explicit; go 1.23.2
+github.com/smithy-security/pkg/utils
 # github.com/stretchr/testify v1.10.0
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
