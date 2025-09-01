@@ -1,0 +1,10 @@
+source-code-artifact:
+- name: "artifact_url"
+  type: "string"
+  value: "https://github.com/B3nac/InjuredAndroid/releases/download/v1.0.12/InjuredAndroid-1.0.12-release.apk"
+
+# ios
+# source-code-artifact:
+# - name: "artifact_url"
+#   type: "string"
+#   value: "https://github.com/prateek147/DVIA-v2/releases/download/v2.0/DVIA-v2-swift.ipa"
