@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
+	"math"
 	"os"
 	"regexp"
 	"strconv"
@@ -15,7 +16,7 @@ import (
 	"github.com/smithy-security/pkg/env"
 	"github.com/smithy-security/pkg/utils"
 	"github.com/smithy-security/smithy/sdk/component"
-	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	findinginfov1 "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -31,6 +32,10 @@ type (
 		rawOutFilePath  string
 		baseLineFinding *ocsf.VulnerabilityFinding
 	}
+)
+
+var (
+	cweRE = regexp.MustCompile(`CWE-(\d+)`)
 )
 
 // MobSFTransformerWithClock allows customising the underlying clock.
@@ -116,6 +121,9 @@ func (g *mobSFTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 		}
 	} else if strings.ToLower(common.AppType) == "ipa" || strings.ToLower(common.AppType) == "swift" {
 		ocsfVulns, err = g.parseiOSMobSFRawOutput(ctx, b)
+		if err != nil {
+			return nil, errors.Errorf("could not parse iOS MobSF output: %w", err)
+		}
 	} else {
 		return nil, errors.Errorf("unsupported app type '%s'", common.AppType)
 	}
@@ -129,6 +137,7 @@ func (g *mobSFTransformer) setBaseLineFinding(ctx context.Context) (*ocsf.Vulner
 	if err != nil {
 		return nil, errors.Errorf("failed to map data source: %w", err)
 	}
+
 	now := g.clock.Now().Unix()
 	return &ocsf.VulnerabilityFinding{
 		ActivityName: utils.Ptr(ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String()),
@@ -156,15 +165,22 @@ func (g *mobSFTransformer) setBaseLineFinding(ctx context.Context) (*ocsf.Vulner
 	}, nil
 }
 
-func (g *mobSFTransformer) parseAndroidMobSFRawOutput(ctx context.Context, b []byte) ([]*ocsf.VulnerabilityFinding, error) {
+func (g *mobSFTransformer) parseAndroidMobSFRawOutput(
+	ctx context.Context,
+	b []byte,
+) ([]*ocsf.VulnerabilityFinding, error) {
 	var androidReport AndroidReport
 	if err := json.Unmarshal(b, &androidReport); err != nil {
 		return nil, errors.Errorf("failed to unmarshal raw output: %w", err)
 	}
+
 	return g.convertAndroidReportToOCSF(ctx, &androidReport)
 }
 
-func (g *mobSFTransformer) convertAndroidReportToOCSF(ctx context.Context, report *AndroidReport) ([]*ocsf.VulnerabilityFinding, error) {
+func (g *mobSFTransformer) convertAndroidReportToOCSF(
+	ctx context.Context,
+	report *AndroidReport,
+) ([]*ocsf.VulnerabilityFinding, error) {
 	var findings []*ocsf.VulnerabilityFinding
 
 	// Appsec findings first
@@ -179,35 +195,79 @@ func (g *mobSFTransformer) convertAndroidReportToOCSF(ctx context.Context, repor
 
 	// Binary analysis findings
 	for _, binaryReport := range report.BinaryAnalysis {
-		finding := g.convertBinaryAnalysisFindingToOCSF(binaryReport.Name, binaryReport.Fortify.Description, g.mobsfSeverityToOcsf(binaryReport.Fortify.Severity), "Test if binary is fortified")
+		finding := g.convertBinaryAnalysisFindingToOCSF(
+			binaryReport.Name,
+			binaryReport.Fortify.Description,
+			g.mobsfSeverityToOcsf(binaryReport.Fortify.Severity),
+			"Test if binary is fortified",
+		)
 		findings = append(findings, finding)
 
-		finding = g.convertBinaryAnalysisFindingToOCSF(binaryReport.Name, binaryReport.Nx.Description, g.mobsfSeverityToOcsf(binaryReport.Nx.Severity), "Test if binary has NX enabled")
+		finding = g.convertBinaryAnalysisFindingToOCSF(
+			binaryReport.Name,
+			binaryReport.Nx.Description,
+			g.mobsfSeverityToOcsf(binaryReport.Nx.Severity),
+			"Test if binary has NX enabled",
+		)
 		findings = append(findings, finding)
 
-		finding = g.convertBinaryAnalysisFindingToOCSF(binaryReport.Name, binaryReport.Pie.Description, g.mobsfSeverityToOcsf(binaryReport.Pie.Severity), "Test if binary has PIE enabled")
+		finding = g.convertBinaryAnalysisFindingToOCSF(
+			binaryReport.Name,
+			binaryReport.Pie.Description,
+			g.mobsfSeverityToOcsf(binaryReport.Pie.Severity),
+			"Test if binary has PIE enabled",
+		)
 		findings = append(findings, finding)
 
-		finding = g.convertBinaryAnalysisFindingToOCSF(binaryReport.Name, binaryReport.RelocationReadonly.Description, g.mobsfSeverityToOcsf(binaryReport.RelocationReadonly.Severity), "Test if binary has RelRO enabled")
+		finding = g.convertBinaryAnalysisFindingToOCSF(
+			binaryReport.Name,
+			binaryReport.RelocationReadonly.Description,
+			g.mobsfSeverityToOcsf(binaryReport.RelocationReadonly.Severity),
+			"Test if binary has RelRO enabled",
+		)
 		findings = append(findings, finding)
 
-		finding = g.convertBinaryAnalysisFindingToOCSF(binaryReport.Name, binaryReport.Rpath.Description, g.mobsfSeverityToOcsf(binaryReport.Rpath.Severity), "Test if binary has RPATH enabled")
+		finding = g.convertBinaryAnalysisFindingToOCSF(
+			binaryReport.Name,
+			binaryReport.Rpath.Description,
+			g.mobsfSeverityToOcsf(binaryReport.Rpath.Severity),
+			"Test if binary has RPATH enabled",
+		)
 		findings = append(findings, finding)
 
-		finding = g.convertBinaryAnalysisFindingToOCSF(binaryReport.Name, binaryReport.Runpath.Description, g.mobsfSeverityToOcsf(binaryReport.Runpath.Severity), "Test if binary has Runpath enabled")
+		finding = g.convertBinaryAnalysisFindingToOCSF(
+			binaryReport.Name,
+			binaryReport.Runpath.Description,
+			g.mobsfSeverityToOcsf(binaryReport.Runpath.Severity),
+			"Test if binary has Runpath enabled",
+		)
 		findings = append(findings, finding)
 
-		finding = g.convertBinaryAnalysisFindingToOCSF(binaryReport.Name, binaryReport.StackCanary.Description, g.mobsfSeverityToOcsf(binaryReport.StackCanary.Severity), "Test if binary has Stack Canary enabled")
+		finding = g.convertBinaryAnalysisFindingToOCSF(
+			binaryReport.Name,
+			binaryReport.StackCanary.Description,
+			g.mobsfSeverityToOcsf(binaryReport.StackCanary.Severity),
+			"Test if binary has Stack Canary enabled",
+		)
 		findings = append(findings, finding)
 
-		finding = g.convertBinaryAnalysisFindingToOCSF(binaryReport.Name, binaryReport.Symbol.Description, g.mobsfSeverityToOcsf(binaryReport.Symbol.Severity), "Test if binary has Symbols Stripped")
+		finding = g.convertBinaryAnalysisFindingToOCSF(
+			binaryReport.Name,
+			binaryReport.Symbol.Description,
+			g.mobsfSeverityToOcsf(binaryReport.Symbol.Severity),
+			"Test if binary has Symbols Stripped",
+		)
 		findings = append(findings, finding)
 	}
 
 	// Code analysis findings
 	for ruleName, finding := range report.CodeAnalysis.Findings {
-		finding := g.convertCodeFindingToOCSF(ruleName, finding)
-		findings = append(findings, finding)
+		fileFindings, err := g.convertCodeFindingToOCSF(ctx, ruleName, finding)
+		if err != nil {
+			return nil, err
+		}
+
+		findings = append(findings, fileFindings...)
 	}
 
 	for _, url := range report.FirebaseUrls {
@@ -250,22 +310,27 @@ func (g *mobSFTransformer) convertAppSecFindingsToOCSF(finding Appsec) []*ocsf.V
 		finding := g.convertMobSFFindingToOCSF(issues, ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH)
 		findings = append(findings, finding)
 	}
+
 	for _, issues := range finding.Warning {
 		finding := g.convertMobSFFindingToOCSF(issues, ocsf.VulnerabilityFinding_SEVERITY_ID_MEDIUM)
 		findings = append(findings, finding)
 	}
+
 	for _, issues := range finding.Info {
 		finding := g.convertMobSFFindingToOCSF(issues, ocsf.VulnerabilityFinding_SEVERITY_ID_INFORMATIONAL)
 		findings = append(findings, finding)
 	}
+
 	for _, issues := range finding.Secure {
 		finding := g.convertMobSFFindingToOCSF(issues, ocsf.VulnerabilityFinding_SEVERITY_ID_OTHER)
 		findings = append(findings, finding)
 	}
+
 	for _, issues := range finding.Hotspot {
 		finding := g.convertMobSFFindingToOCSF(issues, ocsf.VulnerabilityFinding_SEVERITY_ID_OTHER)
 		findings = append(findings, finding)
 	}
+
 	return findings
 }
 
@@ -334,14 +399,15 @@ func (g *mobSFTransformer) convertCertificateFindingToOCSF(finding []string) *oc
 
 }
 
-func (g *mobSFTransformer) convertMobSFFindingToOCSF(finding Finding, severity ocsf.VulnerabilityFinding_SeverityId) *ocsf.VulnerabilityFinding {
+func (g *mobSFTransformer) convertMobSFFindingToOCSF(
+	finding Finding,
+	severity ocsf.VulnerabilityFinding_SeverityId,
+) *ocsf.VulnerabilityFinding {
 	// Create a copy of the baseline finding
 	vf := proto.Clone(g.baseLineFinding).(*ocsf.VulnerabilityFinding)
-	vf.FindingInfo = &ocsf.FindingInfo{
-		Desc:  utils.Ptr(finding.Description),
-		Title: finding.Title,
-		Uid:   finding.Title,
-	}
+	vf.FindingInfo.Desc = utils.Ptr(finding.Description)
+	vf.FindingInfo.Title = finding.Title
+	vf.FindingInfo.Uid = finding.Title
 	vf.Message = &finding.Description
 	vf.Severity = utils.Ptr(severity.String())
 	vf.SeverityId = severity
@@ -359,18 +425,21 @@ func (g *mobSFTransformer) convertMobSFFindingToOCSF(finding Finding, severity o
 	return vf
 }
 
-func (g *mobSFTransformer) convertBinaryAnalysisFindingToOCSF(binaryName string, findingDescription string, severity ocsf.VulnerabilityFinding_SeverityId, title string) *ocsf.VulnerabilityFinding {
+func (g *mobSFTransformer) convertBinaryAnalysisFindingToOCSF(
+	binaryName string,
+	findingDescription string,
+	severity ocsf.VulnerabilityFinding_SeverityId,
+	title string,
+) *ocsf.VulnerabilityFinding {
 	// Create a copy of the baseline finding
 	vf := proto.Clone(g.baseLineFinding).(*ocsf.VulnerabilityFinding)
-	vf.FindingInfo = &ocsf.FindingInfo{
-		Desc:          utils.Ptr(findingDescription),
-		FirstSeenTime: utils.Ptr(g.clock.Now().Unix()),
-		LastSeenTime:  utils.Ptr(g.clock.Now().Unix()),
-		ModifiedTime:  utils.Ptr(g.clock.Now().Unix()),
-		ProductUid:    utils.Ptr("mobSF"),
-		Title:         title,
-		Uid:           title,
-	}
+	vf.FindingInfo.Desc = utils.Ptr(findingDescription)
+	vf.FindingInfo.FirstSeenTime = utils.Ptr(g.clock.Now().Unix())
+	vf.FindingInfo.LastSeenTime = utils.Ptr(g.clock.Now().Unix())
+	vf.FindingInfo.ModifiedTime = utils.Ptr(g.clock.Now().Unix())
+	vf.FindingInfo.ProductUid = utils.Ptr("mobSF")
+	vf.FindingInfo.Title = title
+	vf.FindingInfo.Uid = title
 	vf.Severity = utils.Ptr(severity.String())
 	vf.SeverityId = severity
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
@@ -393,13 +462,19 @@ func (g *mobSFTransformer) convertBinaryAnalysisFindingToOCSF(binaryName string,
 	return vf
 }
 
-func (g *mobSFTransformer) convertCodeFindingToOCSF(ruleName string, finding CodeFinding) *ocsf.VulnerabilityFinding {
-	vf := proto.Clone(g.baseLineFinding).(*ocsf.VulnerabilityFinding)
+func (g *mobSFTransformer) convertCodeFindingToOCSF(
+	ctx context.Context,
+	ruleName string,
+	finding CodeFinding,
+) ([]*ocsf.VulnerabilityFinding, error) {
+	vf, ok := proto.Clone(g.baseLineFinding).(*ocsf.VulnerabilityFinding)
+	if !ok {
+		return nil, errors.Errorf("there was an issue cloning base line finding: %v", vf)
+	}
 
 	// Extract CWE number from ruleName if present (e.g., "CWE-532: Insertion of Sensitive Information into Log File")
 	var cweNumber string
-	re := regexp.MustCompile(`CWE-(\d+)`)
-	if matches := re.FindStringSubmatch(ruleName); len(matches) == 2 {
+	if matches := cweRE.FindStringSubmatch(ruleName); len(matches) == 2 {
 		cweNumber = matches[1]
 	}
 	vf.Message = &finding.Metadata.Description
@@ -424,6 +499,8 @@ func (g *mobSFTransformer) convertCodeFindingToOCSF(ruleName string, finding Cod
 		},
 	}
 
+	denormalisedFindings := []*ocsf.VulnerabilityFinding{}
+	dataSource := component.TargetMetadataFromCtx(ctx)
 	for filename, lines := range finding.Files {
 		for _, line := range strings.Split(lines, ",") {
 			intLine, err := strconv.Atoi(line)
@@ -431,19 +508,56 @@ func (g *mobSFTransformer) convertCodeFindingToOCSF(ruleName string, finding Cod
 				slog.Warn("failed to convert line number to int", "line", line, "error", err)
 				continue
 			}
-			if intLine < 0 || intLine > int(^int32(0)) {
+
+			if intLine < 0 || intLine > math.MaxInt32 {
 				slog.Warn("line number out of int32 bounds", "line", intLine)
 				continue
 			}
-			vf.Vulnerabilities[0].AffectedCode = append(vf.Vulnerabilities[0].AffectedCode, &ocsf.AffectedCode{
-				File: &ocsf.File{
-					Name: filename,
+
+			denormalisedFinding, ok := proto.Clone(vf).(*ocsf.VulnerabilityFinding)
+			if !ok {
+				return nil, errors.Errorf("there was an issue cloning vulnerability finding: %v", denormalisedFinding)
+			}
+
+			contextualisedDataSource, ok := proto.Clone(dataSource).(*findinginfov1.DataSource)
+			if !ok {
+				return nil, errors.Errorf("could not clone data source: %s", dataSource.String())
+			}
+
+			contextualisedFilename := filename
+			if contextualisedDataSource.Uri.Path != "" {
+				contextualisedFilename = fmt.Sprintf("%s:%s", contextualisedDataSource.Uri.Path, filename)
+			}
+
+			denormalisedFinding.Vulnerabilities[0].AffectedCode = []*ocsf.AffectedCode{
+				{
+					File: &ocsf.File{
+						Name: contextualisedFilename,
+					},
+					StartLine: utils.Ptr(int32(intLine)),
+					EndLine:   utils.Ptr(int32(intLine)),
 				},
-				StartLine: utils.Ptr(int32(intLine)),
-			})
+			}
+
+			contextualisedDataSource.Uri.Path = contextualisedFilename
+			contextualisedDataSource.LocationData = &findinginfov1.DataSource_FileFindingLocationData_{
+				FileFindingLocationData: &findinginfov1.DataSource_FileFindingLocationData{
+					StartLine: uint32(intLine),
+					EndLine:   uint32(intLine),
+				},
+			}
+
+			marshaledDataSource, err := protojson.Marshal(contextualisedDataSource)
+			if err != nil {
+				return nil, errors.Errorf("could not marshal data source: %v", contextualisedDataSource)
+			}
+
+			denormalisedFinding.FindingInfo.DataSources[0] = string(marshaledDataSource)
+			denormalisedFindings = append(denormalisedFindings, denormalisedFinding)
 		}
 	}
-	return vf
+
+	return denormalisedFindings, nil
 }
 
 func (g *mobSFTransformer) convertFirebaseFindingsToOCSF(url FirebaseUrl) *ocsf.VulnerabilityFinding {
@@ -452,14 +566,16 @@ func (g *mobSFTransformer) convertFirebaseFindingsToOCSF(url FirebaseUrl) *ocsf.
 	vf.FindingInfo.Title = url.Title
 	vf.FindingInfo.Uid = url.Title
 	vf.Message = &url.Description
-	vf.Severity = utils.Ptr(g.mobsfSeverityToOcsf(url.Severity).String())
-	vf.SeverityId = g.mobsfSeverityToOcsf(url.Severity)
+
+	severity := g.mobsfSeverityToOcsf(url.Severity)
+	vf.Severity = utils.Ptr(severity.String())
+	vf.SeverityId = severity
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			Desc:          &url.Description,
 			FirstSeenTime: utils.Ptr(g.clock.Now().Unix()),
 			LastSeenTime:  utils.Ptr(g.clock.Now().Unix()),
-			Severity:      utils.Ptr(g.mobsfSeverityToOcsf(url.Severity).String()),
+			Severity:      utils.Ptr(severity.String()),
 			Title:         &url.Title,
 			VendorName:    utils.Ptr("MobSF"),
 		},
@@ -474,14 +590,16 @@ func (g *mobSFTransformer) convertManifestFindingToOCSF(finding ManifestFinding)
 	vf.FindingInfo.Title = finding.Title
 	vf.FindingInfo.Uid = finding.Rule
 	vf.Message = &finding.Description
-	vf.Severity = utils.Ptr(g.mobsfSeverityToOcsf(finding.Severity).String())
-	vf.SeverityId = g.mobsfSeverityToOcsf(finding.Severity)
+
+	severity := g.mobsfSeverityToOcsf(finding.Severity)
+	vf.Severity = utils.Ptr(severity.String())
+	vf.SeverityId = severity
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			Desc:          &finding.Description,
 			FirstSeenTime: utils.Ptr(g.clock.Now().Unix()),
 			LastSeenTime:  utils.Ptr(g.clock.Now().Unix()),
-			Severity:      utils.Ptr(g.mobsfSeverityToOcsf(finding.Severity).String()),
+			Severity:      utils.Ptr(severity.String()),
 			Title:         &finding.Title,
 			VendorName:    utils.Ptr("MobSF"),
 		},
@@ -495,14 +613,16 @@ func (g *mobSFTransformer) convertNetworkSecurityFindingToOCSF(finding NetworkFi
 	vf.FindingInfo.Title = finding.Description
 	vf.FindingInfo.Uid = finding.Description
 	vf.Message = &finding.Description
-	vf.Severity = utils.Ptr(g.mobsfSeverityToOcsf(finding.Severity).String())
-	vf.SeverityId = g.mobsfSeverityToOcsf(finding.Severity)
+
+	severity := g.mobsfSeverityToOcsf(finding.Severity)
+	vf.Severity = utils.Ptr(severity.String())
+	vf.SeverityId = severity
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			Desc:          &finding.Description,
 			FirstSeenTime: utils.Ptr(g.clock.Now().Unix()),
 			LastSeenTime:  utils.Ptr(g.clock.Now().Unix()),
-			Severity:      utils.Ptr(g.mobsfSeverityToOcsf(finding.Severity).String()),
+			Severity:      utils.Ptr(severity.String()),
 			Title:         &finding.Description,
 			VendorName:    utils.Ptr("MobSF"),
 		},
@@ -512,15 +632,11 @@ func (g *mobSFTransformer) convertNetworkSecurityFindingToOCSF(finding NetworkFi
 
 func (g *mobSFTransformer) mapDataSource(ctx context.Context) (string, error) {
 	targetMetadata := component.TargetMetadataFromCtx(ctx)
-
-	dataSource := ocsffindinginfo.DataSource{
-		TargetType:         ocsffindinginfo.DataSource_TARGET_TYPE_UNSPECIFIED,
-		SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
-	}
-	toBytes, err := protojson.Marshal(&dataSource)
+	toBytes, err := protojson.Marshal(targetMetadata)
 	if err != nil {
 		return "", errors.Errorf("failed to marshal data source to JSON err:%w", err)
 	}
+
 	return string(toBytes), nil
 }
 
@@ -545,12 +661,14 @@ func (g *mobSFTransformer) convertAtsFindingToOCSF(finding AtsFinding) *ocsf.Vul
 	return vf
 }
 
-func (g *mobSFTransformer) convertIOSBinaryFindingToOCSF(ruleID string, finding IosBinaryFinding) *ocsf.VulnerabilityFinding {
+func (g *mobSFTransformer) convertIOSBinaryFindingToOCSF(
+	ruleID string,
+	finding IosBinaryFinding,
+) *ocsf.VulnerabilityFinding {
 	vf := proto.Clone(g.baseLineFinding).(*ocsf.VulnerabilityFinding)
 
 	var cweNumber string
-	re := regexp.MustCompile(`CWE-(\d+)`)
-	if matches := re.FindStringSubmatch(finding.Cwe); len(matches) == 2 {
+	if matches := cweRE.FindStringSubmatch(finding.Cwe); len(matches) == 2 {
 		cweNumber = matches[1]
 	}
 
@@ -590,7 +708,7 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			AffectedPackages: []*ocsf.AffectedPackage{
-				&ocsf.AffectedPackage{
+				{
 					Name: dylib.Name,
 				},
 			},
@@ -615,7 +733,7 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			AffectedPackages: []*ocsf.AffectedPackage{
-				&ocsf.AffectedPackage{
+				{
 					Name: dylib.Name,
 				},
 			},
@@ -640,7 +758,7 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			AffectedPackages: []*ocsf.AffectedPackage{
-				&ocsf.AffectedPackage{
+				{
 					Name: dylib.Name,
 				},
 			},
@@ -665,7 +783,7 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			AffectedPackages: []*ocsf.AffectedPackage{
-				&ocsf.AffectedPackage{
+				{
 					Name: dylib.Name,
 				},
 			},
@@ -690,7 +808,7 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			AffectedPackages: []*ocsf.AffectedPackage{
-				&ocsf.AffectedPackage{
+				{
 					Name: dylib.Name,
 				},
 			},
@@ -715,7 +833,7 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			AffectedPackages: []*ocsf.AffectedPackage{
-				&ocsf.AffectedPackage{
+				{
 					Name: dylib.Name,
 				},
 			},
@@ -740,7 +858,7 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			AffectedPackages: []*ocsf.AffectedPackage{
-				&ocsf.AffectedPackage{
+				{
 					Name: dylib.Name,
 				},
 			},
@@ -765,7 +883,7 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 	vf.Vulnerabilities = []*ocsf.Vulnerability{
 		{
 			AffectedPackages: []*ocsf.AffectedPackage{
-				&ocsf.AffectedPackage{
+				{
 					Name: dylib.Name,
 				},
 			},
@@ -781,7 +899,11 @@ func (g *mobSFTransformer) convertDylibFindingToOCSF(dylib IosLibAnalysis) []*oc
 
 	return findings
 }
-func (g *mobSFTransformer) parseiOSMobSFRawOutput(ctx context.Context, rawOutput []byte) ([]*ocsf.VulnerabilityFinding, error) {
+
+func (g *mobSFTransformer) parseiOSMobSFRawOutput(
+	ctx context.Context,
+	rawOutput []byte,
+) ([]*ocsf.VulnerabilityFinding, error) {
 	var report IOsReport
 	if err := json.Unmarshal(rawOutput, &report); err != nil {
 		return nil, errors.Errorf("failed to unmarshal MobSF iOS output: %w", err)
@@ -806,8 +928,12 @@ func (g *mobSFTransformer) parseiOSMobSFRawOutput(ctx context.Context, rawOutput
 
 	// Code analysis findings
 	for ruleName, finding := range report.CodeAnalysis.Findings {
-		finding := g.convertCodeFindingToOCSF(ruleName, finding)
-		findings = append(findings, finding)
+		fileFindings, err := g.convertCodeFindingToOCSF(ctx, ruleName, finding)
+		if err != nil {
+			return nil, err
+		}
+
+		findings = append(findings, fileFindings...)
 	}
 
 	for _, dyLib := range report.DylibAnalysis {
