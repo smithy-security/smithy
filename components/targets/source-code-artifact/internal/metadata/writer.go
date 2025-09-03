@@ -15,10 +15,12 @@ import (
 type (
 	// Config contains writer's conf.
 	Config struct {
-		ArtifactURL  string
-		Reference    string
-		MetadataPath string
-		FileType     artifact.FileType
+		ArtifactURL   string
+		ArtifactID    string
+		RepositoryURL string
+		Reference     string
+		MetadataPath  string
+		FileType      artifact.FileType
 	}
 
 	// JSONWriter writes the metadata provided to it as a JSON document to the
@@ -37,8 +39,12 @@ func NewWriter(cfg Config) JSONWriter {
 func (w JSONWriter) WriteMetadata(ctx context.Context) error {
 	dataSource := &ocsffindinginfo.DataSource{
 		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+		Uri: &ocsffindinginfo.DataSource_URI{
+			UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
+			Path:      w.cfg.ArtifactID,
+		},
 		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
-			RepositoryUrl: w.cfg.ArtifactURL,
+			RepositoryUrl: w.cfg.RepositoryURL,
 			Reference:     w.cfg.Reference,
 		},
 	}

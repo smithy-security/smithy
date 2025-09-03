@@ -2,9 +2,17 @@ name: "source-code-artifact"
 description: "Downloads archived files in zip, tag or targz format from a plain http or s3 compatible API"
 type: "target"
 parameters:
-  # Must be a valid url like: https://github.com/aws/aws-sdk-go-v2/archive/refs/heads/main.zip
-  # Or a s3 compatible url like: s3://my-bucket/my-archive.tar or gs://my-bucket/my-archive.tar.gz
+  # Must be a valid URL like: https://github.com/aws/aws-sdk-go-v2/archive/refs/heads/main.zip
+  # Or a s3 compatible URL like: s3://my-bucket/my-archive.tar or gs://my-bucket/my-archive.tar.gz
+  # or a URL to an APK or some other artifact built from sources like: https://github.com/B3nac/InjuredAndroid/releases/download/v1.0.12/InjuredAndroid-1.0.12-release.apk
   - name: "artifact_url"
+    type: "string"
+    value: ""
+  # an id that will be used to identify the artifact. it's important when the artifact is downloaded and not unarchived
+  - name: "artifact_id"
+    type: "string"
+    value: ""
+  - name: "artifact_repository_url"
     type: "string"
     value: ""
   # This is an optional parameter that specifies the extension of the artifact.
@@ -29,7 +37,9 @@ steps:
       ARCHIVE_PATH: "{{ scratchWorkspace }}"
       SOURCE_CODE_PATH: "{{ sourceCodeWorkspace }}"
       METADATA_PATH: "{{ targetMetadataWorkspace }}/target.json"
+      ARTIFACT_ID: "{{ .parameters.artifact_id }}"
       ARTIFACT_URL: "{{ .parameters.artifact_url }}"
+      ARTIFACT_REPOSITORY_URL: "{{ .parameters.artifact_repository_url }}"
       ARTIFACT_EXTENSION: "{{ .parameters.artifact_extension }}"
       ARTIFACT_REFERENCE: "{{ .parameters.artifact_reference }}"
       ARTIFACT_REGISTRY_REGION: "{{ .parameters.artifact_registry_region }}"
