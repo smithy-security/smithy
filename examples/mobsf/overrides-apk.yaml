@@ -1,0 +1,13 @@
+source-code-artifact:
+- name: "artifact_url"
+  type: "string"
+  value: "https://github.com/B3nac/InjuredAndroid/releases/download/v1.0.12/InjuredAndroid-1.0.12-release.apk"
+- name: "artifact_repository_url"
+  type: "string"
+  value: "https://github.com/B3nac/InjuredAndroid"
+- name: "artifact_id"
+  type: "string"
+  value: "InjuredAndroid-1.0.12-release.apk"
+- name: "artifact_reference"
+  type: "string"
+  value: "v1.0.12"

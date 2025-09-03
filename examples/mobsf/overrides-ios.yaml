@@ -1,0 +1,13 @@
+source-code-artifact:
+- name: "artifact_url"
+  type: "string"
+  value: "https://github.com/prateek147/DVIA-v2/releases/download/v2.0/DVIA-v2-swift.ipa"
+- name: "artifact_repository_url"
+  type: "string"
+  value: "https://github.com/prateek147/DVIA-v2"
+- name: "artifact_id"
+  type: "string"
+  value: "DVIA-v2-swift.ipa"
+- name: "artifact_reference"
+  type: "string"
+  value: "main"
