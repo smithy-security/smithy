@@ -15,38 +15,70 @@ import (
 )
 
 func TestWriter_WriteMetadata(t *testing.T) {
-	const testDir = "./testdata"
-	require.NoError(t, os.MkdirAll(testDir, 0750))
-
-	t.Cleanup(func() {
-		require.NoError(t, os.RemoveAll(testDir))
-	})
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	config := metadata.Config{
-		ArtifactURL:  "https://github.com/example/repo.git",
-		Reference:    "main",
-		MetadataPath: filepath.Join(testDir, "metadata.json"),
-	}
+	t.Run("write metadata for source code containing artifact", func(t *testing.T) {
+		testDir := t.TempDir()
 
-	writer := metadata.NewWriter(config)
-	err := writer.WriteMetadata(ctx)
-	require.NoError(t, err)
+		config := metadata.Config{
+			ArtifactURL:   "https://github.com/smithy-security/smithy/archive/6b327c4c75844f221acaf2da391f7f5a23286116.zip",
+			RepositoryURL: "https://github.com/smithy-security",
+			ArtifactID:    "",
+			Reference:     "6b327c4c75844f221acaf2da391f7f5a23286116",
+			MetadataPath:  filepath.Join(testDir, "metadata.json"),
+		}
 
-	_, err = os.Stat(config.MetadataPath)
-	require.NoError(t, err, "metadata file should exist")
+		writer := metadata.NewWriter(config)
+		err := writer.WriteMetadata(ctx)
+		require.NoError(t, err)
 
-	fileContent, err := os.ReadFile(config.MetadataPath)
-	require.NoError(t, err)
-	require.NotEmpty(t, fileContent, "file should not be empty")
+		_, err = os.Stat(config.MetadataPath)
+		require.NoError(t, err, "metadata file should exist")
 
-	var actualData ocsffindinginfo.DataSource
-	require.NoError(t, protojson.Unmarshal(fileContent, &actualData))
+		fileContent, err := os.ReadFile(config.MetadataPath)
+		require.NoError(t, err)
+		require.NotEmpty(t, fileContent, "file should not be empty")
 
-	require.Equal(t, ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY, actualData.TargetType)
-	require.NotNil(t, actualData.SourceCodeMetadata)
-	require.Equal(t, "https://github.com/example/repo.git", actualData.SourceCodeMetadata.RepositoryUrl)
-	require.Equal(t, "main", actualData.SourceCodeMetadata.Reference)
+		var actualData ocsffindinginfo.DataSource
+		require.NoError(t, protojson.Unmarshal(fileContent, &actualData))
+
+		require.Equal(t, ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY, actualData.TargetType)
+		require.NotNil(t, actualData.SourceCodeMetadata)
+		require.Equal(t, "https://github.com/smithy-security", actualData.SourceCodeMetadata.RepositoryUrl)
+		require.Equal(t, "6b327c4c75844f221acaf2da391f7f5a23286116", actualData.SourceCodeMetadata.Reference)
+		require.Empty(t, actualData.Uri.Path)
+	})
+
+	t.Run("write metadata for artifact built from source code", func(t *testing.T) {
+		testDir := t.TempDir()
+
+		config := metadata.Config{
+			ArtifactURL:   "https://github.com/B3nac/InjuredAndroid/releases/download/v1.0.12/InjuredAndroid-1.0.12-release.apk",
+			RepositoryURL: "https://github.com/B3nac/InjuredAndroid",
+			ArtifactID:    "apk-release-1.0.12",
+			Reference:     "1.0.12",
+			MetadataPath:  filepath.Join(testDir, "metadata.json"),
+		}
+
+		writer := metadata.NewWriter(config)
+		err := writer.WriteMetadata(ctx)
+		require.NoError(t, err)
+
+		_, err = os.Stat(config.MetadataPath)
+		require.NoError(t, err, "metadata file should exist")
+
+		fileContent, err := os.ReadFile(config.MetadataPath)
+		require.NoError(t, err)
+		require.NotEmpty(t, fileContent, "file should not be empty")
+
+		var actualData ocsffindinginfo.DataSource
+		require.NoError(t, protojson.Unmarshal(fileContent, &actualData))
+
+		require.Equal(t, ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY, actualData.TargetType)
+		require.NotNil(t, actualData.SourceCodeMetadata)
+		require.Equal(t, "https://github.com/B3nac/InjuredAndroid", actualData.SourceCodeMetadata.RepositoryUrl)
+		require.Equal(t, "1.0.12", actualData.SourceCodeMetadata.Reference)
+		require.Equal(t, "apk-release-1.0.12", actualData.Uri.Path)
+	})
 }

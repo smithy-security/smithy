@@ -20,12 +20,16 @@ func TestConfigParsing(t *testing.T) {
 		metadataFile := path.Join(metadataFolder, "target.json")
 
 		artifactURL := "https://github.com/B3nac/InjuredAndroid/archive/refs/tags/v1.0.12.tar.gz"
+		artifactRepositoryURL := "https://github.com/B3nac/InjuredAndroid"
+		reference := "91a8f8b6e08aab4124d7362d9d74f273d754383a"
 
 		require.NoError(t, os.Setenv(EnvVarArchivePath, archiveFile))
 		require.NoError(t, os.Setenv(EnvVarSourceCodePath, sourceCodeFolder))
 		require.NoError(t, os.Setenv(EnvVarMetadataPath, metadataFolder))
 		require.NoError(t, os.Setenv(EnvVarArchiveType, ""))
 		require.NoError(t, os.Setenv(EnvVarArtifactURL, artifactURL))
+		require.NoError(t, os.Setenv(EnvVarRepositoryURL, artifactRepositoryURL))
+		require.NoError(t, os.Setenv(EnvVarArtifactReference, reference))
 
 		cfg, err := New()
 		require.NoError(t, err)
@@ -35,6 +39,8 @@ func TestConfigParsing(t *testing.T) {
 		assert.Equal(t, artifact.FileTypeTarGz, cfg.Metadata.FileType)
 		assert.Equal(t, artifactURL, cfg.Metadata.ArtifactURL)
 		assert.Equal(t, metadataFile, cfg.Metadata.MetadataPath)
+		assert.Equal(t, artifactRepositoryURL, cfg.Metadata.RepositoryURL)
+		assert.Equal(t, reference, cfg.Metadata.Reference)
 	})
 
 	t.Run("archive path is inferred", func(t *testing.T) {
@@ -45,12 +51,16 @@ func TestConfigParsing(t *testing.T) {
 		metadataFile := path.Join(metadataFolder, "target.json")
 
 		artifactURL := "https://github.com/B3nac/InjuredAndroid/archive/refs/tags/v1.0.12.tar.gz"
+		artifactRepositoryURL := "https://github.com/B3nac/InjuredAndroid"
+		reference := "main"
 
 		require.NoError(t, os.Setenv(EnvVarArchivePath, archiveFolder))
 		require.NoError(t, os.Setenv(EnvVarSourceCodePath, sourceCodeFolder))
 		require.NoError(t, os.Setenv(EnvVarMetadataPath, metadataFolder))
 		require.NoError(t, os.Setenv(EnvVarArchiveType, ""))
 		require.NoError(t, os.Setenv(EnvVarArtifactURL, artifactURL))
+		require.NoError(t, os.Setenv(EnvVarRepositoryURL, artifactRepositoryURL))
+		require.NoError(t, os.Setenv(EnvVarArtifactReference, reference))
 
 		cfg, err := New()
 		require.NoError(t, err)
@@ -60,6 +70,8 @@ func TestConfigParsing(t *testing.T) {
 		assert.Equal(t, artifact.FileTypeTarGz, cfg.Metadata.FileType)
 		assert.Equal(t, artifactURL, cfg.Metadata.ArtifactURL)
 		assert.Equal(t, metadataFile, cfg.Metadata.MetadataPath)
+		assert.Equal(t, artifactRepositoryURL, cfg.Metadata.RepositoryURL)
+		assert.Equal(t, reference, cfg.Metadata.Reference)
 	})
 
 	t.Run("unarchived file is downloaded in source code path", func(t *testing.T) {
@@ -70,12 +82,18 @@ func TestConfigParsing(t *testing.T) {
 		metadataFile := path.Join(metadataFolder, "target.json")
 
 		artifactURL := "https://github.com/B3nac/InjuredAndroid/archive/refs/tags/v1.0.12.apk"
+		artifactRepositoryURL := "https://github.com/B3nac/InjuredAndroid"
+		reference := "91a8f8b6e08aab4124d7362d9d74f273d754383a"
+		artifactID := "v1.0.12-release"
 
 		require.NoError(t, os.Setenv(EnvVarArchivePath, archiveFolder))
 		require.NoError(t, os.Setenv(EnvVarSourceCodePath, sourceCodeFolder))
 		require.NoError(t, os.Setenv(EnvVarMetadataPath, metadataFolder))
 		require.NoError(t, os.Setenv(EnvVarArchiveType, ""))
 		require.NoError(t, os.Setenv(EnvVarArtifactURL, artifactURL))
+		require.NoError(t, os.Setenv(EnvVarRepositoryURL, artifactRepositoryURL))
+		require.NoError(t, os.Setenv(EnvVarArtifactID, artifactID))
+		require.NoError(t, os.Setenv(EnvVarArtifactReference, reference))
 
 		cfg, err := New()
 		require.NoError(t, err)
@@ -85,6 +103,9 @@ func TestConfigParsing(t *testing.T) {
 		assert.Equal(t, artifact.FileTypeUnarchived, cfg.Metadata.FileType)
 		assert.Equal(t, artifactURL, cfg.Metadata.ArtifactURL)
 		assert.Equal(t, metadataFile, cfg.Metadata.MetadataPath)
+		assert.Equal(t, artifactRepositoryURL, cfg.Metadata.RepositoryURL)
+		assert.Equal(t, reference, cfg.Metadata.Reference)
+		assert.Equal(t, artifactID, cfg.Metadata.ArtifactID)
 	})
 
 	t.Run("archive type is fetched from environment", func(t *testing.T) {
@@ -120,12 +141,14 @@ func TestConfigParsing(t *testing.T) {
 		metadataFile := path.Join(metadataFolder, "target.json")
 
 		artifactURL := "https://github.com/B3nac/InjuredAndroid/archive/refs/tags/v1.0.12.tar.gz"
+		reference := "main"
 
 		require.NoError(t, os.Setenv(EnvVarArchivePath, archiveFile))
 		require.NoError(t, os.Setenv(EnvVarSourceCodePath, sourceCodeFolder))
 		require.NoError(t, os.Setenv(EnvVarMetadataPath, metadataFolder))
 		require.NoError(t, os.Setenv(EnvVarArchiveType, "zip"))
 		require.NoError(t, os.Setenv(EnvVarArtifactURL, artifactURL))
+		require.NoError(t, os.Setenv(EnvVarArtifactReference, reference))
 
 		cfg, err := New()
 		require.NoError(t, err)

@@ -34,6 +34,12 @@ const (
 	EnvVarArtifactURL = "ARTIFACT_URL"
 	// EnvVarArchiveType is the environment variable for the archive type
 	EnvVarArchiveType = "ARCHIVE_TYPE"
+	// EnvVarRepositoryURL is the environment variable for the repository
+	// URL from where the artifact was generated
+	EnvVarRepositoryURL = "ARTIFACT_REPOSITORY_URL"
+	// EnvVarArtifactID is the environment variable for the unique ID of
+	// the artifact
+	EnvVarArtifactID = "ARTIFACT_ID"
 	// EnvVarArtifactReference is the environment variable for the artifact
 	// reference
 	EnvVarArtifactReference = "ARTIFACT_REFERENCE"
@@ -63,7 +69,10 @@ func New() (Config, error) {
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var ARCHIVE_PATH: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarArchivePath, err),
+		)
 	}
 
 	cfg.Target.SourceCodePath, err = env.GetOrDefault(
@@ -72,7 +81,10 @@ func New() (Config, error) {
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var SOURCE_CODE_PATH: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarSourceCodePath, err),
+		)
 	}
 
 	cfg.Metadata.MetadataPath, err = env.GetOrDefault(
@@ -81,7 +93,10 @@ func New() (Config, error) {
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var METADATA_PATH: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarMetadataPath, err),
+		)
 	}
 
 	if cfg.Metadata.MetadataPath != "" && !strings.HasSuffix(cfg.Metadata.MetadataPath, "target.json") {
@@ -94,7 +109,10 @@ func New() (Config, error) {
 		"",
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_URL: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarArtifactURL, err),
+		)
 	}
 
 	archiveTypeStr, err := env.GetOrDefault(
@@ -103,7 +121,10 @@ func New() (Config, error) {
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var ARCHIVE_TYPE: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarArchiveType, err),
+		)
 	}
 
 	archiveType, err := artifact.GetArchiveType(archiveTypeStr)
@@ -118,9 +139,38 @@ func New() (Config, error) {
 	cfg.Metadata.Reference, err = env.GetOrDefault(
 		EnvVarArtifactReference,
 		"",
+		env.WithDefaultOnError(false),
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_REFERENCE: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarArtifactReference, err),
+		)
+
+	}
+
+	cfg.Metadata.RepositoryURL, err = env.GetOrDefault(
+		EnvVarRepositoryURL,
+		"",
+		env.WithDefaultOnError(false),
+	)
+	if err != nil {
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarRepositoryURL, err),
+		)
+	}
+
+	cfg.Metadata.ArtifactID, err = env.GetOrDefault(
+		EnvVarArtifactID,
+		"",
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarArtifactID, err),
+		)
 	}
 
 	cfg.Fetcher.Region, err = env.GetOrDefault(
@@ -129,7 +179,10 @@ func New() (Config, error) {
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_REGISTRY_REGION: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarArtifactRegistryRegion, err),
+		)
 	}
 
 	cfg.Fetcher.AuthID, err = env.GetOrDefault(
@@ -138,7 +191,10 @@ func New() (Config, error) {
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_REGISTRY_AUTH_ID: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarArtifactRegistryAuthID, err),
+		)
 	}
 
 	cfg.Fetcher.AuthSecret, err = env.GetOrDefault(
@@ -147,7 +203,10 @@ func New() (Config, error) {
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		errs = errors.Join(errs, errors.Errorf("failed to get env var ARTIFACT_REGISTRY_AUTH_SECRET: %w", err))
+		errs = errors.Join(
+			errs,
+			errors.Errorf("failed to get env var %s: %w", EnvVarArtifactRegistryAuthSecret, err),
+		)
 	}
 
 	cfg.Metadata.FileType, err = artifact.GetFileType(cfg.Target.ArtifactURL)
