@@ -29,7 +29,7 @@ steps:
 
   - name: run-mobsf
     image: components/scanners/mobsf/scanner
-    executable: /usr/local/bin/mosf-orchestrator
+    executable: /usr/local/bin/mobsf-orchestrator
     env_vars:
       MOBSF_SCANNED_FILE_DIR: "{{ sourceCodeWorkspace }}"
       MOBSF_REPORT_OUTPUT_PATH: "{{ scratchWorkspace }}/mobsf_report.json"
