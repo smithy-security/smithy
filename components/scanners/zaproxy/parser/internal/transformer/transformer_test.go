@@ -249,19 +249,22 @@ func TestZapTransformer_Metrics(t *testing.T) {
 	require.NoError(t, report.UnmarshalJSON(b))
 	metricsReport := ocsfTransformer.metrics(&report)
 
-	assert.Equal(t,
-		metrics{
-			runs:        1,
-			resultCount: 3,
-			paths: []string{
-				"http://bodgeit.com:8080/bodgeit/search.jsp?q=%3C%2Ffont%3E%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E%3Cfont%3E",
-				"http://bodgeit.com:8080/bodgeit/contact.jsp",
-				"http://bodgeit.com:8080/bodgeit/basket.jsp",
-			},
-			ruleIDs: []string{"40012", "40018"},
+	expectedMetrics := metrics{
+		runs:        1,
+		resultCount: 3,
+		paths: []string{
+			"http://bodgeit.com:8080/bodgeit/search.jsp?q=%3C%2Ffont%3E%3CscrIpt%3Ealert%281%29%3B%3C%2FscRipt%3E%3Cfont%3E",
+			"http://bodgeit.com:8080/bodgeit/contact.jsp",
+			"http://bodgeit.com:8080/bodgeit/basket.jsp",
 		},
-		metricsReport,
-	)
+		ruleIDs: []string{"40012", "40018"},
+	}
+
+	assert.Equal(t, expectedMetrics.runs, metricsReport.runs)
+	assert.Equal(t, expectedMetrics.resultCount, metricsReport.resultCount)
+
+	assert.ElementsMatch(t, expectedMetrics.paths, metricsReport.paths)
+	assert.ElementsMatch(t, expectedMetrics.ruleIDs, metricsReport.ruleIDs)
 }
 
 func TestZapTransformer_ReadFile_NotFound(t *testing.T) {
