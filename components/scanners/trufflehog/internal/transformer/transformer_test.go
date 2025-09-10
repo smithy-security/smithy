@@ -3,6 +3,8 @@ package transformer
 import (
 	"context"
 	_ "embed"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -39,7 +41,7 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 	}
 
 	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
-
+	os.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/pwd")
 	ocsfTransformer, err := New(
 		TrufflehogRawOutFilePath("./testdata/trufflehog.json"),
 		TrufflehogTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
@@ -200,5 +202,85 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 			assert.NotEmptyf(t, vulnerability.Cwe.Uid, "Unexpected empty value for uid in vulnerability for finding %d", idx)
 			assert.NotEmptyf(t, vulnerability.Cwe.Caption, "Unexpected empty value for caption in vulnerability for finding %d", idx)
 		}
+	})
+	t.Run("it should extract the relative path from the absolute path", func(t *testing.T) {
+		rawJSON := `{
+		"SourceMetadata": { "Data": { "Filesystem": { "file": "/pwd/.git/objects/06/a26a7f8c8e7dd7e07594f5c061f397b05ffbfe", "line": 2 }}},
+		"SourceID": 1, "SourceType": 15, "SourceName": "trufflehog - filesystem",
+		"DetectorType": 1002, "DetectorName": "Box", "DecoderName": "PLAIN", "Raw": "cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn"
+	}`
+
+		// Create a temporary file and write the raw JSON to it directly
+		tempDir := t.TempDir()
+		tempFile, err := os.Create(filepath.Join(tempDir, "static_trufflehog.json"))
+		require.NoError(t, err)
+		_, err = tempFile.Write([]byte(rawJSON))
+		require.NoError(t, err)
+		tempFile.Close()
+
+		os.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/pwd")
+		transformer, err := New(
+			TrufflehogRawOutFilePath(tempFile.Name()),
+			TrufflehogTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := transformer.Transform(ctx)
+		require.NoError(t, err)
+		require.Len(t, findings, 1)
+
+		expectedPath := ".git/objects/06/a26a7f8c8e7dd7e07594f5c061f397b05ffbfe"
+
+		// Check the path for the dataSource
+		var dataSource ocsffindinginfo.DataSource
+		require.NotEmpty(t, findings[0].FindingInfo.DataSources)
+		err = protojson.Unmarshal([]byte(findings[0].FindingInfo.DataSources[0]), &dataSource)
+		require.NoError(t, err)
+
+		assert.Equalf(
+			t,
+			expectedPath,
+			dataSource.Uri.Path,
+			"DataSource path was not transformed correctly",
+		)
+
+		// Check the path for the affectedCode
+		affectedCode := findings[0].Vulnerabilities[0].AffectedCode[0]
+		expectedURI := "file://" + expectedPath
+
+		assert.Equalf(
+			t,
+			expectedURI,
+			*affectedCode.File.Path,
+			"AffectedCode path was not transformed correctly for finding",
+		)
+	})
+	t.Run("it should return an error from", func(t *testing.T) {
+		rawJSON := `{
+        "SourceMetadata": { "Data": { "Filesystem": { "file": "/etc/passwd", "line": 1 }}},
+        "SourceID": 1, "SourceType": 15, "SourceName": "trufflehog - filesystem",
+        "DetectorType": 1002, "DetectorName": "Box", "DecoderName": "PLAIN", "Raw": "secret"
+    }`
+
+		tempDir := t.TempDir()
+		tempFile, err := os.Create(filepath.Join(tempDir, "mismatched_path.json"))
+		require.NoError(t, err)
+		_, err = tempFile.Write([]byte(rawJSON))
+		require.NoError(t, err)
+		tempFile.Close()
+
+		// set the prefix to a value that is not a prefix in the findings' SourceMetadata.file field
+		os.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/workspace/source-code")
+
+		transformer, err := New(
+			TrufflehogRawOutFilePath(tempFile.Name()),
+			TrufflehogTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := transformer.Transform(ctx)
+		require.Error(t, err)
+		require.Nil(t, findings)
+		assert.Contains(t, err.Error(), "does not have expected prefix")
 	})
 }
