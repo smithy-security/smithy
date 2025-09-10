@@ -325,7 +325,7 @@ func (t *trufflehogTransformer) mapDataSource(ctx context.Context, location Truf
 		TargetType: t.targetType,
 		Uri: &ocsffindinginfo.DataSource_URI{
 			UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
-			Path:      relativePath,
+			Path:      fmt.Sprintf("file://%s", relativePath),
 		},
 		LocationData: &ocsffindinginfo.DataSource_FileFindingLocationData_{
 			FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{

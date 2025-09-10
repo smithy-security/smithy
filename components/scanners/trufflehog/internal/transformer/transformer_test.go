@@ -230,6 +230,7 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 		require.Len(t, findings, 1)
 
 		expectedPath := ".git/objects/06/a26a7f8c8e7dd7e07594f5c061f397b05ffbfe"
+		expectedURI := "file://" + expectedPath
 
 		// Check the path for the dataSource
 		var dataSource ocsffindinginfo.DataSource
@@ -239,15 +240,13 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 
 		assert.Equalf(
 			t,
-			expectedPath,
+			expectedURI,
 			dataSource.Uri.Path,
 			"DataSource path was not transformed correctly",
 		)
 
 		// Check the path for the affectedCode
 		affectedCode := findings[0].Vulnerabilities[0].AffectedCode[0]
-		expectedURI := "file://" + expectedPath
-
 		assert.Equalf(
 			t,
 			expectedURI,
