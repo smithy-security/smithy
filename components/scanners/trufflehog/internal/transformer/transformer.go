@@ -54,36 +54,30 @@ type (
 	}
 
 	// TrufflehogTransformerOption allows customising the transformer.
-	TrufflehogTransformerOption func(g *trufflehogTransformer) error
+	TrufflehogTransformerOption func(t *trufflehogTransformer) error
 
 	trufflehogTransformer struct {
-		targetType     ocsffindinginfo.DataSource_TargetType
-		clock          clockwork.Clock
-		rawOutFilePath string
-		fileContents   []byte
+		targetType          ocsffindinginfo.DataSource_TargetType
+		clock               clockwork.Clock
+		rawOutFilePath      string
+		fileContents        []byte
+		stripFilePathPrefix string
 	}
 )
 
 var (
 	// Generic errors
 
-	// ErrNilClock is thrown when the option setclock is called with empty clock
-	ErrNilClock = errors.Errorf("invalid nil clock")
-	// ErrEmptyTarget is thrown when the option set target is called with empty target
-	ErrEmptyTarget = errors.Errorf("invalid empty target")
-	// ErrEmptyRawOutfilePath is thrown when the option raw outfile path is called with empty path
-	ErrEmptyRawOutfilePath = errors.Errorf("invalid raw out file path")
 	// ErrEmptyRawOutfileContents is thrown when the option raw outfile contents is called with empty contents
 	ErrEmptyRawOutfileContents = errors.Errorf("empty raw out file contents")
-	// ErrBadTargetType is thrown when the option set target type is called with an unspecified or empty target type
-	ErrBadTargetType = errors.New("invalid empty target type")
 
 	// Parser Specific Errors
 
-	// ErrNoLineRange is thrown when parser produces a finding without a line range
-	ErrNoLineRange = errors.Errorf("result does not contain a line range")
 	// ErrBadDataSource is thrown when parser produces a finding that cannot have a datasource (e.g. no filename)
 	ErrBadDataSource = errors.Errorf("failed to marshal data source to JSON")
+
+	// ErrPrefixNotInPath is thrown when the path does not have the expected prefix
+	ErrPrefixNotInPath = errors.Errorf("path does not have expected prefix")
 )
 
 // ParseMultiJSONMessages provides method to parse tool results in JSON format.
@@ -109,44 +103,44 @@ func ParseMultiJSONMessages(in []byte) ([]*TrufflehogOut, error) {
 
 // TrufflehogTransformerWithClock allows customising the underlying clock.
 func TrufflehogTransformerWithClock(clock clockwork.Clock) TrufflehogTransformerOption {
-	return func(g *trufflehogTransformer) error {
+	return func(t *trufflehogTransformer) error {
 		if clock == nil {
 			return errors.Errorf("invalid nil clock")
 		}
-		g.clock = clock
+		t.clock = clock
 		return nil
 	}
 }
 
 // TrufflehogTransformerWithTarget allows customising the underlying target type.
 func TrufflehogTransformerWithTarget(target ocsffindinginfo.DataSource_TargetType) TrufflehogTransformerOption {
-	return func(g *trufflehogTransformer) error {
+	return func(t *trufflehogTransformer) error {
 		if target == ocsffindinginfo.DataSource_TARGET_TYPE_UNSPECIFIED {
 			return errors.Errorf("invalid empty target")
 		}
-		g.targetType = target
+		t.targetType = target
 		return nil
 	}
 }
 
 // TrufflehogRawOutFilePath allows customising the underlying raw out file path.
 func TrufflehogRawOutFilePath(path string) TrufflehogTransformerOption {
-	return func(g *trufflehogTransformer) error {
+	return func(t *trufflehogTransformer) error {
 		if path == "" {
 			return errors.Errorf("invalid raw out file path")
 		}
-		g.rawOutFilePath = path
+		t.rawOutFilePath = path
 		return nil
 	}
 }
 
 // TrufflehogRawOutFileContents allows customising the underlying raw out file contents.
 func TrufflehogRawOutFileContents(contents []byte) TrufflehogTransformerOption {
-	return func(g *trufflehogTransformer) error {
+	return func(t *trufflehogTransformer) error {
 		if contents == nil {
 			return ErrEmptyRawOutfileContents
 		}
-		g.fileContents = contents
+		t.fileContents = contents
 		return nil
 	}
 }
@@ -171,10 +165,20 @@ func New(opts ...TrufflehogTransformerOption) (*trufflehogTransformer, error) {
 		return nil, err
 	}
 
+	stripFilePathPrefix, err := env.GetOrDefault(
+		"TRUFFLEHOG_SOURCE_CODE_WORKSPACE",
+		"",
+		env.WithDefaultOnError(false),
+	)
+	if err != nil {
+		return nil, errors.Errorf("could not lookup environment variable for '%s': %w", "TRUFFLEHOG_SOURCE_CODE_WORKSPACE", err)
+	}
+
 	t := trufflehogTransformer{
-		rawOutFilePath: rawOutFilePath,
-		targetType:     ocsffindinginfo.DataSource_TargetType(ocsffindinginfo.DataSource_TargetType_value[target]),
-		clock:          clockwork.NewRealClock(),
+		rawOutFilePath:      rawOutFilePath,
+		targetType:          ocsffindinginfo.DataSource_TargetType(ocsffindinginfo.DataSource_TargetType_value[target]),
+		clock:               clockwork.NewRealClock(),
+		stripFilePathPrefix: stripFilePathPrefix,
 	}
 
 	for _, opt := range opts {
@@ -194,17 +198,17 @@ func New(opts ...TrufflehogTransformerOption) (*trufflehogTransformer, error) {
 }
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
-func (g *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
+func (t *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	logger := componentlogger.LoggerFromContext(ctx)
 
-	logger.Debug("preparing to parse raw trufflehog output...")
+	logger.Debug("Preparing to parse raw trufflehog output...")
 
-	b, err := os.ReadFile(g.rawOutFilePath)
+	b, err := os.ReadFile(t.rawOutFilePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, errors.Errorf("raw output file '%s' not found", g.rawOutFilePath)
+			return nil, errors.Errorf("raw output file '%s' not found", t.rawOutFilePath)
 		}
-		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
+		return nil, errors.Errorf("failed to read raw output file '%s': %w", t.rawOutFilePath, err)
 	}
 
 	truffleResults, err := ParseMultiJSONMessages(b)
@@ -212,29 +216,78 @@ func (g *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 		return nil, errors.Errorf("could not parse trufflehog file with multiple messages, err: %w", err)
 	}
 
-	findings, err := g.parseFindings(ctx, truffleResults)
+	findings, err := t.parseFindings(ctx, truffleResults)
 	if err != nil {
-		return nil, errors.Errorf("one or more findings failed to transform err: %w", err)
+		return nil, errors.Errorf("one or more findings failed to transform, err: %w", err)
 	}
-	logger.Debug("successfully transformed", slog.Int("num_findings", len(findings)))
+
+	logger.Debug("Successfully transformed", slog.Int("num_findings", len(findings)))
 	return findings, err
 }
 
 func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*TrufflehogOut) ([]*ocsf.VulnerabilityFinding, error) {
-	vulns := make([]*ocsf.VulnerabilityFinding, 0, len(out))
-	now := t.clock.Now().Unix()
+
+	var (
+		logger = componentlogger.LoggerFromContext(ctx)
+		vulns  = make([]*ocsf.VulnerabilityFinding, 0, len(out))
+		now    = t.clock.Now().Unix()
+	)
 
 	for _, finding := range out {
 		confidenceID := ocsf.VulnerabilityFinding_CONFIDENCE_ID_LOW
+
 		if finding.Verified {
 			confidenceID = ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH
 		}
 		confidence := ocsf.VulnerabilityFinding_ConfidenceId_name[int32(confidenceID)]
-		dataSource, err := t.mapDataSource(ctx, *finding)
+
+		path := finding.SourceMetadata.Data.Filesystem.File
+		if path == "" {
+			return nil, errors.Errorf("unsupported trufflehog findings with empty file entry detected, finding %#v", finding)
+		}
+
+		// Please note if you pass empty string to clean it will return ".". And then that will fail futher
+		// down in filepath.Rel(...). Hence why I chose to check for absPath == "" first in the lines above
+		cleanedPath := filepath.Clean(path)
+		cleanedPrefix := filepath.Clean(t.stripFilePathPrefix)
+
+		logger.Debug("Checking if absolute path has the prefix",
+			slog.String("path", cleanedPath),
+			slog.String("prefix_path", cleanedPrefix),
+		)
+
+		if !strings.HasPrefix(cleanedPath, cleanedPrefix) {
+			return nil, errors.Errorf("%w: absolute path: %q, and prefix: %q", ErrPrefixNotInPath, cleanedPath, t.stripFilePathPrefix)
+		}
+
+		logger.Debug("Getting relative path...")
+
+		relativePath, err := filepath.Rel(cleanedPrefix, cleanedPath)
+		if err != nil {
+			return nil, errors.Errorf("could not get relative path from path %s using prefix %q", cleanedPath, cleanedPrefix)
+		}
+
+		logger.Debug("Found paths...",
+			slog.String("path", cleanedPath),
+			slog.String("prefix_path", cleanedPrefix),
+			slog.String("relative_path", relativePath),
+		)
+
+		fileSystemLine := finding.SourceMetadata.Data.Filesystem.Line
+
+		dataSource, err := t.mapDataSource(ctx, relativePath, fileSystemLine)
 		if err != nil {
 			return nil, errors.Errorf("could not map datasource for finding %#v, err:%w", finding, err)
 		}
-		affectedCode := t.mapAffectedCode(*finding)
+
+		affectedCode := &ocsf.AffectedCode{
+			File: &ocsf.File{
+				Name: filepath.Base(relativePath),
+				Path: utils.Ptr(fmt.Sprintf("file://%s", relativePath)),
+			},
+			StartLine: utils.Ptr(int32(fileSystemLine)),
+		}
+
 		description := fmt.Sprintf("Trufflehog found hardcoded credentials (Redacted):%s\n", finding.Redacted)
 
 		vulns = append(vulns,
@@ -294,39 +347,25 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 	return vulns, nil
 }
 
-func (t *trufflehogTransformer) mapDataSource(ctx context.Context, location TrufflehogOut) (string, error) {
-	if location.SourceMetadata.Data.Filesystem.File == "" {
-		return "", errors.Errorf("unsupported trufflehog findings with empty file entry detected, finding %#v", location)
-	}
+func (t *trufflehogTransformer) mapDataSource(ctx context.Context, relativePath string, line int) (string, error) {
 	targetMetadata := component.TargetMetadataFromCtx(ctx)
 	dataSource := ocsffindinginfo.DataSource{
 		TargetType: t.targetType,
 		Uri: &ocsffindinginfo.DataSource_URI{
 			UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
-			Path:      location.SourceMetadata.Data.Filesystem.File,
+			Path:      fmt.Sprintf("file://%s", relativePath),
 		},
 		LocationData: &ocsffindinginfo.DataSource_FileFindingLocationData_{
 			FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
-				StartLine: uint32(location.SourceMetadata.Data.Filesystem.Line),
+				StartLine: uint32(line),
 			},
 		},
 		SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
 	}
+
 	toBytes, err := protojson.Marshal(&dataSource)
 	if err != nil {
 		return "", errors.Errorf("%w err:%w", ErrBadDataSource, err)
 	}
 	return string(toBytes), nil
-}
-
-func (t *trufflehogTransformer) mapAffectedCode(location TrufflehogOut) *ocsf.AffectedCode {
-	result := ocsf.AffectedCode{}
-	if location.SourceMetadata.Data.Filesystem.File != "" {
-		result.File = &ocsf.File{
-			Name: filepath.Base(location.SourceMetadata.Data.Filesystem.File),
-			Path: utils.Ptr(fmt.Sprintf("file://%s", location.SourceMetadata.Data.Filesystem.File)),
-		}
-		result.StartLine = utils.Ptr(int32(location.SourceMetadata.Data.Filesystem.Line))
-	}
-	return &result
 }

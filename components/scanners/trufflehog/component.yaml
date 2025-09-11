@@ -17,3 +17,4 @@ steps:
     env_vars:
       TRUFFLEHOG_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/trufflehog.json"
       TRUFFLEHOG_TARGET_TYPE: "TARGET_TYPE_REPOSITORY"
+      TRUFFLEHOG_SOURCE_CODE_WORKSPACE: "{{sourceCodeWorkspace}}"
