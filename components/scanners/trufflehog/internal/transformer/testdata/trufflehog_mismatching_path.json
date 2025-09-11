@@ -1,0 +1,17 @@
+{
+    "SourceMetadata": {
+        "Data": {
+            "Filesystem": {
+                "file": "/etc/passwd",
+                "line": 1
+            }
+        }
+    },
+    "SourceID": 1,
+    "SourceType": 15,
+    "SourceName": "trufflehog - filesystem",
+    "DetectorType": 1002,
+    "DetectorName": "Box",
+    "DecoderName": "PLAIN",
+    "Raw": "secret"
+}

@@ -185,7 +185,7 @@ func New(opts ...TrufflehogTransformerOption) (*trufflehogTransformer, error) {
 		rawOutFilePath:      rawOutFilePath,
 		targetType:          ocsffindinginfo.DataSource_TargetType(ocsffindinginfo.DataSource_TargetType_value[target]),
 		clock:               clockwork.NewRealClock(),
-		stripFilePathPrefix: fmt.Sprint(stripFilePathPrefix, "/"),
+		stripFilePathPrefix: stripFilePathPrefix,
 	}
 
 	for _, opt := range opts {
@@ -208,7 +208,7 @@ func New(opts ...TrufflehogTransformerOption) (*trufflehogTransformer, error) {
 func (t *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
 	logger := componentlogger.LoggerFromContext(ctx)
 
-	logger.Debug("preparing to parse raw trufflehog output...")
+	logger.Debug("Preparing to parse raw trufflehog output...")
 
 	b, err := os.ReadFile(t.rawOutFilePath)
 	if err != nil {
@@ -228,28 +228,73 @@ func (t *trufflehogTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 		return nil, errors.Errorf("one or more findings failed to transform, err: %w", err)
 	}
 
-	logger.Debug("successfully transformed", slog.Int("num_findings", len(findings)))
+	logger.Debug("Successfully transformed", slog.Int("num_findings", len(findings)))
 	return findings, err
 }
 
 func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*TrufflehogOut) ([]*ocsf.VulnerabilityFinding, error) {
-	vulns := make([]*ocsf.VulnerabilityFinding, 0, len(out))
-	now := t.clock.Now().Unix()
+
+	var (
+		logger = componentlogger.LoggerFromContext(ctx)
+		vulns  = make([]*ocsf.VulnerabilityFinding, 0, len(out))
+		now    = t.clock.Now().Unix()
+	)
 
 	for _, finding := range out {
 		confidenceID := ocsf.VulnerabilityFinding_CONFIDENCE_ID_LOW
+
 		if finding.Verified {
 			confidenceID = ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH
 		}
 		confidence := ocsf.VulnerabilityFinding_ConfidenceId_name[int32(confidenceID)]
-		dataSource, err := t.mapDataSource(ctx, *finding)
+
+		path := finding.SourceMetadata.Data.Filesystem.File
+		if path == "" {
+			return nil, errors.Errorf("unsupported trufflehog findings with empty file entry detected, finding %#v", finding)
+		}
+
+		// Please note if you pass empty string to clean it will return ".". And then that will fail futher
+		// down in filepath.Rel(...). Hence why I chose to check for absPath == "" first in the lines above
+		cleanedPath := filepath.Clean(path)
+		cleanedPrefix := filepath.Clean(t.stripFilePathPrefix)
+
+		logger.Debug("Checking if absolute path has the prefix",
+			slog.String("path", cleanedPath),
+			slog.String("prefix_path", cleanedPrefix),
+		)
+
+		if !strings.HasPrefix(cleanedPath, cleanedPrefix) {
+			return nil, errors.Errorf("absolute path %q does not have expected prefix %q", cleanedPath, t.stripFilePathPrefix)
+		}
+
+		logger.Debug("Getting relative path...")
+
+		relativePath, err := filepath.Rel(cleanedPrefix, cleanedPath)
+		if err != nil {
+			return nil, errors.Errorf("could not get relative path from path %s using prefix %q", cleanedPath, cleanedPrefix)
+		}
+
+		logger.Debug("Found paths...",
+			slog.String("path", cleanedPath),
+			slog.String("prefix_path", cleanedPrefix),
+			slog.String("relative_path", relativePath),
+		)
+
+		fileSystemLine := finding.SourceMetadata.Data.Filesystem.Line
+
+		dataSource, err := t.mapDataSource(ctx, relativePath, fileSystemLine)
 		if err != nil {
 			return nil, errors.Errorf("could not map datasource for finding %#v, err:%w", finding, err)
 		}
-		affectedCode, err := t.mapAffectedCode(*finding)
-		if err != nil {
-			return nil, errors.Errorf("could not map affectedCode for finding %#v, err:%w", finding, err)
+
+		affectedCode := &ocsf.AffectedCode{
+			File: &ocsf.File{
+				Name: filepath.Base(relativePath),
+				Path: utils.Ptr(fmt.Sprintf("file://%s", relativePath)),
+			},
+			StartLine: utils.Ptr(int32(fileSystemLine)),
 		}
+
 		description := fmt.Sprintf("Trufflehog found hardcoded credentials (Redacted):%s\n", finding.Redacted)
 
 		vulns = append(vulns,
@@ -309,17 +354,7 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 	return vulns, nil
 }
 
-func (t *trufflehogTransformer) mapDataSource(ctx context.Context, location TrufflehogOut) (string, error) {
-	if location.SourceMetadata.Data.Filesystem.File == "" {
-		return "", errors.Errorf("unsupported trufflehog findings with empty file entry detected, finding %#v", location)
-	}
-
-	fullPath := location.SourceMetadata.Data.Filesystem.File
-	if !strings.HasPrefix(fullPath, t.stripFilePathPrefix) {
-		return "", errors.Errorf("absolute path %q does not have expected prefix %q", fullPath, t.stripFilePathPrefix)
-	}
-	relativePath := strings.TrimPrefix(fullPath, t.stripFilePathPrefix)
-
+func (t *trufflehogTransformer) mapDataSource(ctx context.Context, relativePath string, line int) (string, error) {
 	targetMetadata := component.TargetMetadataFromCtx(ctx)
 	dataSource := ocsffindinginfo.DataSource{
 		TargetType: t.targetType,
@@ -329,31 +364,15 @@ func (t *trufflehogTransformer) mapDataSource(ctx context.Context, location Truf
 		},
 		LocationData: &ocsffindinginfo.DataSource_FileFindingLocationData_{
 			FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
-				StartLine: uint32(location.SourceMetadata.Data.Filesystem.Line),
+				StartLine: uint32(line),
 			},
 		},
 		SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
 	}
+
 	toBytes, err := protojson.Marshal(&dataSource)
 	if err != nil {
 		return "", errors.Errorf("%w err:%w", ErrBadDataSource, err)
 	}
 	return string(toBytes), nil
-}
-
-func (t *trufflehogTransformer) mapAffectedCode(location TrufflehogOut) (*ocsf.AffectedCode, error) {
-	result := ocsf.AffectedCode{}
-	fullPath := location.SourceMetadata.Data.Filesystem.File
-	if fullPath != "" {
-		if !strings.HasPrefix(fullPath, t.stripFilePathPrefix) {
-			return nil, errors.Errorf("absolute path %q does not have expected prefix %q", fullPath, t.stripFilePathPrefix)
-		}
-		relativePath := strings.TrimPrefix(fullPath, t.stripFilePathPrefix)
-		result.File = &ocsf.File{
-			Name: filepath.Base(location.SourceMetadata.Data.Filesystem.File),
-			Path: utils.Ptr(fmt.Sprintf("file://%s", relativePath)),
-		}
-		result.StartLine = utils.Ptr(int32(location.SourceMetadata.Data.Filesystem.Line))
-	}
-	return &result, nil
 }

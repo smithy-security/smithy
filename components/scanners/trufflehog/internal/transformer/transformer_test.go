@@ -3,8 +3,7 @@ package transformer
 import (
 	"context"
 	_ "embed"
-	"os"
-	"path/filepath"
+	"fmt"
 	"testing"
 	"time"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/smithy-security/pkg/utils"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
@@ -41,7 +41,7 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 	}
 
 	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
-	os.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/pwd")
+	t.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/pwd")
 	ocsfTransformer, err := New(
 		TrufflehogRawOutFilePath("./testdata/trufflehog.json"),
 		TrufflehogTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
@@ -204,76 +204,80 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 		}
 	})
 	t.Run("it should extract the relative path from the absolute path", func(t *testing.T) {
-		rawJSON := `{
-		"SourceMetadata": { "Data": { "Filesystem": { "file": "/pwd/.git/objects/06/a26a7f8c8e7dd7e07594f5c061f397b05ffbfe", "line": 2 }}},
-		"SourceID": 1, "SourceType": 15, "SourceName": "trufflehog - filesystem",
-		"DetectorType": 1002, "DetectorName": "Box", "DecoderName": "PLAIN", "Raw": "cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn"
-	}`
-
-		// Create a temporary file and write the raw JSON to it directly
-		tempDir := t.TempDir()
-		tempFile, err := os.Create(filepath.Join(tempDir, "static_trufflehog.json"))
-		require.NoError(t, err)
-		_, err = tempFile.Write([]byte(rawJSON))
-		require.NoError(t, err)
-		tempFile.Close()
-
-		os.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/pwd")
+		t.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/pwd")
 		transformer, err := New(
-			TrufflehogRawOutFilePath(tempFile.Name()),
+			TrufflehogRawOutFilePath("./testdata/trufflehog_matching_path.json"),
 			TrufflehogTransformerWithClock(clock),
+			TrufflehogTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
 		)
 		require.NoError(t, err)
+
+		expectedRelativePath := ".git/objects/06/a26a7f8c8e7dd7e07594f5c061f397b05ffbfe"
+
+		// Check the path for the dataSource
+		expectedDataSource := &ocsffindinginfo.DataSource{
+			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+			Uri: &ocsffindinginfo.DataSource_URI{
+				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
+				Path:      fmt.Sprint("file://" + expectedRelativePath),
+			},
+			LocationData: &ocsffindinginfo.DataSource_FileFindingLocationData_{
+				FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
+					StartLine: 2,
+				},
+			},
+			SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
+		}
+
+		expectedDataSourceJSON, err := protojson.Marshal(expectedDataSource)
+		require.NoError(t, err)
+
+		expectedFinding := &ocsf.VulnerabilityFinding{
+			FindingInfo: &ocsf.FindingInfo{
+				DataSources: []string{string(expectedDataSourceJSON)},
+			},
+			Vulnerabilities: []*ocsf.Vulnerability{
+				{
+					Desc:          utils.Ptr("Trufflehog found hardcoded credentials (Redacted):\n"),
+					Title:         utils.Ptr("trufflehog - filesystem\nPLAIN:Box"),
+					Severity:      utils.Ptr(ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH.String()),
+					FirstSeenTime: &nowUnix,
+					LastSeenTime:  &nowUnix,
+					Cwe: &ocsf.Cwe{
+						Uid:     "798",
+						Caption: utils.Ptr("Use of Hard-coded Credentials"),
+						SrcUrl:  utils.Ptr("https://cwe.mitre.org/data/definitions/798.html"),
+					},
+					AffectedCode: []*ocsf.AffectedCode{
+						{
+							File: &ocsf.File{
+								Name: "a26a7f8c8e7dd7e07594f5c061f397b05ffbfe",
+								Path: utils.Ptr("file://" + expectedRelativePath),
+							},
+							StartLine: utils.Ptr(int32(2)),
+						},
+					},
+				},
+			},
+		}
 
 		findings, err := transformer.Transform(ctx)
 		require.NoError(t, err)
 		require.Len(t, findings, 1)
 
-		expectedPath := ".git/objects/06/a26a7f8c8e7dd7e07594f5c061f397b05ffbfe"
-		expectedURI := "file://" + expectedPath
+		actualFinding := findings[0]
+		require.Equal(t, expectedFinding.Vulnerabilities, actualFinding.Vulnerabilities)
+		require.JSONEq(t, string(expectedDataSourceJSON), actualFinding.FindingInfo.DataSources[0])
 
-		// Check the path for the dataSource
-		var dataSource ocsffindinginfo.DataSource
-		require.NotEmpty(t, findings[0].FindingInfo.DataSources)
-		err = protojson.Unmarshal([]byte(findings[0].FindingInfo.DataSources[0]), &dataSource)
-		require.NoError(t, err)
-
-		assert.Equalf(
-			t,
-			expectedURI,
-			dataSource.Uri.Path,
-			"DataSource path was not transformed correctly",
-		)
-
-		// Check the path for the affectedCode
-		affectedCode := findings[0].Vulnerabilities[0].AffectedCode[0]
-		assert.Equalf(
-			t,
-			expectedURI,
-			*affectedCode.File.Path,
-			"AffectedCode path was not transformed correctly for finding",
-		)
 	})
-	t.Run("it should return an error from", func(t *testing.T) {
-		rawJSON := `{
-        "SourceMetadata": { "Data": { "Filesystem": { "file": "/etc/passwd", "line": 1 }}},
-        "SourceID": 1, "SourceType": 15, "SourceName": "trufflehog - filesystem",
-        "DetectorType": 1002, "DetectorName": "Box", "DecoderName": "PLAIN", "Raw": "secret"
-    }`
-
-		tempDir := t.TempDir()
-		tempFile, err := os.Create(filepath.Join(tempDir, "mismatched_path.json"))
-		require.NoError(t, err)
-		_, err = tempFile.Write([]byte(rawJSON))
-		require.NoError(t, err)
-		tempFile.Close()
-
+	t.Run("it should return an error", func(t *testing.T) {
 		// set the prefix to a value that is not a prefix in the findings' SourceMetadata.file field
-		os.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/workspace/source-code")
+		t.Setenv("TRUFFLEHOG_SOURCE_CODE_WORKSPACE", "/workspace/source-code")
 
 		transformer, err := New(
-			TrufflehogRawOutFilePath(tempFile.Name()),
+			TrufflehogRawOutFilePath("./testdata/trufflehog_mismatching_path.json"),
 			TrufflehogTransformerWithClock(clock),
+			TrufflehogTransformerWithTarget(ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY),
 		)
 		require.NoError(t, err)
 

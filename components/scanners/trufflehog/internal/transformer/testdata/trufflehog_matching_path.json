@@ -1,0 +1,17 @@
+{
+    "SourceMetadata": {
+        "Data": {
+            "Filesystem": {
+                "file": "/pwd/.git/objects/06/a26a7f8c8e7dd7e07594f5c061f397b05ffbfe",
+                "line": 2
+            }
+        }
+    },
+    "SourceID": 1,
+    "SourceType": 15,
+    "SourceName": "trufflehog - filesystem",
+    "DetectorType": 1002,
+    "DetectorName": "Box",
+    "DecoderName": "PLAIN",
+    "Raw": "cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn"
+}
