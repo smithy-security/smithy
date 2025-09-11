@@ -54,7 +54,7 @@ type (
 	}
 
 	// TrufflehogTransformerOption allows customising the transformer.
-	TrufflehogTransformerOption func(g *trufflehogTransformer) error
+	TrufflehogTransformerOption func(t *trufflehogTransformer) error
 
 	trufflehogTransformer struct {
 		targetType          ocsffindinginfo.DataSource_TargetType
