@@ -23,7 +23,7 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 		ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
 		clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
 		nowUnix     = clock.Now().Unix()
-		typeUid     = int64(
+		typeUID     = int64(
 			ocsf.VulnerabilityFinding_CLASS_UID_VULNERABILITY_FINDING.Number()*
 				100 +
 				ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.Number(),
@@ -134,7 +134,7 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 				idx,
 			)
 			assert.Equalf(t, nowUnix, finding.Time, "Unexpected time for finding %d", idx)
-			assert.Equalf(t, typeUid, finding.TypeUid, "Unexpected type uid for finding %d", idx)
+			assert.Equalf(t, typeUID, finding.TypeUid, "Unexpected type uid for finding %d", idx)
 			require.NotNilf(t, finding.FindingInfo, "Unexpected nil finding info for finding %d", idx)
 			findingInfo := finding.FindingInfo
 			assert.Equalf(t, nowUnix, *findingInfo.CreatedTime, "Unexpected finding info created time for finding %d", idx)
@@ -189,7 +189,7 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 			)
 			assert.NotEmptyf(t, vulnerability.Title, "Unexpected empty title for vulnerability for finding %d", idx)
 			assert.NotEmptyf(t, vulnerability.Desc, "Unexpected empty desc for vulnerability for finding %d", idx)
-			require.Lenf(t, vulnerability.AffectedCode, 1, "Unexpected lenght for affected code for vulnerability for finding %d. Expected 1", idx)
+			require.Lenf(t, vulnerability.AffectedCode, 1, "Unexpected length for affected code for vulnerability for finding %d. Expected 1", idx)
 
 			var affectedCode = vulnerability.AffectedCode[0]
 			require.NotNilf(t, affectedCode.File, "Unexpected nil file for vulnerability for finding %d", idx)
@@ -284,6 +284,6 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 		findings, err := transformer.Transform(ctx)
 		require.Error(t, err)
 		require.Nil(t, findings)
-		assert.Contains(t, err.Error(), "does not have expected prefix")
+		require.ErrorIs(t, err, ErrPrefixNotInPath)
 	})
 }

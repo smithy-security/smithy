@@ -68,23 +68,16 @@ type (
 var (
 	// Generic errors
 
-	// ErrNilClock is thrown when the option setclock is called with empty clock
-	ErrNilClock = errors.Errorf("invalid nil clock")
-	// ErrEmptyTarget is thrown when the option set target is called with empty target
-	ErrEmptyTarget = errors.Errorf("invalid empty target")
-	// ErrEmptyRawOutfilePath is thrown when the option raw outfile path is called with empty path
-	ErrEmptyRawOutfilePath = errors.Errorf("invalid raw out file path")
 	// ErrEmptyRawOutfileContents is thrown when the option raw outfile contents is called with empty contents
 	ErrEmptyRawOutfileContents = errors.Errorf("empty raw out file contents")
-	// ErrBadTargetType is thrown when the option set target type is called with an unspecified or empty target type
-	ErrBadTargetType = errors.New("invalid empty target type")
 
 	// Parser Specific Errors
 
-	// ErrNoLineRange is thrown when parser produces a finding without a line range
-	ErrNoLineRange = errors.Errorf("result does not contain a line range")
 	// ErrBadDataSource is thrown when parser produces a finding that cannot have a datasource (e.g. no filename)
 	ErrBadDataSource = errors.Errorf("failed to marshal data source to JSON")
+
+	// ErrPrefixNotInPath is thrown when the path does not have the expected prefix
+	ErrPrefixNotInPath = errors.Errorf("path does not have expected prefix")
 )
 
 // ParseMultiJSONMessages provides method to parse tool results in JSON format.
@@ -110,11 +103,11 @@ func ParseMultiJSONMessages(in []byte) ([]*TrufflehogOut, error) {
 
 // TrufflehogTransformerWithClock allows customising the underlying clock.
 func TrufflehogTransformerWithClock(clock clockwork.Clock) TrufflehogTransformerOption {
-	return func(g *trufflehogTransformer) error {
+	return func(t *trufflehogTransformer) error {
 		if clock == nil {
 			return errors.Errorf("invalid nil clock")
 		}
-		g.clock = clock
+		t.clock = clock
 		return nil
 	}
 }
@@ -264,7 +257,7 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 		)
 
 		if !strings.HasPrefix(cleanedPath, cleanedPrefix) {
-			return nil, errors.Errorf("absolute path %q does not have expected prefix %q", cleanedPath, t.stripFilePathPrefix)
+			return nil, errors.Errorf("%w: absolute path: %q, and prefix: %q", ErrPrefixNotInPath, cleanedPath, t.stripFilePathPrefix)
 		}
 
 		logger.Debug("Getting relative path...")
