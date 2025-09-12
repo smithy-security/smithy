@@ -340,6 +340,7 @@ func (t *trufflehogTransformer) parseFindings(ctx context.Context, out []*Truffl
 						FirstSeenTime: &now,
 						LastSeenTime:  &now,
 						Title:         utils.Ptr(fmt.Sprintf("%s\n%s:%s", finding.SourceName, finding.DecoderName, finding.DetectorName)),
+						VendorName:    utils.Ptr("trufflehog"),
 					},
 				},
 			})

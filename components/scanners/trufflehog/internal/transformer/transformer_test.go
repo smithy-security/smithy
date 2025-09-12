@@ -189,6 +189,7 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 			)
 			assert.NotEmptyf(t, vulnerability.Title, "Unexpected empty title for vulnerability for finding %d", idx)
 			assert.NotEmptyf(t, vulnerability.Desc, "Unexpected empty desc for vulnerability for finding %d", idx)
+			assert.NotEmptyf(t, vulnerability.VendorName, "Unexpected empty name of tool for finding %d", idx)
 			require.Lenf(t, vulnerability.AffectedCode, 1, "Unexpected length for affected code for vulnerability for finding %d. Expected 1", idx)
 
 			var affectedCode = vulnerability.AffectedCode[0]
@@ -257,6 +258,7 @@ func TestTrufflehogTransformer_Transform(t *testing.T) {
 							StartLine: utils.Ptr(int32(2)),
 						},
 					},
+					VendorName: utils.Ptr("trufflehog"),
 				},
 			},
 		}
