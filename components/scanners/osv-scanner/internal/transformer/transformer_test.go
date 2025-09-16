@@ -140,7 +140,6 @@ func TestTransformer_Transform(t *testing.T) {
 
 	})
 	t.Run("it should return an error, could not construct path for affected code", func(t *testing.T) {
-	t.Run("it should return an error, could not construct path for affected code", func(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
 
