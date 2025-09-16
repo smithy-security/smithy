@@ -3,8 +3,8 @@ package transformer
 import (
 	"context"
 	_ "embed"
+	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -12,55 +12,160 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/smithy-security/pkg/utils"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 )
 
-func fakeClock() *clockwork.FakeClock {
-	return clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
-}
-
 // test that it finds both requirements.txt and pyproject.toml
 
 func TestTransformer_Transform(t *testing.T) {
 	var (
-		clock = fakeClock()
+		clock = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
 	)
 
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
-		path, err := os.Getwd()
-		require.NoError(t, err)
-		os.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-output.sarif.json")
+		t.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-output.sarif.json")
+		t.Setenv("WORKSPACE_PATH", "/code")
 		ocsfTransformer, err := New(
 			OSVScannerTransformerWithClock(clock),
-			OSVScannerTransformerWithProjectRoot(filepath.Join(path, ".")),
 		)
 		require.NoError(t, err)
 		transformMethodTest(t, ocsfTransformer.Transform, nil, 11)
 	})
 	t.Run("it should exit cleanly when there are no results", func(t *testing.T) {
-		path, err := os.Getwd()
-		require.NoError(t, err)
 		os.Setenv("RAW_OUT_FILE", "./testdata/empty.json")
+		t.Setenv("WORKSPACE_PATH", "/code")
 		ocsfTransformer, err := New(
 			OSVScannerTransformerWithClock(clock),
-			OSVScannerTransformerWithProjectRoot(filepath.Join(path, ".")),
 		)
 		require.NoError(t, err)
 		transformMethodTest(t, ocsfTransformer.Transform, nil, 0)
 	})
 	t.Run("it should return an error when there are malformed results", func(t *testing.T) {
-		path, err := os.Getwd()
-		require.NoError(t, err)
 		os.Setenv("RAW_OUT_FILE", "./testdata/malformed.json")
+		t.Setenv("WORKSPACE_PATH", "/code")
 		ocsfTransformer, err := New(
 			OSVScannerTransformerWithClock(clock),
-			OSVScannerTransformerWithProjectRoot(filepath.Join(path, ".")),
 		)
 		require.NoError(t, err)
 		transformMethodTest(t, ocsfTransformer.Transform, ErrMalformedSARIFfile, 0)
+	})
+	t.Run("it should extract the relative path from the absolute path", func(t *testing.T) {
+		var (
+			ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
+			clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
+			nowUnix     = clock.Now().Unix()
+			falseBool   = false
+		)
+
+		defer cancel()
+		commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
+		repositoryURL := "https://github.com/smithy-security/test"
+		targetMetadata := &ocsffindinginfo.DataSource{
+			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+			SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+				RepositoryUrl: repositoryURL,
+				Reference:     commitRef,
+			},
+		}
+
+		ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
+
+		t.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-single-output.sarif.json")
+		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
+		ocsfTransformer, err := New(
+			OSVScannerTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		expectedRelativePath := "sample/go.mod"
+
+		expectedDataSource := &ocsffindinginfo.DataSource{
+			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+			Uri: &ocsffindinginfo.DataSource_URI{
+				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
+				Path:      fmt.Sprint("file://" + expectedRelativePath),
+			},
+			SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
+		}
+
+		expectedDataSourceJSON, err := protojson.Marshal(expectedDataSource)
+		require.NoError(t, err)
+
+		expectedFinding := &ocsf.VulnerabilityFinding{
+			FindingInfo: &ocsf.FindingInfo{
+				DataSources: []string{string(expectedDataSourceJSON)},
+			},
+			Vulnerabilities: []*ocsf.Vulnerability{
+				{
+					Desc:          utils.Ptr("SSH servers which implement file transfer protocols are vulnerable to a denial of service attack from clients which complete the key exchange slowly, or not at all, causing pending content to be read into memory, but never transmitted."),
+					Title:         utils.Ptr("CVE-2025-22869: Potential denial of service in golang.org/x/crypto"),
+					Severity:      utils.Ptr(ocsf.VulnerabilityFinding_SEVERITY_ID_MEDIUM.String()),
+					FirstSeenTime: &nowUnix,
+					LastSeenTime:  &nowUnix,
+					Cwe:           nil,
+					Cve: &ocsf.Cve{
+						Uid:  "CVE-2025-22869",
+						Desc: utils.Ptr("SSH servers which implement file transfer protocols are vulnerable to a denial of service attack from clients which complete the key exchange slowly, or not at all, causing pending content to be read into memory, but never transmitted."),
+					},
+					AffectedCode: []*ocsf.AffectedCode{
+						{
+							File: &ocsf.File{
+								Name: "sample/go.mod",
+								Path: utils.Ptr("file://sample/go.mod"),
+							},
+						},
+					},
+					VendorName:      utils.Ptr("osv-scanner"),
+					FirstSeenTimeDt: &timestamppb.Timestamp{Seconds: nowUnix},
+					LastSeenTimeDt:  &timestamppb.Timestamp{Seconds: nowUnix},
+					IsFixAvailable:  &falseBool,
+					FixAvailable:    &falseBool,
+				},
+			},
+		}
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		require.NotEmpty(t, findings)
+		require.Len(t, findings, 1)
+
+		actualFinding := findings[0]
+		require.JSONEq(t, string(expectedDataSourceJSON), actualFinding.FindingInfo.DataSources[0])
+		require.Equal(t, expectedFinding.Vulnerabilities, actualFinding.Vulnerabilities)
+
+	})
+	t.Run("it should return an error, could not construct path for affected code", func(t *testing.T) {
+	t.Run("it should return an error, could not construct path for affected code", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+
+		commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
+		repositoryURL := "https://github.com/smithy-security/test"
+		targetMetadata := &ocsffindinginfo.DataSource{
+			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+			SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+				RepositoryUrl: repositoryURL,
+				Reference:     commitRef,
+			},
+		}
+
+		ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
+
+		t.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-single-output.sarif.json")
+		t.Setenv("WORKSPACE_PATH", "/some-random-path")
+		ocsfTransformer, err := New(
+			OSVScannerTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.ErrorContains(t, err, ErrConstructPath.Error())
+		require.Nil(t, findings)
 	})
 }
 

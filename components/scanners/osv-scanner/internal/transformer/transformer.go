@@ -24,11 +24,11 @@ type (
 
 	// OSVScannerTransformer represents the osv-scanner output parser
 	OSVScannerTransformer struct {
-		targetType   ocsffindinginfo.DataSource_TargetType
-		clock        clockwork.Clock
-		rawOutFile   string
-		fileContents []byte
-		projectRoot  string
+		targetType    ocsffindinginfo.DataSource_TargetType
+		clock         clockwork.Clock
+		rawOutFile    string
+		fileContents  []byte
+		workspacePath string
 	}
 )
 
@@ -52,6 +52,9 @@ var (
 	ErrBadDataSource = errors.Errorf("failed to marshal data source to JSON")
 	// ErrCouldNotFindPackage is thrown when nancy cannot find the dependency in any go.mod files
 	ErrCouldNotFindPackage = errors.Errorf("could not find package")
+
+	// ErrConstructPath is thrown when it cannot construct path for affected code
+	ErrConstructPath = errors.Errorf("could not construct path for affected code")
 )
 
 // OSVScanneryTransformerWithClock allows customising the underlying clock.
@@ -82,7 +85,7 @@ func OSVScannerTransformerWithProjectRoot(path string) OSVScannerTransformerOpti
 		if path == "" {
 			return ErrEmptyPath
 		}
-		g.projectRoot = path
+		g.workspacePath = path
 		return nil
 	}
 }
@@ -98,10 +101,20 @@ func New(opts ...OSVScannerTransformerOption) (*OSVScannerTransformer, error) {
 		return nil, err
 	}
 
+	workspacePath, err := env.GetOrDefault(
+		"WORKSPACE_PATH",
+		"",
+		env.WithDefaultOnError(false),
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	t := OSVScannerTransformer{
-		clock:      clockwork.NewRealClock(),
-		targetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
-		rawOutFile: rawOutFile,
+		clock:         clockwork.NewRealClock(),
+		targetType:    ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+		rawOutFile:    rawOutFile,
+		workspacePath: workspacePath,
 	}
 
 	for _, opt := range opts {
@@ -142,6 +155,7 @@ func (b *OSVScannerTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerab
 		guidProvider,
 		false,
 		component.TargetMetadataFromCtx(ctx),
+		b.workspacePath,
 	)
 	if err != nil {
 		return nil, err
