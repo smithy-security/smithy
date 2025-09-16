@@ -14,5 +14,5 @@ steps:
     image: components/scanners/osv-scanner
     env_vars:
       RAW_OUT_FILE: "{{ scratchWorkspace }}/output.json"
-      SCANNED_PROJECT_ROOT: "{{ sourceCodeWorkspace }}"
+      WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: /bin/app
