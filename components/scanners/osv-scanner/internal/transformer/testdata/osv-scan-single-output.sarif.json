@@ -1,0 +1,66 @@
+{
+    "version": "2.1.0",
+    "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+    "runs": [
+      {
+        "tool": {
+          "driver": {
+            "informationUri": "https://github.com/google/osv-scanner",
+            "name": "osv-scanner",
+            "rules": [
+              {
+                "id": "CVE-2025-22869",
+                "name": "CVE-2025-22869",
+                "shortDescription": {
+                  "text": "CVE-2025-22869: Potential denial of service in golang.org/x/crypto"
+                },
+                "fullDescription": {
+                  "text": "SSH servers which implement file transfer protocols are vulnerable to a denial of service attack from clients which complete the key exchange slowly, or not at all, causing pending content to be read into memory, but never transmitted.",
+                  "markdown": "SSH servers which implement file transfer protocols are vulnerable to a denial of service attack from clients which complete the key exchange slowly, or not at all, causing pending content to be read into memory, but never transmitted."
+                },
+                "deprecatedIds": [
+                  "CVE-2025-22869",
+                  "GO-2025-3487",
+                  "GHSA-hcg3-q754-cr77"
+                ],
+                "help": {
+                  "text": "**Your dependency is vulnerable to [CVE-2025-22869](https://osv.dev/list?q=CVE-2025-22869)**\n(Also published as: [GO-2025-3487](https://osv.dev/vulnerability/GO-2025-3487), [GHSA-hcg3-q754-cr77](https://osv.dev/vulnerability/GHSA-hcg3-q754-cr77), ).\n\n## [GO-2025-3487](https://osv.dev/vulnerability/GO-2025-3487)\n\n<details>\n<summary>Details</summary>\n\n> SSH servers which implement file transfer protocols are vulnerable to a denial of service attack from clients which complete the key exchange slowly, or not at all, causing pending content to be read into memory, but never transmitted.\n\n</details>\n\n## [GHSA-hcg3-q754-cr77](https://osv.dev/vulnerability/GHSA-hcg3-q754-cr77)\n\n<details>\n<summary>Details</summary>\n\n> SSH servers which implement file transfer protocols are vulnerable to a denial of service attack from clients which complete the key exchange slowly, or not at all, causing pending content to be read into memory, but never transmitted.\n\n</details>\n\n---\n\n### Affected Packages\n\n| Source | Package Name | Package Version |\n| --- | --- | --- |\n| lockfile:/code/sample/go.mod | golang.org/x/crypto | 0.24.0 |\n\n## Remediation\n\nTo fix these vulnerabilities, update the vulnerabilities past the listed fixed versions below.\n\n### Fixed Versions\n\n| Vulnerability ID | Package Name | Fixed Version |\n| --- | --- | --- |\n| GHSA-hcg3-q754-cr77 | golang.org/x/crypto | 0.35.0 |\n| GO-2025-3487 | golang.org/x/crypto | 0.35.0 |\n\nIf you believe these vulnerabilities do not affect your code and wish to ignore them, add them to the ignore list in an\n`osv-scanner.toml` file located in the same directory as the lockfile containing the vulnerable dependency.\n\nSee the format and more options in our documentation here: https://google.github.io/osv-scanner/configuration/\n\nAdd or append these values to the following config files to ignore this vulnerability:\n\n`/code/sample/osv-scanner.toml`\n\n```\n[[IgnoredVulns]]\nid = \"CVE-2025-22869\"\nreason = \"Your reason for ignoring this vulnerability\"\n```\n"
+                },
+                "properties": {
+                  "security-severity": "7.5"
+                }
+              }
+            ],
+            "version": "2.0.0"
+          }
+        },
+        "artifacts": [
+          {
+            "location": {
+              "uri": "file:///workspace/source-code/sample/go.mod"
+            },
+            "length": -1
+          }
+        ],
+        "results": [
+          {
+            "ruleId": "CVE-2025-22869",
+            "ruleIndex": 0,
+            "level": "warning",
+            "message": {
+              "text": "Package 'golang.org/x/crypto@0.24.0' is vulnerable to 'CVE-2025-22869' (also known as 'GO-2025-3487', 'GHSA-hcg3-q754-cr77')."
+            },
+            "locations": [
+              {
+                "physicalLocation": {
+                  "artifactLocation": {
+                    "uri": "file:///workspace/source-code//sample/go.mod"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
