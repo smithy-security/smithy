@@ -59,7 +59,9 @@ baseline_plan_template = """
     {
       "parameters": {
         "scanOnlyInScope": true,
-        "enableTags": false
+        "enableTags": false,
+        "threadsPerHost": 1,
+        "maxBodySizeInBytes": 33554432
       },
       "rules": [],
       "name": "passiveScan-config",
@@ -69,13 +71,14 @@ baseline_plan_template = """
       "parameters": {
         "maxDuration": "${zap_spider_duration_mins}",
         "maxCrawlDepth": "${zap_spider_max_crawl_depth}",
-        "numberOfThreads": 2,
+        "numberOfThreads": 1,
         "maxChildren": "${zap_spider_max_children}",
         "handleParameters": "USE_ALL",
-        "maxParseTimeInSecs": 30,
+        "maxParseTimeInSecs": 15,
         "parseComments": false,
         "parseRobotsTxt": false,
-        "handleODataParametersVisited": false
+        "handleODataParametersVisited": false,
+        "maxParseSizeBytes": 33554432
       },
       "name": "spider",
       "type": "spider"
@@ -97,7 +100,8 @@ baseline_plan_template = """
         "randomInputs": false,
         "reloadWait": 1000,
         "clickElemWait": 100,
-        "eventWait": 1000
+        "eventWait": 1000,
+        "maxCrawlStates": 50
       },
       "name": "spiderAjax",
       "type": "spiderAjax"
@@ -106,8 +110,9 @@ baseline_plan_template = """
       "parameters": {
         "maxScanDurationInMins": "${zap_active_scan_duration_mins}",
         "maxRuleDurationInMins": 1,
-        "threadPerHost": 2,
-        "hostPerScan": 1
+        "threadPerHost": 1,
+        "hostPerScan": 1,
+        "scanOnlyInScope": true
       },
       "policyDefinition": {},
       "name": "activeScan",
@@ -196,13 +201,11 @@ class ZapRunner:
 
         # Build JAVA_OPTS string with performance/memory optimizations:
         java_opts = [
-            "-Xmx4g",  # -Xmx4g: Allows ZAP to use up to 4GB RAM, preventing out-of-memory errors during large scans.
-            "-Xms2g",  # -Xms2g: Starts JVM with 2GB RAM, reducing time spent resizing the heap during startup.
-            "-XX:MaxMetaspaceSize=512m",  # -XX:MaxMetaspaceSize=512m: Limits class metadata memory usage, preventing excessive growth.
-            "-XX:+UseG1GC",  # -XX:+UseG1GC: Uses G1 garbage collector, which is efficient for large heaps and reduces GC pause times.
-            "-XX:G1HeapRegionSize=16m",  # -XX:G1HeapRegionSize=16m: Sets G1 region size, improving GC efficiency for large objects.
+            "-Xmx1536m",  # -Xmx1536m: Allows ZAP to use up to ~1.5GB RAM per thread, preventing out-of-memory errors during large scans.
+            "-Xms512m",  # -Xms512m: Starts JVM with 512MB RAM, reducing time spent resizing the heap during startup.
+            "-XX:MaxMetaspaceSize=256m",  # -XX:MaxMetaspaceSize=256m: Limits class metadata memory usage, preventing excessive growth.
             "-XX:+UseStringDeduplication",  # -XX:+UseStringDeduplication: Saves memory by deduplicating identical strings in the heap.
-            "-XX:+DisableExplicitGC",  # -XX:+DisableExplicitGC: Prevents explicit garbage collection calls, avoiding unnecessary GC pauses.
+            "-XX:+UseParallelGC",  # -XX:+UseParallelGC: Enables parallel garbage collection, improving performance on multi-core systems.
         ]
         env["JAVA_OPTS"] = " ".join(java_opts)
 
@@ -285,7 +288,7 @@ class ZapRunner:
             ctx["authentication"] = {
                 "method": "browser",
                 "parameters": {
-                    "browserId": "firefox-headless",
+                    "browserId": "chromium-headless",
                     "loginPageUrl": login_url,
                     "loginPageWait": 5,
                 },
