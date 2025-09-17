@@ -46,7 +46,7 @@ func TestTransformer_Transform(t *testing.T) {
 		transformMethodTest(t, ocsfTransformer.Transform, nil, 0)
 	})
 	t.Run("it should return an error when there are malformed results", func(t *testing.T) {
-		os.Setenv("RAW_OUT_FILE", "./testdata/malformed.json")
+		t.Setenv("RAW_OUT_FILE", "./testdata/malformed.json")
 		t.Setenv("WORKSPACE_PATH", "/code")
 		ocsfTransformer, err := New(
 			OSVScannerTransformerWithClock(clock),
@@ -55,6 +55,9 @@ func TestTransformer_Transform(t *testing.T) {
 		transformMethodTest(t, ocsfTransformer.Transform, ErrMalformedSARIFfile, 0)
 	})
 	t.Run("it should extract the relative path from the absolute path", func(t *testing.T) {
+		t.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-single-output.sarif.json")
+		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
+
 		var (
 			ctx, cancel = context.WithTimeout(context.Background(), time.Minute)
 			clock       = clockwork.NewFakeClockAt(time.Date(2024, 11, 1, 0, 0, 0, 0, time.UTC))
@@ -74,9 +77,6 @@ func TestTransformer_Transform(t *testing.T) {
 		}
 
 		ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
-
-		t.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-single-output.sarif.json")
-		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 		ocsfTransformer, err := New(
 			OSVScannerTransformerWithClock(clock),
 		)
@@ -143,6 +143,9 @@ func TestTransformer_Transform(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
 
+		t.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-single-output.sarif.json")
+		t.Setenv("WORKSPACE_PATH", "/some-random-path")
+
 		commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
 		repositoryURL := "https://github.com/smithy-security/test"
 		targetMetadata := &ocsffindinginfo.DataSource{
@@ -155,8 +158,6 @@ func TestTransformer_Transform(t *testing.T) {
 
 		ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
 
-		t.Setenv("RAW_OUT_FILE", "./testdata/osv-scan-single-output.sarif.json")
-		t.Setenv("WORKSPACE_PATH", "/some-random-path")
 		ocsfTransformer, err := New(
 			OSVScannerTransformerWithClock(clock),
 		)
