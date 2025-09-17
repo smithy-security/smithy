@@ -57,7 +57,7 @@ var (
 	ErrConstructPath = errors.Errorf("could not construct path for affected code")
 )
 
-// OSVScanneryTransformerWithClock allows customising the underlying clock.
+// OSVScannerTransformerWithClock allows customising the underlying clock.
 func OSVScannerTransformerWithClock(clock clockwork.Clock) OSVScannerTransformerOption {
 	return func(g *OSVScannerTransformer) error {
 		if clock == nil {
