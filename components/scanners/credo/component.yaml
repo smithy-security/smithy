@@ -12,4 +12,5 @@ steps:
     image: components/scanners/credo
     env_vars:
       CREDO_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/credo.out.sarif.json"
+      WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: /bin/app
