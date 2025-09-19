@@ -1,0 +1,302 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "columnKind": "utf16CodeUnits",
+      "originalUriBaseIds": {
+        "ROOTPATH": {
+          "uri": "file:///workspace/source-code/"
+        }
+      },
+      "results": [
+        {
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "CarafeWeb.UserAuth"
+                }
+              ],
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe_web/controllers/user_auth.ex",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "endColumn": 29,
+                  "snippet": {
+                    "text": "CarafeWeb.UserAuth"
+                  },
+                  "startColumn": 11,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "markdown": "Modules should have a @moduledoc tag.",
+            "text": "Modules should have a @moduledoc tag."
+          },
+          "rank": 13,
+          "ruleId": "EX3009"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "CarafeWeb.PotionController.status"
+                }
+              ],
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe_web/controllers/potion_controller.ex",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "endColumn": 15,
+                  "snippet": {
+                    "text": "IO.inspect"
+                  },
+                  "startColumn": 5,
+                  "startLine": 44
+                }
+              }
+            }
+          ],
+          "message": {
+            "markdown": "There should be no calls to `IO.inspect/1`.",
+            "text": "There should be no calls to 'IO.inspect/1'."
+          },
+          "rank": 24,
+          "ruleId": "EX5006"
+        },
+        {
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Carafe.Review"
+                }
+              ],
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe/reviews/schema.ex",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "endColumn": 24,
+                  "snippet": {
+                    "text": "Carafe.Review"
+                  },
+                  "startColumn": 11,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "markdown": "Modules should have a @moduledoc tag.",
+            "text": "Modules should have a @moduledoc tag."
+          },
+          "rank": 12,
+          "ruleId": "EX3009"
+        },
+        {
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Carafe.Potion"
+                }
+              ],
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe/potions/schema.ex",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "endColumn": 24,
+                  "snippet": {
+                    "text": "Carafe.Potion"
+                  },
+                  "startColumn": 11,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "markdown": "Modules should have a @moduledoc tag.",
+            "text": "Modules should have a @moduledoc tag."
+          },
+          "rank": 12,
+          "ruleId": "EX3009"
+        },
+        {
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Carafe.Potions"
+                }
+              ],
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe/potions.ex",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "endColumn": 25,
+                  "snippet": {
+                    "text": "Carafe.Potions"
+                  },
+                  "startColumn": 11,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "markdown": "Modules should have a @moduledoc tag.",
+            "text": "Modules should have a @moduledoc tag."
+          },
+          "rank": 13,
+          "ruleId": "EX3009"
+        },
+        {
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Carafe.Accounts.UserToken"
+                }
+              ],
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe/accounts/user_token.ex",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "endColumn": 36,
+                  "snippet": {
+                    "text": "Carafe.Accounts.UserToken"
+                  },
+                  "startColumn": 11,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "markdown": "Modules should have a @moduledoc tag.",
+            "text": "Modules should have a @moduledoc tag."
+          },
+          "rank": 13,
+          "ruleId": "EX3009"
+        },
+        {
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Carafe.Accounts.UserNotifier"
+                }
+              ],
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe/accounts/user_notifier.ex",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "endColumn": 39,
+                  "snippet": {
+                    "text": "Carafe.Accounts.UserNotifier"
+                  },
+                  "startColumn": 11,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "markdown": "Modules should have a @moduledoc tag.",
+            "text": "Modules should have a @moduledoc tag."
+          },
+          "rank": 12,
+          "ruleId": "EX3009"
+        },
+        {
+          "locations": [
+            {
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "Carafe.Accounts.User"
+                }
+              ],
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "lib/carafe/accounts/user.ex",
+                  "uriBaseId": "ROOTPATH"
+                },
+                "region": {
+                  "endColumn": 31,
+                  "snippet": {
+                    "text": "Carafe.Accounts.User"
+                  },
+                  "startColumn": 11,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "markdown": "Modules should have a @moduledoc tag.",
+            "text": "Modules should have a @moduledoc tag."
+          },
+          "rank": 13,
+          "ruleId": "EX3009"
+        }
+      ],
+      "tool": {
+        "driver": {
+          "informationUri": "http://credo-ci.org/",
+          "name": "Credo",
+          "rules": [
+            {
+              "fullDescription": {
+                "markdown": "Every module should contain comprehensive documentation.\n\n    # preferred\n\n    defmodule MyApp.Web.Search do\n      @moduledoc \"\"\"\n      This module provides a public API for all search queries originating\n      in the web layer.\n      \"\"\"\n    end\n\n    # also okay: explicitly say there is no documentation\n\n    defmodule MyApp.Web.Search do\n      @moduledoc false\n    end\n\nMany times a sentence or two in plain english, explaining why the module\nexists, will suffice. Documenting your train of thought this way will help\nboth your co-workers and your future-self.\n\nOther times you will want to elaborate even further and show some\nexamples of how the module's functions can and should be used.\n\nIn some cases however, you might not want to document things about a module,\ne.g. it is part of a private API inside your project. Since Elixir prefers\nexplicitness over implicit behaviour, you should \"tag\" these modules with\n\n    @moduledoc false\n\nto make it clear that there is no intention in documenting it.\n\nLike all `Readability` issues, this one is not a technical concern.\nBut you can improve the odds of others reading and liking your code by making\nit easier to follow.\n",
+                "text": "Every module should contain comprehensive documentation.\n\n    # preferred\n\n    defmodule MyApp.Web.Search do\n      @moduledoc \"\"\"\n      This module provides a public API for all search queries originating\n      in the web layer.\n      \"\"\"\n    end\n\n    # also okay: explicitly say there is no documentation\n\n    defmodule MyApp.Web.Search do\n      @moduledoc false\n    end\n\nMany times a sentence or two in plain english, explaining why the module\nexists, will suffice. Documenting your train of thought this way will help\nboth your co-workers and your future-self.\n\nOther times you will want to elaborate even further and show some\nexamples of how the module's functions can and should be used.\n\nIn some cases however, you might not want to document things about a module,\ne.g. it is part of a private API inside your project. Since Elixir prefers\nexplicitness over implicit behaviour, you should \"tag\" these modules with\n\n    @moduledoc false\n\nto make it clear that there is no intention in documenting it.\n\nLike all 'Readability' issues, this one is not a technical concern.\nBut you can improve the odds of others reading and liking your code by making\nit easier to follow.\n"
+              },
+              "helpUri": "https://hexdocs.pm/credo/Credo.Check.Readability.ModuleDoc.html",
+              "id": "EX3009",
+              "name": "Credo.Check.Readability.ModuleDoc",
+              "properties": {
+                "tags": [
+                  "readability"
+                ]
+              }
+            },
+            {
+              "fullDescription": {
+                "markdown": "While calls to IO.inspect might appear in some parts of production code,\nmost calls to this function are added during debugging sessions.\n\nThis check warns about those calls, because they might have been committed\nin error.\n",
+                "text": "While calls to IO.inspect might appear in some parts of production code,\nmost calls to this function are added during debugging sessions.\n\nThis check warns about those calls, because they might have been committed\nin error.\n"
+              },
+              "helpUri": "https://hexdocs.pm/credo/Credo.Check.Warning.IoInspect.html",
+              "id": "EX5006",
+              "name": "Credo.Check.Warning.IoInspect",
+              "properties": {
+                "tags": [
+                  "warning"
+                ]
+              }
+            }
+          ],
+          "version": "1.7.12"
+        }
+      }
+    }
+  ]
+}
