@@ -73,7 +73,7 @@ func CredoRawOutFilePath(path string) CredoTransformerOption {
 func New(opts ...CredoTransformerOption) (*credoTransformer, error) {
 	rawOutFilePath, err := env.GetOrDefault(
 		"CREDO_RAW_OUT_FILE_PATH",
-		"credo.sarif.json",
+		"",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
@@ -113,7 +113,7 @@ func New(opts ...CredoTransformerOption) (*credoTransformer, error) {
 
 	switch {
 	case t.rawOutFilePath == "":
-		return nil, errors.New("invalid empty raw output file")
+		return nil, errors.New("invalid empty raw output file path")
 	case t.targetType == "":
 		return nil, errors.New("invalid empty target type")
 	}
