@@ -73,7 +73,7 @@ func CredoRawOutFilePath(path string) CredoTransformerOption {
 func New(opts ...CredoTransformerOption) (*credoTransformer, error) {
 	rawOutFilePath, err := env.GetOrDefault(
 		"CREDO_RAW_OUT_FILE_PATH",
-		"",
+		"credo.sarif.json",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {

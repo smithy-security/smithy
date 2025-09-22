@@ -41,7 +41,7 @@ func TestTransformer_Transform(t *testing.T) {
 
 	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
 	t.Run("it should extract the relative path from the absolute path", func(t *testing.T) {
-		t.Setenv("RAW_OUT_FILE", "./testdata/credo.sarif.json")
+		t.Setenv("CREDO_RAW_OUT_FILE_PATH", "./testdata/credo.sarif.json")
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 
 		expectedRelativePath := "lib/carafe_web/controllers/potion_controller.ex"
@@ -99,7 +99,6 @@ func TestTransformer_Transform(t *testing.T) {
 
 		ocsfTransformer, err := transformer.New(
 			transformer.CredoTransformerWithClock(clock),
-			transformer.CredoRawOutFilePath("./testdata/credo.sarif.json"),
 		)
 		require.NoError(t, err)
 
@@ -115,12 +114,11 @@ func TestTransformer_Transform(t *testing.T) {
 	})
 
 	t.Run("it should not return an error if the results file is empty", func(t *testing.T) {
-		t.Setenv("RAW_OUT_FILE", "./testdata/credo.empty.sarif.json")
+		t.Setenv("CREDO_RAW_OUT_FILE_PATH", "./testdata/credo.empty.sarif.json")
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 
 		ocsfTransformer, err := transformer.New(
 			transformer.CredoTransformerWithClock(clock),
-			transformer.CredoRawOutFilePath("./testdata/credo.empty.sarif.json"),
 		)
 		require.NoError(t, err)
 
@@ -130,12 +128,11 @@ func TestTransformer_Transform(t *testing.T) {
 	})
 
 	t.Run("it should return an error if the results file doesn't exit", func(t *testing.T) {
-		t.Setenv("RAW_OUT_FILE", "./testdata/credo.non.existent.sarif.json")
+		t.Setenv("CREDO_RAW_OUT_FILE_PATH", "./testdata/credo.non.existent.sarif.json")
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 
 		ocsfTransformer, err := transformer.New(
 			transformer.CredoTransformerWithClock(clock),
-			transformer.CredoRawOutFilePath("./testdata/credo.non.existent.sarif.json"),
 		)
 		require.NoError(t, err)
 
