@@ -56,7 +56,7 @@ func TestTransformer_Transform(t *testing.T) {
 	})
 
 	t.Run("it should return an error if the results file doesn't exit", func(t *testing.T) {
-		t.Setenv("RAW_OUT_FILE", "./testdata/credo.empty.sarif.json")
+		t.Setenv("RAW_OUT_FILE", "./testdata/credo.non.existent.sarif.json")
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 
 		ocsfTransformer, err := transformer.New(
