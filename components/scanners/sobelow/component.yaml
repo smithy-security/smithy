@@ -12,4 +12,5 @@ steps:
     image: components/scanners/sobelow
     env_vars:
       SOBELOW_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/sobelow.out.sarif.json"
+      WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: /bin/app

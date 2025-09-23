@@ -28,6 +28,7 @@ type (
 		targetType     TargetType
 		clock          clockwork.Clock
 		rawOutFilePath string
+		workspacePath  string
 	}
 )
 
@@ -88,10 +89,20 @@ func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
 		return nil, err
 	}
 
+	workspacePath, err := env.GetOrDefault(
+		"WORKSPACE_PATH",
+		"",
+		env.WithDefaultOnError(false),
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	t := sobelowTransformer{
 		rawOutFilePath: rawOutFilePath,
 		targetType:     TargetType(target),
 		clock:          clockwork.NewRealClock(),
+		workspacePath:  workspacePath,
 	}
 
 	for _, opt := range opts {
@@ -155,6 +166,7 @@ func (g *sobelowTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabili
 		guidProvider,
 		true,
 		component.TargetMetadataFromCtx(ctx),
+		g.workspacePath,
 	)
 	if err != nil {
 		return nil, err
