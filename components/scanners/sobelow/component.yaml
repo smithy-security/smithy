@@ -4,6 +4,9 @@ type: scanner
 steps:
   - name: scanner
     image: components/scanners/sobelow/scanner
+    env_vars:
+      TERM: "dumb"
+      ERL_FLAGS: "-noinput -noshell"
     executable: /bin/bash
     args:
       - -c
