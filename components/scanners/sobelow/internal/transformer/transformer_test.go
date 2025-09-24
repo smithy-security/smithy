@@ -142,7 +142,7 @@ func TestSobelowTransformer_Transform(t *testing.T) {
 	})
 
 	t.Run("it should return an error if the results file doesn't exit", func(t *testing.T) {
-		t.Setenv("CREDO_RAW_OUT_FILE_PATH", "./testdata/sobelow.non.existent.sarif.json")
+		t.Setenv("SOBELOW_RAW_OUT_FILE_PATH", "./testdata/sobelow.non.existent.sarif.json")
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 
 		ocsfTransformer, err := transformer.New(
