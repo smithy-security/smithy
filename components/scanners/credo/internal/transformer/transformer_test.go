@@ -114,7 +114,7 @@ func TestTransformer_Transform(t *testing.T) {
 
 	})
 
-	t.Run("it should not return an error if the results file is a valid empty sarif", func(t *testing.T) {
+	t.Run("it should not return an error if the results file is a valid empty sarif json", func(t *testing.T) {
 		t.Setenv("CREDO_RAW_OUT_FILE_PATH", "./testdata/credo.empty.valid.sarif.json")
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 

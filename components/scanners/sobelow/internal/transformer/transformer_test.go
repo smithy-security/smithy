@@ -113,7 +113,7 @@ func TestSobelowTransformer_Transform(t *testing.T) {
 		require.Equal(t, expectedFinding.Vulnerabilities, actualFinding.Vulnerabilities)
 	})
 
-	t.Run("it should not return an error if the results file is a valid empty sarif", func(t *testing.T) {
+	t.Run("it should not return an error if the results file is a valid empty sarif json", func(t *testing.T) {
 		t.Setenv("SOBELOW_RAW_OUT_FILE_PATH", "./testdata/sobelow.empty.valid.sarif.json")
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 
