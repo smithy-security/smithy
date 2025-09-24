@@ -113,7 +113,21 @@ func TestSobelowTransformer_Transform(t *testing.T) {
 		require.Equal(t, expectedFinding.Vulnerabilities, actualFinding.Vulnerabilities)
 	})
 
-	t.Run("it should not return an error if the results file is empty", func(t *testing.T) {
+	t.Run("it should not return an error if the results file is a valid empty sarif", func(t *testing.T) {
+		t.Setenv("SOBELOW_RAW_OUT_FILE_PATH", "./testdata/sobelow.empty.valid.sarif.json")
+		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
+
+		ocsfTransformer, err := transformer.New(
+			transformer.SobelowTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		assert.NoError(t, err)
+		require.Empty(t, findings)
+	})
+
+	t.Run("it should not return an error if the results file is completely empty", func(t *testing.T) {
 		t.Setenv("SOBELOW_RAW_OUT_FILE_PATH", "./testdata/sobelow.empty.sarif.json")
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 

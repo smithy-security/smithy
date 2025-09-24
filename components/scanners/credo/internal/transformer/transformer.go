@@ -136,6 +136,12 @@ func (g *credoTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerability
 		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
 	}
 
+	// Handle a complete empty finding file, and treating as no findings.
+	if len(b) == 0 {
+		logger.Debug("raw output file is empty, treating as no findings")
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
+
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw credo output: %w", err)

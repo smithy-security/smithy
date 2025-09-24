@@ -136,6 +136,14 @@ func (g *sobelowTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabili
 		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
 	}
 
+	// If the sobelow scanner is run against a non Phoenix application it doesn't return anything,
+	// which then make it an invalid json file, causing report.UnmarshalJSON(b) to fail.
+	// We should treat it as no findings found
+	if len(b) == 0 {
+		logger.Debug("raw output file is empty, treating as no findings")
+		return []*ocsf.VulnerabilityFinding{}, nil
+	}
+
 	var report sarifschemav210.SchemaJson
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw sobelow output: %w", err)
