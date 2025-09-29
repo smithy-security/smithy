@@ -16,4 +16,5 @@ steps:
     image: "components/scanners/checkov"
     env_vars:
       CHECKOV_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/results_sarif.sarif"
+      CHECKOV_WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: "/bin/app"
