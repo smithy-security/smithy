@@ -1,0 +1,61 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Checkov",
+          "version": "3.2.470",
+          "informationUri": "https://checkov.io",
+          "rules": [
+            {
+              "id": "CKV_ALI_10",
+              "name": "Ensure OSS bucket has versioning enabled",
+              "shortDescription": {
+                "text": "Ensure OSS bucket has versioning enabled"
+              },
+              "fullDescription": {
+                "text": "Ensure OSS bucket has versioning enabled"
+              },
+              "help": {
+                "text": "Ensure OSS bucket has versioning enabled\nResource: alicloud_oss_bucket.bad_bucket"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/alibaba-policies/alibaba-general-policies/ensure-alibaba-cloud-oss-bucket-has-versioning-enabled"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CKV_ALI_10",
+          "ruleIndex": 0,
+          "level": "error",
+          "attachments": [],
+          "message": {
+            "text": "Ensure OSS bucket has versioning enabled"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/code/terraform/alicloud/bucket.tf"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 18,
+                  "snippet": {
+                    "text": "resource \"alicloud_oss_bucket\" \"bad_bucket\" {\n  # Public and writeable bucket \n  # Versioning isn't enabled\n  # Not Encrypted with a Customer Master Key and no Server side encryption\n  # Doesn't have access logging enabled\" \n  bucket = \"wildwestfreeforall\"\n  acl    = \"public-read-write\"\n  tags = {\n    git_commit           = \"9c114f23d311f787c137723e1f71b27a52f0adec\"\n    git_file             = \"terraform/alicloud/bucket.tf\"\n    git_last_modified_at = \"2022-04-05 15:17:55\"\n    git_last_modified_by = \"james.woolfenden@gmail.com\"\n    git_modifiers        = \"james.woolfenden\"\n    git_org              = \"bridgecrewio\"\n    git_repo             = \"terragoat\"\n    yor_trace            = \"80373049-248d-4f5e-9d25-740c3e80f2b9\"\n  }\n}\n"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
