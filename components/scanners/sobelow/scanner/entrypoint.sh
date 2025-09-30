@@ -10,7 +10,7 @@ OUT_DIR=$(dirname "$FINAL_OUT")
 TMP_DIR=$(mktemp -d "$OUT_DIR/tmp.XXXXXX")
 
 # Step 1: Find all Phoenix/Elixir projects, don't include deps and build folders
-projects=$(find "$WORKSPACE" \
+projects=$(find "${WORKSPACE}" \
   -type f -name mix.exs \
   -not -path "*/deps/*" \
   -not -path "*/_build/*" \
@@ -25,17 +25,17 @@ for project in $projects; do
     project_path_clean=""
   fi
 
-  outfile="$TMP_DIR/sobelow_${i}.sarif.json"
+  outfile="${TMP_DIR}/sobelow_${i}.sarif.json"
   echo "Scanning $project -> $outfile"
 
   (cd "$project" && sobelow --format sarif 2>/dev/null | \
     jq -s 'first(.[]) | .runs[0].results |= map(
       .locations |= map(
         .physicalLocation.artifactLocation.uri = (
-          if "'"$project_path_clean"'" == "" then
+          if "'"${project_path_clean}"'" == "" then
             .physicalLocation.artifactLocation.uri
           else
-            "'"$project_path_clean"'" + "/" + .physicalLocation.artifactLocation.uri
+            "'"${project_path_clean}"'" + "/" + .physicalLocation.artifactLocation.uri
           end
         )
       )
@@ -48,7 +48,7 @@ done
 # Step 3: Merge the individual SARIF files into one report
 # Check if any SARIF files were created before attempting to merge
 shopt -s nullglob
-sarif_files=("$TMP_DIR"/sobelow_*.sarif.json)
+sarif_files=("${TMP_DIR}"/sobelow_*.sarif.json)
 shopt -u nullglob
 
 if [ ${#sarif_files[@]} -gt 0 ]; then
@@ -58,8 +58,8 @@ if [ ${#sarif_files[@]} -gt 0 ]; then
       "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
       runs: (map(.runs) | add)
     }
-  ' "${sarif_files[@]}" > "$FINAL_OUT"
+  ' "${sarif_files[@]}" > "${FINAL_OUT}"
 
   # Clean up temporary directory
-  rm -r "$TMP_DIR"
+  rm -r "${TMP_DIR}"
 fi
