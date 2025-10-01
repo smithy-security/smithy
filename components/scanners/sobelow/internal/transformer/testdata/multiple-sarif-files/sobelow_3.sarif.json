@@ -13,7 +13,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "/workspace/source-code/sobelow1/lib/carafe_web/controllers/potion_controller.ex"
+                  "uri": "/workspace/source-code/sobelow3/lib/carafe_web/controllers/potion_controller.ex"
                 },
                 "region": {
                   "endColumn": 32,
@@ -38,7 +38,7 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "/workspace/source-code/sobelow1/config/prod.exs"
+                  "uri": "/workspace/source-code/sobelow3/config/prod.exs"
                 },
                 "region": {
                   "endColumn": 1,

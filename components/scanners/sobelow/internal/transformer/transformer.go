@@ -60,10 +60,11 @@ func SobelowTransformerWithTarget(target TargetType) SobelowTransformerOption {
 	}
 }
 
+// SobelowResultsDirPath allows customising the results directory path
 func SobelowResultsDirPath(path string) SobelowTransformerOption {
 	return func(g *sobelowTransformer) error {
 		if path == "" {
-			return errors.Errorf("invalid results dir path")
+			return errors.Errorf("invalid results directory path")
 		}
 		g.resultsDirPath = path
 		return nil
@@ -124,11 +125,12 @@ func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *sobelowTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	logger := componentlogger.LoggerFromContext(ctx)
-
-	logger.Debug("preparing to scan and merge SARIF files from directory...",
-		slog.String("directory", g.resultsDirPath),
+	var (
+		errs   error
+		logger = componentlogger.LoggerFromContext(ctx)
 	)
+
+	logger.Debug("preparing to parse raw sobelow output...")
 
 	// Read all files from the results directory.
 	files, err := os.ReadDir(g.resultsDirPath)
@@ -139,7 +141,12 @@ func (g *sobelowTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabili
 		return nil, errors.Errorf("failed to read results directory '%s': %w", g.resultsDirPath, err)
 	}
 
-	var masterReport *sarifschemav210.SchemaJson
+	var allOcsfFindings []*ocsf.VulnerabilityFinding
+
+	guidProvider, err := sarif.NewBasicStableUUIDProvider()
+	if err != nil {
+		return nil, errors.Errorf("failed to create guid provider: %w", err)
+	}
 
 	// Iterate over each file, parse it, and merge its results.
 	for _, file := range files {
@@ -155,85 +162,81 @@ func (g *sobelowTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabili
 
 		b, err := os.ReadFile(filePath)
 		if err != nil {
-			// Log error for the specific file but continue processing others.
 			logger.Error("failed to read SARIF file, skipping",
 				slog.String("file", filePath),
 				slog.String("error", err.Error()),
 			)
+			errs = errors.Join(errs, errors.Errorf("failed to read SARIF file: %w", err))
 			continue
 		}
 
 		if len(b) == 0 {
-			logger.Debug("SARIF file is empty, skipping", slog.String("file", filePath))
+			logger.Debug("SARIF file is empty, skipping",
+				slog.String("file", filePath),
+			)
 			continue
 		}
 
 		var currentReport sarifschemav210.SchemaJson
 		if err := currentReport.UnmarshalJSON(b); err != nil {
-			logger.Error("failed to parse SARIF file, skipping",
+			logger.Error("failed to parse SARIF file, skipping...",
 				slog.String("file", filePath),
 				slog.String("error", err.Error()),
 			)
+			errs = errors.Join(errs, errors.Errorf("failed to parse SARIF file: %w", err))
 			continue
 		}
 
-		// If this is the first valid report, use it as the base.
-		if masterReport == nil {
-			masterReport = &currentReport
-			// Ensure there's at least one run to append to.
-			if len(masterReport.Runs) == 0 {
-				logger.Error("initial SARIF report has no runs, cannot merge",
-					slog.String("file", filePath),
-				)
-				masterReport = nil
-				continue
-			}
-		} else {
-			// Merge the results from the current report into the master report.
-			for _, run := range currentReport.Runs {
-				if len(masterReport.Runs) > 0 {
-					masterReport.Runs[0].Results = append(masterReport.Runs[0].Results, run.Results...)
-				}
-			}
+		logger.Debug(
+			"successfully parsed sobelow output",
+			slog.String("file", filePath),
+			slog.Int("num_sarif_runs", len(currentReport.Runs)),
+			slog.Int("num_sarif_results", countSarifResults(currentReport.Runs)),
+		)
+
+		transformer, err := sarif.NewTransformer(
+			&currentReport,
+			"",
+			g.clock,
+			guidProvider,
+			true,
+			component.TargetMetadataFromCtx(ctx),
+			g.workspacePath,
+		)
+		if err != nil {
+			logger.Error("failed to create transformer for SARIF file",
+				slog.String("file", filePath),
+				slog.String("error", err.Error()),
+			)
+			errs = errors.Join(errs, errors.Errorf("failed to create transformer for SARIF file: %w", err))
+			continue
 		}
+
+		ocsfFindings, err := transformer.ToOCSF(ctx)
+		if err != nil {
+			logger.Error("failed to transform SARIF file to OCSF",
+				slog.String("file", filePath),
+				slog.String("error", err.Error()),
+			)
+			errs = errors.Join(errs, errors.Errorf("failed to transform SARIF file to OCSF: %w", err))
+			continue
+		}
+
+		allOcsfFindings = append(allOcsfFindings, ocsfFindings...)
 	}
 
-	// Check if any findings were found after iterating through all files.
-	if masterReport == nil {
-		logger.Debug("no valid SARIF reports with findings were found in the directory")
-		return []*ocsf.VulnerabilityFinding{}, nil
-	}
-
-	logger.Debug(
-		"successfully merged all SARIF reports!",
-		slog.Int("num_sarif_runs", len(masterReport.Runs)),
-		slog.Int("num_sarif_results", func(runs []sarifschemav210.Run) int {
-			var countRes = 0
-			for _, run := range runs {
-				countRes += len(run.Results)
-			}
-			return countRes
-		}(masterReport.Runs)),
+	logger.Debug("finished parsing raw sobelow findings",
+		slog.Int("total_ocsf_findings", len(allOcsfFindings)),
 	)
 
-	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
-	guidProvider, err := sarif.NewBasicStableUUIDProvider()
-	if err != nil {
-		return nil, errors.Errorf("failed to create guid provider: %w", err)
-	}
+	return allOcsfFindings, errs
+}
 
-	transformer, err := sarif.NewTransformer(
-		masterReport,
-		"",
-		g.clock,
-		guidProvider,
-		true,
-		component.TargetMetadataFromCtx(ctx),
-		g.workspacePath,
-	)
-	if err != nil {
-		return nil, err
+// countSarifResults calculates the total number of results across all runs in a single SARIF report.
+func countSarifResults(runs []sarifschemav210.Run) int {
+	var count int
+	for _, run := range runs {
+		count += len(run.Results)
 	}
-
-	return transformer.ToOCSF(ctx)
+	return count
 }
