@@ -10,10 +10,10 @@ steps:
     executable: /bin/bash
     args:
       - -c
-      - /entrypoint.sh {{ sourceCodeWorkspace }} {{ scratchWorkspace }}/sobelow.out.sarif.json
+      - /entrypoint.sh {{ sourceCodeWorkspace }} {{ scratchWorkspace }}/results
   - name: parser
     image: components/scanners/sobelow
     env_vars:
-      SOBELOW_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/sobelow.out.sarif.json"
+      SOBELOW_RESULTS_DIR: "{{ scratchWorkspace }}/results"
       WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: /bin/app

@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
@@ -27,7 +29,7 @@ type (
 	sobelowTransformer struct {
 		targetType     TargetType
 		clock          clockwork.Clock
-		rawOutFilePath string
+		resultsDirPath string
 		workspacePath  string
 	}
 )
@@ -58,22 +60,21 @@ func SobelowTransformerWithTarget(target TargetType) SobelowTransformerOption {
 	}
 }
 
-// SobelowRawOutFilePath allows customising the underlying raw out file path.
-func SobelowRawOutFilePath(path string) SobelowTransformerOption {
+func SobelowResultsDirPath(path string) SobelowTransformerOption {
 	return func(g *sobelowTransformer) error {
 		if path == "" {
-			return errors.Errorf("invalid raw out file path")
+			return errors.Errorf("invalid results dir path")
 		}
-		g.rawOutFilePath = path
+		g.resultsDirPath = path
 		return nil
 	}
 }
 
 // New returns a new sobelow transformer.
 func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
-	rawOutFilePath, err := env.GetOrDefault(
-		"SOBELOW_RAW_OUT_FILE_PATH",
-		"sobelow.sarif.json",
+	resultsDirPath, err := env.GetOrDefault(
+		"SOBELOW_RESULTS_DIR",
+		"/results",
 		env.WithDefaultOnError(true),
 	)
 	if err != nil {
@@ -99,9 +100,9 @@ func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
 	}
 
 	t := sobelowTransformer{
-		rawOutFilePath: rawOutFilePath,
 		targetType:     TargetType(target),
 		clock:          clockwork.NewRealClock(),
+		resultsDirPath: resultsDirPath,
 		workspacePath:  workspacePath,
 	}
 
@@ -112,8 +113,8 @@ func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
 	}
 
 	switch {
-	case t.rawOutFilePath == "":
-		return nil, errors.New("invalid empty raw output file")
+	case t.resultsDirPath == "":
+		return nil, errors.New("invalid empty results directory path")
 	case t.targetType == "":
 		return nil, errors.New("invalid empty target type")
 	}
@@ -123,42 +124,96 @@ func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
 
 // Transform transforms raw sarif findings into ocsf vulnerability findings.
 func (g *sobelowTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityFinding, error) {
-	logger := componentlogger.
-		LoggerFromContext(ctx)
+	logger := componentlogger.LoggerFromContext(ctx)
 
-	logger.Debug("preparing to parse raw sobelow output...")
+	logger.Debug("preparing to scan and merge SARIF files from directory...",
+		slog.String("directory", g.resultsDirPath),
+	)
 
-	b, err := os.ReadFile(g.rawOutFilePath)
+	// Read all files from the results directory.
+	files, err := os.ReadDir(g.resultsDirPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return nil, errors.Errorf("raw output file '%s' not found", g.rawOutFilePath)
+			return nil, errors.Errorf("results directory '%s' not found", g.resultsDirPath)
 		}
-		return nil, errors.Errorf("failed to read raw output file '%s': %w", g.rawOutFilePath, err)
+		return nil, errors.Errorf("failed to read results directory '%s': %w", g.resultsDirPath, err)
 	}
 
-	// If the sobelow scanner is run against a non Phoenix application it doesn't return anything,
-	// which then make it an invalid json file, causing report.UnmarshalJSON(b) to fail.
-	// We should treat it as no findings found
-	if len(b) == 0 {
-		logger.Debug("raw output file is empty, treating as no findings")
+	var masterReport *sarifschemav210.SchemaJson
+
+	// Iterate over each file, parse it, and merge its results.
+	for _, file := range files {
+		// Skip directories and files that are not SARIF reports.
+		if file.IsDir() || !strings.HasSuffix(file.Name(), ".sarif.json") {
+			continue
+		}
+
+		filePath := filepath.Join(g.resultsDirPath, file.Name())
+		logger.Debug("processing SARIF file",
+			slog.String("file", filePath),
+		)
+
+		b, err := os.ReadFile(filePath)
+		if err != nil {
+			// Log error for the specific file but continue processing others.
+			logger.Error("failed to read SARIF file, skipping",
+				slog.String("file", filePath),
+				slog.String("error", err.Error()),
+			)
+			continue
+		}
+
+		if len(b) == 0 {
+			logger.Debug("SARIF file is empty, skipping", slog.String("file", filePath))
+			continue
+		}
+
+		var currentReport sarifschemav210.SchemaJson
+		if err := currentReport.UnmarshalJSON(b); err != nil {
+			logger.Error("failed to parse SARIF file, skipping",
+				slog.String("file", filePath),
+				slog.String("error", err.Error()),
+			)
+			continue
+		}
+
+		// If this is the first valid report, use it as the base.
+		if masterReport == nil {
+			masterReport = &currentReport
+			// Ensure there's at least one run to append to.
+			if len(masterReport.Runs) == 0 {
+				logger.Error("initial SARIF report has no runs, cannot merge",
+					slog.String("file", filePath),
+				)
+				masterReport = nil
+				continue
+			}
+		} else {
+			// Merge the results from the current report into the master report.
+			for _, run := range currentReport.Runs {
+				if len(masterReport.Runs) > 0 {
+					masterReport.Runs[0].Results = append(masterReport.Runs[0].Results, run.Results...)
+				}
+			}
+		}
+	}
+
+	// Check if any findings were found after iterating through all files.
+	if masterReport == nil {
+		logger.Debug("no valid SARIF reports with findings were found in the directory")
 		return []*ocsf.VulnerabilityFinding{}, nil
 	}
 
-	var report sarifschemav210.SchemaJson
-	if err := report.UnmarshalJSON(b); err != nil {
-		return nil, errors.Errorf("failed to parse raw sobelow output: %w", err)
-	}
-
 	logger.Debug(
-		"successfully parsed raw sobelow output!",
-		slog.Int("num_sarif_runs", len(report.Runs)),
+		"successfully merged all SARIF reports!",
+		slog.Int("num_sarif_runs", len(masterReport.Runs)),
 		slog.Int("num_sarif_results", func(runs []sarifschemav210.Run) int {
 			var countRes = 0
 			for _, run := range runs {
 				countRes += len(run.Results)
 			}
 			return countRes
-		}(report.Runs)),
+		}(masterReport.Runs)),
 	)
 
 	logger.Debug("preparing to parse raw sarif findings to ocsf vulnerability findings...")
@@ -168,7 +223,7 @@ func (g *sobelowTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabili
 	}
 
 	transformer, err := sarif.NewTransformer(
-		&report,
+		masterReport,
 		"",
 		g.clock,
 		guidProvider,
