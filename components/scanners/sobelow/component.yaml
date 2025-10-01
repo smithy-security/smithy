@@ -7,10 +7,11 @@ steps:
     env_vars:
       TERM: "dumb"
       ERL_FLAGS: "-noinput -noshell"
+      SOBELOW_RESULTS_DIR: "{{ scratchWorkspace }}/results"
     executable: /bin/bash
     args:
       - -c
-      - /entrypoint.sh {{ sourceCodeWorkspace }} {{ scratchWorkspace }}/results
+      - /entrypoint.sh {{ sourceCodeWorkspace }} ${SOBELOW_RESULTS_DIR}
   - name: parser
     image: components/scanners/sobelow
     env_vars:

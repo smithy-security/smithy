@@ -99,7 +99,7 @@ func TestSobelowTransformer_Transform(t *testing.T) {
 
 		ocsfTransformer, err := transformer.New(
 			transformer.SobelowTransformerWithClock(clock),
-			transformer.SobelowResultsDirPath("./testdata/single-file-sarif"),
+			transformer.SobelowResultsDirPath("./testdata/single-sarif-file"),
 		)
 		require.NoError(t, err)
 
@@ -116,7 +116,7 @@ func TestSobelowTransformer_Transform(t *testing.T) {
 	t.Run("it should merge and transform findings from multiple files in a directory", func(t *testing.T) {
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 
-		expectedRelativePath := "sarif1/lib/carafe_web/controllers/potion_controller.ex"
+		expectedRelativePath := "sobelow1/lib/carafe_web/controllers/potion_controller.ex"
 
 		expectedDataSource := &ocsffindinginfo.DataSource{
 			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
@@ -154,8 +154,8 @@ func TestSobelowTransformer_Transform(t *testing.T) {
 					AffectedCode: []*ocsf.AffectedCode{
 						{
 							File: &ocsf.File{
-								Name: "sarif1/lib/carafe_web/controllers/potion_controller.ex",
-								Path: utils.Ptr("file://sarif1/lib/carafe_web/controllers/potion_controller.ex"),
+								Name: "sobelow1/lib/carafe_web/controllers/potion_controller.ex",
+								Path: utils.Ptr("file://sobelow1/lib/carafe_web/controllers/potion_controller.ex"),
 							},
 							StartLine: utils.Ptr(int32(43)),
 							EndLine:   utils.Ptr(int32(43)),
@@ -179,8 +179,8 @@ func TestSobelowTransformer_Transform(t *testing.T) {
 		findings, err := ocsfTransformer.Transform(ctx)
 		require.NoError(t, err)
 		require.NotEmpty(t, findings)
-		// Each file has 2 findings, so 2 files should result in 4 findings.
-		require.Len(t, findings, 4)
+		// Each file has 2 findings, so 3 files non empty should result in 6 findings.
+		require.Len(t, findings, 6)
 
 		actualFinding := findings[2]
 		require.JSONEq(t, string(expectedDataSourceJSON), actualFinding.FindingInfo.DataSources[0])
@@ -231,7 +231,7 @@ func TestSobelowTransformer_Transform(t *testing.T) {
 		require.Empty(t, findings)
 	})
 
-	t.Run("it should return an error if the results file doesn't exit", func(t *testing.T) {
+	t.Run("it should return an error if the results directory doesn't exit", func(t *testing.T) {
 		t.Setenv("WORKSPACE_PATH", "/workspace/source-code")
 
 		ocsfTransformer, err := transformer.New(
