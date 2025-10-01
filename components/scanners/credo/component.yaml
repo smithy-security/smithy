@@ -7,13 +7,14 @@ steps:
     env_vars:
       TERM: "dumb"
       ERL_FLAGS: "-noinput -noshell"
+      CREDO_RESULTS_DIR: "{{ scratchWorkspace }}/results"
     executable: /bin/bash
     args:
       - -c
-      - /entrypoint.sh {{ sourceCodeWorkspace }} {{ scratchWorkspace }}/credo.out.sarif.json
+      - /entrypoint.sh {{ sourceCodeWorkspace }} ${CREDO_RESULTS_DIR}
   - name: parser
     image: components/scanners/credo
     env_vars:
-      CREDO_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/credo.out.sarif.json"
+      CREDO_RESULTS_DIR: "{{ scratchWorkspace }}/results"
       WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: /bin/app
