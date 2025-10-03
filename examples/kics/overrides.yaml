@@ -1,4 +1,4 @@
 git-clone:
 - name: "repo_url"
   type: "string"
-  value: "https://github.com/smithy-security/e2e-monorepo.git"
+  value: "https://github.com/bridgecrewio/terragoat"
