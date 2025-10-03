@@ -1,5 +1,5 @@
 name: sobelow
-description: "Runs ncc sobelow for elixir and parses findings into OCSF format"
+description: "Static code analysis scanner for the Elixir Phoenix Framework."
 type: scanner
 steps:
   - name: scanner

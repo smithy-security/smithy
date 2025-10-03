@@ -1,5 +1,5 @@
 name: "defectdojo"
-description: "Logs findings to remote defectdojo"
+description: "Pushes findings to a DefectDojo vulnerability management instance."
 type: "reporter"
 parameters:
   - name: "dojo_user"

@@ -1,5 +1,5 @@
 name: git-clone
-description: "Clones a repository"
+description: "Clones any git repository. Can be on GitHub, BitBucket, GitLab, Azure etc."
 type: target
 parameters:
   - name: repo_url

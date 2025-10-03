@@ -1,5 +1,5 @@
 name: osv-scanner
-description: "Scans projects with google's osv-scanner, parses sarif findings into OCSF format"
+description: "Scans third party dependencies of multiple languages."
 type: scanner
 steps:
   - name: scanner

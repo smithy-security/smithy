@@ -1,5 +1,5 @@
 name: "linear"
-description: "Reports findings to Linear"
+description: "Pushes finding details tickets to Linear."
 type: "reporter"
 parameters:
   - name: "api_key"

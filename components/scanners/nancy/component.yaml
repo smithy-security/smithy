@@ -1,5 +1,5 @@
 name: nancy
-description: "Parses nancy findings into OCSF format"
+description: "Scans dependencies for Go projects."
 type: scanner
 steps:
   - name: scanner

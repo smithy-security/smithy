@@ -1,5 +1,5 @@
 name: semgrep
-description: "Runs Semgrep then parses findings into the OCSF format"
+description: "Static analysis for source code."
 type: scanner
 parameters:
   - name: ruleset

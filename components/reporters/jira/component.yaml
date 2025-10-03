@@ -1,5 +1,5 @@
 name: "jira"
-description: "Creates Issues on JIRA"
+description: "Pushes finding details tickets to Jira."
 type: "reporter"
 parameters:
   - name: "base_url"

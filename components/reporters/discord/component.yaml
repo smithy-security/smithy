@@ -1,5 +1,5 @@
 name: "discord"
-description: "Reports findings to Discord"
+description: "Pushes short finding alerts to Discord."
 type: "reporter"
 parameters:
   - name: "channel_id"
