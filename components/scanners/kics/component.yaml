@@ -3,7 +3,7 @@ description: "Static analysis for Infrastructure as code."
 type: "scanner"
 steps:
   - name: "run-kics"
-    image: "checkmarx/kics:latest"
+    image: "checkmarx/kics:v2.1.14"
     executable: "/app/bin/kics"
     args:
       - "scan"
@@ -17,5 +17,5 @@ steps:
   - name: "parser"
     image: "components/scanners/kics"
     env_vars:
-      KICS_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/results_sarif.sarif"
+      KICS_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/results.sarif"
     executable: "/bin/app"
