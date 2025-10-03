@@ -3,17 +3,22 @@ description: "Runs Checkov then parses findings into the OCSF format"
 type: "scanner"
 steps:
   - name: "run-checkov"
-    image: "bridgecrew/checkov"
-    executable: "/usr/local/bin/checkov"
+    image: "bridgecrew/checkov:3.2.473"
+    executable: "/bin/sh"
     args:
-    - "-d={{ sourceCodeWorkspace }}"
-    - "-o=sarif"
-    - "--output-file-path={{ scratchWorkspace }}"
-    - "--soft-fail"
+    - "-c"
+    - >
+      cd {{ sourceCodeWorkspace }} &&
+      /usr/local/bin/checkov \
+        -d . \
+        -o=sarif \
+        --output-file-path={{ scratchWorkspace }} \
+        --soft-fail
     # - "--scan-secrets-history"
     # - "--secrets-history-timeout=10m"
   - name: "parser"
     image: "components/scanners/checkov"
     env_vars:
       CHECKOV_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/results_sarif.sarif"
+      CHECKOV_WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: "/bin/app"

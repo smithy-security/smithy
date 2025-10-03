@@ -3,16 +3,19 @@ package transformer_test
 import (
 	"context"
 	_ "embed"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/jonboulle/clockwork"
+	"github.com/smithy-security/pkg/utils"
 	"github.com/smithy-security/smithy/sdk/component"
 	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/smithy-security/smithy/components/scanners/checkov/internal/transformer"
 )
@@ -27,6 +30,7 @@ func TestCheckovTransformer_Transform(t *testing.T) {
 				100 +
 				ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.Number(),
 		)
+		falseBool = false
 	)
 
 	defer cancel()
@@ -42,14 +46,16 @@ func TestCheckovTransformer_Transform(t *testing.T) {
 
 	ctx = context.WithValue(ctx, component.SCANNER_TARGET_METADATA_CTX_KEY, targetMetadata)
 
-	ocsfTransformer, err := transformer.New(
-		transformer.CheckovRawOutFilePath("./testdata/results_sarif.sarif"),
-		transformer.CheckovTransformerWithTarget(transformer.TargetTypeRepository),
-		transformer.CheckovTransformerWithClock(clock),
-	)
-	require.NoError(t, err)
-
 	t.Run("it should transform correctly the finding to ocsf format", func(t *testing.T) {
+		t.Setenv("CHECKOV_WORKSPACE_PATH", "/code")
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CheckovRawOutFilePath("./testdata/results_sarif.sarif"),
+			transformer.CheckovTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CheckovTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
 		findings, err := ocsfTransformer.Transform(ctx)
 		require.NoError(t, err)
 		require.NotEmpty(t, findings)
@@ -213,5 +219,123 @@ func TestCheckovTransformer_Transform(t *testing.T) {
 			assert.NotNilf(t, affectedCode.StartLine, "Unexpected nil start line for vulnerability for finding %d", idx)
 			assert.NotNilf(t, affectedCode.EndLine, "Unexpected nil end line for vulnerability for finding %d", idx)
 		}
+	})
+
+	t.Run("it should extract the relative path from the absolute path", func(t *testing.T) {
+		t.Setenv("CHECKOV_WORKSPACE_PATH", "/code")
+
+		expectedRelativePath := "terraform/alicloud/bucket.tf"
+
+		expectedDataSource := &ocsffindinginfo.DataSource{
+			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+			Uri: &ocsffindinginfo.DataSource_URI{
+				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
+				Path:      fmt.Sprint("file://" + expectedRelativePath),
+			},
+
+			LocationData: &ocsffindinginfo.DataSource_FileFindingLocationData_{
+				FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
+					StartLine: 1,
+					EndLine:   18,
+				},
+			},
+			SourceCodeMetadata: targetMetadata.SourceCodeMetadata,
+		}
+
+		expectedDataSourceJSON, err := protojson.Marshal(expectedDataSource)
+		require.NoError(t, err)
+
+		expectedFinding := &ocsf.VulnerabilityFinding{
+			FindingInfo: &ocsf.FindingInfo{
+				DataSources: []string{string(expectedDataSourceJSON)},
+			},
+			Vulnerabilities: []*ocsf.Vulnerability{
+				{
+					Desc:          utils.Ptr("Ensure OSS bucket has versioning enabled\n\n Help: Ensure OSS bucket has versioning enabled\nResource: alicloud_oss_bucket.bad_bucket\n\n More info: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/alibaba-policies/alibaba-general-policies/ensure-alibaba-cloud-oss-bucket-has-versioning-enabled"),
+					Title:         utils.Ptr("Ensure OSS bucket has versioning enabled"),
+					Severity:      utils.Ptr(ocsf.VulnerabilityFinding_SEVERITY_ID_HIGH.String()),
+					FirstSeenTime: &nowUnix,
+					LastSeenTime:  &nowUnix,
+					Cwe:           nil,
+					Cve:           nil,
+					AffectedCode: []*ocsf.AffectedCode{
+						{
+							File: &ocsf.File{
+								Name: "terraform/alicloud/bucket.tf",
+								Path: utils.Ptr("file://terraform/alicloud/bucket.tf"),
+							},
+							StartLine: utils.Ptr(int32(1)),
+							EndLine:   utils.Ptr(int32(18)),
+						},
+					},
+					VendorName:      utils.Ptr("Checkov"),
+					FirstSeenTimeDt: &timestamppb.Timestamp{Seconds: nowUnix},
+					LastSeenTimeDt:  &timestamppb.Timestamp{Seconds: nowUnix},
+					IsFixAvailable:  &falseBool,
+					FixAvailable:    &falseBool,
+				},
+			},
+		}
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CheckovRawOutFilePath("./testdata/checkov.valid.sarif"),
+			transformer.CheckovTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CheckovTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		require.NoError(t, err)
+		require.NotEmpty(t, findings)
+		require.Len(t, findings, 1)
+
+		actualFinding := findings[0]
+		require.JSONEq(t, string(expectedDataSourceJSON), actualFinding.FindingInfo.DataSources[0])
+		require.Equal(t, expectedFinding.Vulnerabilities, actualFinding.Vulnerabilities)
+
+	})
+
+	t.Run("it should not return an error if the results file is a valid empty sarif json", func(t *testing.T) {
+		t.Setenv("CHECKOV_WORKSPACE_PATH", "/code")
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CheckovRawOutFilePath("./testdata/checkov.empty.valid.sarif"),
+			transformer.CheckovTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CheckovTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		assert.NoError(t, err)
+		require.Empty(t, findings)
+	})
+
+	t.Run("it should not return an error if the results file is completely empty", func(t *testing.T) {
+		t.Setenv("CHECKOV_WORKSPACE_PATH", "/code")
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CheckovRawOutFilePath("./testdata/checkov.empty.valid.sarif"),
+			transformer.CheckovTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CheckovTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		findings, err := ocsfTransformer.Transform(ctx)
+		assert.NoError(t, err)
+		require.Empty(t, findings)
+	})
+
+	t.Run("it should return an error if the results file doesn't exit", func(t *testing.T) {
+		t.Setenv("CHECKOV_WORKSPACE_PATH", "/code")
+
+		ocsfTransformer, err := transformer.New(
+			transformer.CheckovRawOutFilePath("./testdata/non.existent.sarif"),
+			transformer.CheckovTransformerWithTarget(transformer.TargetTypeRepository),
+			transformer.CheckovTransformerWithClock(clock),
+		)
+		require.NoError(t, err)
+
+		_, err = ocsfTransformer.Transform(ctx)
+		require.Error(t, err)
 	})
 }

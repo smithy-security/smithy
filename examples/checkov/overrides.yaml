@@ -1,4 +1,10 @@
 git-clone:
-- name: "repo_url"
-  type: "string"
-  value: "https://github.com/smithy-security/e2e-monorepo.git"
+  - name: "repo_url"
+    type: "string"
+    value: "https://github.com/bridgecrewio/terragoat"
+# - name: "repo_url"
+#   type: "string"
+#   value: "https://github.com/smithy-security/e2e-monorepo.git"
+# - name: reference
+#   type: string
+#   value: main # needed for our e2e repo

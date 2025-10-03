@@ -28,6 +28,7 @@ type (
 		targetType     TargetType
 		clock          clockwork.Clock
 		rawOutFilePath string
+		workspacePath  string
 	}
 )
 
@@ -88,10 +89,20 @@ func New(opts ...CheckovTransformerOption) (*checkovTransformer, error) {
 		return nil, err
 	}
 
+	workspacePath, err := env.GetOrDefault(
+		"CHECKOV_WORKSPACE_PATH",
+		"",
+		env.WithDefaultOnError(false),
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	t := checkovTransformer{
 		rawOutFilePath: rawOutFilePath,
 		targetType:     TargetType(target),
 		clock:          clockwork.NewRealClock(),
+		workspacePath:  workspacePath,
 	}
 
 	for _, opt := range opts {
@@ -148,7 +159,15 @@ func (g *checkovTransformer) Transform(ctx context.Context) ([]*ocsf.Vulnerabili
 		return nil, errors.Errorf("failed to create guid provider: %w", err)
 	}
 
-	transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true, component.TargetMetadataFromCtx(ctx))
+	transformer, err := sarif.NewTransformer(
+		&report,
+		"",
+		g.clock,
+		guidProvider,
+		true,
+		component.TargetMetadataFromCtx(ctx),
+		g.workspacePath,
+	)
 	if err != nil {
 		return nil, err
 	}
