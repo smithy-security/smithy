@@ -1,5 +1,5 @@
 name: "checkov"
-description: "Runs Checkov then parses findings into the OCSF format"
+description: "Static code analysis for infrastructure as code. Finds misconfigurations that may lead to security or compliance problems."
 type: "scanner"
 steps:
   - name: "run-checkov"

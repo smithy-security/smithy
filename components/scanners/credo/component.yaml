@@ -1,5 +1,5 @@
 name: credo
-description: "Runs credo for elixir and parses findings into OCSF format"
+description: "Static code analysis tool for Elixir source code."
 type: scanner
 steps:
   - name: scanner

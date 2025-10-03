@@ -1,5 +1,5 @@
 name: bandit
-description: "Parses bandit findings into OCSF format"
+description: "Static application security testing for Python source code."
 type: scanner
 steps:
   - name: scanner

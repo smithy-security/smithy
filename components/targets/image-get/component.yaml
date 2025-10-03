@@ -1,5 +1,5 @@
 name: image-get
-description: "Downloads a container image and saves it as `image.tar.gz` in the {{ sourceCodeWorkspace}} "
+description: "Download a remote image from any registry."
 type: target
 parameters:
   - name: image
