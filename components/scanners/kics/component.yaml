@@ -1,5 +1,5 @@
 name: "kics"
-description: "Runs Kics then parses findings into the OCSF format"
+description: "Static analysis for Infrastructure as code."
 type: "scanner"
 steps:
   - name: "run-kics"

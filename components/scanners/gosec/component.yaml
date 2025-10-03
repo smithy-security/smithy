@@ -1,5 +1,5 @@
 name: gosec
-description: "Parses gosec findings into OCSF format"
+description: "Static analysis for Go code vulnerabilities."
 type: scanner
 parameters: []
 steps:

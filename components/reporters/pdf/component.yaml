@@ -1,5 +1,5 @@
 name: "pdf"
-description: "Logs findings into a PDF document"
+description: "Generates a detailed report into a PDF and uploads it to an S3-compatible bucket."
 type: "reporter"
 parameters:
   - name: "aws_access_key_id"

@@ -1,5 +1,5 @@
 name: mobsf
-description: "Runs MobSF against an APK or IPA then parses findings into the OCSF format"
+description: "Static analysis tool that can find vulnerabilities in your Android and iOS applications. It scans packaged application files."
 type: scanner
 parameters:
   - name: client_request_timeout

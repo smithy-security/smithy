@@ -1,5 +1,5 @@
 name: zaproxy
-description: "Runs zaproxy then parses findings into the OCSF format"
+description: "Dynamic application security scanner that analyses web applications for security issues."
 type: scanner
 parameters:
 
