@@ -1,5 +1,5 @@
 name: snyk
-description: "Static code analysis with Snyk."
+description: "Static analysis of code and dependencies."
 type: scanner
 parameters:
   - name: http_proxy

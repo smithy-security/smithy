@@ -1,6 +1,6 @@
 ---
 name: trivy
-description: "Scan for vulnerabilities and misconfigurations  in code repositories, binary artifacts, container images and Kubernetes clusters."
+description: "Scan for vulnerabilities and misconfigurations in code repositories, binary artifacts, container images and Kubernetes clusters."
 type: scanner
 parameters:
   - name: image
