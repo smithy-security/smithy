@@ -10,8 +10,8 @@ steps:
     - >
       cd {{ sourceCodeWorkspace }} &&
       /usr/local/bin/checkov \
-        -d . \
-        -o=sarif \
+        --directory=. \
+        --output=sarif \
         --output-file-path={{ scratchWorkspace }} \
         --soft-fail
     # - "--scan-secrets-history"
