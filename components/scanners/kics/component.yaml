@@ -4,18 +4,24 @@ type: "scanner"
 steps:
   - name: "run-kics"
     image: "checkmarx/kics:v2.1.14"
-    executable: "/app/bin/kics"
+    executable: "/bin/sh"
     args:
-      - "scan"
-      - "--ignore-on-exit=results"
-      - "--output-path={{ scratchWorkspace }}"
-      - "--parallel=0"
-      - "--path={{sourceCodeWorkspace}}"
-      - "--payload-lines"
-      - "--report-formats=sarif"
-      - "--ci"
+      - "-c"
+      # EDITED: CD into the source code first, then run the scan.
+      # This changes the "Execution Root" for the kics process.
+      - |
+        cd {{ scratchWorkspace }} && \
+        /app/bin/kics scan \
+        --ignore-on-exit=results \
+        --output-path=. \
+        --parallel=0 \
+        --path=. \
+        --payload-lines \
+        --report-formats=sarif \
+        --ci
   - name: "parser"
     image: "components/scanners/kics"
     env_vars:
       KICS_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/results.sarif"
+      KICS_WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: "/bin/app"
