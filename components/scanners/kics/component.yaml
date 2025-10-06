@@ -7,13 +7,11 @@ steps:
     executable: "/bin/sh"
     args:
       - "-c"
-      # EDITED: CD into the source code first, then run the scan.
-      # This changes the "Execution Root" for the kics process.
       - |
-        cd {{ scratchWorkspace }} && \
+        cd {{ sourceCodeWorkspace }} && \
         /app/bin/kics scan \
         --ignore-on-exit=results \
-        --output-path=. \
+        --output-path={{ scratchWorkspace }} \
         --parallel=0 \
         --path=. \
         --payload-lines \

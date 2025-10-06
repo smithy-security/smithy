@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "KICS",
+          "version": "v2.1.14",
+          "fullName": "Keeping Infrastructure as Code Secure",
+          "informationUri": "https://www.kics.io/",
+          "rules": []
+        }
+      },
+      "results": []
+    }
+  ]
+}

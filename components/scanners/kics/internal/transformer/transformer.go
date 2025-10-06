@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"os"
-	"path/filepath"
 
 	"github.com/go-errors/errors"
 	"github.com/jonboulle/clockwork"
@@ -100,16 +99,11 @@ func New(opts ...KicsTransformerOption) (*kicsTransformer, error) {
 		return nil, err
 	}
 
-	absolutePath, err := filepath.Abs(workspacePath)
-	if err != nil {
-		return nil, err
-	}
-
 	t := kicsTransformer{
 		rawOutFilePath: rawOutFilePath,
 		targetType:     TargetType(target),
 		clock:          clockwork.NewRealClock(),
-		workspacePath:  absolutePath,
+		workspacePath:  workspacePath,
 	}
 
 	for _, opt := range opts {
@@ -147,9 +141,6 @@ func (g *kicsTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityF
 	if err := report.UnmarshalJSON(b); err != nil {
 		return nil, errors.Errorf("failed to parse raw kics output: %w", err)
 	}
-
-	logger.Debug("raw finding",
-		slog.Any("raw findings", report.Runs[0].Results[0]))
 
 	logger.Debug(
 		"successfully parsed raw kics output!",
