@@ -1,5 +1,5 @@
 name: mobsfscan
-description: "Runs MobSF Scan then parses findings into the OCSF format"
+description: "Static analysis tool that can find insecure code patterns in your Android and iOS source code. Supports Java, Kotlin, Android XML, Swift and Objective C Code. Mobsfscan uses MobSF static analysis rules and is powered by semgrep and libsast pattern matcher."
 type: scanner
 steps:
   - name: run-mobsfscan

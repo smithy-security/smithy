@@ -1,5 +1,5 @@
 name: "trufflehog"
-description: "Runs trufflehog against a target"
+description: "Scans code for secrets."
 type: "scanner"
 steps:
   - name: "run-trufflehog"

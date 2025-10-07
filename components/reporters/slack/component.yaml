@@ -1,5 +1,5 @@
 name: "slack"
-description: "Logs findings to slack"
+description: "Pushes short finding alerts to Slack."
 type: "reporter"
 parameters:
   - name: "slack_webhook"

@@ -1,6 +1,6 @@
 ---
 name: trivy
-description: Runs Aquasec/Trivy against the downloaded image then parses findings into the OCSF format
+description: "Scan for vulnerabilities and misconfigurations in code repositories, binary artifacts, container images and Kubernetes clusters."
 type: scanner
 parameters:
   - name: image

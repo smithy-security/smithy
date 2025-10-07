@@ -1,5 +1,5 @@
 name: "source-code-artifact"
-description: "Downloads archived files in zip, tag or targz format from a plain http or s3 compatible API"
+description: "Downloads archived files in zip, tag or targz format from a plain HTTP or S3-compatible API"
 type: "target"
 parameters:
   # Must be a valid URL like: https://github.com/aws/aws-sdk-go-v2/archive/refs/heads/main.zip

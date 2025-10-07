@@ -1,5 +1,5 @@
 name: elasticsearch
-description: "Logs findings to a remote elasticsearch"
+description: "Pushes findings to a remote ElasticSearch."
 type: reporter
 parameters:
   - name: elasticsearch_url

@@ -1,5 +1,5 @@
 name: snyk
-description: "Runs snyk open source then parses findings into the OCSF format"
+description: "Static analysis of code and dependencies."
 type: scanner
 parameters:
   - name: http_proxy
