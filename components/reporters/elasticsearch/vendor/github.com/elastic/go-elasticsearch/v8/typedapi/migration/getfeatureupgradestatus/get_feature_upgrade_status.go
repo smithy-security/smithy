@@ -16,9 +16,16 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Find out whether system features need to be upgraded or not
+// Get feature migration information.
+// Version upgrades sometimes require changes to how features store
+// configuration information and data in system indices.
+// Check which features need to be migrated and the status of any migrations
+// that are in progress.
+//
+// TIP: This API is designed for indirect use by the Upgrade Assistant.
+// You are strongly recommended to use the Upgrade Assistant.
 package getfeatureupgradestatus
 
 import (
@@ -68,9 +75,16 @@ func NewGetFeatureUpgradeStatusFunc(tp elastictransport.Interface) NewGetFeature
 	}
 }
 
-// Find out whether system features need to be upgraded or not
+// Get feature migration information.
+// Version upgrades sometimes require changes to how features store
+// configuration information and data in system indices.
+// Check which features need to be migrated and the status of any migrations
+// that are in progress.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/migration-api-feature-upgrade.html
+// TIP: This API is designed for indirect use by the Upgrade Assistant.
+// You are strongly recommended to use the Upgrade Assistant.
+//
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/feature-migration-api.html
 func New(tp elastictransport.Interface) *GetFeatureUpgradeStatus {
 	r := &GetFeatureUpgradeStatus{
 		transport: tp,

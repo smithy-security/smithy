@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Stops Watcher if it is running.
+// Stop the watch service.
+// Stop the Watcher service if it is running.
 package stop
 
 import (
@@ -68,9 +69,10 @@ func NewStopFunc(tp elastictransport.Interface) NewStop {
 	}
 }
 
-// Stops Watcher if it is running.
+// Stop the watch service.
+// Stop the Watcher service if it is running.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/watcher-api-stop.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-watcher-stop
 func New(tp elastictransport.Interface) *Stop {
 	r := &Stop{
 		transport: tp,
@@ -272,6 +274,17 @@ func (r Stop) IsSuccess(providedCtx context.Context) (bool, error) {
 // Header set a key, value pair in the Stop headers map.
 func (r *Stop) Header(key, value string) *Stop {
 	r.headers.Set(key, value)
+
+	return r
+}
+
+// MasterTimeout The period to wait for the master node.
+// If the master node is not available before the timeout expires, the request
+// fails and returns an error.
+// To indicate that the request should never timeout, set it to `-1`.
+// API name: master_timeout
+func (r *Stop) MasterTimeout(duration string) *Stop {
+	r.values.Set("master_timeout", duration)
 
 	return r
 }

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -37,7 +37,7 @@ func newAsyncSearchSubmitFunc(t Transport) AsyncSearchSubmit {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -71,6 +71,7 @@ type AsyncSearchSubmitRequest struct {
 	From                       *int
 	IgnoreThrottled            *bool
 	IgnoreUnavailable          *bool
+	KeepAlive                  time.Duration
 	KeepOnCompletion           *bool
 	Lenient                    *bool
 	MaxConcurrentShardRequests *int
@@ -109,7 +110,7 @@ type AsyncSearchSubmitRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -121,7 +122,7 @@ func (r AsyncSearchSubmitRequest) Do(providedCtx context.Context, transport Tran
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "async_search.submit")
 		defer instrument.Close(ctx)
 	}
@@ -136,7 +137,7 @@ func (r AsyncSearchSubmitRequest) Do(providedCtx context.Context, transport Tran
 	if len(r.Index) > 0 {
 		path.WriteString("/")
 		path.WriteString(strings.Join(r.Index, ","))
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordPathPart(ctx, "index", strings.Join(r.Index, ","))
 		}
 	}
@@ -199,6 +200,10 @@ func (r AsyncSearchSubmitRequest) Do(providedCtx context.Context, transport Tran
 
 	if r.IgnoreUnavailable != nil {
 		params["ignore_unavailable"] = strconv.FormatBool(*r.IgnoreUnavailable)
+	}
+
+	if r.KeepAlive != 0 {
+		params["keep_alive"] = formatDuration(r.KeepAlive)
 	}
 
 	if r.KeepOnCompletion != nil {
@@ -331,7 +336,7 @@ func (r AsyncSearchSubmitRequest) Do(providedCtx context.Context, transport Tran
 
 	req, err := newRequest(method, path.String(), r.Body)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -365,18 +370,18 @@ func (r AsyncSearchSubmitRequest) Do(providedCtx context.Context, transport Tran
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "async_search.submit")
 		if reader := instrument.RecordRequestBody(ctx, "async_search.submit", r.Body); reader != nil {
 			req.Body = reader
 		}
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "async_search.submit")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -507,6 +512,13 @@ func (f AsyncSearchSubmit) WithIgnoreThrottled(v bool) func(*AsyncSearchSubmitRe
 func (f AsyncSearchSubmit) WithIgnoreUnavailable(v bool) func(*AsyncSearchSubmitRequest) {
 	return func(r *AsyncSearchSubmitRequest) {
 		r.IgnoreUnavailable = &v
+	}
+}
+
+// WithKeepAlive - update the time interval in which the results (partial or final) for this search will be available.
+func (f AsyncSearchSubmit) WithKeepAlive(v time.Duration) func(*AsyncSearchSubmitRequest) {
+	return func(r *AsyncSearchSubmitRequest) {
+		r.KeepAlive = v
 	}
 }
 

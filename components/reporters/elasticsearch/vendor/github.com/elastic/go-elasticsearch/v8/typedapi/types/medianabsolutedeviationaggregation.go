@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -27,16 +27,25 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/tdigestexecutionhint"
 )
 
 // MedianAbsoluteDeviationAggregation type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/aggregations/metric.ts#L167-L176
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/aggregations/metric.ts#L173-L188
 type MedianAbsoluteDeviationAggregation struct {
 	// Compression Limits the maximum number of nodes used by the underlying TDigest algorithm
 	// to `20 * compression`, enabling control of memory usage and approximation
 	// error.
 	Compression *Float64 `json:"compression,omitempty"`
+	// ExecutionHint The default implementation of TDigest is optimized for performance, scaling
+	// to millions or even billions of sample values while maintaining acceptable
+	// accuracy levels (close to 1% relative error for millions of samples in some
+	// cases).
+	// To use an implementation optimized for accuracy, set this parameter to
+	// high_accuracy instead.
+	ExecutionHint *tdigestexecutionhint.TDigestExecutionHint `json:"execution_hint,omitempty"`
 	// Field The field on which to run the aggregation.
 	Field  *string `json:"field,omitempty"`
 	Format *string `json:"format,omitempty"`
@@ -75,6 +84,11 @@ func (s *MedianAbsoluteDeviationAggregation) UnmarshalJSON(data []byte) error {
 			case float64:
 				f := Float64(v)
 				s.Compression = &f
+			}
+
+		case "execution_hint":
+			if err := dec.Decode(&s.ExecutionHint); err != nil {
+				return fmt.Errorf("%s | %w", "ExecutionHint", err)
 			}
 
 		case "field":

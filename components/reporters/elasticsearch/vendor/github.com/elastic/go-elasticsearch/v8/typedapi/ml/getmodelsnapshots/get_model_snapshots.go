@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get model snapshots info.
 package getmodelsnapshots
@@ -94,8 +94,6 @@ func New(tp elastictransport.Interface) *GetModelSnapshots {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -417,6 +415,9 @@ func (r *GetModelSnapshots) Pretty(pretty bool) *GetModelSnapshots {
 // Desc Refer to the description for the `desc` query parameter.
 // API name: desc
 func (r *GetModelSnapshots) Desc(desc bool) *GetModelSnapshots {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Desc = &desc
 
 	return r
@@ -425,6 +426,9 @@ func (r *GetModelSnapshots) Desc(desc bool) *GetModelSnapshots {
 // End Refer to the description for the `end` query parameter.
 // API name: end
 func (r *GetModelSnapshots) End(datetime types.DateTime) *GetModelSnapshots {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.End = datetime
 
 	return r
@@ -432,6 +436,9 @@ func (r *GetModelSnapshots) End(datetime types.DateTime) *GetModelSnapshots {
 
 // API name: page
 func (r *GetModelSnapshots) Page(page *types.Page) *GetModelSnapshots {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Page = page
 
@@ -441,6 +448,9 @@ func (r *GetModelSnapshots) Page(page *types.Page) *GetModelSnapshots {
 // Sort Refer to the description for the `sort` query parameter.
 // API name: sort
 func (r *GetModelSnapshots) Sort(field string) *GetModelSnapshots {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Sort = &field
 
 	return r
@@ -449,6 +459,9 @@ func (r *GetModelSnapshots) Sort(field string) *GetModelSnapshots {
 // Start Refer to the description for the `start` query parameter.
 // API name: start
 func (r *GetModelSnapshots) Start(datetime types.DateTime) *GetModelSnapshots {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Start = datetime
 
 	return r

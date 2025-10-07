@@ -16,12 +16,20 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Find API keys with a query.
 //
-// Get a paginated list of API keys and their information. You can optionally
-// filter the results with a query.
+// Get a paginated list of API keys and their information.
+// You can optionally filter the results with a query.
+//
+// To use this API, you must have at least the `manage_own_api_key` or the
+// `read_security` cluster privileges.
+// If you have only the `manage_own_api_key` privilege, this API returns only
+// the API keys that you own.
+// If you have the `read_security`, `manage_api_key`, or greater privileges
+// (including `manage_security`), this API returns all API keys regardless of
+// ownership.
 package queryapikeys
 
 import (
@@ -78,8 +86,16 @@ func NewQueryApiKeysFunc(tp elastictransport.Interface) NewQueryApiKeys {
 
 // Find API keys with a query.
 //
-// Get a paginated list of API keys and their information. You can optionally
-// filter the results with a query.
+// Get a paginated list of API keys and their information.
+// You can optionally filter the results with a query.
+//
+// To use this API, you must have at least the `manage_own_api_key` or the
+// `read_security` cluster privileges.
+// If you have only the `manage_own_api_key` privilege, this API returns only
+// the API keys that you own.
+// If you have the `read_security`, `manage_api_key`, or greater privileges
+// (including `manage_security`), this API returns all API keys regardless of
+// ownership.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-query-api-key.html
 func New(tp elastictransport.Interface) *QueryApiKeys {
@@ -89,8 +105,6 @@ func New(tp elastictransport.Interface) *QueryApiKeys {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -305,7 +319,10 @@ func (r *QueryApiKeys) Header(key, value string) *QueryApiKeys {
 // WithLimitedBy Return the snapshot of the owner user's role descriptors associated with the
 // API key.
 // An API key's actual permission is the intersection of its assigned role
-// descriptors and the owner user's role descriptors.
+// descriptors and the owner user's role descriptors (effectively limited by
+// it).
+// An API key cannot retrieve any API key’s limited-by role descriptors
+// (including itself) unless it has `manage_api_key` or higher privileges.
 // API name: with_limited_by
 func (r *QueryApiKeys) WithLimitedBy(withlimitedby bool) *QueryApiKeys {
 	r.values.Set("with_limited_by", strconv.FormatBool(withlimitedby))
@@ -313,8 +330,10 @@ func (r *QueryApiKeys) WithLimitedBy(withlimitedby bool) *QueryApiKeys {
 	return r
 }
 
-// WithProfileUid Determines whether to also retrieve the profile uid, for the API key owner
-// principal, if it exists.
+// WithProfileUid Determines whether to also retrieve the profile UID for the API key owner
+// principal.
+// If it exists, the profile UID is returned under the `profile_uid` response
+// field for each API key.
 // API name: with_profile_uid
 func (r *QueryApiKeys) WithProfileUid(withprofileuid bool) *QueryApiKeys {
 	r.values.Set("with_profile_uid", strconv.FormatBool(withprofileuid))
@@ -385,18 +404,25 @@ func (r *QueryApiKeys) Pretty(pretty bool) *QueryApiKeys {
 // works with.
 // API name: aggregations
 func (r *QueryApiKeys) Aggregations(aggregations map[string]types.ApiKeyAggregationContainer) *QueryApiKeys {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Aggregations = aggregations
 
 	return r
 }
 
-// From Starting document offset.
-// By default, you cannot page through more than 10,000 hits using the from and
-// size parameters.
+// From The starting document offset.
+// It must not be negative.
+// By default, you cannot page through more than 10,000 hits using the `from`
+// and `size` parameters.
 // To page through more hits, use the `search_after` parameter.
 // API name: from
 func (r *QueryApiKeys) From(from int) *QueryApiKeys {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.From = &from
 
 	return r
@@ -411,38 +437,61 @@ func (r *QueryApiKeys) From(from int) *QueryApiKeys {
 // `id`, `type`, `name`,
 // `creation`, `expiration`, `invalidated`, `invalidation`, `username`, `realm`,
 // and `metadata`.
+//
+// NOTE: The queryable string values associated with API keys are internally
+// mapped as keywords.
+// Consequently, if no `analyzer` parameter is specified for a `match` query,
+// then the provided match query string is interpreted as a single keyword
+// value.
+// Such a match query is hence equivalent to a `term` query.
 // API name: query
 func (r *QueryApiKeys) Query(query *types.ApiKeyQueryContainer) *QueryApiKeys {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Query = query
 
 	return r
 }
 
-// SearchAfter Search after definition
+// SearchAfter The search after definition.
 // API name: search_after
 func (r *QueryApiKeys) SearchAfter(sortresults ...types.FieldValue) *QueryApiKeys {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.SearchAfter = sortresults
 
 	return r
 }
 
 // Size The number of hits to return.
+// It must not be negative.
+// The `size` parameter can be set to `0`, in which case no API key matches are
+// returned, only the aggregation results.
 // By default, you cannot page through more than 10,000 hits using the `from`
 // and `size` parameters.
 // To page through more hits, use the `search_after` parameter.
 // API name: size
 func (r *QueryApiKeys) Size(size int) *QueryApiKeys {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Size = &size
 
 	return r
 }
 
-// Sort Other than `id`, all public fields of an API key are eligible for sorting.
+// Sort The sort definition.
+// Other than `id`, all public fields of an API key are eligible for sorting.
 // In addition, sort can also be applied to the `_doc` field to sort by index
 // order.
 // API name: sort
 func (r *QueryApiKeys) Sort(sorts ...types.SortCombinations) *QueryApiKeys {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Sort = sorts
 
 	return r

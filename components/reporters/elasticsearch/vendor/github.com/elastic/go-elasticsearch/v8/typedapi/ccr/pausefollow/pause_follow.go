@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Pause a follower.
+//
 // Pause a cross-cluster replication follower index.
 // The follower index will not fetch any additional operations from the leader
 // index.
@@ -83,6 +84,7 @@ func NewPauseFollowFunc(tp elastictransport.Interface) NewPauseFollow {
 }
 
 // Pause a follower.
+//
 // Pause a cross-cluster replication follower index.
 // The follower index will not fetch any additional operations from the leader
 // index.
@@ -302,11 +304,22 @@ func (r *PauseFollow) Header(key, value string) *PauseFollow {
 	return r
 }
 
-// Index The name of the follower index that should pause following its leader index.
+// Index The name of the follower index.
 // API Name: index
 func (r *PauseFollow) _index(index string) *PauseFollow {
 	r.paramSet |= indexMask
 	r.index = index
+
+	return r
+}
+
+// MasterTimeout The period to wait for a connection to the master node.
+// If the master node is not available before the timeout expires, the request
+// fails and returns an error.
+// It can also be set to `-1` to indicate that the request should never timeout.
+// API name: master_timeout
+func (r *PauseFollow) MasterTimeout(duration string) *PauseFollow {
+	r.values.Set("master_timeout", duration)
 
 	return r
 }

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package samlauthenticate
 
@@ -31,13 +31,13 @@ import (
 
 // Request holds the request body struct for the package samlauthenticate
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/saml_authenticate/Request.ts#L23-L40
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/saml_authenticate/Request.ts#L23-L61
 type Request struct {
 
-	// Content The SAML response as it was sent by the user’s browser, usually a Base64
+	// Content The SAML response as it was sent by the user's browser, usually a Base64
 	// encoded XML document.
 	Content string `json:"content"`
-	// Ids A json array with all the valid SAML Request Ids that the caller of the API
+	// Ids A JSON array with all the valid SAML Request Ids that the caller of the API
 	// has for the current user.
 	Ids []string `json:"ids"`
 	// Realm The name of the realm that should authenticate the SAML response. Useful in

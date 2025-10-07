@@ -97,6 +97,7 @@ type Config struct {
 	Instrumentation Instrumentation
 
 	DiscoverNodesInterval time.Duration
+	DiscoverNodeTimeout   *time.Duration
 
 	Transport http.RoundTripper
 	Logger    Logger
@@ -130,6 +131,7 @@ type Client struct {
 	retryBackoff          func(attempt int) time.Duration
 	discoverNodesInterval time.Duration
 	discoverNodesTimer    *time.Timer
+	discoverNodeTimeout   *time.Duration
 
 	compressRequestBody      bool
 	compressRequestBodyLevel int
@@ -239,6 +241,10 @@ func New(cfg Config) (*Client, error) {
 		poolFunc:  cfg.ConnectionPoolFunc,
 
 		instrumentation: cfg.Instrumentation,
+	}
+
+	if cfg.DiscoverNodeTimeout != nil {
+		client.discoverNodeTimeout = cfg.DiscoverNodeTimeout
 	}
 
 	if client.poolFunc != nil {

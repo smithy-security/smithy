@@ -16,23 +16,60 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // TableValuesContainer type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/esql/_types/TableValuesContainer.ts#L22-L28
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/esql/_types/TableValuesContainer.ts#L22-L28
 type TableValuesContainer struct {
-	Float64 [][]Float64 `json:"double,omitempty"`
-	Int     [][]int     `json:"integer,omitempty"`
-	Int64   [][]int64   `json:"long,omitempty"`
-	Keyword [][]string  `json:"keyword,omitempty"`
+	AdditionalTableValuesContainerProperty map[string]json.RawMessage `json:"-"`
+	Float64                                [][]Float64                `json:"double,omitempty"`
+	Int                                    [][]int                    `json:"integer,omitempty"`
+	Int64                                  [][]int64                  `json:"long,omitempty"`
+	Keyword                                [][]string                 `json:"keyword,omitempty"`
+}
+
+// MarhsalJSON overrides marshalling for types with additional properties
+func (s TableValuesContainer) MarshalJSON() ([]byte, error) {
+	type opt TableValuesContainer
+	// We transform the struct to a map without the embedded additional properties map
+	tmp := make(map[string]any, 0)
+
+	data, err := json.Marshal(opt(s))
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, &tmp)
+	if err != nil {
+		return nil, err
+	}
+
+	// We inline the additional fields from the underlying map
+	for key, value := range s.AdditionalTableValuesContainerProperty {
+		tmp[fmt.Sprintf("%s", key)] = value
+	}
+	delete(tmp, "AdditionalTableValuesContainerProperty")
+
+	data, err = json.Marshal(tmp)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // NewTableValuesContainer returns a TableValuesContainer.
 func NewTableValuesContainer() *TableValuesContainer {
-	r := &TableValuesContainer{}
+	r := &TableValuesContainer{
+		AdditionalTableValuesContainerProperty: make(map[string]json.RawMessage),
+	}
 
 	return r
 }

@@ -16,12 +16,15 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create a service account token.
 //
 // Create a service accounts token for access without requiring basic
 // authentication.
+//
+// NOTE: Service account tokens never expire.
+// You must actively delete them if they are no longer needed.
 package createservicetoken
 
 import (
@@ -92,6 +95,9 @@ func NewCreateServiceTokenFunc(tp elastictransport.Interface) NewCreateServiceTo
 //
 // Create a service accounts token for access without requiring basic
 // authentication.
+//
+// NOTE: Service account tokens never expire.
+// You must actively delete them if they are no longer needed.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-service-token.html
 func New(tp elastictransport.Interface) *CreateServiceToken {
@@ -344,7 +350,7 @@ func (r *CreateServiceToken) Header(key, value string) *CreateServiceToken {
 	return r
 }
 
-// Namespace An identifier for the namespace
+// Namespace The name of the namespace, which is a top-level grouping of service accounts.
 // API Name: namespace
 func (r *CreateServiceToken) _namespace(namespace string) *CreateServiceToken {
 	r.paramSet |= namespaceMask
@@ -353,7 +359,7 @@ func (r *CreateServiceToken) _namespace(namespace string) *CreateServiceToken {
 	return r
 }
 
-// Service An identifier for the service name
+// Service The name of the service.
 // API Name: service
 func (r *CreateServiceToken) _service(service string) *CreateServiceToken {
 	r.paramSet |= serviceMask
@@ -362,7 +368,18 @@ func (r *CreateServiceToken) _service(service string) *CreateServiceToken {
 	return r
 }
 
-// Name An identifier for the token name
+// Name The name for the service account token.
+// If omitted, a random name will be generated.
+//
+// Token names must be at least one and no more than 256 characters.
+// They can contain alphanumeric characters (a-z, A-Z, 0-9), dashes (`-`), and
+// underscores (`_`), but cannot begin with an underscore.
+//
+// NOTE: Token names must be unique in the context of the associated service
+// account.
+// They must also be globally unique with their fully qualified names, which are
+// comprised of the service account principal and token name, such as
+// `<namespace>/<service>/<token-name>`.
 // API Name: name
 func (r *CreateServiceToken) Name(name string) *CreateServiceToken {
 	r.paramSet |= nameMask

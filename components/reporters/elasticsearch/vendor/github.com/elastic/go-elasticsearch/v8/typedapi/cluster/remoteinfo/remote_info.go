@@ -16,12 +16,24 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get remote cluster information.
-// Get all of the configured remote cluster information.
-// This API returns connection and endpoint information keyed by the configured
+//
+// Get information about configured remote clusters.
+// The API returns connection and endpoint information keyed by the configured
 // remote cluster alias.
+//
+// > info
+// > This API returns information that reflects current state on the local
+// cluster.
+// > The `connected` field does not necessarily reflect whether a remote cluster
+// is down or unavailable, only whether there is currently an open connection to
+// it.
+// > Elasticsearch does not spontaneously try to reconnect to a disconnected
+// remote cluster.
+// > To trigger a reconnection, attempt a cross-cluster search, ES|QL
+// cross-cluster search, or try the `/_resolve/cluster` endpoint.
 package remoteinfo
 
 import (
@@ -72,9 +84,21 @@ func NewRemoteInfoFunc(tp elastictransport.Interface) NewRemoteInfo {
 }
 
 // Get remote cluster information.
-// Get all of the configured remote cluster information.
-// This API returns connection and endpoint information keyed by the configured
+//
+// Get information about configured remote clusters.
+// The API returns connection and endpoint information keyed by the configured
 // remote cluster alias.
+//
+// > info
+// > This API returns information that reflects current state on the local
+// cluster.
+// > The `connected` field does not necessarily reflect whether a remote cluster
+// is down or unavailable, only whether there is currently an open connection to
+// it.
+// > Elasticsearch does not spontaneously try to reconnect to a disconnected
+// remote cluster.
+// > To trigger a reconnection, attempt a cross-cluster search, ES|QL
+// cross-cluster search, or try the `/_resolve/cluster` endpoint.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-remote-info.html
 func New(tp elastictransport.Interface) *RemoteInfo {

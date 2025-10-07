@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -30,11 +30,12 @@ import (
 
 // FieldRule type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/_types/RoleMappingRule.ts#L35-L43
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/_types/RoleMappingRule.ts#L35-L43
 type FieldRule struct {
-	Dn       []string `json:"dn,omitempty"`
-	Groups   []string `json:"groups,omitempty"`
-	Username []string `json:"username,omitempty"`
+	AdditionalFieldRuleProperty map[string]json.RawMessage `json:"-"`
+	Dn                          []string                   `json:"dn,omitempty"`
+	Groups                      []string                   `json:"groups,omitempty"`
+	Username                    []string                   `json:"username,omitempty"`
 }
 
 func (s *FieldRule) UnmarshalJSON(data []byte) error {
@@ -100,14 +101,58 @@ func (s *FieldRule) UnmarshalJSON(data []byte) error {
 				}
 			}
 
+		default:
+
+			if key, ok := t.(string); ok {
+				if s.AdditionalFieldRuleProperty == nil {
+					s.AdditionalFieldRuleProperty = make(map[string]json.RawMessage, 0)
+				}
+				raw := new(json.RawMessage)
+				if err := dec.Decode(&raw); err != nil {
+					return fmt.Errorf("%s | %w", "AdditionalFieldRuleProperty", err)
+				}
+				s.AdditionalFieldRuleProperty[key] = *raw
+			}
+
 		}
 	}
 	return nil
 }
 
+// MarhsalJSON overrides marshalling for types with additional properties
+func (s FieldRule) MarshalJSON() ([]byte, error) {
+	type opt FieldRule
+	// We transform the struct to a map without the embedded additional properties map
+	tmp := make(map[string]any, 0)
+
+	data, err := json.Marshal(opt(s))
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, &tmp)
+	if err != nil {
+		return nil, err
+	}
+
+	// We inline the additional fields from the underlying map
+	for key, value := range s.AdditionalFieldRuleProperty {
+		tmp[fmt.Sprintf("%s", key)] = value
+	}
+	delete(tmp, "AdditionalFieldRuleProperty")
+
+	data, err = json.Marshal(tmp)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 // NewFieldRule returns a FieldRule.
 func NewFieldRule() *FieldRule {
-	r := &FieldRule{}
+	r := &FieldRule{
+		AdditionalFieldRuleProperty: make(map[string]json.RawMessage),
+	}
 
 	return r
 }

@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get auto-follow patterns.
+//
 // Get cross-cluster replication auto-follow patterns.
 package getautofollowpattern
 
@@ -76,6 +77,7 @@ func NewGetAutoFollowPatternFunc(tp elastictransport.Interface) NewGetAutoFollow
 }
 
 // Get auto-follow patterns.
+//
 // Get cross-cluster replication auto-follow patterns.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/ccr-get-auto-follow-pattern.html
@@ -297,12 +299,24 @@ func (r *GetAutoFollowPattern) Header(key, value string) *GetAutoFollowPattern {
 	return r
 }
 
-// Name Specifies the auto-follow pattern collection that you want to retrieve. If
-// you do not specify a name, the API returns information for all collections.
+// Name The auto-follow pattern collection that you want to retrieve.
+// If you do not specify a name, the API returns information for all
+// collections.
 // API Name: name
 func (r *GetAutoFollowPattern) Name(name string) *GetAutoFollowPattern {
 	r.paramSet |= nameMask
 	r.name = name
+
+	return r
+}
+
+// MasterTimeout The period to wait for a connection to the master node.
+// If the master node is not available before the timeout expires, the request
+// fails and returns an error.
+// It can also be set to `-1` to indicate that the request should never timeout.
+// API name: master_timeout
+func (r *GetAutoFollowPattern) MasterTimeout(duration string) *GetAutoFollowPattern {
+	r.values.Set("master_timeout", duration)
 
 	return r
 }

@@ -16,20 +16,36 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package enrollnode
 
 // Response holds the response body struct for the package enrollnode
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/enroll_node/Response.ts#L20-L29
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/enroll_node/Response.ts#L20-L47
 type Response struct {
-	HttpCaCert      string   `json:"http_ca_cert"`
-	HttpCaKey       string   `json:"http_ca_key"`
-	NodesAddresses  []string `json:"nodes_addresses"`
-	TransportCaCert string   `json:"transport_ca_cert"`
-	TransportCert   string   `json:"transport_cert"`
-	TransportKey    string   `json:"transport_key"`
+
+	// HttpCaCert The CA certificate that can be used by the new node in order to sign its
+	// certificate for the HTTP layer, as a Base64 encoded string of the ASN.1 DER
+	// encoding of the certificate.
+	HttpCaCert string `json:"http_ca_cert"`
+	// HttpCaKey The CA private key that can be used by the new node in order to sign its
+	// certificate for the HTTP layer, as a Base64 encoded string of the ASN.1 DER
+	// encoding of the key.
+	HttpCaKey string `json:"http_ca_key"`
+	// NodesAddresses A list of transport addresses in the form of `host:port` for the nodes that
+	// are already members of the cluster.
+	NodesAddresses []string `json:"nodes_addresses"`
+	// TransportCaCert The CA certificate that is used to sign the TLS certificate for the transport
+	// layer, as a Base64 encoded string of the ASN.1 DER encoding of the
+	// certificate.
+	TransportCaCert string `json:"transport_ca_cert"`
+	// TransportCert The certificate that the node can use for TLS for its transport layer, as a
+	// Base64 encoded string of the ASN.1 DER encoding of the certificate.
+	TransportCert string `json:"transport_cert"`
+	// TransportKey The private key that the node can use for TLS for its transport layer, as a
+	// Base64 encoded string of the ASN.1 DER encoding of the key.
+	TransportKey string `json:"transport_key"`
 }
 
 // NewResponse returns a Response

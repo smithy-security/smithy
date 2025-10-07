@@ -16,13 +16,47 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update field mappings.
-// Adds new fields to an existing data stream or index.
-// You can also use this API to change the search settings of existing fields.
+// Add new fields to an existing data stream or index.
+// You can also use this API to change the search settings of existing fields
+// and add new properties to existing object fields.
 // For data streams, these changes are applied to all backing indices by
 // default.
+//
+// **Add multi-fields to an existing field**
+//
+// Multi-fields let you index the same field in different ways.
+// You can use this API to update the fields mapping parameter and enable
+// multi-fields for an existing field.
+// WARNING: If an index (or data stream) contains documents when you add a
+// multi-field, those documents will not have values for the new multi-field.
+// You can populate the new multi-field with the update by query API.
+//
+// **Change supported mapping parameters for an existing field**
+//
+// The documentation for each mapping parameter indicates whether you can update
+// it for an existing field using this API.
+// For example, you can use the update mapping API to update the `ignore_above`
+// parameter.
+//
+// **Change the mapping of an existing field**
+//
+// Except for supported mapping parameters, you can't change the mapping or
+// field type of an existing field.
+// Changing an existing field could invalidate data that's already indexed.
+//
+// If you need to change the mapping of a field in a data stream's backing
+// indices, refer to documentation about modifying data streams.
+// If you need to change the mapping of a field in other indices, create a new
+// index with the correct mapping and reindex your data into that index.
+//
+// **Rename a field**
+//
+// Renaming a field would invalidate data already indexed under the old field
+// name.
+// Instead, add an alias field to create an alternate field name.
 package putmapping
 
 import (
@@ -88,10 +122,44 @@ func NewPutMappingFunc(tp elastictransport.Interface) NewPutMapping {
 }
 
 // Update field mappings.
-// Adds new fields to an existing data stream or index.
-// You can also use this API to change the search settings of existing fields.
+// Add new fields to an existing data stream or index.
+// You can also use this API to change the search settings of existing fields
+// and add new properties to existing object fields.
 // For data streams, these changes are applied to all backing indices by
 // default.
+//
+// **Add multi-fields to an existing field**
+//
+// Multi-fields let you index the same field in different ways.
+// You can use this API to update the fields mapping parameter and enable
+// multi-fields for an existing field.
+// WARNING: If an index (or data stream) contains documents when you add a
+// multi-field, those documents will not have values for the new multi-field.
+// You can populate the new multi-field with the update by query API.
+//
+// **Change supported mapping parameters for an existing field**
+//
+// The documentation for each mapping parameter indicates whether you can update
+// it for an existing field using this API.
+// For example, you can use the update mapping API to update the `ignore_above`
+// parameter.
+//
+// **Change the mapping of an existing field**
+//
+// Except for supported mapping parameters, you can't change the mapping or
+// field type of an existing field.
+// Changing an existing field could invalidate data that's already indexed.
+//
+// If you need to change the mapping of a field in a data stream's backing
+// indices, refer to documentation about modifying data streams.
+// If you need to change the mapping of a field in other indices, create a new
+// index with the correct mapping and reindex your data into that index.
+//
+// **Rename a field**
+//
+// Renaming a field would invalidate data already indexed under the old field
+// name.
+// Instead, add an alias field to create an alternate field name.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html
 func New(tp elastictransport.Interface) *PutMapping {
@@ -101,8 +169,6 @@ func New(tp elastictransport.Interface) *PutMapping {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -338,7 +404,6 @@ func (r *PutMapping) AllowNoIndices(allownoindices bool) *PutMapping {
 // If the request can target data streams, this argument determines whether
 // wildcard expressions match hidden data streams.
 // Supports comma-separated values, such as `open,hidden`.
-// Valid values are: `all`, `open`, `closed`, `hidden`, `none`.
 // API name: expand_wildcards
 func (r *PutMapping) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *PutMapping {
 	tmp := []string{}
@@ -435,6 +500,9 @@ func (r *PutMapping) Pretty(pretty bool) *PutMapping {
 // DateDetection Controls whether dynamic date detection is enabled.
 // API name: date_detection
 func (r *PutMapping) DateDetection(datedetection bool) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.DateDetection = &datedetection
 
 	return r
@@ -443,6 +511,9 @@ func (r *PutMapping) DateDetection(datedetection bool) *PutMapping {
 // Dynamic Controls whether new fields are added dynamically.
 // API name: dynamic
 func (r *PutMapping) Dynamic(dynamic dynamicmapping.DynamicMapping) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Dynamic = &dynamic
 
 	return r
@@ -453,6 +524,9 @@ func (r *PutMapping) Dynamic(dynamic dynamicmapping.DynamicMapping) *PutMapping 
 // a new date field is added instead of string.
 // API name: dynamic_date_formats
 func (r *PutMapping) DynamicDateFormats(dynamicdateformats ...string) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.DynamicDateFormats = dynamicdateformats
 
 	return r
@@ -460,7 +534,10 @@ func (r *PutMapping) DynamicDateFormats(dynamicdateformats ...string) *PutMappin
 
 // DynamicTemplates Specify dynamic templates for the mapping.
 // API name: dynamic_templates
-func (r *PutMapping) DynamicTemplates(dynamictemplates []map[string]types.DynamicTemplate) *PutMapping {
+func (r *PutMapping) DynamicTemplates(dynamictemplates ...map[string]types.DynamicTemplate) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.DynamicTemplates = dynamictemplates
 
 	return r
@@ -469,6 +546,9 @@ func (r *PutMapping) DynamicTemplates(dynamictemplates []map[string]types.Dynami
 // FieldNames_ Control whether field names are enabled for the index.
 // API name: _field_names
 func (r *PutMapping) FieldNames_(fieldnames_ *types.FieldNamesField) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.FieldNames_ = fieldnames_
 
@@ -480,6 +560,9 @@ func (r *PutMapping) FieldNames_(fieldnames_ *types.FieldNamesField) *PutMapping
 // application-specific metadata.
 // API name: _meta
 func (r *PutMapping) Meta_(metadata types.Metadata) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Meta_ = metadata
 
 	return r
@@ -488,6 +571,9 @@ func (r *PutMapping) Meta_(metadata types.Metadata) *PutMapping {
 // NumericDetection Automatically map strings into numeric data types for all fields.
 // API name: numeric_detection
 func (r *PutMapping) NumericDetection(numericdetection bool) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.NumericDetection = &numericdetection
 
 	return r
@@ -500,6 +586,9 @@ func (r *PutMapping) NumericDetection(numericdetection bool) *PutMapping {
 // - Mapping parameters
 // API name: properties
 func (r *PutMapping) Properties(properties map[string]types.Property) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Properties = properties
 
@@ -509,6 +598,9 @@ func (r *PutMapping) Properties(properties map[string]types.Property) *PutMappin
 // Routing_ Enable making a routing value required on indexed documents.
 // API name: _routing
 func (r *PutMapping) Routing_(routing_ *types.RoutingField) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Routing_ = routing_
 
@@ -518,6 +610,9 @@ func (r *PutMapping) Routing_(routing_ *types.RoutingField) *PutMapping {
 // Runtime Mapping of runtime fields for the index.
 // API name: runtime
 func (r *PutMapping) Runtime(runtimefields types.RuntimeFields) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Runtime = runtimefields
 
 	return r
@@ -526,6 +621,9 @@ func (r *PutMapping) Runtime(runtimefields types.RuntimeFields) *PutMapping {
 // Source_ Control whether the _source field is enabled on the index.
 // API name: _source
 func (r *PutMapping) Source_(source_ *types.SourceField) *PutMapping {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Source_ = source_
 

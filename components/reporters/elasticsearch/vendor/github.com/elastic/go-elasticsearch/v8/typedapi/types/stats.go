@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -33,7 +33,7 @@ import (
 
 // Stats type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/nodes/_types/Stats.ts#L30-L114
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/nodes/_types/Stats.ts#L30-L114
 type Stats struct {
 	// AdaptiveSelection Statistics about adaptive replica selection.
 	AdaptiveSelection map[string]AdaptiveSelection `json:"adaptive_selection,omitempty"`
@@ -270,11 +270,11 @@ func (s *Stats) UnmarshalJSON(data []byte) error {
 // NewStats returns a Stats.
 func NewStats() *Stats {
 	r := &Stats{
-		AdaptiveSelection: make(map[string]AdaptiveSelection, 0),
-		Attributes:        make(map[string]string, 0),
-		Breakers:          make(map[string]Breaker, 0),
-		ScriptCache:       make(map[string][]ScriptCache, 0),
-		ThreadPool:        make(map[string]ThreadCount, 0),
+		AdaptiveSelection: make(map[string]AdaptiveSelection),
+		Attributes:        make(map[string]string),
+		Breakers:          make(map[string]Breaker),
+		ScriptCache:       make(map[string][]ScriptCache),
+		ThreadPool:        make(map[string]ThreadCount),
 	}
 
 	return r

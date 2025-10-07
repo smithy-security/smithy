@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package putrole
 
@@ -34,7 +34,7 @@ import (
 
 // Request holds the request body struct for the package putrole
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/put_role/SecurityPutRoleRequest.ts#L32-L102
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/put_role/SecurityPutRoleRequest.ts#L32-L111
 type Request struct {
 
 	// Applications A list of application privilege entries.
@@ -56,6 +56,11 @@ type Request struct {
 	// RemoteCluster A list of remote cluster permissions entries.
 	RemoteCluster []types.RemoteClusterPrivileges `json:"remote_cluster,omitempty"`
 	// RemoteIndices A list of remote indices permissions entries.
+	//
+	// NOTE: Remote indices are effective for remote clusters configured with the
+	// API key based model.
+	// They have no effect for remote clusters configured with the certificate based
+	// model.
 	RemoteIndices []types.RemoteIndicesPrivileges `json:"remote_indices,omitempty"`
 	// RunAs A list of users that the owners of this role can impersonate. *Note*: in
 	// Serverless, the run-as feature is disabled. For API compatibility, you can

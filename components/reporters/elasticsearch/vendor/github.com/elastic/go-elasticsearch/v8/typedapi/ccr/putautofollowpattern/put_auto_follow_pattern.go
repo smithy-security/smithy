@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create or update auto-follow patterns.
 // Create a collection of cross-cluster replication auto-follow patterns for a
@@ -113,8 +113,6 @@ func New(tp elastictransport.Interface) *PutAutoFollowPattern {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -337,6 +335,14 @@ func (r *PutAutoFollowPattern) _name(name string) *PutAutoFollowPattern {
 	return r
 }
 
+// MasterTimeout Period to wait for a connection to the master node.
+// API name: master_timeout
+func (r *PutAutoFollowPattern) MasterTimeout(duration string) *PutAutoFollowPattern {
+	r.values.Set("master_timeout", duration)
+
+	return r
+}
+
 // ErrorTrace When set to `true` Elasticsearch will include the full stack trace of errors
 // when they occur.
 // API name: error_trace
@@ -387,6 +393,9 @@ func (r *PutAutoFollowPattern) Pretty(pretty bool) *PutAutoFollowPattern {
 // to the names of a follower data stream’s backing indices.
 // API name: follow_index_pattern
 func (r *PutAutoFollowPattern) FollowIndexPattern(indexpattern string) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.FollowIndexPattern = &indexpattern
 
 	return r
@@ -398,6 +407,9 @@ func (r *PutAutoFollowPattern) FollowIndexPattern(indexpattern string) *PutAutoF
 // leader_index_exclusion_patterns won’t be followed.
 // API name: leader_index_exclusion_patterns
 func (r *PutAutoFollowPattern) LeaderIndexExclusionPatterns(indexpatterns ...string) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.LeaderIndexExclusionPatterns = indexpatterns
 
 	return r
@@ -407,6 +419,9 @@ func (r *PutAutoFollowPattern) LeaderIndexExclusionPatterns(indexpatterns ...str
 // cluster specified by the remote_cluster field.
 // API name: leader_index_patterns
 func (r *PutAutoFollowPattern) LeaderIndexPatterns(indexpatterns ...string) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.LeaderIndexPatterns = indexpatterns
 
 	return r
@@ -415,6 +430,9 @@ func (r *PutAutoFollowPattern) LeaderIndexPatterns(indexpatterns ...string) *Put
 // MaxOutstandingReadRequests The maximum number of outstanding reads requests from the remote cluster.
 // API name: max_outstanding_read_requests
 func (r *PutAutoFollowPattern) MaxOutstandingReadRequests(maxoutstandingreadrequests int) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxOutstandingReadRequests = &maxoutstandingreadrequests
 
 	return r
@@ -423,6 +441,9 @@ func (r *PutAutoFollowPattern) MaxOutstandingReadRequests(maxoutstandingreadrequ
 // MaxOutstandingWriteRequests The maximum number of outstanding reads requests from the remote cluster.
 // API name: max_outstanding_write_requests
 func (r *PutAutoFollowPattern) MaxOutstandingWriteRequests(maxoutstandingwriterequests int) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxOutstandingWriteRequests = &maxoutstandingwriterequests
 
 	return r
@@ -431,6 +452,9 @@ func (r *PutAutoFollowPattern) MaxOutstandingWriteRequests(maxoutstandingwritere
 // MaxReadRequestOperationCount The maximum number of operations to pull per read from the remote cluster.
 // API name: max_read_request_operation_count
 func (r *PutAutoFollowPattern) MaxReadRequestOperationCount(maxreadrequestoperationcount int) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxReadRequestOperationCount = &maxreadrequestoperationcount
 
 	return r
@@ -440,6 +464,9 @@ func (r *PutAutoFollowPattern) MaxReadRequestOperationCount(maxreadrequestoperat
 // the remote cluster.
 // API name: max_read_request_size
 func (r *PutAutoFollowPattern) MaxReadRequestSize(bytesize types.ByteSize) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxReadRequestSize = bytesize
 
 	return r
@@ -449,6 +476,9 @@ func (r *PutAutoFollowPattern) MaxReadRequestSize(bytesize types.ByteSize) *PutA
 // exceptionally. An exponential backoff strategy is employed when retrying.
 // API name: max_retry_delay
 func (r *PutAutoFollowPattern) MaxRetryDelay(duration types.Duration) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxRetryDelay = duration
 
 	return r
@@ -459,6 +489,9 @@ func (r *PutAutoFollowPattern) MaxRetryDelay(duration types.Duration) *PutAutoFo
 // number of queued operations goes below the limit.
 // API name: max_write_buffer_count
 func (r *PutAutoFollowPattern) MaxWriteBufferCount(maxwritebuffercount int) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxWriteBufferCount = &maxwritebuffercount
 
 	return r
@@ -469,6 +502,9 @@ func (r *PutAutoFollowPattern) MaxWriteBufferCount(maxwritebuffercount int) *Put
 // the total bytes of queued operations goes below the limit.
 // API name: max_write_buffer_size
 func (r *PutAutoFollowPattern) MaxWriteBufferSize(bytesize types.ByteSize) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxWriteBufferSize = bytesize
 
 	return r
@@ -478,6 +514,9 @@ func (r *PutAutoFollowPattern) MaxWriteBufferSize(bytesize types.ByteSize) *PutA
 // follower.
 // API name: max_write_request_operation_count
 func (r *PutAutoFollowPattern) MaxWriteRequestOperationCount(maxwriterequestoperationcount int) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxWriteRequestOperationCount = &maxwriterequestoperationcount
 
 	return r
@@ -487,6 +526,9 @@ func (r *PutAutoFollowPattern) MaxWriteRequestOperationCount(maxwriterequestoper
 // follower.
 // API name: max_write_request_size
 func (r *PutAutoFollowPattern) MaxWriteRequestSize(bytesize types.ByteSize) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxWriteRequestSize = bytesize
 
 	return r
@@ -499,6 +541,9 @@ func (r *PutAutoFollowPattern) MaxWriteRequestSize(bytesize types.ByteSize) *Put
 // from the leader again.
 // API name: read_poll_timeout
 func (r *PutAutoFollowPattern) ReadPollTimeout(duration types.Duration) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ReadPollTimeout = duration
 
 	return r
@@ -507,6 +552,9 @@ func (r *PutAutoFollowPattern) ReadPollTimeout(duration types.Duration) *PutAuto
 // RemoteCluster The remote cluster containing the leader indices to match against.
 // API name: remote_cluster
 func (r *PutAutoFollowPattern) RemoteCluster(remotecluster string) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RemoteCluster = remotecluster
 
@@ -517,6 +565,9 @@ func (r *PutAutoFollowPattern) RemoteCluster(remotecluster string) *PutAutoFollo
 // not be overrode (e.g., index.number_of_shards).
 // API name: settings
 func (r *PutAutoFollowPattern) Settings(settings map[string]json.RawMessage) *PutAutoFollowPattern {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 

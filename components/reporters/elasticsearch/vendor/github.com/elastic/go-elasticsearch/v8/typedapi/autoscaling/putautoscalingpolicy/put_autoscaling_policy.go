@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create or update an autoscaling policy.
 //
@@ -99,8 +99,6 @@ func New(tp elastictransport.Interface) *PutAutoscalingPolicy {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -389,6 +387,9 @@ func (r *PutAutoscalingPolicy) Pretty(pretty bool) *PutAutoscalingPolicy {
 // Deciders Decider settings.
 // API name: deciders
 func (r *PutAutoscalingPolicy) Deciders(deciders map[string]json.RawMessage) *PutAutoscalingPolicy {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Deciders = deciders
 
@@ -397,6 +398,9 @@ func (r *PutAutoscalingPolicy) Deciders(deciders map[string]json.RawMessage) *Pu
 
 // API name: roles
 func (r *PutAutoscalingPolicy) Roles(roles ...string) *PutAutoscalingPolicy {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Roles = roles
 
 	return r

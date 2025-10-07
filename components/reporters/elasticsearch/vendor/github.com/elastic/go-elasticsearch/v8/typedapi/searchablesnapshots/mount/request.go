@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package mount
 
@@ -30,12 +30,20 @@ import (
 
 // Request holds the request body struct for the package mount
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/searchable_snapshots/mount/SearchableSnapshotsMountRequest.ts#L26-L49
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/searchable_snapshots/mount/SearchableSnapshotsMountRequest.ts#L26-L92
 type Request struct {
-	IgnoreIndexSettings []string                   `json:"ignore_index_settings,omitempty"`
-	Index               string                     `json:"index"`
-	IndexSettings       map[string]json.RawMessage `json:"index_settings,omitempty"`
-	RenamedIndex        *string                    `json:"renamed_index,omitempty"`
+
+	// IgnoreIndexSettings The names of settings that should be removed from the index when it is
+	// mounted.
+	IgnoreIndexSettings []string `json:"ignore_index_settings,omitempty"`
+	// Index The name of the index contained in the snapshot whose data is to be mounted.
+	// If no `renamed_index` is specified, this name will also be used to create the
+	// new index.
+	Index string `json:"index"`
+	// IndexSettings The settings that should be added to the index when it is mounted.
+	IndexSettings map[string]json.RawMessage `json:"index_settings,omitempty"`
+	// RenamedIndex The name of the index that will be created.
+	RenamedIndex *string `json:"renamed_index,omitempty"`
 }
 
 // NewRequest returns a Request

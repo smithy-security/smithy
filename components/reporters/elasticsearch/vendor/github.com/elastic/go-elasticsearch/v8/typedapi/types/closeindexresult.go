@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // CloseIndexResult type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/indices/close/CloseIndexResponse.ts#L32-L35
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/indices/close/CloseIndexResponse.ts#L32-L35
 type CloseIndexResult struct {
 	Closed bool                        `json:"closed"`
 	Shards map[string]CloseShardResult `json:"shards,omitempty"`
@@ -82,7 +82,7 @@ func (s *CloseIndexResult) UnmarshalJSON(data []byte) error {
 // NewCloseIndexResult returns a CloseIndexResult.
 func NewCloseIndexResult() *CloseIndexResult {
 	r := &CloseIndexResult{
-		Shards: make(map[string]CloseShardResult, 0),
+		Shards: make(map[string]CloseShardResult),
 	}
 
 	return r

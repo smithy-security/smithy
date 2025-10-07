@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // GrokProcessor type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ingest/_types/Processors.ts#L950-L981
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ingest/_types/Processors.ts#L950-L981
 type GrokProcessor struct {
 	// Description Description of the processor.
 	// Useful for describing the purpose of the processor or its configuration.
@@ -202,7 +202,7 @@ func (s *GrokProcessor) UnmarshalJSON(data []byte) error {
 // NewGrokProcessor returns a GrokProcessor.
 func NewGrokProcessor() *GrokProcessor {
 	r := &GrokProcessor{
-		PatternDefinitions: make(map[string]string, 0),
+		PatternDefinitions: make(map[string]string),
 	}
 
 	return r

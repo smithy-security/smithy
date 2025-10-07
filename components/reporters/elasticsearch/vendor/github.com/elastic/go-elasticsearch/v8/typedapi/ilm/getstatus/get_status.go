@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get the ILM status.
+//
 // Get the current index lifecycle management status.
 package getstatus
 
@@ -70,6 +71,7 @@ func NewGetStatusFunc(tp elastictransport.Interface) NewGetStatus {
 }
 
 // Get the ILM status.
+//
 // Get the current index lifecycle management status.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/ilm-get-status.html

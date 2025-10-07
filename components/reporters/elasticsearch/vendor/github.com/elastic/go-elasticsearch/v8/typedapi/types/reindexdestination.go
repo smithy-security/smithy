@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -34,20 +34,26 @@ import (
 
 // ReindexDestination type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/reindex/types.ts#L39-L64
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/reindex/types.ts#L39-L67
 type ReindexDestination struct {
 	// Index The name of the data stream, index, or index alias you are copying to.
 	Index string `json:"index"`
-	// OpType Set to `create` to only index documents that do not already exist.
-	// Important: To reindex to a data stream destination, this argument must be
+	// OpType If it is `create`, the operation will only index documents that do not
+	// already exist (also known as "put if absent").
+	//
+	// IMPORTANT: To reindex to a data stream destination, this argument must be
 	// `create`.
 	OpType *optype.OpType `json:"op_type,omitempty"`
 	// Pipeline The name of the pipeline to use.
 	Pipeline *string `json:"pipeline,omitempty"`
-	// Routing By default, a document's routing is preserved unless it’s changed by the
+	// Routing By default, a document's routing is preserved unless it's changed by the
 	// script.
-	// Set to `discard` to set routing to `null`,  or `=value` to route using the
-	// specified `value`.
+	// If it is `keep`, the routing on the bulk request sent for each match is set
+	// to the routing on the match.
+	// If it is `discard`, the routing on the bulk request sent for each match is
+	// set to `null`.
+	// If it is `=value`, the routing on the bulk request sent for each match is set
+	// to all value specified after the equals sign (`=`).
 	Routing *string `json:"routing,omitempty"`
 	// VersionType The versioning to use for the indexing operation.
 	VersionType *versiontype.VersionType `json:"version_type,omitempty"`

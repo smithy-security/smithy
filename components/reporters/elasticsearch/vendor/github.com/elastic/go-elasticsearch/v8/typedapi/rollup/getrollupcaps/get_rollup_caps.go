@@ -16,10 +16,21 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Returns the capabilities of any rollup jobs that have been configured for a
+// Get the rollup job capabilities.
+// Get the capabilities of any rollup jobs that have been configured for a
 // specific index or index pattern.
+//
+// This API is useful because a rollup job is often configured to rollup only a
+// subset of fields from the source index.
+// Furthermore, only certain aggregations can be configured for various fields,
+// leading to a limited subset of functionality depending on that configuration.
+// This API enables you to inspect an index and determine:
+//
+// 1. Does this index have associated rollup data somewhere in the cluster?
+// 2. If yes to the first question, what fields were rolled up, what
+// aggregations can be performed, and where does the data live?
 package getrollupcaps
 
 import (
@@ -75,8 +86,19 @@ func NewGetRollupCapsFunc(tp elastictransport.Interface) NewGetRollupCaps {
 	}
 }
 
-// Returns the capabilities of any rollup jobs that have been configured for a
+// Get the rollup job capabilities.
+// Get the capabilities of any rollup jobs that have been configured for a
 // specific index or index pattern.
+//
+// This API is useful because a rollup job is often configured to rollup only a
+// subset of fields from the source index.
+// Furthermore, only certain aggregations can be configured for various fields,
+// leading to a limited subset of functionality depending on that configuration.
+// This API enables you to inspect an index and determine:
+//
+// 1. Does this index have associated rollup data somewhere in the cluster?
+// 2. If yes to the first question, what fields were rolled up, what
+// aggregations can be performed, and where does the data live?
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/rollup-get-rollup-caps.html
 func New(tp elastictransport.Interface) *GetRollupCaps {

@@ -16,10 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Clones indices from one snapshot into another snapshot in the same
-// repository.
+// Clone a snapshot.
+// Clone part of all of a snapshot into another snapshot in the same repository.
 package clone
 
 import (
@@ -92,10 +92,10 @@ func NewCloneFunc(tp elastictransport.Interface) NewClone {
 	}
 }
 
-// Clones indices from one snapshot into another snapshot in the same
-// repository.
+// Clone a snapshot.
+// Clone part of all of a snapshot into another snapshot in the same repository.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/clone-snapshot-api.html
 func New(tp elastictransport.Interface) *Clone {
 	r := &Clone{
 		transport: tp,
@@ -103,8 +103,6 @@ func New(tp elastictransport.Interface) *Clone {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -365,13 +363,6 @@ func (r *Clone) MasterTimeout(duration string) *Clone {
 	return r
 }
 
-// API name: timeout
-func (r *Clone) Timeout(duration string) *Clone {
-	r.values.Set("timeout", duration)
-
-	return r
-}
-
 // ErrorTrace When set to `true` Elasticsearch will include the full stack trace of errors
 // when they occur.
 // API name: error_trace
@@ -418,6 +409,9 @@ func (r *Clone) Pretty(pretty bool) *Clone {
 
 // API name: indices
 func (r *Clone) Indices(indices string) *Clone {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Indices = indices
 

@@ -16,11 +16,13 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Disable users.
 //
 // Disable users in the native realm.
+// By default, when you create users, they are enabled.
+// You can use this API to revoke a user's access to Elasticsearch.
 package disableuser
 
 import (
@@ -82,6 +84,8 @@ func NewDisableUserFunc(tp elastictransport.Interface) NewDisableUser {
 // Disable users.
 //
 // Disable users in the native realm.
+// By default, when you create users, they are enabled.
+// You can use this API to revoke a user's access to Elasticsearch.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-disable-user.html
 func New(tp elastictransport.Interface) *DisableUser {
@@ -297,7 +301,7 @@ func (r *DisableUser) Header(key, value string) *DisableUser {
 	return r
 }
 
-// Username The username of the user to disable
+// Username An identifier for the user.
 // API Name: username
 func (r *DisableUser) _username(username string) *DisableUser {
 	r.paramSet |= usernameMask

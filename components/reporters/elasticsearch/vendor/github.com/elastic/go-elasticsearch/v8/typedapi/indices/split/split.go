@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Split an index.
 // Split an index into a new index with more primary shards.
@@ -24,6 +24,18 @@
 //
 // * The index must be read-only.
 // * The cluster health status must be green.
+//
+// You can do make an index read-only with the following request using the add
+// index block API:
+//
+// ```
+// PUT /my_source_index/_block/write
+// ```
+//
+// The current write index on a data stream cannot be split.
+// In order to split the current write index, the data stream must first be
+// rolled over so that a new write index is created and then the previous write
+// index can be split.
 //
 // The number of times the index can be split (and the number of shards that
 // each original shard can be split into) is determined by the
@@ -128,6 +140,18 @@ func NewSplitFunc(tp elastictransport.Interface) NewSplit {
 // * The index must be read-only.
 // * The cluster health status must be green.
 //
+// You can do make an index read-only with the following request using the add
+// index block API:
+//
+// ```
+// PUT /my_source_index/_block/write
+// ```
+//
+// The current write index on a data stream cannot be split.
+// In order to split the current write index, the data stream must first be
+// rolled over so that a new write index is created and then the previous write
+// index can be split.
+//
 // The number of times the index can be split (and the number of shards that
 // each original shard can be split into) is determined by the
 // `index.number_of_routing_shards` setting.
@@ -166,8 +190,6 @@ func New(tp elastictransport.Interface) *Split {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -481,6 +503,9 @@ func (r *Split) Pretty(pretty bool) *Split {
 // Aliases Aliases for the resulting index.
 // API name: aliases
 func (r *Split) Aliases(aliases map[string]types.Alias) *Split {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Aliases = aliases
 
@@ -490,6 +515,9 @@ func (r *Split) Aliases(aliases map[string]types.Alias) *Split {
 // Settings Configuration options for the target index.
 // API name: settings
 func (r *Split) Settings(settings map[string]json.RawMessage) *Split {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 

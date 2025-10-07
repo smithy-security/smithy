@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package datastreamsstats
 
@@ -26,7 +26,7 @@ import (
 
 // Response holds the response body struct for the package datastreamsstats
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/indices/data_streams_stats/IndicesDataStreamsStatsResponse.ts#L25-L43
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/indices/data_streams_stats/IndicesDataStreamsStatsResponse.ts#L25-L43
 type Response struct {
 
 	// BackingIndices Total number of backing indices for the selected data streams.

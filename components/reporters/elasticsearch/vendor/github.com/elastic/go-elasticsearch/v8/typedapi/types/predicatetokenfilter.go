@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -30,8 +30,10 @@ import (
 
 // PredicateTokenFilter type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/analysis/token_filters.ts#L297-L300
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/analysis/token_filters.ts#L397-L401
 type PredicateTokenFilter struct {
+	// Script Script containing a condition used to filter incoming tokens. Only tokens
+	// that match this script are included in the output.
 	Script  Script  `json:"script"`
 	Type    string  `json:"type,omitempty"`
 	Version *string `json:"version,omitempty"`

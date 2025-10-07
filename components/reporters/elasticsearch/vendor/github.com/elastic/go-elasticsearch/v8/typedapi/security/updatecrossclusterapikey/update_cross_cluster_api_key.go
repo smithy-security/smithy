@@ -16,12 +16,33 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update a cross-cluster API key.
 //
 // Update the attributes of an existing cross-cluster API key, which is used for
 // API key based remote cluster access.
+//
+// To use this API, you must have at least the `manage_security` cluster
+// privilege.
+// Users can only update API keys that they created.
+// To update another user's API key, use the `run_as` feature to submit a
+// request on behalf of another user.
+//
+// IMPORTANT: It's not possible to use an API key as the authentication
+// credential for this API.
+// To update an API key, the owner user's credentials are required.
+//
+// It's not possible to update expired API keys, or API keys that have been
+// invalidated by the invalidate API key API.
+//
+// This API supports updates to an API key's access scope, metadata, and
+// expiration.
+// The owner user's information, such as the `username` and `realm`, is also
+// updated automatically on every call.
+//
+// NOTE: This API cannot update REST API keys, which should be updated by either
+// the update API key or bulk update API keys API.
 package updatecrossclusterapikey
 
 import (
@@ -89,6 +110,27 @@ func NewUpdateCrossClusterApiKeyFunc(tp elastictransport.Interface) NewUpdateCro
 // Update the attributes of an existing cross-cluster API key, which is used for
 // API key based remote cluster access.
 //
+// To use this API, you must have at least the `manage_security` cluster
+// privilege.
+// Users can only update API keys that they created.
+// To update another user's API key, use the `run_as` feature to submit a
+// request on behalf of another user.
+//
+// IMPORTANT: It's not possible to use an API key as the authentication
+// credential for this API.
+// To update an API key, the owner user's credentials are required.
+//
+// It's not possible to update expired API keys, or API keys that have been
+// invalidated by the invalidate API key API.
+//
+// This API supports updates to an API key's access scope, metadata, and
+// expiration.
+// The owner user's information, such as the `username` and `realm`, is also
+// updated automatically on every call.
+//
+// NOTE: This API cannot update REST API keys, which should be updated by either
+// the update API key or bulk update API keys API.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-update-cross-cluster-api-key.html
 func New(tp elastictransport.Interface) *UpdateCrossClusterApiKey {
 	r := &UpdateCrossClusterApiKey{
@@ -97,8 +139,6 @@ func New(tp elastictransport.Interface) *UpdateCrossClusterApiKey {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -375,17 +415,23 @@ func (r *UpdateCrossClusterApiKey) Pretty(pretty bool) *UpdateCrossClusterApiKey
 // assigned access.
 // API name: access
 func (r *UpdateCrossClusterApiKey) Access(access *types.Access) *UpdateCrossClusterApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Access = *access
 
 	return r
 }
 
-// Expiration Expiration time for the API key.
+// Expiration The expiration time for the API key.
 // By default, API keys never expire. This property can be omitted to leave the
 // value unchanged.
 // API name: expiration
 func (r *UpdateCrossClusterApiKey) Expiration(duration types.Duration) *UpdateCrossClusterApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Expiration = duration
 
 	return r
@@ -399,6 +445,9 @@ func (r *UpdateCrossClusterApiKey) Expiration(duration types.Duration) *UpdateCr
 // associated with the API key.
 // API name: metadata
 func (r *UpdateCrossClusterApiKey) Metadata(metadata types.Metadata) *UpdateCrossClusterApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Metadata = metadata
 
 	return r

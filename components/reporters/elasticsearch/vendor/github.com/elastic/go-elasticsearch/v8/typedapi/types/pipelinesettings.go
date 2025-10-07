@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // PipelineSettings type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/logstash/_types/Pipeline.ts#L28-L59
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/logstash/_types/Pipeline.ts#L28-L55
 type PipelineSettings struct {
 	// PipelineBatchDelay When creating pipeline event batches, how long in milliseconds to wait for
 	// each event before dispatching an undersized batch to pipeline workers.
@@ -45,11 +45,8 @@ type PipelineSettings struct {
 	// QueueCheckpointWrites The maximum number of written events before forcing a checkpoint when
 	// persistent queues are enabled (`queue.type: persisted`).
 	QueueCheckpointWrites int `json:"queue.checkpoint.writes"`
-	// QueueMaxBytesNumber The total capacity of the queue (`queue.type: persisted`) in number of bytes.
-	QueueMaxBytesNumber int `json:"queue.max_bytes.number"`
-	// QueueMaxBytesUnits The total capacity of the queue (`queue.type: persisted`) in terms of units
-	// of bytes.
-	QueueMaxBytesUnits string `json:"queue.max_bytes.units"`
+	// QueueMaxBytes The total capacity of the queue (`queue.type: persisted`) in number of bytes.
+	QueueMaxBytes string `json:"queue.max_bytes"`
 	// QueueType The internal queuing model to use for event buffering.
 	QueueType string `json:"queue.type"`
 }
@@ -133,33 +130,17 @@ func (s *PipelineSettings) UnmarshalJSON(data []byte) error {
 				s.QueueCheckpointWrites = f
 			}
 
-		case "queue.max_bytes.number":
-
-			var tmp any
-			dec.Decode(&tmp)
-			switch v := tmp.(type) {
-			case string:
-				value, err := strconv.Atoi(v)
-				if err != nil {
-					return fmt.Errorf("%s | %w", "QueueMaxBytesNumber", err)
-				}
-				s.QueueMaxBytesNumber = value
-			case float64:
-				f := int(v)
-				s.QueueMaxBytesNumber = f
-			}
-
-		case "queue.max_bytes.units":
+		case "queue.max_bytes":
 			var tmp json.RawMessage
 			if err := dec.Decode(&tmp); err != nil {
-				return fmt.Errorf("%s | %w", "QueueMaxBytesUnits", err)
+				return fmt.Errorf("%s | %w", "QueueMaxBytes", err)
 			}
 			o := string(tmp[:])
 			o, err = strconv.Unquote(o)
 			if err != nil {
 				o = string(tmp[:])
 			}
-			s.QueueMaxBytesUnits = o
+			s.QueueMaxBytes = o
 
 		case "queue.type":
 			var tmp json.RawMessage

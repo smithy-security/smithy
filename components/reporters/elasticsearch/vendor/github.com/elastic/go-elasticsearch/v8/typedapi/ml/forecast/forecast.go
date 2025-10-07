@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Predict future behavior of a time series.
 //
@@ -101,8 +101,6 @@ func New(tp elastictransport.Interface) *Forecast {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -375,6 +373,9 @@ func (r *Forecast) Pretty(pretty bool) *Forecast {
 // Duration Refer to the description for the `duration` query parameter.
 // API name: duration
 func (r *Forecast) Duration(duration types.Duration) *Forecast {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Duration = duration
 
 	return r
@@ -383,6 +384,9 @@ func (r *Forecast) Duration(duration types.Duration) *Forecast {
 // ExpiresIn Refer to the description for the `expires_in` query parameter.
 // API name: expires_in
 func (r *Forecast) ExpiresIn(duration types.Duration) *Forecast {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ExpiresIn = duration
 
 	return r
@@ -391,6 +395,9 @@ func (r *Forecast) ExpiresIn(duration types.Duration) *Forecast {
 // MaxModelMemory Refer to the description for the `max_model_memory` query parameter.
 // API name: max_model_memory
 func (r *Forecast) MaxModelMemory(maxmodelmemory string) *Forecast {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.MaxModelMemory = &maxmodelmemory
 

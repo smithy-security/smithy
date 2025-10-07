@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,10 +31,11 @@ import (
 
 // FielddataStats type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/Stats.ts#L111-L116
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/Stats.ts#L123-L129
 type FielddataStats struct {
 	Evictions         *int64                      `json:"evictions,omitempty"`
 	Fields            map[string]FieldMemoryUsage `json:"fields,omitempty"`
+	GlobalOrdinals    GlobalOrdinalsStats         `json:"global_ordinals"`
 	MemorySize        ByteSize                    `json:"memory_size,omitempty"`
 	MemorySizeInBytes int64                       `json:"memory_size_in_bytes"`
 }
@@ -77,6 +78,11 @@ func (s *FielddataStats) UnmarshalJSON(data []byte) error {
 				return fmt.Errorf("%s | %w", "Fields", err)
 			}
 
+		case "global_ordinals":
+			if err := dec.Decode(&s.GlobalOrdinals); err != nil {
+				return fmt.Errorf("%s | %w", "GlobalOrdinals", err)
+			}
+
 		case "memory_size":
 			if err := dec.Decode(&s.MemorySize); err != nil {
 				return fmt.Errorf("%s | %w", "MemorySize", err)
@@ -105,7 +111,7 @@ func (s *FielddataStats) UnmarshalJSON(data []byte) error {
 // NewFielddataStats returns a FielddataStats.
 func NewFielddataStats() *FielddataStats {
 	r := &FielddataStats{
-		Fields: make(map[string]FieldMemoryUsage, 0),
+		Fields: make(map[string]FieldMemoryUsage),
 	}
 
 	return r

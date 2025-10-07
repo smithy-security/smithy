@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,9 +31,13 @@ import (
 
 // LengthTokenFilter type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/analysis/token_filters.ts#L244-L248
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/analysis/token_filters.ts#L328-L334
 type LengthTokenFilter struct {
-	Max     *int    `json:"max,omitempty"`
+	// Max Maximum character length of a token. Longer tokens are excluded from the
+	// output. Defaults to `Integer.MAX_VALUE`, which is `2^31-1` or `2147483647`.
+	Max *int `json:"max,omitempty"`
+	// Min Minimum character length of a token. Shorter tokens are excluded from the
+	// output. Defaults to `0`.
 	Min     *int    `json:"min,omitempty"`
 	Type    string  `json:"type,omitempty"`
 	Version *string `json:"version,omitempty"`

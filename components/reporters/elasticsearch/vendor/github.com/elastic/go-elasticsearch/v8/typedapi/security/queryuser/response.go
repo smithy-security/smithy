@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package queryuser
 
@@ -26,14 +26,14 @@ import (
 
 // Response holds the response body struct for the package queryuser
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/query_user/SecurityQueryUserResponse.ts#L23-L38
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/query_user/SecurityQueryUserResponse.ts#L23-L38
 type Response struct {
 
 	// Count The number of users returned in the response.
 	Count int `json:"count"`
 	// Total The total number of users found.
 	Total int `json:"total"`
-	// Users A list of user information.
+	// Users A list of users that match the query.
 	Users []types.QueryUser `json:"users"`
 }
 

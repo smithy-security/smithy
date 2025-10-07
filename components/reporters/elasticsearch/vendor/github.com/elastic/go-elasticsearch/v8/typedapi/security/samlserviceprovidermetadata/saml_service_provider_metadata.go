@@ -16,11 +16,16 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create SAML service provider metadata.
 //
 // Generate SAML metadata for a SAML 2.0 Service Provider.
+//
+// The SAML 2.0 specification provides a mechanism for Service Providers to
+// describe their capabilities and configuration using a metadata file.
+// This API generates Service Provider metadata based on the configuration of a
+// SAML realm in Elasticsearch.
 package samlserviceprovidermetadata
 
 import (
@@ -81,6 +86,11 @@ func NewSamlServiceProviderMetadataFunc(tp elastictransport.Interface) NewSamlSe
 // Create SAML service provider metadata.
 //
 // Generate SAML metadata for a SAML 2.0 Service Provider.
+//
+// The SAML 2.0 specification provides a mechanism for Service Providers to
+// describe their capabilities and configuration using a metadata file.
+// This API generates Service Provider metadata based on the configuration of a
+// SAML realm in Elasticsearch.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-saml-sp-metadata.html
 func New(tp elastictransport.Interface) *SamlServiceProviderMetadata {

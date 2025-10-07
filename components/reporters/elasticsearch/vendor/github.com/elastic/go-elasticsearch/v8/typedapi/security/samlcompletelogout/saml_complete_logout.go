@@ -16,11 +16,26 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Logout of SAML completely.
 //
 // Verifies the logout response sent from the SAML IdP.
+//
+// NOTE: This API is intended for use by custom web applications other than
+// Kibana.
+// If you are using Kibana, refer to the documentation for configuring SAML
+// single-sign-on on the Elastic Stack.
+//
+// The SAML IdP may send a logout response back to the SP after handling the
+// SP-initiated SAML Single Logout.
+// This API verifies the response by ensuring the content is relevant and
+// validating its signature.
+// An empty response is returned if the verification process is successful.
+// The response can be sent by the IdP with either the HTTP-Redirect or the
+// HTTP-Post binding.
+// The caller of this API must prepare the request accordingly so that this API
+// can handle either of them.
 package samlcompletelogout
 
 import (
@@ -78,6 +93,21 @@ func NewSamlCompleteLogoutFunc(tp elastictransport.Interface) NewSamlCompleteLog
 //
 // Verifies the logout response sent from the SAML IdP.
 //
+// NOTE: This API is intended for use by custom web applications other than
+// Kibana.
+// If you are using Kibana, refer to the documentation for configuring SAML
+// single-sign-on on the Elastic Stack.
+//
+// The SAML IdP may send a logout response back to the SP after handling the
+// SP-initiated SAML Single Logout.
+// This API verifies the response by ensuring the content is relevant and
+// validating its signature.
+// An empty response is returned if the verification process is successful.
+// The response can be sent by the IdP with either the HTTP-Redirect or the
+// HTTP-Post binding.
+// The caller of this API must prepare the request accordingly so that this API
+// can handle either of them.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-saml-complete-logout.html
 func New(tp elastictransport.Interface) *SamlCompleteLogout {
 	r := &SamlCompleteLogout{
@@ -86,8 +116,6 @@ func New(tp elastictransport.Interface) *SamlCompleteLogout {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -292,16 +320,22 @@ func (r *SamlCompleteLogout) Pretty(pretty bool) *SamlCompleteLogout {
 // logout response.
 // API name: content
 func (r *SamlCompleteLogout) Content(content string) *SamlCompleteLogout {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Content = &content
 
 	return r
 }
 
-// Ids A json array with all the valid SAML Request Ids that the caller of the API
+// Ids A JSON array with all the valid SAML Request Ids that the caller of the API
 // has for the current user.
 // API name: ids
 func (r *SamlCompleteLogout) Ids(ids ...string) *SamlCompleteLogout {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Ids = ids
 
 	return r
@@ -311,6 +345,9 @@ func (r *SamlCompleteLogout) Ids(ids ...string) *SamlCompleteLogout {
 // this field must be set to the query string of the redirect URI.
 // API name: query_string
 func (r *SamlCompleteLogout) QueryString(querystring string) *SamlCompleteLogout {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.QueryString = &querystring
 
@@ -321,6 +358,9 @@ func (r *SamlCompleteLogout) QueryString(querystring string) *SamlCompleteLogout
 // used to verify the logout response.
 // API name: realm
 func (r *SamlCompleteLogout) Realm(realm string) *SamlCompleteLogout {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Realm = realm
 

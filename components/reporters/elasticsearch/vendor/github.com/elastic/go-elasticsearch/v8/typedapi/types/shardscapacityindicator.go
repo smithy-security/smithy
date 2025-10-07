@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -33,7 +33,7 @@ import (
 
 // ShardsCapacityIndicator type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/health_report/types.ts#L190-L194
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/health_report/types.ts#L191-L195
 type ShardsCapacityIndicator struct {
 	Details   *ShardsCapacityIndicatorDetails             `json:"details,omitempty"`
 	Diagnosis []Diagnosis                                 `json:"diagnosis,omitempty"`

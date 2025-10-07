@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get anomaly records for an anomaly detection job.
 // Records contain the detailed analytical results. They describe the anomalous
@@ -111,8 +111,6 @@ func New(tp elastictransport.Interface) *GetRecords {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -402,6 +400,9 @@ func (r *GetRecords) Pretty(pretty bool) *GetRecords {
 // Desc Refer to the description for the `desc` query parameter.
 // API name: desc
 func (r *GetRecords) Desc(desc bool) *GetRecords {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Desc = &desc
 
 	return r
@@ -410,6 +411,9 @@ func (r *GetRecords) Desc(desc bool) *GetRecords {
 // End Refer to the description for the `end` query parameter.
 // API name: end
 func (r *GetRecords) End(datetime types.DateTime) *GetRecords {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.End = datetime
 
 	return r
@@ -418,6 +422,9 @@ func (r *GetRecords) End(datetime types.DateTime) *GetRecords {
 // ExcludeInterim Refer to the description for the `exclude_interim` query parameter.
 // API name: exclude_interim
 func (r *GetRecords) ExcludeInterim(excludeinterim bool) *GetRecords {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ExcludeInterim = &excludeinterim
 
 	return r
@@ -425,6 +432,9 @@ func (r *GetRecords) ExcludeInterim(excludeinterim bool) *GetRecords {
 
 // API name: page
 func (r *GetRecords) Page(page *types.Page) *GetRecords {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Page = page
 
@@ -434,6 +444,9 @@ func (r *GetRecords) Page(page *types.Page) *GetRecords {
 // RecordScore Refer to the description for the `record_score` query parameter.
 // API name: record_score
 func (r *GetRecords) RecordScore(recordscore types.Float64) *GetRecords {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RecordScore = &recordscore
 
@@ -443,6 +456,9 @@ func (r *GetRecords) RecordScore(recordscore types.Float64) *GetRecords {
 // Sort Refer to the description for the `sort` query parameter.
 // API name: sort
 func (r *GetRecords) Sort(field string) *GetRecords {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Sort = &field
 
 	return r
@@ -451,6 +467,9 @@ func (r *GetRecords) Sort(field string) *GetRecords {
 // Start Refer to the description for the `start` query parameter.
 // API name: start
 func (r *GetRecords) Start(datetime types.DateTime) *GetRecords {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Start = datetime
 
 	return r

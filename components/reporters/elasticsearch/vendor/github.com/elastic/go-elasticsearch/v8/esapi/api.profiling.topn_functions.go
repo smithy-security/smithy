@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -34,7 +34,7 @@ func newProfilingTopnFunctionsFunc(t Transport) ProfilingTopnFunctions {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -61,7 +61,7 @@ type ProfilingTopnFunctionsRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -73,7 +73,7 @@ func (r ProfilingTopnFunctionsRequest) Do(providedCtx context.Context, transport
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "profiling.topn_functions")
 		defer instrument.Close(ctx)
 	}
@@ -107,7 +107,7 @@ func (r ProfilingTopnFunctionsRequest) Do(providedCtx context.Context, transport
 
 	req, err := newRequest(method, path.String(), r.Body)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -141,18 +141,18 @@ func (r ProfilingTopnFunctionsRequest) Do(providedCtx context.Context, transport
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "profiling.topn_functions")
 		if reader := instrument.RecordRequestBody(ctx, "profiling.topn_functions", r.Body); reader != nil {
 			req.Body = reader
 		}
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "profiling.topn_functions")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err

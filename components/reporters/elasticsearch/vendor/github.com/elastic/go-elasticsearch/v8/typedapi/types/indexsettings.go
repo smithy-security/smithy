@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -33,13 +33,13 @@ import (
 
 // IndexSettings type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/indices/_types/IndexSettings.ts#L69-L169
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/indices/_types/IndexSettings.ts#L70-L176
 type IndexSettings struct {
 	Analysis *IndexSettingsAnalysis `json:"analysis,omitempty"`
 	// Analyze Settings to define analyzers, tokenizers, token filters and character
 	// filters.
 	Analyze            *SettingsAnalyze                         `json:"analyze,omitempty"`
-	AutoExpandReplicas *string                                  `json:"auto_expand_replicas,omitempty"`
+	AutoExpandReplicas any                                      `json:"auto_expand_replicas,omitempty"`
 	Blocks             *IndexSettingBlocks                      `json:"blocks,omitempty"`
 	CheckOnStartup     *indexcheckonstartup.IndexCheckOnStartup `json:"check_on_startup,omitempty"`
 	Codec              *string                                  `json:"codec,omitempty"`
@@ -47,9 +47,9 @@ type IndexSettings struct {
 	CreationDateString DateTime                                 `json:"creation_date_string,omitempty"`
 	DefaultPipeline    *string                                  `json:"default_pipeline,omitempty"`
 	FinalPipeline      *string                                  `json:"final_pipeline,omitempty"`
-	Format             string                                   `json:"format,omitempty"`
+	Format             *string                                  `json:"format,omitempty"`
 	GcDeletes          Duration                                 `json:"gc_deletes,omitempty"`
-	Hidden             string                                   `json:"hidden,omitempty"`
+	Hidden             *string                                  `json:"hidden,omitempty"`
 	Highlight          *SettingsHighlight                       `json:"highlight,omitempty"`
 	Index              *IndexSettings                           `json:"index,omitempty"`
 	IndexSettings      map[string]json.RawMessage               `json:"-"`
@@ -73,10 +73,10 @@ type IndexSettings struct {
 	MaxTermsCount           *int                  `json:"max_terms_count,omitempty"`
 	Merge                   *Merge                `json:"merge,omitempty"`
 	Mode                    *string               `json:"mode,omitempty"`
-	NumberOfReplicas        string                `json:"number_of_replicas,omitempty"`
+	NumberOfReplicas        *string               `json:"number_of_replicas,omitempty"`
 	NumberOfRoutingShards   *int                  `json:"number_of_routing_shards,omitempty"`
-	NumberOfShards          string                `json:"number_of_shards,omitempty"`
-	Priority                string                `json:"priority,omitempty"`
+	NumberOfShards          *string               `json:"number_of_shards,omitempty"`
+	Priority                *string               `json:"priority,omitempty"`
 	ProvidedName            *string               `json:"provided_name,omitempty"`
 	Queries                 *Queries              `json:"queries,omitempty"`
 	QueryString             *SettingsQueryString  `json:"query_string,omitempty"`
@@ -98,7 +98,7 @@ type IndexSettings struct {
 	TopMetricsMaxSize   *int                     `json:"top_metrics_max_size,omitempty"`
 	Translog            *Translog                `json:"translog,omitempty"`
 	Uuid                *string                  `json:"uuid,omitempty"`
-	VerifiedBeforeClose string                   `json:"verified_before_close,omitempty"`
+	VerifiedBeforeClose *string                  `json:"verified_before_close,omitempty"`
 	Version             *IndexVersioning         `json:"version,omitempty"`
 }
 
@@ -128,16 +128,9 @@ func (s *IndexSettings) UnmarshalJSON(data []byte) error {
 			}
 
 		case "auto_expand_replicas":
-			var tmp json.RawMessage
-			if err := dec.Decode(&tmp); err != nil {
+			if err := dec.Decode(&s.AutoExpandReplicas); err != nil {
 				return fmt.Errorf("%s | %w", "AutoExpandReplicas", err)
 			}
-			o := string(tmp[:])
-			o, err = strconv.Unquote(o)
-			if err != nil {
-				o = string(tmp[:])
-			}
-			s.AutoExpandReplicas = &o
 
 		case "blocks":
 			if err := dec.Decode(&s.Blocks); err != nil {
@@ -191,7 +184,7 @@ func (s *IndexSettings) UnmarshalJSON(data []byte) error {
 			if err != nil {
 				o = string(tmp[:])
 			}
-			s.Format = o
+			s.Format = &o
 
 		case "gc_deletes":
 			if err := dec.Decode(&s.GcDeletes); err != nil {
@@ -208,7 +201,7 @@ func (s *IndexSettings) UnmarshalJSON(data []byte) error {
 			if err != nil {
 				o = string(tmp[:])
 			}
-			s.Hidden = o
+			s.Hidden = &o
 
 		case "highlight":
 			if err := dec.Decode(&s.Highlight); err != nil {
@@ -457,7 +450,7 @@ func (s *IndexSettings) UnmarshalJSON(data []byte) error {
 			if err != nil {
 				o = string(tmp[:])
 			}
-			s.NumberOfReplicas = o
+			s.NumberOfReplicas = &o
 
 		case "number_of_routing_shards":
 
@@ -485,7 +478,7 @@ func (s *IndexSettings) UnmarshalJSON(data []byte) error {
 			if err != nil {
 				o = string(tmp[:])
 			}
-			s.NumberOfShards = o
+			s.NumberOfShards = &o
 
 		case "priority":
 			var tmp json.RawMessage
@@ -497,7 +490,7 @@ func (s *IndexSettings) UnmarshalJSON(data []byte) error {
 			if err != nil {
 				o = string(tmp[:])
 			}
-			s.Priority = o
+			s.Priority = &o
 
 		case "provided_name":
 			if err := dec.Decode(&s.ProvidedName); err != nil {
@@ -572,55 +565,55 @@ func (s *IndexSettings) UnmarshalJSON(data []byte) error {
 				case "BM25":
 					oo := NewSettingsSimilarityBm25()
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("Similarity | %w", err)
 					}
 					s.Similarity[key] = oo
 				case "boolean":
 					oo := NewSettingsSimilarityBoolean()
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("Similarity | %w", err)
 					}
 					s.Similarity[key] = oo
 				case "DFI":
 					oo := NewSettingsSimilarityDfi()
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("Similarity | %w", err)
 					}
 					s.Similarity[key] = oo
 				case "DFR":
 					oo := NewSettingsSimilarityDfr()
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("Similarity | %w", err)
 					}
 					s.Similarity[key] = oo
 				case "IB":
 					oo := NewSettingsSimilarityIb()
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("Similarity | %w", err)
 					}
 					s.Similarity[key] = oo
 				case "LMDirichlet":
 					oo := NewSettingsSimilarityLmd()
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("Similarity | %w", err)
 					}
 					s.Similarity[key] = oo
 				case "LMJelinekMercer":
 					oo := NewSettingsSimilarityLmj()
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("Similarity | %w", err)
 					}
 					s.Similarity[key] = oo
 				case "scripted":
 					oo := NewSettingsSimilarityScripted()
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("Similarity | %w", err)
 					}
 					s.Similarity[key] = oo
 				default:
 					oo := new(SettingsSimilarity)
 					if err := localDec.Decode(&oo); err != nil {
-						return err
+						return fmt.Errorf("new(SettingsSimilarity) | %w", err)
 					}
 					s.Similarity[key] = oo
 				}
@@ -682,7 +675,7 @@ func (s *IndexSettings) UnmarshalJSON(data []byte) error {
 			if err != nil {
 				o = string(tmp[:])
 			}
-			s.VerifiedBeforeClose = o
+			s.VerifiedBeforeClose = &o
 
 		case "version":
 			if err := dec.Decode(&s.Version); err != nil {
@@ -739,8 +732,8 @@ func (s IndexSettings) MarshalJSON() ([]byte, error) {
 // NewIndexSettings returns a IndexSettings.
 func NewIndexSettings() *IndexSettings {
 	r := &IndexSettings{
-		IndexSettings: make(map[string]json.RawMessage, 0),
-		Similarity:    make(map[string]SettingsSimilarity, 0),
+		IndexSettings: make(map[string]json.RawMessage),
+		Similarity:    make(map[string]SettingsSimilarity),
 	}
 
 	return r

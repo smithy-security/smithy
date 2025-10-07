@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Start the ILM plugin.
 // Start the index lifecycle management plugin if it is currently stopped.
@@ -284,6 +284,8 @@ func (r *Start) Header(key, value string) *Start {
 	return r
 }
 
+// MasterTimeout Period to wait for a connection to the master node. If no response is
+// received before the timeout expires, the request fails and returns an error.
 // API name: master_timeout
 func (r *Start) MasterTimeout(duration string) *Start {
 	r.values.Set("master_timeout", duration)
@@ -291,6 +293,8 @@ func (r *Start) MasterTimeout(duration string) *Start {
 	return r
 }
 
+// Timeout Period to wait for a response. If no response is received before the timeout
+// expires, the request fails and returns an error.
 // API name: timeout
 func (r *Start) Timeout(duration string) *Start {
 	r.values.Set("timeout", duration)

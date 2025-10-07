@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create a cross-cluster API key.
 //
@@ -139,8 +139,6 @@ func New(tp elastictransport.Interface) *CreateCrossClusterApiKey {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -405,6 +403,9 @@ func (r *CreateCrossClusterApiKey) Pretty(pretty bool) *CreateCrossClusterApiKey
 // role descriptor which has relevant privileges assigned accordingly.
 // API name: access
 func (r *CreateCrossClusterApiKey) Access(access *types.Access) *CreateCrossClusterApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Access = *access
 
@@ -415,6 +416,9 @@ func (r *CreateCrossClusterApiKey) Access(access *types.Access) *CreateCrossClus
 // By default, API keys never expire.
 // API name: expiration
 func (r *CreateCrossClusterApiKey) Expiration(duration types.Duration) *CreateCrossClusterApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Expiration = duration
 
 	return r
@@ -426,6 +430,9 @@ func (r *CreateCrossClusterApiKey) Expiration(duration types.Duration) *CreateCr
 // usage.
 // API name: metadata
 func (r *CreateCrossClusterApiKey) Metadata(metadata types.Metadata) *CreateCrossClusterApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Metadata = metadata
 
 	return r
@@ -434,6 +441,9 @@ func (r *CreateCrossClusterApiKey) Metadata(metadata types.Metadata) *CreateCros
 // Name Specifies the name for this API key.
 // API name: name
 func (r *CreateCrossClusterApiKey) Name(name string) *CreateCrossClusterApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Name = name
 
 	return r

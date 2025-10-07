@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -30,7 +30,7 @@ import (
 
 // RankEvalRequestItem type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/rank_eval/types.ts#L98-L109
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/rank_eval/types.ts#L98-L109
 type RankEvalRequestItem struct {
 	// Id The search request’s ID, used to group result details later.
 	Id string `json:"id"`
@@ -95,7 +95,7 @@ func (s *RankEvalRequestItem) UnmarshalJSON(data []byte) error {
 // NewRankEvalRequestItem returns a RankEvalRequestItem.
 func NewRankEvalRequestItem() *RankEvalRequestItem {
 	r := &RankEvalRequestItem{
-		Params: make(map[string]json.RawMessage, 0),
+		Params: make(map[string]json.RawMessage),
 	}
 
 	return r

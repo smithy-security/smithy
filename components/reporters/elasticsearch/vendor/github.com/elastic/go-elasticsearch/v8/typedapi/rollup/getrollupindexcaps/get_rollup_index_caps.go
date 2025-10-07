@@ -16,10 +16,17 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Returns the rollup capabilities of all jobs inside of a rollup index (for
-// example, the index where rollup data is stored).
+// Get the rollup index capabilities.
+// Get the rollup capabilities of all jobs inside of a rollup index.
+// A single rollup index may store the data for multiple rollup jobs and may
+// have a variety of capabilities depending on those jobs. This API enables you
+// to determine:
+//
+// * What jobs are stored in an index (or indices specified via a pattern)?
+// * What target indices were rolled up, what fields were used in those rollups,
+// and what aggregations can be performed on each job?
 package getrollupindexcaps
 
 import (
@@ -77,8 +84,15 @@ func NewGetRollupIndexCapsFunc(tp elastictransport.Interface) NewGetRollupIndexC
 	}
 }
 
-// Returns the rollup capabilities of all jobs inside of a rollup index (for
-// example, the index where rollup data is stored).
+// Get the rollup index capabilities.
+// Get the rollup capabilities of all jobs inside of a rollup index.
+// A single rollup index may store the data for multiple rollup jobs and may
+// have a variety of capabilities depending on those jobs. This API enables you
+// to determine:
+//
+// * What jobs are stored in an index (or indices specified via a pattern)?
+// * What target indices were rolled up, what fields were used in those rollups,
+// and what aggregations can be performed on each job?
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/rollup-get-rollup-index-caps.html
 func New(tp elastictransport.Interface) *GetRollupIndexCaps {

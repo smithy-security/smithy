@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -24,6 +24,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func newIngestDeleteGeoipDatabaseFunc(t Transport) IngestDeleteGeoipDatabase {
@@ -34,7 +35,7 @@ func newIngestDeleteGeoipDatabaseFunc(t Transport) IngestDeleteGeoipDatabase {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -52,6 +53,9 @@ type IngestDeleteGeoipDatabase func(id []string, o ...func(*IngestDeleteGeoipDat
 type IngestDeleteGeoipDatabaseRequest struct {
 	DocumentID []string
 
+	MasterTimeout time.Duration
+	Timeout       time.Duration
+
 	Pretty     bool
 	Human      bool
 	ErrorTrace bool
@@ -61,7 +65,7 @@ type IngestDeleteGeoipDatabaseRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -73,7 +77,7 @@ func (r IngestDeleteGeoipDatabaseRequest) Do(providedCtx context.Context, transp
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "ingest.delete_geoip_database")
 		defer instrument.Close(ctx)
 	}
@@ -97,11 +101,19 @@ func (r IngestDeleteGeoipDatabaseRequest) Do(providedCtx context.Context, transp
 	path.WriteString("database")
 	path.WriteString("/")
 	path.WriteString(strings.Join(r.DocumentID, ","))
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "id", strings.Join(r.DocumentID, ","))
 	}
 
 	params = make(map[string]string)
+
+	if r.MasterTimeout != 0 {
+		params["master_timeout"] = formatDuration(r.MasterTimeout)
+	}
+
+	if r.Timeout != 0 {
+		params["timeout"] = formatDuration(r.Timeout)
+	}
 
 	if r.Pretty {
 		params["pretty"] = "true"
@@ -121,7 +133,7 @@ func (r IngestDeleteGeoipDatabaseRequest) Do(providedCtx context.Context, transp
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -151,15 +163,15 @@ func (r IngestDeleteGeoipDatabaseRequest) Do(providedCtx context.Context, transp
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "ingest.delete_geoip_database")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "ingest.delete_geoip_database")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -178,6 +190,20 @@ func (r IngestDeleteGeoipDatabaseRequest) Do(providedCtx context.Context, transp
 func (f IngestDeleteGeoipDatabase) WithContext(v context.Context) func(*IngestDeleteGeoipDatabaseRequest) {
 	return func(r *IngestDeleteGeoipDatabaseRequest) {
 		r.ctx = v
+	}
+}
+
+// WithMasterTimeout - explicit operation timeout for connection to master node.
+func (f IngestDeleteGeoipDatabase) WithMasterTimeout(v time.Duration) func(*IngestDeleteGeoipDatabaseRequest) {
+	return func(r *IngestDeleteGeoipDatabaseRequest) {
+		r.MasterTimeout = v
+	}
+}
+
+// WithTimeout - explicit operation timeout.
+func (f IngestDeleteGeoipDatabase) WithTimeout(v time.Duration) func(*IngestDeleteGeoipDatabaseRequest) {
+	return func(r *IngestDeleteGeoipDatabaseRequest) {
+		r.Timeout = v
 	}
 }
 

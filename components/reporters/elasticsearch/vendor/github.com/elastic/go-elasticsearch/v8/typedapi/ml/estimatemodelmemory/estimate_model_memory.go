@@ -16,11 +16,13 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Estimate job model memory usage.
-// Makes an estimation of the memory usage for an anomaly detection job model.
-// It is based on analysis configuration details for the job and cardinality
+//
+// Make an estimation of the memory usage for an anomaly detection job model.
+// The estimate is based on analysis configuration details for the job and
+// cardinality
 // estimates for the fields it references.
 package estimatemodelmemory
 
@@ -77,11 +79,13 @@ func NewEstimateModelMemoryFunc(tp elastictransport.Interface) NewEstimateModelM
 }
 
 // Estimate job model memory usage.
-// Makes an estimation of the memory usage for an anomaly detection job model.
-// It is based on analysis configuration details for the job and cardinality
+//
+// Make an estimation of the memory usage for an anomaly detection job model.
+// The estimate is based on analysis configuration details for the job and
+// cardinality
 // estimates for the fields it references.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-apis.html
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-estimate-model-memory.html
 func New(tp elastictransport.Interface) *EstimateModelMemory {
 	r := &EstimateModelMemory{
 		transport: tp,
@@ -89,8 +93,6 @@ func New(tp elastictransport.Interface) *EstimateModelMemory {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -348,6 +350,9 @@ func (r *EstimateModelMemory) Pretty(pretty bool) *EstimateModelMemory {
 // `analysis_config` component of the body of this API.
 // API name: analysis_config
 func (r *EstimateModelMemory) AnalysisConfig(analysisconfig *types.AnalysisConfig) *EstimateModelMemory {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.AnalysisConfig = analysisconfig
 
@@ -361,6 +366,9 @@ func (r *EstimateModelMemory) AnalysisConfig(analysisconfig *types.AnalysisConfi
 // has no effect on the estimation.
 // API name: max_bucket_cardinality
 func (r *EstimateModelMemory) MaxBucketCardinality(maxbucketcardinality map[string]int64) *EstimateModelMemory {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.MaxBucketCardinality = maxbucketcardinality
 
@@ -376,6 +384,9 @@ func (r *EstimateModelMemory) MaxBucketCardinality(maxbucketcardinality map[stri
 // `over_field_name` or `partition_field_name`.
 // API name: overall_cardinality
 func (r *EstimateModelMemory) OverallCardinality(overallcardinality map[string]int64) *EstimateModelMemory {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.OverallCardinality = overallcardinality
 

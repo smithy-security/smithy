@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,13 +31,22 @@ import (
 
 // AutoFollowStats type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ccr/stats/types.ts.ts#L32-L38
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ccr/stats/types.ts.ts#L32-L47
 type AutoFollowStats struct {
-	AutoFollowedClusters                     []AutoFollowedCluster `json:"auto_followed_clusters"`
-	NumberOfFailedFollowIndices              int64                 `json:"number_of_failed_follow_indices"`
-	NumberOfFailedRemoteClusterStateRequests int64                 `json:"number_of_failed_remote_cluster_state_requests"`
-	NumberOfSuccessfulFollowIndices          int64                 `json:"number_of_successful_follow_indices"`
-	RecentAutoFollowErrors                   []ErrorCause          `json:"recent_auto_follow_errors"`
+	AutoFollowedClusters []AutoFollowedCluster `json:"auto_followed_clusters"`
+	// NumberOfFailedFollowIndices The number of indices that the auto-follow coordinator failed to
+	// automatically follow.
+	// The causes of recent failures are captured in the logs of the elected master
+	// node and in the `auto_follow_stats.recent_auto_follow_errors` field.
+	NumberOfFailedFollowIndices int64 `json:"number_of_failed_follow_indices"`
+	// NumberOfFailedRemoteClusterStateRequests The number of times that the auto-follow coordinator failed to retrieve the
+	// cluster state from a remote cluster registered in a collection of auto-follow
+	// patterns.
+	NumberOfFailedRemoteClusterStateRequests int64 `json:"number_of_failed_remote_cluster_state_requests"`
+	// NumberOfSuccessfulFollowIndices The number of indices that the auto-follow coordinator successfully followed.
+	NumberOfSuccessfulFollowIndices int64 `json:"number_of_successful_follow_indices"`
+	// RecentAutoFollowErrors An array of objects representing failures by the auto-follow coordinator.
+	RecentAutoFollowErrors []ErrorCause `json:"recent_auto_follow_errors"`
 }
 
 func (s *AutoFollowStats) UnmarshalJSON(data []byte) error {

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -32,12 +32,14 @@ import (
 
 // KeepTypesTokenFilter type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/analysis/token_filters.ts#L219-L223
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/analysis/token_filters.ts#L287-L293
 type KeepTypesTokenFilter struct {
-	Mode    *keeptypesmode.KeepTypesMode `json:"mode,omitempty"`
-	Type    string                       `json:"type,omitempty"`
-	Types   []string                     `json:"types,omitempty"`
-	Version *string                      `json:"version,omitempty"`
+	// Mode Indicates whether to keep or remove the specified token types.
+	Mode *keeptypesmode.KeepTypesMode `json:"mode,omitempty"`
+	Type string                       `json:"type,omitempty"`
+	// Types List of token types to keep or remove.
+	Types   []string `json:"types"`
+	Version *string  `json:"version,omitempty"`
 }
 
 func (s *KeepTypesTokenFilter) UnmarshalJSON(data []byte) error {

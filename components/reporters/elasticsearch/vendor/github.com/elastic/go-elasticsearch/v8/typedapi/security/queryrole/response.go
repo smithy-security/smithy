@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package queryrole
 
@@ -26,12 +26,19 @@ import (
 
 // Response holds the response body struct for the package queryrole
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/query_role/QueryRolesResponse.ts#L23-L38
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/query_role/QueryRolesResponse.ts#L23-L43
 type Response struct {
 
 	// Count The number of roles returned in the response.
 	Count int `json:"count"`
-	// Roles The list of roles.
+	// Roles A list of roles that match the query.
+	// The returned role format is an extension of the role definition format.
+	// It adds the `transient_metadata.enabled` and the `_sort` fields.
+	// `transient_metadata.enabled` is set to `false` in case the role is
+	// automatically disabled, for example when the role grants privileges that are
+	// not allowed by the installed license.
+	// `_sort` is present when the search query sorts on some field.
+	// It contains the array of values that have been used for sorting.
 	Roles []types.QueryRole `json:"roles"`
 	// Total The total number of roles found.
 	Total int `json:"total"`

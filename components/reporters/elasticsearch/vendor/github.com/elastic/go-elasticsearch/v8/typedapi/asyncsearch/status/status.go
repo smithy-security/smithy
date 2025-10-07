@@ -16,14 +16,17 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get the async search status.
 //
 // Get the status of a previously submitted async search request given its
 // identifier, without retrieving search results.
-// If the Elasticsearch security features are enabled, use of this API is
-// restricted to the `monitoring_user` role.
+// If the Elasticsearch security features are enabled, the access to the status
+// of a specific async search is restricted to:
+//
+// * The user or API key that submitted the original async search request.
+// * Users that have the `monitor` cluster privilege or greater privileges.
 package status
 
 import (
@@ -85,8 +88,11 @@ func NewStatusFunc(tp elastictransport.Interface) NewStatus {
 //
 // Get the status of a previously submitted async search request given its
 // identifier, without retrieving search results.
-// If the Elasticsearch security features are enabled, use of this API is
-// restricted to the `monitoring_user` role.
+// If the Elasticsearch security features are enabled, the access to the status
+// of a specific async search is restricted to:
+//
+// * The user or API key that submitted the original async search request.
+// * Users that have the `monitor` cluster privilege or greater privileges.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/async-search.html
 func New(tp elastictransport.Interface) *Status {
@@ -309,7 +315,7 @@ func (r *Status) _id(id string) *Status {
 	return r
 }
 
-// KeepAlive Specifies how long the async search needs to be available.
+// KeepAlive The length of time that the async search needs to be available.
 // Ongoing async searches and any saved search results are deleted after this
 // period.
 // API name: keep_alive
