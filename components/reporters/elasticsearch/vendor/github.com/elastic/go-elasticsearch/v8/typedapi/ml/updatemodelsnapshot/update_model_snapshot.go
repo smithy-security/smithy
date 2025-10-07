@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update a snapshot.
 // Updates certain properties of a snapshot.
@@ -98,8 +98,6 @@ func New(tp elastictransport.Interface) *UpdateModelSnapshot {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -388,6 +386,9 @@ func (r *UpdateModelSnapshot) Pretty(pretty bool) *UpdateModelSnapshot {
 // Description A description of the model snapshot.
 // API name: description
 func (r *UpdateModelSnapshot) Description(description string) *UpdateModelSnapshot {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -399,6 +400,9 @@ func (r *UpdateModelSnapshot) Description(description string) *UpdateModelSnapsh
 // snapshot will be deleted when the job is deleted.
 // API name: retain
 func (r *UpdateModelSnapshot) Retain(retain bool) *UpdateModelSnapshot {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Retain = &retain
 
 	return r

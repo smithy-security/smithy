@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get follower stats.
+//
 // Get cross-cluster replication follower stats.
 // The API returns shard-level stats about the "following tasks" associated with
 // each shard for the specified indices.
@@ -80,6 +81,7 @@ func NewFollowStatsFunc(tp elastictransport.Interface) NewFollowStats {
 }
 
 // Get follower stats.
+//
 // Get cross-cluster replication follower stats.
 // The API returns shard-level stats about the "following tasks" associated with
 // each shard for the specified indices.
@@ -296,12 +298,21 @@ func (r *FollowStats) Header(key, value string) *FollowStats {
 	return r
 }
 
-// Index A comma-separated list of index patterns; use `_all` to perform the operation
-// on all indices
+// Index A comma-delimited list of index patterns.
 // API Name: index
 func (r *FollowStats) _index(index string) *FollowStats {
 	r.paramSet |= indexMask
 	r.index = index
+
+	return r
+}
+
+// Timeout The period to wait for a response.
+// If no response is received before the timeout expires, the request fails and
+// returns an error.
+// API name: timeout
+func (r *FollowStats) Timeout(duration string) *FollowStats {
+	r.values.Set("timeout", duration)
 
 	return r
 }

@@ -16,9 +16,9 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Validates an anomaly detection detector.
+// Validate an anomaly detection job.
 package validatedetector
 
 import (
@@ -74,9 +74,9 @@ func NewValidateDetectorFunc(tp elastictransport.Interface) NewValidateDetector 
 	}
 }
 
-// Validates an anomaly detection detector.
+// Validate an anomaly detection job.
 //
-// https://www.elastic.co/guide/en/machine-learning/current/ml-jobs.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8
 func New(tp elastictransport.Interface) *ValidateDetector {
 	r := &ValidateDetector{
 		transport: tp,
@@ -84,8 +84,6 @@ func New(tp elastictransport.Interface) *ValidateDetector {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -346,6 +344,9 @@ func (r *ValidateDetector) Pretty(pretty bool) *ValidateDetector {
 // finding unusual values in the context of the split.
 // API name: by_field_name
 func (r *ValidateDetector) ByFieldName(field string) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ByFieldName = &field
 
 	return r
@@ -356,6 +357,9 @@ func (r *ValidateDetector) ByFieldName(field string) *ValidateDetector {
 // refers to custom rules as job rules.
 // API name: custom_rules
 func (r *ValidateDetector) CustomRules(customrules ...types.DetectionRule) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.CustomRules = customrules
 
 	return r
@@ -364,6 +368,9 @@ func (r *ValidateDetector) CustomRules(customrules ...types.DetectionRule) *Vali
 // DetectorDescription A description of the detector.
 // API name: detector_description
 func (r *ValidateDetector) DetectorDescription(detectordescription string) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.DetectorDescription = &detectordescription
 
@@ -375,6 +382,9 @@ func (r *ValidateDetector) DetectorDescription(detectordescription string) *Vali
 // value for this property, it is ignored.
 // API name: detector_index
 func (r *ValidateDetector) DetectorIndex(detectorindex int) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.DetectorIndex = &detectorindex
 
 	return r
@@ -386,6 +396,9 @@ func (r *ValidateDetector) DetectorIndex(detectorindex int) *ValidateDetector {
 // to `all` for both fields, or to `by` or `over` for those specific fields.
 // API name: exclude_frequent
 func (r *ValidateDetector) ExcludeFrequent(excludefrequent excludefrequent.ExcludeFrequent) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ExcludeFrequent = &excludefrequent
 
 	return r
@@ -396,6 +409,9 @@ func (r *ValidateDetector) ExcludeFrequent(excludefrequent excludefrequent.Exclu
 // cannot contain double quotes or backslashes.
 // API name: field_name
 func (r *ValidateDetector) FieldName(field string) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.FieldName = &field
 
 	return r
@@ -405,6 +421,9 @@ func (r *ValidateDetector) FieldName(field string) *ValidateDetector {
 // `min`, `max`, or `sum`.
 // API name: function
 func (r *ValidateDetector) Function(function string) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Function = &function
 
@@ -416,6 +435,9 @@ func (r *ValidateDetector) Function(function string) *ValidateDetector {
 // for finding unusual values in the population of all splits.
 // API name: over_field_name
 func (r *ValidateDetector) OverFieldName(field string) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.OverFieldName = &field
 
 	return r
@@ -425,6 +447,9 @@ func (r *ValidateDetector) OverFieldName(field string) *ValidateDetector {
 // completely independent baselines for each value of this field.
 // API name: partition_field_name
 func (r *ValidateDetector) PartitionFieldName(field string) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.PartitionFieldName = &field
 
 	return r
@@ -434,6 +459,9 @@ func (r *ValidateDetector) PartitionFieldName(field string) *ValidateDetector {
 // value for the by or partition fields.
 // API name: use_null
 func (r *ValidateDetector) UseNull(usenull bool) *ValidateDetector {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.UseNull = &usenull
 
 	return r

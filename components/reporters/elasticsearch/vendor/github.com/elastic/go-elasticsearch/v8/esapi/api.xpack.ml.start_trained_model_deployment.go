@@ -15,12 +15,13 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -35,7 +36,7 @@ func newMLStartTrainedModelDeploymentFunc(t Transport) MLStartTrainedModelDeploy
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -51,6 +52,8 @@ type MLStartTrainedModelDeployment func(model_id string, o ...func(*MLStartTrain
 
 // MLStartTrainedModelDeploymentRequest configures the ML Start Trained Model Deployment API request.
 type MLStartTrainedModelDeploymentRequest struct {
+	Body io.Reader
+
 	ModelID string
 
 	CacheSize            string
@@ -71,7 +74,7 @@ type MLStartTrainedModelDeploymentRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -83,7 +86,7 @@ func (r MLStartTrainedModelDeploymentRequest) Do(providedCtx context.Context, tr
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "ml.start_trained_model_deployment")
 		defer instrument.Close(ctx)
 	}
@@ -101,7 +104,7 @@ func (r MLStartTrainedModelDeploymentRequest) Do(providedCtx context.Context, tr
 	path.WriteString("trained_models")
 	path.WriteString("/")
 	path.WriteString(r.ModelID)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "model_id", r.ModelID)
 	}
 	path.WriteString("/")
@@ -159,9 +162,9 @@ func (r MLStartTrainedModelDeploymentRequest) Do(providedCtx context.Context, tr
 		params["filter_path"] = strings.Join(r.FilterPath, ",")
 	}
 
-	req, err := newRequest(method, path.String(), nil)
+	req, err := newRequest(method, path.String(), r.Body)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -187,19 +190,26 @@ func (r MLStartTrainedModelDeploymentRequest) Do(providedCtx context.Context, tr
 		}
 	}
 
+	if r.Body != nil && req.Header.Get(headerContentType) == "" {
+		req.Header[headerContentType] = headerContentTypeJSON
+	}
+
 	if ctx != nil {
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "ml.start_trained_model_deployment")
+		if reader := instrument.RecordRequestBody(ctx, "ml.start_trained_model_deployment", r.Body); reader != nil {
+			req.Body = reader
+		}
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "ml.start_trained_model_deployment")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -218,6 +228,13 @@ func (r MLStartTrainedModelDeploymentRequest) Do(providedCtx context.Context, tr
 func (f MLStartTrainedModelDeployment) WithContext(v context.Context) func(*MLStartTrainedModelDeploymentRequest) {
 	return func(r *MLStartTrainedModelDeploymentRequest) {
 		r.ctx = v
+	}
+}
+
+// WithBody - The settings for the trained model deployment.
+func (f MLStartTrainedModelDeployment) WithBody(v io.Reader) func(*MLStartTrainedModelDeploymentRequest) {
+	return func(r *MLStartTrainedModelDeploymentRequest) {
+		r.Body = v
 	}
 }
 

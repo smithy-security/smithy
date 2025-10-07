@@ -16,9 +16,16 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Creates a repository.
+// Create or update a snapshot repository.
+// IMPORTANT: If you are migrating searchable snapshots, the repository name
+// must be identical in the source and destination clusters.
+// To register a snapshot repository, the cluster's global metadata must be
+// writeable.
+// Ensure there are no cluster blocks (for example, `cluster.blocks.read_only`
+// and `clsuter.blocks.read_only_allow_delete` settings) that prevent write
+// access.
 package createrepository
 
 import (
@@ -81,7 +88,14 @@ func NewCreateRepositoryFunc(tp elastictransport.Interface) NewCreateRepository 
 	}
 }
 
-// Creates a repository.
+// Create or update a snapshot repository.
+// IMPORTANT: If you are migrating searchable snapshots, the repository name
+// must be identical in the source and destination clusters.
+// To register a snapshot repository, the cluster's global metadata must be
+// writeable.
+// Ensure there are no cluster blocks (for example, `cluster.blocks.read_only`
+// and `clsuter.blocks.read_only_allow_delete` settings) that prevent write
+// access.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html
 func New(tp elastictransport.Interface) *CreateRepository {

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Run a scrolling search.
 //
@@ -127,7 +127,7 @@ func NewScrollFunc(tp elastictransport.Interface) NewScroll {
 // the time of the initial search request. Subsequent indexing or document
 // changes only affect later search and scroll requests.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-scroll
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/scroll-api.html
 func New(tp elastictransport.Interface) *Scroll {
 	r := &Scroll{
 		transport: tp,
@@ -135,8 +135,6 @@ func New(tp elastictransport.Interface) *Scroll {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -397,17 +395,23 @@ func (r *Scroll) Pretty(pretty bool) *Scroll {
 	return r
 }
 
-// Scroll Period to retain the search context for scrolling.
+// Scroll The period to retain the search context for scrolling.
 // API name: scroll
 func (r *Scroll) Scroll(duration types.Duration) *Scroll {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Scroll = duration
 
 	return r
 }
 
-// ScrollId Scroll ID of the search.
+// ScrollId The scroll ID of the search.
 // API name: scroll_id
 func (r *Scroll) ScrollId(scrollid string) *Scroll {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ScrollId = scrollid
 
 	return r

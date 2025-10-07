@@ -16,10 +16,11 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Check aliases.
-// Checks if one or more data stream or index aliases exist.
+//
+// Check if one or more data stream or index aliases exist.
 package existsalias
 
 import (
@@ -80,9 +81,10 @@ func NewExistsAliasFunc(tp elastictransport.Interface) NewExistsAlias {
 }
 
 // Check aliases.
-// Checks if one or more data stream or index aliases exist.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
+// Check if one or more data stream or index aliases exist.
+//
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-indices-exists-alias
 func New(tp elastictransport.Interface) *ExistsAlias {
 	r := &ExistsAlias{
 		transport: tp,
@@ -295,7 +297,6 @@ func (r *ExistsAlias) AllowNoIndices(allownoindices bool) *ExistsAlias {
 // If the request can target data streams, this argument determines whether
 // wildcard expressions match hidden data streams.
 // Supports comma-separated values, such as `open,hidden`.
-// Valid values are: `all`, `open`, `closed`, `hidden`, `none`.
 // API name: expand_wildcards
 func (r *ExistsAlias) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *ExistsAlias {
 	tmp := []string{}

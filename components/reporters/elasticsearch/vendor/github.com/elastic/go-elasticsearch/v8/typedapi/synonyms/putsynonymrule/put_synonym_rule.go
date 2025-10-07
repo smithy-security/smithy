@@ -16,10 +16,15 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create or update a synonym rule.
 // Create or update a synonym rule in a synonym set.
+//
+// If any of the synonym rules included is invalid, the API returns an error.
+//
+// When you update a synonym rule, all analyzers using the synonyms set will be
+// reloaded automatically to reflect the new rule.
 package putsynonymrule
 
 import (
@@ -90,6 +95,11 @@ func NewPutSynonymRuleFunc(tp elastictransport.Interface) NewPutSynonymRule {
 // Create or update a synonym rule.
 // Create or update a synonym rule in a synonym set.
 //
+// If any of the synonym rules included is invalid, the API returns an error.
+//
+// When you update a synonym rule, all analyzers using the synonyms set will be
+// reloaded automatically to reflect the new rule.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/put-synonym-rule.html
 func New(tp elastictransport.Interface) *PutSynonymRule {
 	r := &PutSynonymRule{
@@ -98,8 +108,6 @@ func New(tp elastictransport.Interface) *PutSynonymRule {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -317,7 +325,7 @@ func (r *PutSynonymRule) Header(key, value string) *PutSynonymRule {
 	return r
 }
 
-// SetId The id of the synonym set to be updated with the synonym rule
+// SetId The ID of the synonym set.
 // API Name: setid
 func (r *PutSynonymRule) _setid(setid string) *PutSynonymRule {
 	r.paramSet |= setidMask
@@ -326,7 +334,7 @@ func (r *PutSynonymRule) _setid(setid string) *PutSynonymRule {
 	return r
 }
 
-// RuleId The id of the synonym rule to be updated or created
+// RuleId The ID of the synonym rule to be updated or created.
 // API Name: ruleid
 func (r *PutSynonymRule) _ruleid(ruleid string) *PutSynonymRule {
 	r.paramSet |= ruleidMask
@@ -379,8 +387,12 @@ func (r *PutSynonymRule) Pretty(pretty bool) *PutSynonymRule {
 	return r
 }
 
+// Synonyms The synonym rule information definition, which must be in Solr format.
 // API name: synonyms
 func (r *PutSynonymRule) Synonyms(synonymstring string) *PutSynonymRule {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Synonyms = synonymstring
 
 	return r

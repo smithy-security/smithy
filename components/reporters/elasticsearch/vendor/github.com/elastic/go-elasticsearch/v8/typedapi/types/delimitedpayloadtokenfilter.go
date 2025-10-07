@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -33,12 +33,14 @@ import (
 
 // DelimitedPayloadTokenFilter type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/analysis/token_filters.ts#L67-L71
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/analysis/token_filters.ts#L84-L90
 type DelimitedPayloadTokenFilter struct {
-	Delimiter *string                                            `json:"delimiter,omitempty"`
-	Encoding  *delimitedpayloadencoding.DelimitedPayloadEncoding `json:"encoding,omitempty"`
-	Type      string                                             `json:"type,omitempty"`
-	Version   *string                                            `json:"version,omitempty"`
+	// Delimiter Character used to separate tokens from payloads. Defaults to `|`.
+	Delimiter *string `json:"delimiter,omitempty"`
+	// Encoding Data type for the stored payload.
+	Encoding *delimitedpayloadencoding.DelimitedPayloadEncoding `json:"encoding,omitempty"`
+	Type     string                                             `json:"type,omitempty"`
+	Version  *string                                            `json:"version,omitempty"`
 }
 
 func (s *DelimitedPayloadTokenFilter) UnmarshalJSON(data []byte) error {

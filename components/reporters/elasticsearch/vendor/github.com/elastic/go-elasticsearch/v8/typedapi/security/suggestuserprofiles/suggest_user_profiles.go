@@ -16,11 +16,17 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Suggest a user profile.
 //
 // Get suggestions for user profiles that match specified search criteria.
+//
+// NOTE: The user profile feature is designed only for use by Kibana and
+// Elastic's Observability, Enterprise Search, and Elastic Security solutions.
+// Individual users and external applications should not call this API directly.
+// Elastic reserves the right to change or remove this feature in future
+// releases without prior notice.
 package suggestuserprofiles
 
 import (
@@ -79,6 +85,12 @@ func NewSuggestUserProfilesFunc(tp elastictransport.Interface) NewSuggestUserPro
 //
 // Get suggestions for user profiles that match specified search criteria.
 //
+// NOTE: The user profile feature is designed only for use by Kibana and
+// Elastic's Observability, Enterprise Search, and Elastic Security solutions.
+// Individual users and external applications should not call this API directly.
+// Elastic reserves the right to change or remove this feature in future
+// releases without prior notice.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-suggest-user-profile.html
 func New(tp elastictransport.Interface) *SuggestUserProfiles {
 	r := &SuggestUserProfiles{
@@ -87,8 +99,6 @@ func New(tp elastictransport.Interface) *SuggestUserProfiles {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -342,12 +352,19 @@ func (r *SuggestUserProfiles) Pretty(pretty bool) *SuggestUserProfiles {
 	return r
 }
 
-// Data List of filters for the `data` field of the profile document.
-// To return all content use `data=*`. To return a subset of content
-// use `data=<key>` to retrieve content nested under the specified `<key>`.
-// By default returns no `data` content.
+// Data A comma-separated list of filters for the `data` field of the profile
+// document.
+// To return all content use `data=*`.
+// To return a subset of content, use `data=<key>` to retrieve content nested
+// under the specified `<key>`.
+// By default, the API returns no `data` content.
+// It is an error to specify `data` as both the query parameter and the request
+// body field.
 // API name: data
 func (r *SuggestUserProfiles) Data(data ...string) *SuggestUserProfiles {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Data = data
 
 	return r
@@ -355,29 +372,38 @@ func (r *SuggestUserProfiles) Data(data ...string) *SuggestUserProfiles {
 
 // Hint Extra search criteria to improve relevance of the suggestion result.
 // Profiles matching the spcified hint are ranked higher in the response.
-// Profiles not matching the hint don't exclude the profile from the response
-// as long as the profile matches the `name` field query.
+// Profiles not matching the hint aren't excluded from the response as long as
+// the profile matches the `name` field query.
 // API name: hint
 func (r *SuggestUserProfiles) Hint(hint *types.Hint) *SuggestUserProfiles {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Hint = hint
 
 	return r
 }
 
-// Name Query string used to match name-related fields in user profile documents.
+// Name A query string used to match name-related fields in user profile documents.
 // Name-related fields are the user's `username`, `full_name`, and `email`.
 // API name: name
 func (r *SuggestUserProfiles) Name(name string) *SuggestUserProfiles {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Name = &name
 
 	return r
 }
 
-// Size Number of profiles to return.
+// Size The number of profiles to return.
 // API name: size
 func (r *SuggestUserProfiles) Size(size int64) *SuggestUserProfiles {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Size = &size
 

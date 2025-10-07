@@ -16,11 +16,16 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Clear the cache.
 // Clear the cache of one or more indices.
 // For data streams, the API clears the caches of the stream's backing indices.
+//
+// By default, the clear cache API clears all caches.
+// To clear only specific caches, use the `fielddata`, `query`, or `request`
+// parameters.
+// To clear the cache only of specific fields, use the `fields` parameter.
 package clearcache
 
 import (
@@ -80,6 +85,11 @@ func NewClearCacheFunc(tp elastictransport.Interface) NewClearCache {
 // Clear the cache.
 // Clear the cache of one or more indices.
 // For data streams, the API clears the caches of the stream's backing indices.
+//
+// By default, the clear cache API clears all caches.
+// To clear only specific caches, use the `fielddata`, `query`, or `request`
+// parameters.
+// To clear the cache only of specific fields, use the `fields` parameter.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clearcache.html
 func New(tp elastictransport.Interface) *ClearCache {
@@ -327,7 +337,6 @@ func (r *ClearCache) AllowNoIndices(allownoindices bool) *ClearCache {
 // If the request can target data streams, this argument determines whether
 // wildcard expressions match hidden data streams.
 // Supports comma-separated values, such as `open,hidden`.
-// Valid values are: `all`, `open`, `closed`, `hidden`, `none`.
 // API name: expand_wildcards
 func (r *ClearCache) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *ClearCache {
 	tmp := []string{}

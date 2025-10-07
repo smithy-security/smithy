@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Run an async search.
 //
@@ -117,8 +117,6 @@ func New(tp elastictransport.Interface) *Submit {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -357,6 +355,16 @@ func (r *Submit) WaitForCompletionTimeout(duration string) *Submit {
 	return r
 }
 
+// KeepAlive Specifies how long the async search needs to be available.
+// Ongoing async searches and any saved search results are deleted after this
+// period.
+// API name: keep_alive
+func (r *Submit) KeepAlive(duration string) *Submit {
+	r.values.Set("keep_alive", duration)
+
+	return r
+}
+
 // KeepOnCompletion If `true`, results are stored for later retrieval when the search completes
 // within the `wait_for_completion_timeout`.
 // API name: keep_on_completion
@@ -483,13 +491,6 @@ func (r *Submit) Lenient(lenient bool) *Submit {
 // API name: max_concurrent_shard_requests
 func (r *Submit) MaxConcurrentShardRequests(maxconcurrentshardrequests string) *Submit {
 	r.values.Set("max_concurrent_shard_requests", maxconcurrentshardrequests)
-
-	return r
-}
-
-// API name: min_compatible_shard_node
-func (r *Submit) MinCompatibleShardNode(versionstring string) *Submit {
-	r.values.Set("min_compatible_shard_node", versionstring)
 
 	return r
 }
@@ -648,6 +649,9 @@ func (r *Submit) Pretty(pretty bool) *Submit {
 
 // API name: aggregations
 func (r *Submit) Aggregations(aggregations map[string]types.Aggregations) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Aggregations = aggregations
 
@@ -656,6 +660,9 @@ func (r *Submit) Aggregations(aggregations map[string]types.Aggregations) *Submi
 
 // API name: collapse
 func (r *Submit) Collapse(collapse *types.FieldCollapse) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Collapse = collapse
 
@@ -666,6 +673,9 @@ func (r *Submit) Collapse(collapse *types.FieldCollapse) *Submit {
 // names matching these patterns in the hits.fields property of the response.
 // API name: docvalue_fields
 func (r *Submit) DocvalueFields(docvaluefields ...types.FieldAndFormat) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.DocvalueFields = docvaluefields
 
 	return r
@@ -675,6 +685,9 @@ func (r *Submit) DocvalueFields(docvaluefields ...types.FieldAndFormat) *Submit 
 // hit.
 // API name: explain
 func (r *Submit) Explain(explain bool) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Explain = &explain
 
 	return r
@@ -683,6 +696,9 @@ func (r *Submit) Explain(explain bool) *Submit {
 // Ext Configuration of search extensions defined by Elasticsearch plugins.
 // API name: ext
 func (r *Submit) Ext(ext map[string]json.RawMessage) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Ext = ext
 
@@ -693,6 +709,9 @@ func (r *Submit) Ext(ext map[string]json.RawMessage) *Submit {
 // matching these patterns in the hits.fields property of the response.
 // API name: fields
 func (r *Submit) Fields(fields ...types.FieldAndFormat) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Fields = fields
 
 	return r
@@ -704,6 +723,9 @@ func (r *Submit) Fields(fields ...types.FieldAndFormat) *Submit {
 // search_after parameter.
 // API name: from
 func (r *Submit) From(from int) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.From = &from
 
 	return r
@@ -711,6 +733,9 @@ func (r *Submit) From(from int) *Submit {
 
 // API name: highlight
 func (r *Submit) Highlight(highlight *types.Highlight) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Highlight = highlight
 
@@ -720,6 +745,9 @@ func (r *Submit) Highlight(highlight *types.Highlight) *Submit {
 // IndicesBoost Boosts the _score of documents from specified indices.
 // API name: indices_boost
 func (r *Submit) IndicesBoost(indicesboosts ...map[string]types.Float64) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IndicesBoost = indicesboosts
 
 	return r
@@ -728,15 +756,21 @@ func (r *Submit) IndicesBoost(indicesboosts ...map[string]types.Float64) *Submit
 // Knn Defines the approximate kNN search to run.
 // API name: knn
 func (r *Submit) Knn(knns ...types.KnnSearch) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Knn = knns
 
 	return r
 }
 
 // MinScore Minimum _score for matching documents. Documents with a lower _score are
-// not included in the search results.
+// not included in search results and results collected by aggregations.
 // API name: min_score
 func (r *Submit) MinScore(minscore types.Float64) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.MinScore = &minscore
 
@@ -747,6 +781,9 @@ func (r *Submit) MinScore(minscore types.Float64) *Submit {
 // cannot specify an <index> in the request path.
 // API name: pit
 func (r *Submit) Pit(pit *types.PointInTimeReference) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Pit = pit
 
@@ -755,6 +792,9 @@ func (r *Submit) Pit(pit *types.PointInTimeReference) *Submit {
 
 // API name: post_filter
 func (r *Submit) PostFilter(postfilter *types.Query) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.PostFilter = postfilter
 
@@ -763,6 +803,9 @@ func (r *Submit) PostFilter(postfilter *types.Query) *Submit {
 
 // API name: profile
 func (r *Submit) Profile(profile bool) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Profile = &profile
 
 	return r
@@ -771,6 +814,9 @@ func (r *Submit) Profile(profile bool) *Submit {
 // Query Defines the search definition using the Query DSL.
 // API name: query
 func (r *Submit) Query(query *types.Query) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Query = query
 
@@ -779,6 +825,9 @@ func (r *Submit) Query(query *types.Query) *Submit {
 
 // API name: rescore
 func (r *Submit) Rescore(rescores ...types.Rescore) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Rescore = rescores
 
 	return r
@@ -788,6 +837,9 @@ func (r *Submit) Rescore(rescores ...types.Rescore) *Submit {
 // precedence over mapped fields with the same name.
 // API name: runtime_mappings
 func (r *Submit) RuntimeMappings(runtimefields types.RuntimeFields) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.RuntimeMappings = runtimefields
 
 	return r
@@ -796,6 +848,9 @@ func (r *Submit) RuntimeMappings(runtimefields types.RuntimeFields) *Submit {
 // ScriptFields Retrieve a script evaluation (based on different fields) for each hit.
 // API name: script_fields
 func (r *Submit) ScriptFields(scriptfields map[string]types.ScriptField) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ScriptFields = scriptfields
 
@@ -804,6 +859,9 @@ func (r *Submit) ScriptFields(scriptfields map[string]types.ScriptField) *Submit
 
 // API name: search_after
 func (r *Submit) SearchAfter(sortresults ...types.FieldValue) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.SearchAfter = sortresults
 
 	return r
@@ -813,6 +871,9 @@ func (r *Submit) SearchAfter(sortresults ...types.FieldValue) *Submit {
 // of each hit. See Optimistic concurrency control.
 // API name: seq_no_primary_term
 func (r *Submit) SeqNoPrimaryTerm(seqnoprimaryterm bool) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.SeqNoPrimaryTerm = &seqnoprimaryterm
 
 	return r
@@ -823,6 +884,9 @@ func (r *Submit) SeqNoPrimaryTerm(seqnoprimaryterm bool) *Submit {
 // hits, use the search_after parameter.
 // API name: size
 func (r *Submit) Size(size int) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Size = &size
 
 	return r
@@ -830,6 +894,9 @@ func (r *Submit) Size(size int) *Submit {
 
 // API name: slice
 func (r *Submit) Slice(slice *types.SlicedScroll) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Slice = slice
 
@@ -838,6 +905,9 @@ func (r *Submit) Slice(slice *types.SlicedScroll) *Submit {
 
 // API name: sort
 func (r *Submit) Sort(sorts ...types.SortCombinations) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Sort = sorts
 
 	return r
@@ -847,6 +917,9 @@ func (r *Submit) Sort(sorts ...types.SortCombinations) *Submit {
 // fields are returned in the hits._source property of the search response.
 // API name: _source
 func (r *Submit) Source_(sourceconfig types.SourceConfig) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Source_ = sourceconfig
 
 	return r
@@ -857,6 +930,9 @@ func (r *Submit) Source_(sourceconfig types.SourceConfig) *Submit {
 // the indices stats API.
 // API name: stats
 func (r *Submit) Stats(stats ...string) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Stats = stats
 
 	return r
@@ -870,6 +946,9 @@ func (r *Submit) Stats(stats ...string) *Submit {
 // and stored fields in the search response.
 // API name: stored_fields
 func (r *Submit) StoredFields(fields ...string) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.StoredFields = fields
 
 	return r
@@ -877,6 +956,9 @@ func (r *Submit) StoredFields(fields ...string) *Submit {
 
 // API name: suggest
 func (r *Submit) Suggest(suggest *types.Suggester) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Suggest = suggest
 
@@ -891,6 +973,9 @@ func (r *Submit) Suggest(suggest *types.Suggester) *Submit {
 // early.
 // API name: terminate_after
 func (r *Submit) TerminateAfter(terminateafter int64) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.TerminateAfter = &terminateafter
 
@@ -904,6 +989,9 @@ func (r *Submit) TerminateAfter(terminateafter int64) *Submit {
 // Defaults to no timeout.
 // API name: timeout
 func (r *Submit) Timeout(timeout string) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Timeout = &timeout
 
@@ -914,6 +1002,9 @@ func (r *Submit) Timeout(timeout string) *Submit {
 // used for sorting.
 // API name: track_scores
 func (r *Submit) TrackScores(trackscores bool) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.TrackScores = &trackscores
 
 	return r
@@ -925,6 +1016,9 @@ func (r *Submit) TrackScores(trackscores bool) *Submit {
 // Defaults to 10,000 hits.
 // API name: track_total_hits
 func (r *Submit) TrackTotalHits(trackhits types.TrackHits) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.TrackTotalHits = trackhits
 
 	return r
@@ -933,6 +1027,9 @@ func (r *Submit) TrackTotalHits(trackhits types.TrackHits) *Submit {
 // Version If true, returns document version as part of a hit.
 // API name: version
 func (r *Submit) Version(version bool) *Submit {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Version = &version
 
 	return r

@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update the license.
+//
 // You can update your license at runtime without shutting down your nodes.
 // License updates take effect immediately.
 // If the license you are installing does not support all of the features that
@@ -87,6 +88,7 @@ func NewPostFunc(tp elastictransport.Interface) NewPost {
 }
 
 // Update the license.
+//
 // You can update your license at runtime without shutting down your nodes.
 // License updates take effect immediately.
 // If the license you are installing does not support all of the features that
@@ -101,7 +103,7 @@ func NewPostFunc(tp elastictransport.Interface) NewPost {
 // If the operator privileges feature is enabled, only operator users can use
 // this API.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/update-license.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-license-post
 func New(tp elastictransport.Interface) *Post {
 	r := &Post{
 		transport: tp,
@@ -109,8 +111,6 @@ func New(tp elastictransport.Interface) *Post {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -324,6 +324,23 @@ func (r *Post) Acknowledge(acknowledge bool) *Post {
 	return r
 }
 
+// MasterTimeout The period to wait for a connection to the master node.
+// API name: master_timeout
+func (r *Post) MasterTimeout(duration string) *Post {
+	r.values.Set("master_timeout", duration)
+
+	return r
+}
+
+// Timeout The period to wait for a response. If no response is received before the
+// timeout expires, the request fails and returns an error.
+// API name: timeout
+func (r *Post) Timeout(duration string) *Post {
+	r.values.Set("timeout", duration)
+
+	return r
+}
+
 // ErrorTrace When set to `true` Elasticsearch will include the full stack trace of errors
 // when they occur.
 // API name: error_trace
@@ -370,6 +387,9 @@ func (r *Post) Pretty(pretty bool) *Post {
 
 // API name: license
 func (r *Post) License(license *types.License) *Post {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.License = license
 
@@ -379,6 +399,9 @@ func (r *Post) License(license *types.License) *Post {
 // Licenses A sequence of one or more JSON documents containing the license information.
 // API name: licenses
 func (r *Post) Licenses(licenses ...types.License) *Post {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Licenses = licenses
 
 	return r

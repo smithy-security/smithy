@@ -16,10 +16,21 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Run a script.
+//
 // Runs a script and returns a result.
+// Use this API to build and test scripts, such as when defining a script for a
+// runtime field.
+// This API requires very few dependencies and is especially useful if you don't
+// have permissions to write documents on a cluster.
+//
+// The API uses several _contexts_, which control how scripts are run, what
+// variables are available at runtime, and what the return type is.
+//
+// Each context requires a script, but additional parameters depend on the
+// context you're using for that script.
 package scriptspainlessexecute
 
 import (
@@ -36,6 +47,7 @@ import (
 
 	"github.com/elastic/elastic-transport-go/v8/elastictransport"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/painlesscontext"
 )
 
 // ErrBuildPath is returned in case of missing parameters within the build of the request.
@@ -75,7 +87,18 @@ func NewScriptsPainlessExecuteFunc(tp elastictransport.Interface) NewScriptsPain
 }
 
 // Run a script.
+//
 // Runs a script and returns a result.
+// Use this API to build and test scripts, such as when defining a script for a
+// runtime field.
+// This API requires very few dependencies and is especially useful if you don't
+// have permissions to write documents on a cluster.
+//
+// The API uses several _contexts_, which control how scripts are run, what
+// variables are available at runtime, and what the return type is.
+//
+// Each context requires a script, but additional parameters depend on the
+// context you're using for that script.
 //
 // https://www.elastic.co/guide/en/elasticsearch/painless/current/painless-execute-api.html
 func New(tp elastictransport.Interface) *ScriptsPainlessExecute {
@@ -85,8 +108,6 @@ func New(tp elastictransport.Interface) *ScriptsPainlessExecute {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -341,26 +362,37 @@ func (r *ScriptsPainlessExecute) Pretty(pretty bool) *ScriptsPainlessExecute {
 }
 
 // Context The context that the script should run in.
+// NOTE: Result ordering in the field contexts is not guaranteed.
 // API name: context
-func (r *ScriptsPainlessExecute) Context(context string) *ScriptsPainlessExecute {
-
+func (r *ScriptsPainlessExecute) Context(context painlesscontext.PainlessContext) *ScriptsPainlessExecute {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Context = &context
 
 	return r
 }
 
 // ContextSetup Additional parameters for the `context`.
+// NOTE: This parameter is required for all contexts except `painless_test`,
+// which is the default if no value is provided for `context`.
 // API name: context_setup
 func (r *ScriptsPainlessExecute) ContextSetup(contextsetup *types.PainlessContextSetup) *ScriptsPainlessExecute {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ContextSetup = contextsetup
 
 	return r
 }
 
-// Script The Painless script to execute.
+// Script The Painless script to run.
 // API name: script
 func (r *ScriptsPainlessExecute) Script(script *types.Script) *ScriptsPainlessExecute {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Script = script
 

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get async search results.
 //
@@ -309,7 +309,7 @@ func (r *Get) _id(id string) *Get {
 	return r
 }
 
-// KeepAlive Specifies how long the async search should be available in the cluster.
+// KeepAlive The length of time that the async search should be available in the cluster.
 // When not specified, the `keep_alive` set with the corresponding submit async
 // request will be used.
 // Otherwise, it is possible to override the value and extend the validity of

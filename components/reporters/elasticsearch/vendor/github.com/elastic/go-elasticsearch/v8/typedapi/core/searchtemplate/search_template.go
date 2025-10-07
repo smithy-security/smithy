@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Run a search with a search template.
 package searchtemplate
@@ -83,7 +83,7 @@ func NewSearchTemplateFunc(tp elastictransport.Interface) NewSearchTemplate {
 
 // Run a search with a search template.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template.html
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/search-template-api.html
 func New(tp elastictransport.Interface) *SearchTemplate {
 	r := &SearchTemplate{
 		transport: tp,
@@ -91,8 +91,6 @@ func New(tp elastictransport.Interface) *SearchTemplate {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -315,8 +313,8 @@ func (r *SearchTemplate) Header(key, value string) *SearchTemplate {
 	return r
 }
 
-// Index Comma-separated list of data streams, indices,
-// and aliases to search. Supports wildcards (*).
+// Index A comma-separated list of data streams, indices, and aliases to search.
+// It supports wildcards (`*`).
 // API Name: index
 func (r *SearchTemplate) Index(index string) *SearchTemplate {
 	r.paramSet |= indexMask
@@ -346,11 +344,10 @@ func (r *SearchTemplate) CcsMinimizeRoundtrips(ccsminimizeroundtrips bool) *Sear
 	return r
 }
 
-// ExpandWildcards Type of index that wildcard patterns can match.
+// ExpandWildcards The type of index that wildcard patterns can match.
 // If the request can target data streams, this argument determines whether
 // wildcard expressions match hidden data streams.
 // Supports comma-separated values, such as `open,hidden`.
-// Valid values are: `all`, `open`, `closed`, `hidden`, `none`.
 // API name: expand_wildcards
 func (r *SearchTemplate) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *SearchTemplate {
 	tmp := []string{}
@@ -380,8 +377,8 @@ func (r *SearchTemplate) IgnoreUnavailable(ignoreunavailable bool) *SearchTempla
 	return r
 }
 
-// Preference Specifies the node or shard the operation should be performed on.
-// Random by default.
+// Preference The node or shard the operation should be performed on.
+// It is random by default.
 // API name: preference
 func (r *SearchTemplate) Preference(preference string) *SearchTemplate {
 	r.values.Set("preference", preference)
@@ -389,7 +386,7 @@ func (r *SearchTemplate) Preference(preference string) *SearchTemplate {
 	return r
 }
 
-// Routing Custom value used to route operations to a specific shard.
+// Routing A custom value used to route operations to a specific shard.
 // API name: routing
 func (r *SearchTemplate) Routing(routing string) *SearchTemplate {
 	r.values.Set("routing", routing)
@@ -414,7 +411,8 @@ func (r *SearchTemplate) SearchType(searchtype searchtype.SearchType) *SearchTem
 	return r
 }
 
-// RestTotalHitsAsInt If true, hits.total are rendered as an integer in the response.
+// RestTotalHitsAsInt If `true`, `hits.total` is rendered as an integer in the response.
+// If `false`, it is rendered as an object.
 // API name: rest_total_hits_as_int
 func (r *SearchTemplate) RestTotalHitsAsInt(resttotalhitsasint bool) *SearchTemplate {
 	r.values.Set("rest_total_hits_as_int", strconv.FormatBool(resttotalhitsasint))
@@ -477,17 +475,25 @@ func (r *SearchTemplate) Pretty(pretty bool) *SearchTemplate {
 
 // Explain If `true`, returns detailed information about score calculation as part of
 // each hit.
+// If you specify both this and the `explain` query parameter, the API uses only
+// the query parameter.
 // API name: explain
 func (r *SearchTemplate) Explain(explain bool) *SearchTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Explain = &explain
 
 	return r
 }
 
-// Id ID of the search template to use. If no source is specified,
+// Id The ID of the search template to use. If no `source` is specified,
 // this parameter is required.
 // API name: id
 func (r *SearchTemplate) Id(id string) *SearchTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Id = &id
 
 	return r
@@ -498,6 +504,9 @@ func (r *SearchTemplate) Id(id string) *SearchTemplate {
 // The value is the variable value.
 // API name: params
 func (r *SearchTemplate) Params(params map[string]json.RawMessage) *SearchTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Params = params
 
@@ -507,16 +516,23 @@ func (r *SearchTemplate) Params(params map[string]json.RawMessage) *SearchTempla
 // Profile If `true`, the query execution is profiled.
 // API name: profile
 func (r *SearchTemplate) Profile(profile bool) *SearchTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Profile = &profile
 
 	return r
 }
 
 // Source An inline search template. Supports the same parameters as the search API's
-// request body. Also supports Mustache variables. If no id is specified, this
+// request body. It also supports Mustache variables. If no `id` is specified,
+// this
 // parameter is required.
 // API name: source
 func (r *SearchTemplate) Source(source string) *SearchTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Source = &source
 

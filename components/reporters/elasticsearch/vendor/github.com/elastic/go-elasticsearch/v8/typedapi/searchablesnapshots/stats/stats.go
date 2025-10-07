@@ -16,9 +16,9 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Retrieve shard-level statistics about searchable snapshots.
+// Get searchable snapshot statistics.
 package stats
 
 import (
@@ -75,9 +75,9 @@ func NewStatsFunc(tp elastictransport.Interface) NewStats {
 	}
 }
 
-// Retrieve shard-level statistics about searchable snapshots.
+// Get searchable snapshot statistics.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/searchable-snapshots-apis.html
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/searchable-snapshots-api-stats.html
 func New(tp elastictransport.Interface) *Stats {
 	r := &Stats{
 		transport: tp,
@@ -296,7 +296,8 @@ func (r *Stats) Header(key, value string) *Stats {
 	return r
 }
 
-// Index A comma-separated list of index names
+// Index A comma-separated list of data streams and indices to retrieve statistics
+// for.
 // API Name: index
 func (r *Stats) Index(index string) *Stats {
 	r.paramSet |= indexMask

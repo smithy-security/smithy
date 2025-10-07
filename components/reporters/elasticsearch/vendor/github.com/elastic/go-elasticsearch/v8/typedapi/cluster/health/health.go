@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get the cluster health status.
+//
 // You can also use the API to get the health status of only specified data
 // streams and indices.
 // For data streams, the API retrieves the health status of the stream’s backing
@@ -36,7 +37,6 @@
 package health
 
 import (
-	gobytes "bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -44,6 +44,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -94,6 +95,7 @@ func NewHealthFunc(tp elastictransport.Interface) NewHealth {
 }
 
 // Get the cluster health status.
+//
 // You can also use the API to get the health status of only specified data
 // streams and indices.
 // For data streams, the API retrieves the health status of the stream’s backing
@@ -251,7 +253,8 @@ func (r Health) Do(providedCtx context.Context) (*Response, error) {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode < 299 {
+	if res.StatusCode < 299 || slices.Contains([]int{408}, res.StatusCode) {
+
 		err = json.NewDecoder(res.Body).Decode(response)
 		if err != nil {
 			if instrument, ok := r.instrument.(elastictransport.Instrumentation); ok {
@@ -261,42 +264,6 @@ func (r Health) Do(providedCtx context.Context) (*Response, error) {
 		}
 
 		return response, nil
-	}
-
-	if res.StatusCode == 408 {
-		data, err := io.ReadAll(res.Body)
-		if err != nil {
-			if instrument, ok := r.instrument.(elastictransport.Instrumentation); ok {
-				instrument.RecordError(ctx, err)
-			}
-			return nil, err
-		}
-
-		errorResponse := types.NewElasticsearchError()
-		err = json.NewDecoder(gobytes.NewReader(data)).Decode(&errorResponse)
-		if err != nil {
-			if instrument, ok := r.instrument.(elastictransport.Instrumentation); ok {
-				instrument.RecordError(ctx, err)
-			}
-			return nil, err
-		}
-
-		if errorResponse.Status == 0 {
-			err = json.NewDecoder(gobytes.NewReader(data)).Decode(&response)
-			if err != nil {
-				if instrument, ok := r.instrument.(elastictransport.Instrumentation); ok {
-					instrument.RecordError(ctx, err)
-				}
-				return nil, err
-			}
-
-			return response, nil
-		}
-
-		if instrument, ok := r.instrument.(elastictransport.Instrumentation); ok {
-			instrument.RecordError(ctx, errorResponse)
-		}
-		return nil, errorResponse
 	}
 
 	errorResponse := types.NewElasticsearchError()

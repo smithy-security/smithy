@@ -16,14 +16,59 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
-// NodeReloadResult holds the union for the following types:
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+)
+
+// NodeReloadResult type.
 //
-//	Stats
-//	NodeReloadError
-//
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/nodes/_types/NodeReloadResult.ts#L29-L30
-type NodeReloadResult any
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/nodes/_types/NodeReloadResult.ts#L23-L26
+type NodeReloadResult struct {
+	Name            string      `json:"name"`
+	ReloadException *ErrorCause `json:"reload_exception,omitempty"`
+}
+
+func (s *NodeReloadResult) UnmarshalJSON(data []byte) error {
+
+	dec := json.NewDecoder(bytes.NewReader(data))
+
+	for {
+		t, err := dec.Token()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return err
+		}
+
+		switch t {
+
+		case "name":
+			if err := dec.Decode(&s.Name); err != nil {
+				return fmt.Errorf("%s | %w", "Name", err)
+			}
+
+		case "reload_exception":
+			if err := dec.Decode(&s.ReloadException); err != nil {
+				return fmt.Errorf("%s | %w", "ReloadException", err)
+			}
+
+		}
+	}
+	return nil
+}
+
+// NewNodeReloadResult returns a NodeReloadResult.
+func NewNodeReloadResult() *NodeReloadResult {
+	r := &NodeReloadResult{}
+
+	return r
+}

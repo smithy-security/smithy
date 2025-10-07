@@ -16,9 +16,22 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get service account credentials.
+//
+// To use this API, you must have at least the `read_security` cluster privilege
+// (or a greater privilege such as `manage_service_account` or
+// `manage_security`).
+//
+// The response includes service account tokens that were created with the
+// create service account tokens API as well as file-backed tokens from all
+// nodes of the cluster.
+//
+// NOTE: For tokens backed by the `service_tokens` file, the API collects them
+// from all nodes of the cluster.
+// Tokens with the same name from different nodes are assumed to be the same
+// token and are only counted once towards the total number of service tokens.
 package getservicecredentials
 
 import (
@@ -82,6 +95,19 @@ func NewGetServiceCredentialsFunc(tp elastictransport.Interface) NewGetServiceCr
 }
 
 // Get service account credentials.
+//
+// To use this API, you must have at least the `read_security` cluster privilege
+// (or a greater privilege such as `manage_service_account` or
+// `manage_security`).
+//
+// The response includes service account tokens that were created with the
+// create service account tokens API as well as file-backed tokens from all
+// nodes of the cluster.
+//
+// NOTE: For tokens backed by the `service_tokens` file, the API collects them
+// from all nodes of the cluster.
+// Tokens with the same name from different nodes are assumed to be the same
+// token and are only counted once towards the total number of service tokens.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-service-credentials.html
 func New(tp elastictransport.Interface) *GetServiceCredentials {
@@ -303,7 +329,7 @@ func (r *GetServiceCredentials) Header(key, value string) *GetServiceCredentials
 	return r
 }
 
-// Namespace Name of the namespace.
+// Namespace The name of the namespace.
 // API Name: namespace
 func (r *GetServiceCredentials) _namespace(namespace string) *GetServiceCredentials {
 	r.paramSet |= namespaceMask
@@ -312,7 +338,7 @@ func (r *GetServiceCredentials) _namespace(namespace string) *GetServiceCredenti
 	return r
 }
 
-// Service Name of the service name.
+// Service The service name.
 // API Name: service
 func (r *GetServiceCredentials) _service(service string) *GetServiceCredentials {
 	r.paramSet |= serviceMask

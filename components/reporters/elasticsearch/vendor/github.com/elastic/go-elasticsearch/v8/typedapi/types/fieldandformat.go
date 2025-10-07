@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,12 +31,12 @@ import (
 
 // FieldAndFormat type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/query_dsl/abstractions.ts#L528-L542
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/query_dsl/abstractions.ts#L535-L549
 type FieldAndFormat struct {
-	// Field Wildcard pattern. The request returns values for field names matching this
+	// Field A wildcard pattern. The request returns values for field names matching this
 	// pattern.
 	Field string `json:"field"`
-	// Format Format in which the values are returned.
+	// Format The format in which the values are returned.
 	Format          *string `json:"format,omitempty"`
 	IncludeUnmapped *bool   `json:"include_unmapped,omitempty"`
 }

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Evaluate ranked search results.
 //
@@ -96,8 +96,6 @@ func New(tp elastictransport.Interface) *RankEval {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -314,8 +312,9 @@ func (r *RankEval) Header(key, value string) *RankEval {
 	return r
 }
 
-// Index Comma-separated list of data streams, indices, and index aliases used to
-// limit the request. Wildcard (`*`) expressions are supported.
+// Index A  comma-separated list of data streams, indices, and index aliases used to
+// limit the request.
+// Wildcard (`*`) expressions are supported.
 // To target all data streams and indices in a cluster, omit this parameter or
 // use `_all` or `*`.
 // API Name: index
@@ -414,6 +413,9 @@ func (r *RankEval) Pretty(pretty bool) *RankEval {
 // Metric Definition of the evaluation metric to calculate.
 // API name: metric
 func (r *RankEval) Metric(metric *types.RankEvalMetric) *RankEval {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Metric = metric
 
@@ -423,6 +425,9 @@ func (r *RankEval) Metric(metric *types.RankEvalMetric) *RankEval {
 // Requests A set of typical search requests, together with their provided ratings.
 // API name: requests
 func (r *RankEval) Requests(requests ...types.RankEvalRequestItem) *RankEval {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Requests = requests
 
 	return r

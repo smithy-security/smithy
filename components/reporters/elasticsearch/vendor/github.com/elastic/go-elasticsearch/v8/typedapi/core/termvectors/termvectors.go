@@ -16,12 +16,62 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get term vector information.
 //
 // Get information and statistics about terms in the fields of a particular
 // document.
+//
+// You can retrieve term vectors for documents stored in the index or for
+// artificial documents passed in the body of the request.
+// You can specify the fields you are interested in through the `fields`
+// parameter or by adding the fields to the request body.
+// For example:
+//
+// ```
+// GET /my-index-000001/_termvectors/1?fields=message
+// ```
+//
+// Fields can be specified using wildcards, similar to the multi match query.
+//
+// Term vectors are real-time by default, not near real-time.
+// This can be changed by setting `realtime` parameter to `false`.
+//
+// You can request three types of values: _term information_, _term statistics_,
+// and _field statistics_.
+// By default, all term information and field statistics are returned for all
+// fields but term statistics are excluded.
+//
+// **Term information**
+//
+// * term frequency in the field (always returned)
+// * term positions (`positions: true`)
+// * start and end offsets (`offsets: true`)
+// * term payloads (`payloads: true`), as base64 encoded bytes
+//
+// If the requested information wasn't stored in the index, it will be computed
+// on the fly if possible.
+// Additionally, term vectors could be computed for documents not even existing
+// in the index, but instead provided by the user.
+//
+// > warn
+// > Start and end offsets assume UTF-16 encoding is being used. If you want to
+// use these offsets in order to get the original text that produced this token,
+// you should make sure that the string you are taking a sub-string of is also
+// encoded using UTF-16.
+//
+// **Behaviour**
+//
+// The term and field statistics are not accurate.
+// Deleted documents are not taken into account.
+// The information is only retrieved for the shard the requested document
+// resides in.
+// The term and field statistics are therefore only useful as relative measures
+// whereas the absolute numbers have no meaning in this context.
+// By default, when requesting term vectors of artificial documents, a shard to
+// get the statistics from is randomly selected.
+// Use `routing` only to hit a particular shard.
 package termvectors
 
 import (
@@ -93,6 +143,56 @@ func NewTermvectorsFunc(tp elastictransport.Interface) NewTermvectors {
 // Get information and statistics about terms in the fields of a particular
 // document.
 //
+// You can retrieve term vectors for documents stored in the index or for
+// artificial documents passed in the body of the request.
+// You can specify the fields you are interested in through the `fields`
+// parameter or by adding the fields to the request body.
+// For example:
+//
+// ```
+// GET /my-index-000001/_termvectors/1?fields=message
+// ```
+//
+// Fields can be specified using wildcards, similar to the multi match query.
+//
+// Term vectors are real-time by default, not near real-time.
+// This can be changed by setting `realtime` parameter to `false`.
+//
+// You can request three types of values: _term information_, _term statistics_,
+// and _field statistics_.
+// By default, all term information and field statistics are returned for all
+// fields but term statistics are excluded.
+//
+// **Term information**
+//
+// * term frequency in the field (always returned)
+// * term positions (`positions: true`)
+// * start and end offsets (`offsets: true`)
+// * term payloads (`payloads: true`), as base64 encoded bytes
+//
+// If the requested information wasn't stored in the index, it will be computed
+// on the fly if possible.
+// Additionally, term vectors could be computed for documents not even existing
+// in the index, but instead provided by the user.
+//
+// > warn
+// > Start and end offsets assume UTF-16 encoding is being used. If you want to
+// use these offsets in order to get the original text that produced this token,
+// you should make sure that the string you are taking a sub-string of is also
+// encoded using UTF-16.
+//
+// **Behaviour**
+//
+// The term and field statistics are not accurate.
+// Deleted documents are not taken into account.
+// The information is only retrieved for the shard the requested document
+// resides in.
+// The term and field statistics are therefore only useful as relative measures
+// whereas the absolute numbers have no meaning in this context.
+// By default, when requesting term vectors of artificial documents, a shard to
+// get the statistics from is randomly selected.
+// Use `routing` only to hit a particular shard.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-termvectors.html
 func New(tp elastictransport.Interface) *Termvectors {
 	r := &Termvectors{
@@ -101,8 +201,6 @@ func New(tp elastictransport.Interface) *Termvectors {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -331,7 +429,7 @@ func (r *Termvectors) Header(key, value string) *Termvectors {
 	return r
 }
 
-// Index Name of the index that contains the document.
+// Index The name of the index that contains the document.
 // API Name: index
 func (r *Termvectors) _index(index string) *Termvectors {
 	r.paramSet |= indexMask
@@ -340,7 +438,7 @@ func (r *Termvectors) _index(index string) *Termvectors {
 	return r
 }
 
-// Id Unique identifier of the document.
+// Id A unique identifier for the document.
 // API Name: id
 func (r *Termvectors) Id(id string) *Termvectors {
 	r.paramSet |= idMask
@@ -349,52 +447,8 @@ func (r *Termvectors) Id(id string) *Termvectors {
 	return r
 }
 
-// Fields Comma-separated list or wildcard expressions of fields to include in the
-// statistics.
-// Used as the default list unless a specific field list is provided in the
-// `completion_fields` or `fielddata_fields` parameters.
-// API name: fields
-func (r *Termvectors) Fields(fields ...string) *Termvectors {
-	r.values.Set("fields", strings.Join(fields, ","))
-
-	return r
-}
-
-// FieldStatistics If `true`, the response includes the document count, sum of document
-// frequencies, and sum of total term frequencies.
-// API name: field_statistics
-func (r *Termvectors) FieldStatistics(fieldstatistics bool) *Termvectors {
-	r.values.Set("field_statistics", strconv.FormatBool(fieldstatistics))
-
-	return r
-}
-
-// Offsets If `true`, the response includes term offsets.
-// API name: offsets
-func (r *Termvectors) Offsets(offsets bool) *Termvectors {
-	r.values.Set("offsets", strconv.FormatBool(offsets))
-
-	return r
-}
-
-// Payloads If `true`, the response includes term payloads.
-// API name: payloads
-func (r *Termvectors) Payloads(payloads bool) *Termvectors {
-	r.values.Set("payloads", strconv.FormatBool(payloads))
-
-	return r
-}
-
-// Positions If `true`, the response includes term positions.
-// API name: positions
-func (r *Termvectors) Positions(positions bool) *Termvectors {
-	r.values.Set("positions", strconv.FormatBool(positions))
-
-	return r
-}
-
-// Preference Specifies the node or shard the operation should be performed on.
-// Random by default.
+// Preference The node or shard the operation should be performed on.
+// It is random by default.
 // API name: preference
 func (r *Termvectors) Preference(preference string) *Termvectors {
 	r.values.Set("preference", preference)
@@ -406,38 +460,6 @@ func (r *Termvectors) Preference(preference string) *Termvectors {
 // API name: realtime
 func (r *Termvectors) Realtime(realtime bool) *Termvectors {
 	r.values.Set("realtime", strconv.FormatBool(realtime))
-
-	return r
-}
-
-// Routing Custom value used to route operations to a specific shard.
-// API name: routing
-func (r *Termvectors) Routing(routing string) *Termvectors {
-	r.values.Set("routing", routing)
-
-	return r
-}
-
-// TermStatistics If `true`, the response includes term frequency and document frequency.
-// API name: term_statistics
-func (r *Termvectors) TermStatistics(termstatistics bool) *Termvectors {
-	r.values.Set("term_statistics", strconv.FormatBool(termstatistics))
-
-	return r
-}
-
-// Version If `true`, returns the document version as part of a hit.
-// API name: version
-func (r *Termvectors) Version(versionnumber string) *Termvectors {
-	r.values.Set("version", versionnumber)
-
-	return r
-}
-
-// VersionType Specific version type.
-// API name: version_type
-func (r *Termvectors) VersionType(versiontype versiontype.VersionType) *Termvectors {
-	r.values.Set("version_type", versiontype.String())
 
 	return r
 }
@@ -494,6 +516,9 @@ func (r *Termvectors) Pretty(pretty bool) *Termvectors {
 // if a structure is provided, the client will defer a json serialization
 // prior to sending the payload to Elasticsearch.
 func (r *Termvectors) Doc(doc any) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	switch casted := doc.(type) {
 	case json.RawMessage:
 		r.req.Doc = casted
@@ -511,20 +536,148 @@ func (r *Termvectors) Doc(doc any) *Termvectors {
 	return r
 }
 
+// FieldStatistics If `true`, the response includes:
+//
+// * The document count (how many documents contain this field).
+// * The sum of document frequencies (the sum of document frequencies for all
+// terms in this field).
+// * The sum of total term frequencies (the sum of total term frequencies of
+// each term in this field).
+// API name: field_statistics
+func (r *Termvectors) FieldStatistics(fieldstatistics bool) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.FieldStatistics = &fieldstatistics
+
+	return r
+}
+
+// Fields A list of fields to include in the statistics.
+// It is used as the default list unless a specific field list is provided in
+// the `completion_fields` or `fielddata_fields` parameters.
+// API name: fields
+func (r *Termvectors) Fields(fields ...string) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.Fields = fields
+
+	return r
+}
+
 // Filter Filter terms based on their tf-idf scores.
+// This could be useful in order find out a good characteristic vector of a
+// document.
+// This feature works in a similar manner to the second phase of the More Like
+// This Query.
 // API name: filter
 func (r *Termvectors) Filter(filter *types.TermVectorsFilter) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Filter = filter
 
 	return r
 }
 
-// PerFieldAnalyzer Overrides the default per-field analyzer.
+// Offsets If `true`, the response includes term offsets.
+// API name: offsets
+func (r *Termvectors) Offsets(offsets bool) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.Offsets = &offsets
+
+	return r
+}
+
+// Payloads If `true`, the response includes term payloads.
+// API name: payloads
+func (r *Termvectors) Payloads(payloads bool) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.Payloads = &payloads
+
+	return r
+}
+
+// PerFieldAnalyzer Override the default per-field analyzer.
+// This is useful in order to generate term vectors in any fashion, especially
+// when using artificial documents.
+// When providing an analyzer for a field that already stores term vectors, the
+// term vectors will be regenerated.
 // API name: per_field_analyzer
 func (r *Termvectors) PerFieldAnalyzer(perfieldanalyzer map[string]string) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.PerFieldAnalyzer = perfieldanalyzer
+
+	return r
+}
+
+// Positions If `true`, the response includes term positions.
+// API name: positions
+func (r *Termvectors) Positions(positions bool) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.Positions = &positions
+
+	return r
+}
+
+// Routing A custom value that is used to route operations to a specific shard.
+// API name: routing
+func (r *Termvectors) Routing(routing string) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.Routing = &routing
+
+	return r
+}
+
+// TermStatistics If `true`, the response includes:
+//
+// * The total term frequency (how often a term occurs in all documents).
+// * The document frequency (the number of documents containing the current
+// term).
+//
+// By default these values are not returned since term statistics can have a
+// serious performance impact.
+// API name: term_statistics
+func (r *Termvectors) TermStatistics(termstatistics bool) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.TermStatistics = &termstatistics
+
+	return r
+}
+
+// Version If `true`, returns the document version as part of a hit.
+// API name: version
+func (r *Termvectors) Version(versionnumber int64) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.Version = &versionnumber
+
+	return r
+}
+
+// VersionType The version type.
+// API name: version_type
+func (r *Termvectors) VersionType(versiontype versiontype.VersionType) *Termvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.VersionType = &versiontype
 
 	return r
 }

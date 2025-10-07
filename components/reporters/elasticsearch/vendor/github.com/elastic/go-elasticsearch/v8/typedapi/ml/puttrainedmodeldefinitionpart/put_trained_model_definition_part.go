@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create part of a trained model definition.
 package puttrainedmodeldefinitionpart
@@ -96,8 +96,6 @@ func New(tp elastictransport.Interface) *PutTrainedModelDefinitionPart {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -387,6 +385,9 @@ func (r *PutTrainedModelDefinitionPart) Pretty(pretty bool) *PutTrainedModelDefi
 // Definition The definition part for the model. Must be a base64 encoded string.
 // API name: definition
 func (r *PutTrainedModelDefinitionPart) Definition(definition string) *PutTrainedModelDefinitionPart {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Definition = definition
 
@@ -396,6 +397,9 @@ func (r *PutTrainedModelDefinitionPart) Definition(definition string) *PutTraine
 // TotalDefinitionLength The total uncompressed definition length in bytes. Not base64 encoded.
 // API name: total_definition_length
 func (r *PutTrainedModelDefinitionPart) TotalDefinitionLength(totaldefinitionlength int64) *PutTrainedModelDefinitionPart {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.TotalDefinitionLength = totaldefinitionlength
 
@@ -405,6 +409,9 @@ func (r *PutTrainedModelDefinitionPart) TotalDefinitionLength(totaldefinitionlen
 // TotalParts The total number of parts that will be uploaded. Must be greater than 0.
 // API name: total_parts
 func (r *PutTrainedModelDefinitionPart) TotalParts(totalparts int) *PutTrainedModelDefinitionPart {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.TotalParts = totalparts
 
 	return r

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func newCatSegmentsFunc(t Transport) CatSegments {
@@ -34,7 +35,7 @@ func newCatSegmentsFunc(t Transport) CatSegments {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -52,12 +53,14 @@ type CatSegments func(o ...func(*CatSegmentsRequest)) (*Response, error)
 type CatSegmentsRequest struct {
 	Index []string
 
-	Bytes  string
-	Format string
-	H      []string
-	Help   *bool
-	S      []string
-	V      *bool
+	Bytes         string
+	Format        string
+	H             []string
+	Help          *bool
+	Local         *bool
+	MasterTimeout time.Duration
+	S             []string
+	V             *bool
 
 	Pretty     bool
 	Human      bool
@@ -68,7 +71,7 @@ type CatSegmentsRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -80,7 +83,7 @@ func (r CatSegmentsRequest) Do(providedCtx context.Context, transport Transport)
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "cat.segments")
 		defer instrument.Close(ctx)
 	}
@@ -99,7 +102,7 @@ func (r CatSegmentsRequest) Do(providedCtx context.Context, transport Transport)
 	if len(r.Index) > 0 {
 		path.WriteString("/")
 		path.WriteString(strings.Join(r.Index, ","))
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordPathPart(ctx, "index", strings.Join(r.Index, ","))
 		}
 	}
@@ -120,6 +123,14 @@ func (r CatSegmentsRequest) Do(providedCtx context.Context, transport Transport)
 
 	if r.Help != nil {
 		params["help"] = strconv.FormatBool(*r.Help)
+	}
+
+	if r.Local != nil {
+		params["local"] = strconv.FormatBool(*r.Local)
+	}
+
+	if r.MasterTimeout != 0 {
+		params["master_timeout"] = formatDuration(r.MasterTimeout)
 	}
 
 	if len(r.S) > 0 {
@@ -148,7 +159,7 @@ func (r CatSegmentsRequest) Do(providedCtx context.Context, transport Transport)
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -178,15 +189,15 @@ func (r CatSegmentsRequest) Do(providedCtx context.Context, transport Transport)
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "cat.segments")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "cat.segments")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -240,6 +251,20 @@ func (f CatSegments) WithH(v ...string) func(*CatSegmentsRequest) {
 func (f CatSegments) WithHelp(v bool) func(*CatSegmentsRequest) {
 	return func(r *CatSegmentsRequest) {
 		r.Help = &v
+	}
+}
+
+// WithLocal - return local information, do not retrieve the state from master node (default: false).
+func (f CatSegments) WithLocal(v bool) func(*CatSegmentsRequest) {
+	return func(r *CatSegmentsRequest) {
+		r.Local = &v
+	}
+}
+
+// WithMasterTimeout - explicit operation timeout for connection to master node.
+func (f CatSegments) WithMasterTimeout(v time.Duration) func(*CatSegmentsRequest) {
+	return func(r *CatSegmentsRequest) {
+		r.MasterTimeout = v
 	}
 }
 

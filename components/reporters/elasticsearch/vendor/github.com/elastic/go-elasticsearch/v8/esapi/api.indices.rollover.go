@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -36,7 +36,7 @@ func newIndicesRolloverFunc(t Transport) IndicesRollover {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -61,7 +61,6 @@ type IndicesRolloverRequest struct {
 	DryRun              *bool
 	Lazy                *bool
 	MasterTimeout       time.Duration
-	TargetFailureStore  *bool
 	Timeout             time.Duration
 	WaitForActiveShards string
 
@@ -74,7 +73,7 @@ type IndicesRolloverRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -86,7 +85,7 @@ func (r IndicesRolloverRequest) Do(providedCtx context.Context, transport Transp
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "indices.rollover")
 		defer instrument.Close(ctx)
 	}
@@ -100,7 +99,7 @@ func (r IndicesRolloverRequest) Do(providedCtx context.Context, transport Transp
 	path.WriteString("http://")
 	path.WriteString("/")
 	path.WriteString(r.Alias)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "alias", r.Alias)
 	}
 	path.WriteString("/")
@@ -108,7 +107,7 @@ func (r IndicesRolloverRequest) Do(providedCtx context.Context, transport Transp
 	if r.NewIndex != "" {
 		path.WriteString("/")
 		path.WriteString(r.NewIndex)
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordPathPart(ctx, "new_index", r.NewIndex)
 		}
 	}
@@ -125,10 +124,6 @@ func (r IndicesRolloverRequest) Do(providedCtx context.Context, transport Transp
 
 	if r.MasterTimeout != 0 {
 		params["master_timeout"] = formatDuration(r.MasterTimeout)
-	}
-
-	if r.TargetFailureStore != nil {
-		params["target_failure_store"] = strconv.FormatBool(*r.TargetFailureStore)
 	}
 
 	if r.Timeout != 0 {
@@ -157,7 +152,7 @@ func (r IndicesRolloverRequest) Do(providedCtx context.Context, transport Transp
 
 	req, err := newRequest(method, path.String(), r.Body)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -191,18 +186,18 @@ func (r IndicesRolloverRequest) Do(providedCtx context.Context, transport Transp
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "indices.rollover")
 		if reader := instrument.RecordRequestBody(ctx, "indices.rollover", r.Body); reader != nil {
 			req.Body = reader
 		}
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "indices.rollover")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -256,13 +251,6 @@ func (f IndicesRollover) WithLazy(v bool) func(*IndicesRolloverRequest) {
 func (f IndicesRollover) WithMasterTimeout(v time.Duration) func(*IndicesRolloverRequest) {
 	return func(r *IndicesRolloverRequest) {
 		r.MasterTimeout = v
-	}
-}
-
-// WithTargetFailureStore - if set to true, the rollover action will be applied on the failure store of the data stream..
-func (f IndicesRollover) WithTargetFailureStore(v bool) func(*IndicesRolloverRequest) {
-	return func(r *IndicesRolloverRequest) {
-		r.TargetFailureStore = &v
 	}
 }
 

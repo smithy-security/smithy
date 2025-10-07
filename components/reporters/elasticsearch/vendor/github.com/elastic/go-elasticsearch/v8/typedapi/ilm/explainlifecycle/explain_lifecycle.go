@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Explain the lifecycle state.
 // Get the current lifecycle status for one or more indices.
@@ -336,15 +336,6 @@ func (r *ExplainLifecycle) OnlyManaged(onlymanaged bool) *ExplainLifecycle {
 // API name: master_timeout
 func (r *ExplainLifecycle) MasterTimeout(duration string) *ExplainLifecycle {
 	r.values.Set("master_timeout", duration)
-
-	return r
-}
-
-// Timeout Period to wait for a response. If no response is received before the timeout
-// expires, the request fails and returns an error.
-// API name: timeout
-func (r *ExplainLifecycle) Timeout(duration string) *ExplainLifecycle {
-	r.values.Set("timeout", duration)
 
 	return r
 }

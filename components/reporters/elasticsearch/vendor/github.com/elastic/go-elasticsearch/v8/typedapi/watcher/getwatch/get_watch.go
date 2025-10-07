@@ -16,9 +16,9 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Retrieves a watch by its ID.
+// Get a watch.
 package getwatch
 
 import (
@@ -76,9 +76,9 @@ func NewGetWatchFunc(tp elastictransport.Interface) NewGetWatch {
 	}
 }
 
-// Retrieves a watch by its ID.
+// Get a watch.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/watcher-api-get-watch.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-watcher-get-watch
 func New(tp elastictransport.Interface) *GetWatch {
 	r := &GetWatch{
 		transport: tp,
@@ -290,7 +290,7 @@ func (r *GetWatch) Header(key, value string) *GetWatch {
 	return r
 }
 
-// Id Watch ID
+// Id The watch identifier.
 // API Name: id
 func (r *GetWatch) _id(id string) *GetWatch {
 	r.paramSet |= idMask

@@ -16,9 +16,58 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Verifies the integrity of the contents of a snapshot repository
+// Verify the repository integrity.
+// Verify the integrity of the contents of a snapshot repository.
+//
+// This API enables you to perform a comprehensive check of the contents of a
+// repository, looking for any anomalies in its data or metadata which might
+// prevent you from restoring snapshots from the repository or which might cause
+// future snapshot create or delete operations to fail.
+//
+// If you suspect the integrity of the contents of one of your snapshot
+// repositories, cease all write activity to this repository immediately, set
+// its `read_only` option to `true`, and use this API to verify its integrity.
+// Until you do so:
+//
+// * It may not be possible to restore some snapshots from this repository.
+// * Searchable snapshots may report errors when searched or may have unassigned
+// shards.
+// * Taking snapshots into this repository may fail or may appear to succeed but
+// have created a snapshot which cannot be restored.
+// * Deleting snapshots from this repository may fail or may appear to succeed
+// but leave the underlying data on disk.
+// * Continuing to write to the repository while it is in an invalid state may
+// causing additional damage to its contents.
+//
+// If the API finds any problems with the integrity of the contents of your
+// repository, Elasticsearch will not be able to repair the damage.
+// The only way to bring the repository back into a fully working state after
+// its contents have been damaged is by restoring its contents from a repository
+// backup which was taken before the damage occurred.
+// You must also identify what caused the damage and take action to prevent it
+// from happening again.
+//
+// If you cannot restore a repository backup, register a new repository and use
+// this for all future snapshot operations.
+// In some cases it may be possible to recover some of the contents of a damaged
+// repository, either by restoring as many of its snapshots as needed and taking
+// new snapshots of the restored data, or by using the reindex API to copy data
+// from any searchable snapshots mounted from the damaged repository.
+//
+// Avoid all operations which write to the repository while the verify
+// repository integrity API is running.
+// If something changes the repository contents while an integrity verification
+// is running then Elasticsearch may incorrectly report having detected some
+// anomalies in its contents due to the concurrent writes.
+// It may also incorrectly fail to report some anomalies that the concurrent
+// writes prevented it from detecting.
+//
+// NOTE: This API is intended for exploratory use by humans. You should expect
+// the request parameters and the response format to vary in future versions.
+//
+// NOTE: This API may not work correctly in a mixed-version cluster.
 package repositoryverifyintegrity
 
 import (
@@ -76,9 +125,58 @@ func NewRepositoryVerifyIntegrityFunc(tp elastictransport.Interface) NewReposito
 	}
 }
 
-// Verifies the integrity of the contents of a snapshot repository
+// Verify the repository integrity.
+// Verify the integrity of the contents of a snapshot repository.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html
+// This API enables you to perform a comprehensive check of the contents of a
+// repository, looking for any anomalies in its data or metadata which might
+// prevent you from restoring snapshots from the repository or which might cause
+// future snapshot create or delete operations to fail.
+//
+// If you suspect the integrity of the contents of one of your snapshot
+// repositories, cease all write activity to this repository immediately, set
+// its `read_only` option to `true`, and use this API to verify its integrity.
+// Until you do so:
+//
+// * It may not be possible to restore some snapshots from this repository.
+// * Searchable snapshots may report errors when searched or may have unassigned
+// shards.
+// * Taking snapshots into this repository may fail or may appear to succeed but
+// have created a snapshot which cannot be restored.
+// * Deleting snapshots from this repository may fail or may appear to succeed
+// but leave the underlying data on disk.
+// * Continuing to write to the repository while it is in an invalid state may
+// causing additional damage to its contents.
+//
+// If the API finds any problems with the integrity of the contents of your
+// repository, Elasticsearch will not be able to repair the damage.
+// The only way to bring the repository back into a fully working state after
+// its contents have been damaged is by restoring its contents from a repository
+// backup which was taken before the damage occurred.
+// You must also identify what caused the damage and take action to prevent it
+// from happening again.
+//
+// If you cannot restore a repository backup, register a new repository and use
+// this for all future snapshot operations.
+// In some cases it may be possible to recover some of the contents of a damaged
+// repository, either by restoring as many of its snapshots as needed and taking
+// new snapshots of the restored data, or by using the reindex API to copy data
+// from any searchable snapshots mounted from the damaged repository.
+//
+// Avoid all operations which write to the repository while the verify
+// repository integrity API is running.
+// If something changes the repository contents while an integrity verification
+// is running then Elasticsearch may incorrectly report having detected some
+// anomalies in its contents due to the concurrent writes.
+// It may also incorrectly fail to report some anomalies that the concurrent
+// writes prevented it from detecting.
+//
+// NOTE: This API is intended for exploratory use by humans. You should expect
+// the request parameters and the response format to vary in future versions.
+//
+// NOTE: This API may not work correctly in a mixed-version cluster.
+//
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/verify-repo-integrity-api.html
 func New(tp elastictransport.Interface) *RepositoryVerifyIntegrity {
 	r := &RepositoryVerifyIntegrity{
 		transport: tp,

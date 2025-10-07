@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -32,23 +32,47 @@ import (
 
 // MultiSearchItem type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/msearch/types.ts#L216-L219
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/msearch/types.ts#L216-L219
 type MultiSearchItem struct {
-	Aggregations    map[string]Aggregate       `json:"aggregations,omitempty"`
-	Clusters_       *ClusterStatistics         `json:"_clusters,omitempty"`
-	Fields          map[string]json.RawMessage `json:"fields,omitempty"`
-	Hits            HitsMetadata               `json:"hits"`
-	MaxScore        *Float64                   `json:"max_score,omitempty"`
-	NumReducePhases *int64                     `json:"num_reduce_phases,omitempty"`
-	PitId           *string                    `json:"pit_id,omitempty"`
-	Profile         *Profile                   `json:"profile,omitempty"`
-	ScrollId_       *string                    `json:"_scroll_id,omitempty"`
-	Shards_         ShardStatistics            `json:"_shards"`
-	Status          *int                       `json:"status,omitempty"`
-	Suggest         map[string][]Suggest       `json:"suggest,omitempty"`
-	TerminatedEarly *bool                      `json:"terminated_early,omitempty"`
-	TimedOut        bool                       `json:"timed_out"`
-	Took            int64                      `json:"took"`
+	Aggregations map[string]Aggregate       `json:"aggregations,omitempty"`
+	Clusters_    *ClusterStatistics         `json:"_clusters,omitempty"`
+	Fields       map[string]json.RawMessage `json:"fields,omitempty"`
+	// Hits The returned documents and metadata.
+	Hits            HitsMetadata `json:"hits"`
+	MaxScore        *Float64     `json:"max_score,omitempty"`
+	NumReducePhases *int64       `json:"num_reduce_phases,omitempty"`
+	PitId           *string      `json:"pit_id,omitempty"`
+	Profile         *Profile     `json:"profile,omitempty"`
+	// ScrollId_ The identifier for the search and its search context.
+	// You can use this scroll ID with the scroll API to retrieve the next batch of
+	// search results for the request.
+	// This property is returned only if the `scroll` query parameter is specified
+	// in the request.
+	ScrollId_ *string `json:"_scroll_id,omitempty"`
+	// Shards_ A count of shards used for the request.
+	Shards_         ShardStatistics      `json:"_shards"`
+	Status          *int                 `json:"status,omitempty"`
+	Suggest         map[string][]Suggest `json:"suggest,omitempty"`
+	TerminatedEarly *bool                `json:"terminated_early,omitempty"`
+	// TimedOut If `true`, the request timed out before completion; returned results may be
+	// partial or empty.
+	TimedOut bool `json:"timed_out"`
+	// Took The number of milliseconds it took Elasticsearch to run the request.
+	// This value is calculated by measuring the time elapsed between receipt of a
+	// request on the coordinating node and the time at which the coordinating node
+	// is ready to send the response.
+	// It includes:
+	//
+	// * Communication time between the coordinating node and data nodes
+	// * Time the request spends in the search thread pool, queued for execution
+	// * Actual run time
+	//
+	// It does not include:
+	//
+	// * Time needed to send the request to Elasticsearch
+	// * Time needed to serialize the JSON response
+	// * Time needed to send the response to a client
+	Took int64 `json:"took"`
 }
 
 func (s *MultiSearchItem) UnmarshalJSON(data []byte) error {
@@ -797,9 +821,9 @@ func (s *MultiSearchItem) UnmarshalJSON(data []byte) error {
 // NewMultiSearchItem returns a MultiSearchItem.
 func NewMultiSearchItem() *MultiSearchItem {
 	r := &MultiSearchItem{
-		Aggregations: make(map[string]Aggregate, 0),
-		Fields:       make(map[string]json.RawMessage, 0),
-		Suggest:      make(map[string][]Suggest, 0),
+		Aggregations: make(map[string]Aggregate),
+		Fields:       make(map[string]json.RawMessage),
+		Suggest:      make(map[string][]Suggest),
 	}
 
 	return r

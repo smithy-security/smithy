@@ -16,15 +16,19 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get the search shards.
 //
 // Get the indices and shards that a search request would be run against.
 // This information can be useful for working out issues or planning
 // optimizations with routing and shard preferences.
-// When filtered aliases are used, the filter is returned as part of the indices
-// section.
+// When filtered aliases are used, the filter is returned as part of the
+// `indices` section.
+//
+// If the Elasticsearch security features are enabled, you must have the
+// `view_index_metadata` or `manage` index privilege for the target data stream,
+// index, or alias.
 package searchshards
 
 import (
@@ -86,8 +90,12 @@ func NewSearchShardsFunc(tp elastictransport.Interface) NewSearchShards {
 // Get the indices and shards that a search request would be run against.
 // This information can be useful for working out issues or planning
 // optimizations with routing and shard preferences.
-// When filtered aliases are used, the filter is returned as part of the indices
-// section.
+// When filtered aliases are used, the filter is returned as part of the
+// `indices` section.
+//
+// If the Elasticsearch security features are enabled, you must have the
+// `view_index_metadata` or `manage` index privilege for the target data stream,
+// index, or alias.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/search-shards.html
 func New(tp elastictransport.Interface) *SearchShards {
@@ -304,8 +312,10 @@ func (r *SearchShards) Header(key, value string) *SearchShards {
 	return r
 }
 
-// Index Returns the indices and shards that a search request would be executed
-// against.
+// Index A comma-separated list of data streams, indices, and aliases to search.
+// It supports wildcards (`*`).
+// To search all data streams and indices, omit this parameter or use `*` or
+// `_all`.
 // API Name: index
 func (r *SearchShards) Index(index string) *SearchShards {
 	r.paramSet |= indexMask
@@ -330,7 +340,6 @@ func (r *SearchShards) AllowNoIndices(allownoindices bool) *SearchShards {
 // If the request can target data streams, this argument determines whether
 // wildcard expressions match hidden data streams.
 // Supports comma-separated values, such as `open,hidden`.
-// Valid values are: `all`, `open`, `closed`, `hidden`, `none`.
 // API name: expand_wildcards
 func (r *SearchShards) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *SearchShards {
 	tmp := []string{}
@@ -359,8 +368,19 @@ func (r *SearchShards) Local(local bool) *SearchShards {
 	return r
 }
 
-// Preference Specifies the node or shard the operation should be performed on.
-// Random by default.
+// MasterTimeout The period to wait for a connection to the master node.
+// If the master node is not available before the timeout expires, the request
+// fails and returns an error.
+// IT can also be set to `-1` to indicate that the request should never timeout.
+// API name: master_timeout
+func (r *SearchShards) MasterTimeout(duration string) *SearchShards {
+	r.values.Set("master_timeout", duration)
+
+	return r
+}
+
+// Preference The node or shard the operation should be performed on.
+// It is random by default.
 // API name: preference
 func (r *SearchShards) Preference(preference string) *SearchShards {
 	r.values.Set("preference", preference)
@@ -368,7 +388,7 @@ func (r *SearchShards) Preference(preference string) *SearchShards {
 	return r
 }
 
-// Routing Custom value used to route operations to a specific shard.
+// Routing A custom value used to route operations to a specific shard.
 // API name: routing
 func (r *SearchShards) Routing(routing string) *SearchShards {
 	r.values.Set("routing", routing)

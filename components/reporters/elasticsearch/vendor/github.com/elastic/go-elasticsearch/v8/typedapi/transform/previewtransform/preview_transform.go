@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Preview a transform.
 // Generates a preview of the results that you will get when you create a
@@ -105,8 +105,6 @@ func New(tp elastictransport.Interface) *PreviewTransform {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -394,6 +392,9 @@ func (r *PreviewTransform) Pretty(pretty bool) *PreviewTransform {
 // Description Free text description of the transform.
 // API name: description
 func (r *PreviewTransform) Description(description string) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -403,6 +404,9 @@ func (r *PreviewTransform) Description(description string) *PreviewTransform {
 // Dest The destination for the transform.
 // API name: dest
 func (r *PreviewTransform) Dest(dest *types.TransformDestination) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Dest = dest
 
@@ -415,6 +419,9 @@ func (r *PreviewTransform) Dest(dest *types.TransformDestination) *PreviewTransf
 // indexing. The minimum value is 1s and the maximum is 1h.
 // API name: frequency
 func (r *PreviewTransform) Frequency(duration types.Duration) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Frequency = duration
 
 	return r
@@ -424,6 +431,9 @@ func (r *PreviewTransform) Frequency(duration types.Duration) *PreviewTransform 
 // each unique key.
 // API name: latest
 func (r *PreviewTransform) Latest(latest *types.Latest) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Latest = latest
 
@@ -435,6 +445,9 @@ func (r *PreviewTransform) Latest(latest *types.Latest) *PreviewTransform {
 // the data.
 // API name: pivot
 func (r *PreviewTransform) Pivot(pivot *types.Pivot) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Pivot = pivot
 
@@ -445,6 +458,9 @@ func (r *PreviewTransform) Pivot(pivot *types.Pivot) *PreviewTransform {
 // criteria is deleted from the destination index.
 // API name: retention_policy
 func (r *PreviewTransform) RetentionPolicy(retentionpolicy *types.RetentionPolicyContainer) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RetentionPolicy = retentionpolicy
 
@@ -454,6 +470,9 @@ func (r *PreviewTransform) RetentionPolicy(retentionpolicy *types.RetentionPolic
 // Settings Defines optional transform settings.
 // API name: settings
 func (r *PreviewTransform) Settings(settings *types.Settings) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 
@@ -463,6 +482,9 @@ func (r *PreviewTransform) Settings(settings *types.Settings) *PreviewTransform 
 // Source The source of the data for the transform.
 // API name: source
 func (r *PreviewTransform) Source(source *types.TransformSource) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Source = source
 
@@ -472,6 +494,9 @@ func (r *PreviewTransform) Source(source *types.TransformSource) *PreviewTransfo
 // Sync Defines the properties transforms require to run continuously.
 // API name: sync
 func (r *PreviewTransform) Sync(sync *types.SyncContainer) *PreviewTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Sync = sync
 

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -32,10 +32,10 @@ import (
 
 // AsyncSearch type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/async_search/_types/AsyncSearch.ts#L30-L56
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/async_search/_types/AsyncSearch.ts#L30-L56
 type AsyncSearch struct {
 	// Aggregations Partial aggregations results, coming from the shards that have already
-	// completed the execution of the query.
+	// completed running the query.
 	Aggregations map[string]Aggregate       `json:"aggregations,omitempty"`
 	Clusters_    *ClusterStatistics         `json:"_clusters,omitempty"`
 	Fields       map[string]json.RawMessage `json:"fields,omitempty"`
@@ -789,9 +789,9 @@ func (s *AsyncSearch) UnmarshalJSON(data []byte) error {
 // NewAsyncSearch returns a AsyncSearch.
 func NewAsyncSearch() *AsyncSearch {
 	r := &AsyncSearch{
-		Aggregations: make(map[string]Aggregate, 0),
-		Fields:       make(map[string]json.RawMessage, 0),
-		Suggest:      make(map[string][]Suggest, 0),
+		Aggregations: make(map[string]Aggregate),
+		Fields:       make(map[string]json.RawMessage),
+		Suggest:      make(map[string][]Suggest),
 	}
 
 	return r

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update a datafeed.
 // You must stop and start the datafeed for the changes to be applied.
@@ -104,8 +104,6 @@ func New(tp elastictransport.Interface) *UpdateDatafeed {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -346,16 +344,7 @@ func (r *UpdateDatafeed) AllowNoIndices(allownoindices bool) *UpdateDatafeed {
 // ExpandWildcards Type of index that wildcard patterns can match. If the request can target
 // data streams, this argument determines
 // whether wildcard expressions match hidden data streams. Supports
-// comma-separated values. Valid values are:
-//
-// * `all`: Match any data stream or index, including hidden ones.
-// * `closed`: Match closed, non-hidden indices. Also matches any non-hidden
-// data stream. Data streams cannot be closed.
-// * `hidden`: Match hidden data streams and hidden indices. Must be combined
-// with `open`, `closed`, or both.
-// * `none`: Wildcard patterns are not accepted.
-// * `open`: Match open, non-hidden indices. Also matches any non-hidden data
-// stream.
+// comma-separated values.
 // API name: expand_wildcards
 func (r *UpdateDatafeed) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *UpdateDatafeed {
 	tmp := []string{}
@@ -432,6 +421,9 @@ func (r *UpdateDatafeed) Pretty(pretty bool) *UpdateDatafeed {
 // with low cardinality data.
 // API name: aggregations
 func (r *UpdateDatafeed) Aggregations(aggregations map[string]types.Aggregations) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Aggregations = aggregations
 
@@ -445,6 +437,9 @@ func (r *UpdateDatafeed) Aggregations(aggregations map[string]types.Aggregations
 // these time chunks are calculated; it is an advanced configuration option.
 // API name: chunking_config
 func (r *UpdateDatafeed) ChunkingConfig(chunkingconfig *types.ChunkingConfig) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ChunkingConfig = chunkingconfig
 
@@ -462,6 +457,9 @@ func (r *UpdateDatafeed) ChunkingConfig(chunkingconfig *types.ChunkingConfig) *U
 // datafeeds.
 // API name: delayed_data_check_config
 func (r *UpdateDatafeed) DelayedDataCheckConfig(delayeddatacheckconfig *types.DelayedDataCheckConfig) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.DelayedDataCheckConfig = delayeddatacheckconfig
 
@@ -479,6 +477,9 @@ func (r *UpdateDatafeed) DelayedDataCheckConfig(delayeddatacheckconfig *types.De
 // must be divisible by the interval of the date histogram aggregation.
 // API name: frequency
 func (r *UpdateDatafeed) Frequency(duration types.Duration) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Frequency = duration
 
 	return r
@@ -489,6 +490,9 @@ func (r *UpdateDatafeed) Frequency(duration types.Duration) *UpdateDatafeed {
 // learning nodes must have the `remote_cluster_client` role.
 // API name: indices
 func (r *UpdateDatafeed) Indices(indices ...string) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Indices = indices
 
 	return r
@@ -497,6 +501,9 @@ func (r *UpdateDatafeed) Indices(indices ...string) *UpdateDatafeed {
 // IndicesOptions Specifies index expansion options that are used during search.
 // API name: indices_options
 func (r *UpdateDatafeed) IndicesOptions(indicesoptions *types.IndicesOptions) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.IndicesOptions = indicesoptions
 
@@ -505,6 +512,9 @@ func (r *UpdateDatafeed) IndicesOptions(indicesoptions *types.IndicesOptions) *U
 
 // API name: job_id
 func (r *UpdateDatafeed) JobId(id string) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.JobId = &id
 
 	return r
@@ -520,6 +530,9 @@ func (r *UpdateDatafeed) JobId(id string) *UpdateDatafeed {
 // default, it is not set.
 // API name: max_empty_searches
 func (r *UpdateDatafeed) MaxEmptySearches(maxemptysearches int) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxEmptySearches = &maxemptysearches
 
 	return r
@@ -540,6 +553,9 @@ func (r *UpdateDatafeed) MaxEmptySearches(maxemptysearches int) *UpdateDatafeed 
 // when you are satisfied with the results of the job.
 // API name: query
 func (r *UpdateDatafeed) Query(query *types.Query) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Query = query
 
@@ -555,6 +571,9 @@ func (r *UpdateDatafeed) Query(query *types.Query) *UpdateDatafeed {
 // when there are multiple jobs running on the same node.
 // API name: query_delay
 func (r *UpdateDatafeed) QueryDelay(duration types.Duration) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.QueryDelay = duration
 
 	return r
@@ -563,6 +582,9 @@ func (r *UpdateDatafeed) QueryDelay(duration types.Duration) *UpdateDatafeed {
 // RuntimeMappings Specifies runtime fields for the datafeed search.
 // API name: runtime_mappings
 func (r *UpdateDatafeed) RuntimeMappings(runtimefields types.RuntimeFields) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.RuntimeMappings = runtimefields
 
 	return r
@@ -574,6 +596,9 @@ func (r *UpdateDatafeed) RuntimeMappings(runtimefields types.RuntimeFields) *Upd
 // these script fields.
 // API name: script_fields
 func (r *UpdateDatafeed) ScriptFields(scriptfields map[string]types.ScriptField) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ScriptFields = scriptfields
 
@@ -585,6 +610,9 @@ func (r *UpdateDatafeed) ScriptFields(scriptfields map[string]types.ScriptField)
 // The maximum value is the value of `index.max_result_window`.
 // API name: scroll_size
 func (r *UpdateDatafeed) ScrollSize(scrollsize int) *UpdateDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ScrollSize = &scrollsize
 
 	return r

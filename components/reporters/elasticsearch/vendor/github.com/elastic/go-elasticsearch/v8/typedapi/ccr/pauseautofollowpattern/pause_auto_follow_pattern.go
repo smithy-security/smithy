@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Pause an auto-follow pattern.
+//
 // Pause a cross-cluster replication auto-follow pattern.
 // When the API returns, the auto-follow pattern is inactive.
 // New indices that are created on the remote cluster and match the auto-follow
@@ -88,6 +89,7 @@ func NewPauseAutoFollowPatternFunc(tp elastictransport.Interface) NewPauseAutoFo
 }
 
 // Pause an auto-follow pattern.
+//
 // Pause a cross-cluster replication auto-follow pattern.
 // When the API returns, the auto-follow pattern is inactive.
 // New indices that are created on the remote cluster and match the auto-follow
@@ -314,12 +316,22 @@ func (r *PauseAutoFollowPattern) Header(key, value string) *PauseAutoFollowPatte
 	return r
 }
 
-// Name The name of the auto follow pattern that should pause discovering new indices
-// to follow.
+// Name The name of the auto-follow pattern to pause.
 // API Name: name
 func (r *PauseAutoFollowPattern) _name(name string) *PauseAutoFollowPattern {
 	r.paramSet |= nameMask
 	r.name = name
+
+	return r
+}
+
+// MasterTimeout The period to wait for a connection to the master node.
+// If the master node is not available before the timeout expires, the request
+// fails and returns an error.
+// It can also be set to `-1` to indicate that the request should never timeout.
+// API name: master_timeout
+func (r *PauseAutoFollowPattern) MasterTimeout(duration string) *PauseAutoFollowPattern {
+	r.values.Set("master_timeout", duration)
 
 	return r
 }

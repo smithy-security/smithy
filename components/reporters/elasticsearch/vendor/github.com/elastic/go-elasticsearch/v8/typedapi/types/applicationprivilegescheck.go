@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,15 +31,15 @@ import (
 
 // ApplicationPrivilegesCheck type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/has_privileges/types.ts#L24-L31
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/has_privileges/types.ts#L24-L32
 type ApplicationPrivilegesCheck struct {
 	// Application The name of the application.
 	Application string `json:"application"`
 	// Privileges A list of the privileges that you want to check for the specified resources.
-	// May be either application privilege names, or the names of actions that are
+	// It may be either application privilege names or the names of actions that are
 	// granted by those privileges
 	Privileges []string `json:"privileges"`
-	// Resources A list of resource names against which the privileges should be checked
+	// Resources A list of resource names against which the privileges should be checked.
 	Resources []string `json:"resources"`
 }
 

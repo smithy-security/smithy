@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,11 +31,11 @@ import (
 
 // RankedDocument type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/inference/_types/Results.ts#L67-L77
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/inference/_types/Results.ts#L91-L101
 type RankedDocument struct {
-	Index int     `json:"index"`
-	Score float32 `json:"score"`
-	Text  *string `json:"text,omitempty"`
+	Index          int     `json:"index"`
+	RelevanceScore float32 `json:"relevance_score"`
+	Text           *string `json:"text,omitempty"`
 }
 
 func (s *RankedDocument) UnmarshalJSON(data []byte) error {
@@ -69,20 +69,20 @@ func (s *RankedDocument) UnmarshalJSON(data []byte) error {
 				s.Index = f
 			}
 
-		case "score":
+		case "relevance_score":
 			var tmp any
 			dec.Decode(&tmp)
 			switch v := tmp.(type) {
 			case string:
 				value, err := strconv.ParseFloat(v, 32)
 				if err != nil {
-					return fmt.Errorf("%s | %w", "Score", err)
+					return fmt.Errorf("%s | %w", "RelevanceScore", err)
 				}
 				f := float32(value)
-				s.Score = f
+				s.RelevanceScore = f
 			case float64:
 				f := float32(v)
-				s.Score = f
+				s.RelevanceScore = f
 			}
 
 		case "text":

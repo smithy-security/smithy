@@ -16,13 +16,13 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
 // ClusterInfo type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/cluster/allocation_explain/types.ts#L49-L55
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/cluster/allocation_explain/types.ts#L49-L55
 type ClusterInfo struct {
 	Nodes             map[string]NodeDiskUsage `json:"nodes"`
 	ReservedSizes     []ReservedSize           `json:"reserved_sizes"`
@@ -34,10 +34,10 @@ type ClusterInfo struct {
 // NewClusterInfo returns a ClusterInfo.
 func NewClusterInfo() *ClusterInfo {
 	r := &ClusterInfo{
-		Nodes:             make(map[string]NodeDiskUsage, 0),
-		ShardDataSetSizes: make(map[string]string, 0),
-		ShardPaths:        make(map[string]string, 0),
-		ShardSizes:        make(map[string]int64, 0),
+		Nodes:             make(map[string]NodeDiskUsage),
+		ShardDataSetSizes: make(map[string]string),
+		ShardPaths:        make(map[string]string),
+		ShardSizes:        make(map[string]int64),
 	}
 
 	return r

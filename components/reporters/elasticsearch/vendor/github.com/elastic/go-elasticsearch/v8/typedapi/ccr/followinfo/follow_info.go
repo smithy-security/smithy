@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get follower information.
+//
 // Get information about all cross-cluster replication follower indices.
 // For example, the results include follower index names, leader index names,
 // replication options, and whether the follower indices are active or paused.
@@ -80,6 +81,7 @@ func NewFollowInfoFunc(tp elastictransport.Interface) NewFollowInfo {
 }
 
 // Get follower information.
+//
 // Get information about all cross-cluster replication follower indices.
 // For example, the results include follower index names, leader index names,
 // replication options, and whether the follower indices are active or paused.
@@ -296,12 +298,22 @@ func (r *FollowInfo) Header(key, value string) *FollowInfo {
 	return r
 }
 
-// Index A comma-separated list of index patterns; use `_all` to perform the operation
-// on all indices
+// Index A comma-delimited list of follower index patterns.
 // API Name: index
 func (r *FollowInfo) _index(index string) *FollowInfo {
 	r.paramSet |= indexMask
 	r.index = index
+
+	return r
+}
+
+// MasterTimeout The period to wait for a connection to the master node.
+// If the master node is not available before the timeout expires, the request
+// fails and returns an error.
+// It can also be set to `-1` to indicate that the request should never timeout.
+// API name: master_timeout
+func (r *FollowInfo) MasterTimeout(duration string) *FollowInfo {
+	r.values.Set("master_timeout", duration)
 
 	return r
 }

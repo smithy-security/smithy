@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Clear the roles cache.
 //
@@ -296,7 +296,9 @@ func (r *ClearCachedRoles) Header(key, value string) *ClearCachedRoles {
 	return r
 }
 
-// Name Role name
+// Name A comma-separated list of roles to evict from the role cache.
+// To evict all roles, use an asterisk (`*`).
+// It does not support other wildcard patterns.
 // API Name: name
 func (r *ClearCachedRoles) _name(name string) *ClearCachedRoles {
 	r.paramSet |= nameMask

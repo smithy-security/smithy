@@ -16,12 +16,17 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create or update a synonym set.
 // Synonyms sets are limited to a maximum of 10,000 synonym rules per set.
 // If you need to manage more synonym rules, you can create multiple synonym
 // sets.
+//
+// When an existing synonyms set is updated, the search analyzers that use the
+// synonyms set are reloaded automatically for all indices.
+// This is equivalent to invoking the reload search analyzers API for all
+// indices that use the synonyms set.
 package putsynonym
 
 import (
@@ -89,6 +94,11 @@ func NewPutSynonymFunc(tp elastictransport.Interface) NewPutSynonym {
 // If you need to manage more synonym rules, you can create multiple synonym
 // sets.
 //
+// When an existing synonyms set is updated, the search analyzers that use the
+// synonyms set are reloaded automatically for all indices.
+// This is equivalent to invoking the reload search analyzers API for all
+// indices that use the synonyms set.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/put-synonyms-set.html
 func New(tp elastictransport.Interface) *PutSynonym {
 	r := &PutSynonym{
@@ -97,8 +107,6 @@ func New(tp elastictransport.Interface) *PutSynonym {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -310,7 +318,7 @@ func (r *PutSynonym) Header(key, value string) *PutSynonym {
 	return r
 }
 
-// Id The id of the synonyms set to be created or updated
+// Id The ID of the synonyms set to be created or updated.
 // API Name: id
 func (r *PutSynonym) _id(id string) *PutSynonym {
 	r.paramSet |= idMask
@@ -363,9 +371,12 @@ func (r *PutSynonym) Pretty(pretty bool) *PutSynonym {
 	return r
 }
 
-// SynonymsSet The synonym set information to update
+// SynonymsSet The synonym rules definitions for the synonyms set.
 // API name: synonyms_set
 func (r *PutSynonym) SynonymsSet(synonymssets ...types.SynonymRule) *PutSynonym {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.SynonymsSet = synonymssets
 
 	return r

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -33,7 +33,7 @@ import (
 
 // TrainedModelConfig type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ml/_types/TrainedModel.ts#L191-L227
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ml/_types/TrainedModel.ts#L203-L240
 type TrainedModelConfig struct {
 	CompressedDefinition *string `json:"compressed_definition,omitempty"`
 	// CreateTime The time when the trained model was created.
@@ -68,8 +68,9 @@ type TrainedModelConfig struct {
 	ModelPackage   *ModelPackageConfig `json:"model_package,omitempty"`
 	ModelSizeBytes ByteSize            `json:"model_size_bytes,omitempty"`
 	// ModelType The model type
-	ModelType     *trainedmodeltype.TrainedModelType `json:"model_type,omitempty"`
-	PrefixStrings *TrainedModelPrefixStrings         `json:"prefix_strings,omitempty"`
+	ModelType            *trainedmodeltype.TrainedModelType `json:"model_type,omitempty"`
+	PlatformArchitecture *string                            `json:"platform_architecture,omitempty"`
+	PrefixStrings        *TrainedModelPrefixStrings         `json:"prefix_strings,omitempty"`
 	// Tags A comma delimited string of tags. A trained model can have many tags, or
 	// none.
 	Tags []string `json:"tags"`
@@ -239,6 +240,18 @@ func (s *TrainedModelConfig) UnmarshalJSON(data []byte) error {
 				return fmt.Errorf("%s | %w", "ModelType", err)
 			}
 
+		case "platform_architecture":
+			var tmp json.RawMessage
+			if err := dec.Decode(&tmp); err != nil {
+				return fmt.Errorf("%s | %w", "PlatformArchitecture", err)
+			}
+			o := string(tmp[:])
+			o, err = strconv.Unquote(o)
+			if err != nil {
+				o = string(tmp[:])
+			}
+			s.PlatformArchitecture = &o
+
 		case "prefix_strings":
 			if err := dec.Decode(&s.PrefixStrings); err != nil {
 				return fmt.Errorf("%s | %w", "PrefixStrings", err)
@@ -262,7 +275,7 @@ func (s *TrainedModelConfig) UnmarshalJSON(data []byte) error {
 // NewTrainedModelConfig returns a TrainedModelConfig.
 func NewTrainedModelConfig() *TrainedModelConfig {
 	r := &TrainedModelConfig{
-		DefaultFieldMap: make(map[string]string, 0),
+		DefaultFieldMap: make(map[string]string),
 	}
 
 	return r

@@ -16,9 +16,25 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Creates a rollup job.
+// Create a rollup job.
+//
+// WARNING: From 8.15.0, calling this API in a cluster with no rollup usage will
+// fail with a message about the deprecation and planned removal of rollup
+// features. A cluster needs to contain either a rollup job or a rollup index in
+// order for this API to be allowed to run.
+//
+// The rollup job configuration contains all the details about how the job
+// should run, when it indexes documents, and what future queries will be able
+// to run against the rollup index.
+//
+// There are three main sections to the job configuration: the logistical
+// details about the job (for example, the cron schedule), the fields that are
+// used for grouping, and what metrics to collect for each group.
+//
+// Jobs are created in a `STOPPED` state. You can start them with the start
+// rollup jobs API.
 package putjob
 
 import (
@@ -81,7 +97,23 @@ func NewPutJobFunc(tp elastictransport.Interface) NewPutJob {
 	}
 }
 
-// Creates a rollup job.
+// Create a rollup job.
+//
+// WARNING: From 8.15.0, calling this API in a cluster with no rollup usage will
+// fail with a message about the deprecation and planned removal of rollup
+// features. A cluster needs to contain either a rollup job or a rollup index in
+// order for this API to be allowed to run.
+//
+// The rollup job configuration contains all the details about how the job
+// should run, when it indexes documents, and what future queries will be able
+// to run against the rollup index.
+//
+// There are three main sections to the job configuration: the logistical
+// details about the job (for example, the cron schedule), the fields that are
+// used for grouping, and what metrics to collect for each group.
+//
+// Jobs are created in a `STOPPED` state. You can start them with the start
+// rollup jobs API.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/rollup-put-job.html
 func New(tp elastictransport.Interface) *PutJob {
@@ -91,8 +123,6 @@ func New(tp elastictransport.Interface) *PutJob {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -378,6 +408,9 @@ func (r *PutJob) Pretty(pretty bool) *PutJob {
 // cron pattern is defined just like a Watcher cron schedule.
 // API name: cron
 func (r *PutJob) Cron(cron string) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Cron = cron
 
@@ -396,6 +429,9 @@ func (r *PutJob) Cron(cron string) *PutJob {
 // not in what order they are needed.
 // API name: groups
 func (r *PutJob) Groups(groups *types.Groupings) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Groups = *groups
 
@@ -404,6 +440,9 @@ func (r *PutJob) Groups(groups *types.Groupings) *PutJob {
 
 // API name: headers
 func (r *PutJob) Headers(httpheaders types.HttpHeaders) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Headers = httpheaders
 
 	return r
@@ -414,6 +453,9 @@ func (r *PutJob) Headers(httpheaders types.HttpHeaders) *PutJob {
 // rollup the entire index or index-pattern.
 // API name: index_pattern
 func (r *PutJob) IndexPattern(indexpattern string) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.IndexPattern = indexpattern
 
@@ -428,6 +470,9 @@ func (r *PutJob) IndexPattern(indexpattern string) *PutJob {
 // collected.
 // API name: metrics
 func (r *PutJob) Metrics(metrics ...types.FieldMetric) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Metrics = metrics
 
 	return r
@@ -441,6 +486,9 @@ func (r *PutJob) Metrics(metrics ...types.FieldMetric) *PutJob {
 // indexer.
 // API name: page_size
 func (r *PutJob) PageSize(pagesize int) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.PageSize = pagesize
 
 	return r
@@ -451,6 +499,9 @@ func (r *PutJob) PageSize(pagesize int) *PutJob {
 // unrelated jobs.
 // API name: rollup_index
 func (r *PutJob) RollupIndex(indexname string) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.RollupIndex = indexname
 
 	return r
@@ -459,6 +510,9 @@ func (r *PutJob) RollupIndex(indexname string) *PutJob {
 // Timeout Time to wait for the request to complete.
 // API name: timeout
 func (r *PutJob) Timeout(duration types.Duration) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Timeout = duration
 
 	return r

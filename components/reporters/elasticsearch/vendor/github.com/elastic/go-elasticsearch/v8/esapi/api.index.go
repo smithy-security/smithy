@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -36,7 +36,7 @@ func newIndexFunc(t Transport) Index {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -57,18 +57,19 @@ type IndexRequest struct {
 
 	Body io.Reader
 
-	IfPrimaryTerm       *int
-	IfSeqNo             *int
-	OpType              string
-	Pipeline            string
-	Refresh             string
-	RequireAlias        *bool
-	RequireDataStream   *bool
-	Routing             string
-	Timeout             time.Duration
-	Version             *int
-	VersionType         string
-	WaitForActiveShards string
+	IfPrimaryTerm        *int
+	IfSeqNo              *int
+	IncludeSourceOnError *bool
+	OpType               string
+	Pipeline             string
+	Refresh              string
+	RequireAlias         *bool
+	RequireDataStream    *bool
+	Routing              string
+	Timeout              time.Duration
+	Version              *int
+	VersionType          string
+	WaitForActiveShards  string
 
 	Pretty     bool
 	Human      bool
@@ -79,7 +80,7 @@ type IndexRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -91,7 +92,7 @@ func (r IndexRequest) Do(providedCtx context.Context, transport Transport) (*Res
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "index")
 		defer instrument.Close(ctx)
 	}
@@ -109,7 +110,7 @@ func (r IndexRequest) Do(providedCtx context.Context, transport Transport) (*Res
 	path.WriteString("http://")
 	path.WriteString("/")
 	path.WriteString(r.Index)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "index", r.Index)
 	}
 	path.WriteString("/")
@@ -117,7 +118,7 @@ func (r IndexRequest) Do(providedCtx context.Context, transport Transport) (*Res
 	if r.DocumentID != "" {
 		path.WriteString("/")
 		path.WriteString(r.DocumentID)
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordPathPart(ctx, "id", r.DocumentID)
 		}
 	}
@@ -130,6 +131,10 @@ func (r IndexRequest) Do(providedCtx context.Context, transport Transport) (*Res
 
 	if r.IfSeqNo != nil {
 		params["if_seq_no"] = strconv.FormatInt(int64(*r.IfSeqNo), 10)
+	}
+
+	if r.IncludeSourceOnError != nil {
+		params["include_source_on_error"] = strconv.FormatBool(*r.IncludeSourceOnError)
 	}
 
 	if r.OpType != "" {
@@ -190,7 +195,7 @@ func (r IndexRequest) Do(providedCtx context.Context, transport Transport) (*Res
 
 	req, err := newRequest(method, path.String(), r.Body)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -224,18 +229,18 @@ func (r IndexRequest) Do(providedCtx context.Context, transport Transport) (*Res
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "index")
 		if reader := instrument.RecordRequestBody(ctx, "index", r.Body); reader != nil {
 			req.Body = reader
 		}
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "index")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -275,6 +280,13 @@ func (f Index) WithIfPrimaryTerm(v int) func(*IndexRequest) {
 func (f Index) WithIfSeqNo(v int) func(*IndexRequest) {
 	return func(r *IndexRequest) {
 		r.IfSeqNo = &v
+	}
+}
+
+// WithIncludeSourceOnError - true or false if to include the document source in the error message in case of parsing errors. defaults to true..
+func (f Index) WithIncludeSourceOnError(v bool) func(*IndexRequest) {
+	return func(r *IndexRequest) {
+		r.IncludeSourceOnError = &v
 	}
 }
 

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // Sql type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/xpack/usage/types.ts#L384-L387
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/xpack/usage/types.ts#L396-L399
 type Sql struct {
 	Available bool                  `json:"available"`
 	Enabled   bool                  `json:"enabled"`
@@ -106,8 +106,8 @@ func (s *Sql) UnmarshalJSON(data []byte) error {
 // NewSql returns a Sql.
 func NewSql() *Sql {
 	r := &Sql{
-		Features: make(map[string]int, 0),
-		Queries:  make(map[string]XpackQuery, 0),
+		Features: make(map[string]int),
+		Queries:  make(map[string]XpackQuery),
 	}
 
 	return r

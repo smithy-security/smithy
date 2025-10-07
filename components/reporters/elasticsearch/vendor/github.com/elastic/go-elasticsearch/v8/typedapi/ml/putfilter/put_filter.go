@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create a filter.
 // A filter contains a list of strings. It can be used by one or more anomaly
@@ -99,8 +99,6 @@ func New(tp elastictransport.Interface) *PutFilter {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -370,6 +368,9 @@ func (r *PutFilter) Pretty(pretty bool) *PutFilter {
 // Description A description of the filter.
 // API name: description
 func (r *PutFilter) Description(description string) *PutFilter {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -381,6 +382,9 @@ func (r *PutFilter) Description(description string) *PutFilter {
 // Up to 10000 items are allowed in each filter.
 // API name: items
 func (r *PutFilter) Items(items ...string) *PutFilter {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Items = items
 
 	return r

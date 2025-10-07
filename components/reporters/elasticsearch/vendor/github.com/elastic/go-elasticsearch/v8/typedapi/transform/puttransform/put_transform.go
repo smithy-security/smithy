@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create a transform.
 // Creates a transform.
@@ -159,8 +159,6 @@ func New(tp elastictransport.Interface) *PutTransform {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -456,6 +454,9 @@ func (r *PutTransform) Pretty(pretty bool) *PutTransform {
 // Description Free text description of the transform.
 // API name: description
 func (r *PutTransform) Description(description string) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -465,6 +466,9 @@ func (r *PutTransform) Description(description string) *PutTransform {
 // Dest The destination for the transform.
 // API name: dest
 func (r *PutTransform) Dest(dest *types.TransformDestination) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Dest = *dest
 
@@ -478,6 +482,9 @@ func (r *PutTransform) Dest(dest *types.TransformDestination) *PutTransform {
 // The minimum value is `1s` and the maximum is `1h`.
 // API name: frequency
 func (r *PutTransform) Frequency(duration types.Duration) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Frequency = duration
 
 	return r
@@ -487,6 +494,9 @@ func (r *PutTransform) Frequency(duration types.Duration) *PutTransform {
 // unique key.
 // API name: latest
 func (r *PutTransform) Latest(latest *types.Latest) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Latest = latest
 
@@ -496,6 +506,9 @@ func (r *PutTransform) Latest(latest *types.Latest) *PutTransform {
 // Meta_ Defines optional transform metadata.
 // API name: _meta
 func (r *PutTransform) Meta_(metadata types.Metadata) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Meta_ = metadata
 
 	return r
@@ -506,6 +519,9 @@ func (r *PutTransform) Meta_(metadata types.Metadata) *PutTransform {
 // and the aggregation to reduce the data.
 // API name: pivot
 func (r *PutTransform) Pivot(pivot *types.Pivot) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Pivot = pivot
 
@@ -517,6 +533,9 @@ func (r *PutTransform) Pivot(pivot *types.Pivot) *PutTransform {
 // destination index.
 // API name: retention_policy
 func (r *PutTransform) RetentionPolicy(retentionpolicy *types.RetentionPolicyContainer) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RetentionPolicy = retentionpolicy
 
@@ -526,6 +545,9 @@ func (r *PutTransform) RetentionPolicy(retentionpolicy *types.RetentionPolicyCon
 // Settings Defines optional transform settings.
 // API name: settings
 func (r *PutTransform) Settings(settings *types.Settings) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 
@@ -535,6 +557,9 @@ func (r *PutTransform) Settings(settings *types.Settings) *PutTransform {
 // Source The source of the data for the transform.
 // API name: source
 func (r *PutTransform) Source(source *types.TransformSource) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Source = *source
 
@@ -544,6 +569,9 @@ func (r *PutTransform) Source(source *types.TransformSource) *PutTransform {
 // Sync Defines the properties transforms require to run continuously.
 // API name: sync
 func (r *PutTransform) Sync(sync *types.SyncContainer) *PutTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Sync = sync
 

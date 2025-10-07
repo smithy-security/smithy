@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get roles.
 //
@@ -305,9 +305,10 @@ func (r *GetRole) Header(key, value string) *GetRole {
 	return r
 }
 
-// Name The name of the role. You can specify multiple roles as a comma-separated
-// list. If you do not specify this parameter, the API returns information about
-// all roles.
+// Name The name of the role.
+// You can specify multiple roles as a comma-separated list.
+// If you do not specify this parameter, the API returns information about all
+// roles.
 // API Name: name
 func (r *GetRole) Name(name string) *GetRole {
 	r.paramSet |= nameMask

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create a trained model.
 // Enable you to supply a trained model that is not created by data frame
@@ -96,8 +96,6 @@ func New(tp elastictransport.Interface) *PutTrainedModel {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -388,6 +386,9 @@ func (r *PutTrainedModel) Pretty(pretty bool) *PutTrainedModel {
 // specified.
 // API name: compressed_definition
 func (r *PutTrainedModel) CompressedDefinition(compresseddefinition string) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.CompressedDefinition = &compresseddefinition
 
@@ -398,6 +399,9 @@ func (r *PutTrainedModel) CompressedDefinition(compresseddefinition string) *Put
 // compressed_definition cannot be specified.
 // API name: definition
 func (r *PutTrainedModel) Definition(definition *types.Definition) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Definition = definition
 
@@ -407,6 +411,9 @@ func (r *PutTrainedModel) Definition(definition *types.Definition) *PutTrainedMo
 // Description A human-readable description of the inference trained model.
 // API name: description
 func (r *PutTrainedModel) Description(description string) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -419,6 +426,9 @@ func (r *PutTrainedModel) Description(description string) *PutTrainedModel {
 // ELSER the config is not required.
 // API name: inference_config
 func (r *PutTrainedModel) InferenceConfig(inferenceconfig *types.InferenceConfigCreateContainer) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.InferenceConfig = inferenceconfig
 
@@ -428,6 +438,9 @@ func (r *PutTrainedModel) InferenceConfig(inferenceconfig *types.InferenceConfig
 // Input The input field names for the model definition.
 // API name: input
 func (r *PutTrainedModel) Input(input *types.Input) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Input = input
 
@@ -441,6 +454,9 @@ func (r *PutTrainedModel) Input(input *types.Input) *PutTrainedModel {
 // if a structure is provided, the client will defer a json serialization
 // prior to sending the payload to Elasticsearch.
 func (r *PutTrainedModel) Metadata(metadata any) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	switch casted := metadata.(type) {
 	case json.RawMessage:
 		r.req.Metadata = casted
@@ -463,6 +479,9 @@ func (r *PutTrainedModel) Metadata(metadata any) *PutTrainedModel {
 // or the model definition is not supplied.
 // API name: model_size_bytes
 func (r *PutTrainedModel) ModelSizeBytes(modelsizebytes int64) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ModelSizeBytes = &modelsizebytes
 
@@ -472,6 +491,9 @@ func (r *PutTrainedModel) ModelSizeBytes(modelsizebytes int64) *PutTrainedModel 
 // ModelType The model type.
 // API name: model_type
 func (r *PutTrainedModel) ModelType(modeltype trainedmodeltype.TrainedModelType) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ModelType = &modeltype
 
 	return r
@@ -489,6 +511,9 @@ func (r *PutTrainedModel) ModelType(modeltype trainedmodeltype.TrainedModelType)
 // architecture or OS features), leave this field unset.
 // API name: platform_architecture
 func (r *PutTrainedModel) PlatformArchitecture(platformarchitecture string) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.PlatformArchitecture = &platformarchitecture
 
@@ -498,6 +523,9 @@ func (r *PutTrainedModel) PlatformArchitecture(platformarchitecture string) *Put
 // PrefixStrings Optional prefix strings applied at inference
 // API name: prefix_strings
 func (r *PutTrainedModel) PrefixStrings(prefixstrings *types.TrainedModelPrefixStrings) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.PrefixStrings = prefixstrings
 
@@ -507,6 +535,9 @@ func (r *PutTrainedModel) PrefixStrings(prefixstrings *types.TrainedModelPrefixS
 // Tags An array of tags to organize the model.
 // API name: tags
 func (r *PutTrainedModel) Tags(tags ...string) *PutTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Tags = tags
 
 	return r

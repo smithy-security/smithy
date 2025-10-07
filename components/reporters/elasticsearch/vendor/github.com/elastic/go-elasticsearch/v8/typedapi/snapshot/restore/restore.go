@@ -16,9 +16,35 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Restores a snapshot.
+// Restore a snapshot.
+// Restore a snapshot of a cluster or data streams and indices.
+//
+// You can restore a snapshot only to a running cluster with an elected master
+// node.
+// The snapshot repository must be registered and available to the cluster.
+// The snapshot and cluster versions must be compatible.
+//
+// To restore a snapshot, the cluster's global metadata must be writable. Ensure
+// there are't any cluster blocks that prevent writes. The restore operation
+// ignores index blocks.
+//
+// Before you restore a data stream, ensure the cluster contains a matching
+// index template with data streams enabled. To check, use the index management
+// feature in Kibana or the get index template API:
+//
+// ```
+// GET
+// _index_template/*?filter_path=index_templates.name,index_templates.index_template.index_patterns,index_templates.index_template.data_stream
+// ```
+//
+// If no such template exists, you can create one or restore a cluster state
+// that contains one. Without a matching index template, a data stream can't
+// roll over or create backing indices.
+//
+// If your snapshot contains data from App Search or Workplace Search, you must
+// restore the Enterprise Search encryption key before you restore the snapshot.
 package restore
 
 import (
@@ -86,9 +112,35 @@ func NewRestoreFunc(tp elastictransport.Interface) NewRestore {
 	}
 }
 
-// Restores a snapshot.
+// Restore a snapshot.
+// Restore a snapshot of a cluster or data streams and indices.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html
+// You can restore a snapshot only to a running cluster with an elected master
+// node.
+// The snapshot repository must be registered and available to the cluster.
+// The snapshot and cluster versions must be compatible.
+//
+// To restore a snapshot, the cluster's global metadata must be writable. Ensure
+// there are't any cluster blocks that prevent writes. The restore operation
+// ignores index blocks.
+//
+// Before you restore a data stream, ensure the cluster contains a matching
+// index template with data streams enabled. To check, use the index management
+// feature in Kibana or the get index template API:
+//
+// ```
+// GET
+// _index_template/*?filter_path=index_templates.name,index_templates.index_template.index_patterns,index_templates.index_template.data_stream
+// ```
+//
+// If no such template exists, you can create one or restore a cluster state
+// that contains one. Without a matching index template, a data stream can't
+// roll over or create backing indices.
+//
+// If your snapshot contains data from App Search or Workplace Search, you must
+// restore the Enterprise Search encryption key before you restore the snapshot.
+//
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/restore-snapshot-api.html
 func New(tp elastictransport.Interface) *Restore {
 	r := &Restore{
 		transport: tp,
@@ -96,8 +148,6 @@ func New(tp elastictransport.Interface) *Restore {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -397,6 +447,9 @@ func (r *Restore) Pretty(pretty bool) *Restore {
 
 // API name: feature_states
 func (r *Restore) FeatureStates(featurestates ...string) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.FeatureStates = featurestates
 
 	return r
@@ -404,6 +457,9 @@ func (r *Restore) FeatureStates(featurestates ...string) *Restore {
 
 // API name: ignore_index_settings
 func (r *Restore) IgnoreIndexSettings(ignoreindexsettings ...string) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IgnoreIndexSettings = ignoreindexsettings
 
 	return r
@@ -411,6 +467,9 @@ func (r *Restore) IgnoreIndexSettings(ignoreindexsettings ...string) *Restore {
 
 // API name: ignore_unavailable
 func (r *Restore) IgnoreUnavailable(ignoreunavailable bool) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IgnoreUnavailable = &ignoreunavailable
 
 	return r
@@ -418,6 +477,9 @@ func (r *Restore) IgnoreUnavailable(ignoreunavailable bool) *Restore {
 
 // API name: include_aliases
 func (r *Restore) IncludeAliases(includealiases bool) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IncludeAliases = &includealiases
 
 	return r
@@ -425,6 +487,9 @@ func (r *Restore) IncludeAliases(includealiases bool) *Restore {
 
 // API name: include_global_state
 func (r *Restore) IncludeGlobalState(includeglobalstate bool) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IncludeGlobalState = &includeglobalstate
 
 	return r
@@ -432,6 +497,9 @@ func (r *Restore) IncludeGlobalState(includeglobalstate bool) *Restore {
 
 // API name: index_settings
 func (r *Restore) IndexSettings(indexsettings *types.IndexSettings) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.IndexSettings = indexsettings
 
@@ -440,6 +508,9 @@ func (r *Restore) IndexSettings(indexsettings *types.IndexSettings) *Restore {
 
 // API name: indices
 func (r *Restore) Indices(indices ...string) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Indices = indices
 
 	return r
@@ -447,6 +518,9 @@ func (r *Restore) Indices(indices ...string) *Restore {
 
 // API name: partial
 func (r *Restore) Partial(partial bool) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Partial = &partial
 
 	return r
@@ -454,6 +528,9 @@ func (r *Restore) Partial(partial bool) *Restore {
 
 // API name: rename_pattern
 func (r *Restore) RenamePattern(renamepattern string) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RenamePattern = &renamepattern
 
@@ -462,6 +539,9 @@ func (r *Restore) RenamePattern(renamepattern string) *Restore {
 
 // API name: rename_replacement
 func (r *Restore) RenameReplacement(renamereplacement string) *Restore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RenameReplacement = &renamereplacement
 

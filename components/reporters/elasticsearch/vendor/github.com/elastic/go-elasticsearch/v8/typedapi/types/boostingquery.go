@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // BoostingQuery type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/query_dsl/compound.ts#L58-L74
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/query_dsl/compound.ts#L58-L74
 type BoostingQuery struct {
 	// Boost Floating point number used to decrease or increase the relevance scores of
 	// the query.
@@ -40,12 +40,12 @@ type BoostingQuery struct {
 	// A value greater than 1.0 increases the relevance score.
 	Boost *float32 `json:"boost,omitempty"`
 	// Negative Query used to decrease the relevance score of matching documents.
-	Negative *Query `json:"negative,omitempty"`
+	Negative Query `json:"negative"`
 	// NegativeBoost Floating point number between 0 and 1.0 used to decrease the relevance scores
 	// of documents matching the `negative` query.
 	NegativeBoost Float64 `json:"negative_boost"`
 	// Positive Any returned documents must match this query.
-	Positive   *Query  `json:"positive,omitempty"`
+	Positive   Query   `json:"positive"`
 	QueryName_ *string `json:"_name,omitempty"`
 }
 

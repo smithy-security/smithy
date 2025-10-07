@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update an anomaly detection job.
 // Updates certain properties of an anomaly detection job.
@@ -93,8 +93,6 @@ func New(tp elastictransport.Interface) *UpdateJob {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -374,6 +372,9 @@ func (r *UpdateJob) Pretty(pretty bool) *UpdateJob {
 // machine learning node capacity is available.
 // API name: allow_lazy_open
 func (r *UpdateJob) AllowLazyOpen(allowlazyopen bool) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AllowLazyOpen = &allowlazyopen
 
 	return r
@@ -381,6 +382,9 @@ func (r *UpdateJob) AllowLazyOpen(allowlazyopen bool) *UpdateJob {
 
 // API name: analysis_limits
 func (r *UpdateJob) AnalysisLimits(analysislimits *types.AnalysisMemoryLimit) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.AnalysisLimits = analysislimits
 
@@ -399,6 +403,9 @@ func (r *UpdateJob) AnalysisLimits(analysislimits *types.AnalysisMemoryLimit) *U
 // changes to take effect.
 // API name: background_persist_interval
 func (r *UpdateJob) BackgroundPersistInterval(duration types.Duration) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.BackgroundPersistInterval = duration
 
 	return r
@@ -406,6 +413,9 @@ func (r *UpdateJob) BackgroundPersistInterval(duration types.Duration) *UpdateJo
 
 // API name: categorization_filters
 func (r *UpdateJob) CategorizationFilters(categorizationfilters ...string) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.CategorizationFilters = categorizationfilters
 
 	return r
@@ -416,6 +426,9 @@ func (r *UpdateJob) CategorizationFilters(categorizationfilters ...string) *Upda
 // custom URLs to machine learning results.
 // API name: custom_settings
 func (r *UpdateJob) CustomSettings(customsettings map[string]json.RawMessage) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.CustomSettings = customsettings
 
@@ -431,6 +444,9 @@ func (r *UpdateJob) CustomSettings(customsettings map[string]json.RawMessage) *U
 // `model_snapshot_retention_days`.
 // API name: daily_model_snapshot_retention_after_days
 func (r *UpdateJob) DailyModelSnapshotRetentionAfterDays(dailymodelsnapshotretentionafterdays int64) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.DailyModelSnapshotRetentionAfterDays = &dailymodelsnapshotretentionafterdays
 
@@ -440,6 +456,9 @@ func (r *UpdateJob) DailyModelSnapshotRetentionAfterDays(dailymodelsnapshotreten
 // Description A description of the job.
 // API name: description
 func (r *UpdateJob) Description(description string) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -449,6 +468,9 @@ func (r *UpdateJob) Description(description string) *UpdateJob {
 // Detectors An array of detector update objects.
 // API name: detectors
 func (r *UpdateJob) Detectors(detectors ...types.DetectorUpdate) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Detectors = detectors
 
 	return r
@@ -457,6 +479,9 @@ func (r *UpdateJob) Detectors(detectors ...types.DetectorUpdate) *UpdateJob {
 // Groups A list of job groups. A job can belong to no groups or many.
 // API name: groups
 func (r *UpdateJob) Groups(groups ...string) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Groups = groups
 
 	return r
@@ -464,6 +489,9 @@ func (r *UpdateJob) Groups(groups ...string) *UpdateJob {
 
 // API name: model_plot_config
 func (r *UpdateJob) ModelPlotConfig(modelplotconfig *types.ModelPlotConfig) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ModelPlotConfig = modelplotconfig
 
@@ -472,6 +500,9 @@ func (r *UpdateJob) ModelPlotConfig(modelplotconfig *types.ModelPlotConfig) *Upd
 
 // API name: model_prune_window
 func (r *UpdateJob) ModelPruneWindow(duration types.Duration) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ModelPruneWindow = duration
 
 	return r
@@ -483,6 +514,9 @@ func (r *UpdateJob) ModelPruneWindow(duration types.Duration) *UpdateJob {
 // timestamp of the most recent snapshot for this job.
 // API name: model_snapshot_retention_days
 func (r *UpdateJob) ModelSnapshotRetentionDays(modelsnapshotretentiondays int64) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ModelSnapshotRetentionDays = &modelsnapshotretentiondays
 
@@ -492,6 +526,9 @@ func (r *UpdateJob) ModelSnapshotRetentionDays(modelsnapshotretentiondays int64)
 // PerPartitionCategorization Settings related to how categorization interacts with partition fields.
 // API name: per_partition_categorization
 func (r *UpdateJob) PerPartitionCategorization(perpartitioncategorization *types.PerPartitionCategorization) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.PerPartitionCategorization = perpartitioncategorization
 
@@ -502,6 +539,9 @@ func (r *UpdateJob) PerPartitionCategorization(perpartitioncategorization *types
 // score are applied, as new data is seen.
 // API name: renormalization_window_days
 func (r *UpdateJob) RenormalizationWindowDays(renormalizationwindowdays int64) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RenormalizationWindowDays = &renormalizationwindowdays
 
@@ -516,6 +556,9 @@ func (r *UpdateJob) RenormalizationWindowDays(renormalizationwindowdays int64) *
 // value is null, which means all results are retained.
 // API name: results_retention_days
 func (r *UpdateJob) ResultsRetentionDays(resultsretentiondays int64) *UpdateJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ResultsRetentionDays = &resultsretentiondays
 

@@ -16,9 +16,43 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Create an inference endpoint
+// Create an inference endpoint.
+//
+// IMPORTANT: The inference APIs enable you to use certain services, such as
+// built-in machine learning models (ELSER, E5), models uploaded through Eland,
+// Cohere, OpenAI, Mistral, Azure OpenAI, Google AI Studio, Google Vertex AI,
+// Anthropic, Watsonx.ai, or Hugging Face.
+// For built-in models and models uploaded through Eland, the inference APIs
+// offer an alternative way to use and manage trained models.
+// However, if you do not plan to use the inference APIs to use these models or
+// if you want to use non-NLP models, use the machine learning trained model
+// APIs.
+//
+// The following integrations are available through the inference API. You can
+// find the available task types next to the integration name:
+// * AlibabaCloud AI Search (`completion`, `rerank`, `sparse_embedding`,
+// `text_embedding`)
+// * Amazon Bedrock (`completion`, `text_embedding`)
+// * Amazon SageMaker (`chat_completion`, `completion`, `rerank`,
+// `sparse_embedding`, `text_embedding`)
+// * Anthropic (`completion`)
+// * Azure AI Studio (`completion`, `text_embedding`)
+// * Azure OpenAI (`completion`, `text_embedding`)
+// * Cohere (`completion`, `rerank`, `text_embedding`)
+// * DeepSeek (`completion`, `chat_completion`)
+// * Elasticsearch (`rerank`, `sparse_embedding`, `text_embedding` - this
+// service is for built-in models and models uploaded through Eland)
+// * ELSER (`sparse_embedding`)
+// * Google AI Studio (`completion`, `text_embedding`)
+// * Google Vertex AI (`rerank`, `text_embedding`)
+// * Hugging Face (`chat_completion`, `completion`, `rerank`, `text_embedding`)
+// * Mistral (`chat_completion`, `completion`, `text_embedding`)
+// * OpenAI (`chat_completion`, `completion`, `text_embedding`)
+// * VoyageAI (`text_embedding`, `rerank`)
+// * Watsonx inference integration (`text_embedding`)
+// * JinaAI (`text_embedding`, `rerank`)
 package put
 
 import (
@@ -84,7 +118,41 @@ func NewPutFunc(tp elastictransport.Interface) NewPut {
 	}
 }
 
-// Create an inference endpoint
+// Create an inference endpoint.
+//
+// IMPORTANT: The inference APIs enable you to use certain services, such as
+// built-in machine learning models (ELSER, E5), models uploaded through Eland,
+// Cohere, OpenAI, Mistral, Azure OpenAI, Google AI Studio, Google Vertex AI,
+// Anthropic, Watsonx.ai, or Hugging Face.
+// For built-in models and models uploaded through Eland, the inference APIs
+// offer an alternative way to use and manage trained models.
+// However, if you do not plan to use the inference APIs to use these models or
+// if you want to use non-NLP models, use the machine learning trained model
+// APIs.
+//
+// The following integrations are available through the inference API. You can
+// find the available task types next to the integration name:
+// * AlibabaCloud AI Search (`completion`, `rerank`, `sparse_embedding`,
+// `text_embedding`)
+// * Amazon Bedrock (`completion`, `text_embedding`)
+// * Amazon SageMaker (`chat_completion`, `completion`, `rerank`,
+// `sparse_embedding`, `text_embedding`)
+// * Anthropic (`completion`)
+// * Azure AI Studio (`completion`, `text_embedding`)
+// * Azure OpenAI (`completion`, `text_embedding`)
+// * Cohere (`completion`, `rerank`, `text_embedding`)
+// * DeepSeek (`completion`, `chat_completion`)
+// * Elasticsearch (`rerank`, `sparse_embedding`, `text_embedding` - this
+// service is for built-in models and models uploaded through Eland)
+// * ELSER (`sparse_embedding`)
+// * Google AI Studio (`completion`, `text_embedding`)
+// * Google Vertex AI (`rerank`, `text_embedding`)
+// * Hugging Face (`chat_completion`, `completion`, `rerank`, `text_embedding`)
+// * Mistral (`chat_completion`, `completion`, `text_embedding`)
+// * OpenAI (`chat_completion`, `completion`, `text_embedding`)
+// * VoyageAI (`text_embedding`, `rerank`)
+// * Watsonx inference integration (`text_embedding`)
+// * JinaAI (`text_embedding`, `rerank`)
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/put-inference-api.html
 func New(tp elastictransport.Interface) *Put {
@@ -94,8 +162,6 @@ func New(tp elastictransport.Interface) *Put {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -324,7 +390,8 @@ func (r *Put) Header(key, value string) *Put {
 	return r
 }
 
-// TaskType The task type
+// TaskType The task type. Refer to the integration list in the API description for the
+// available task types.
 // API Name: tasktype
 func (r *Put) TaskType(tasktype string) *Put {
 	r.paramSet |= tasktypeMask
@@ -338,6 +405,15 @@ func (r *Put) TaskType(tasktype string) *Put {
 func (r *Put) _inferenceid(inferenceid string) *Put {
 	r.paramSet |= inferenceidMask
 	r.inferenceid = inferenceid
+
+	return r
+}
+
+// Timeout Specifies the amount of time to wait for the inference endpoint to be
+// created.
+// API name: timeout
+func (r *Put) Timeout(duration string) *Put {
+	r.values.Set("timeout", duration)
 
 	return r
 }
@@ -386,9 +462,24 @@ func (r *Put) Pretty(pretty bool) *Put {
 	return r
 }
 
+// ChunkingSettings Chunking configuration object
+// API name: chunking_settings
+func (r *Put) ChunkingSettings(chunkingsettings *types.InferenceChunkingSettings) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+
+	r.req.ChunkingSettings = chunkingsettings
+
+	return r
+}
+
 // Service The service type
 // API name: service
 func (r *Put) Service(service string) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Service = service
 
@@ -398,6 +489,9 @@ func (r *Put) Service(service string) *Put {
 // ServiceSettings Settings specific to the service
 // API name: service_settings
 func (r *Put) ServiceSettings(servicesettings json.RawMessage) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ServiceSettings = servicesettings
 
 	return r
@@ -406,6 +500,9 @@ func (r *Put) ServiceSettings(servicesettings json.RawMessage) *Put {
 // TaskSettings Task settings specific to the service and task type
 // API name: task_settings
 func (r *Put) TaskSettings(tasksettings json.RawMessage) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.TaskSettings = tasksettings
 
 	return r

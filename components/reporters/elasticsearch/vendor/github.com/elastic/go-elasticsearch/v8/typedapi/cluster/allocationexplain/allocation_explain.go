@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Explain the shard allocations.
 // Get explanations for shard allocations in the cluster.
@@ -101,8 +101,6 @@ func New(tp elastictransport.Interface) *AllocationExplain {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -328,6 +326,14 @@ func (r *AllocationExplain) IncludeYesDecisions(includeyesdecisions bool) *Alloc
 	return r
 }
 
+// MasterTimeout Period to wait for a connection to the master node.
+// API name: master_timeout
+func (r *AllocationExplain) MasterTimeout(duration string) *AllocationExplain {
+	r.values.Set("master_timeout", duration)
+
+	return r
+}
+
 // ErrorTrace When set to `true` Elasticsearch will include the full stack trace of errors
 // when they occur.
 // API name: error_trace
@@ -376,6 +382,9 @@ func (r *AllocationExplain) Pretty(pretty bool) *AllocationExplain {
 // currently located on the specified node.
 // API name: current_node
 func (r *AllocationExplain) CurrentNode(currentnode string) *AllocationExplain {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.CurrentNode = &currentnode
 
@@ -385,6 +394,9 @@ func (r *AllocationExplain) CurrentNode(currentnode string) *AllocationExplain {
 // Index Specifies the name of the index that you would like an explanation for.
 // API name: index
 func (r *AllocationExplain) Index(indexname string) *AllocationExplain {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Index = &indexname
 
 	return r
@@ -393,6 +405,9 @@ func (r *AllocationExplain) Index(indexname string) *AllocationExplain {
 // Primary If true, returns explanation for the primary shard for the given shard ID.
 // API name: primary
 func (r *AllocationExplain) Primary(primary bool) *AllocationExplain {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Primary = &primary
 
 	return r
@@ -401,6 +416,9 @@ func (r *AllocationExplain) Primary(primary bool) *AllocationExplain {
 // Shard Specifies the ID of the shard that you would like an explanation for.
 // API name: shard
 func (r *AllocationExplain) Shard(shard int) *AllocationExplain {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Shard = &shard
 
 	return r

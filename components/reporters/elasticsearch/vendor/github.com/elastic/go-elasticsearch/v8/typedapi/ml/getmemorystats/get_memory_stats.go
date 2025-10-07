@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get machine learning memory usage info.
 // Get information about how machine learning jobs and trained models are using
@@ -316,16 +316,6 @@ func (r *GetMemoryStats) NodeId(nodeid string) *GetMemoryStats {
 	return r
 }
 
-// Human Specify this query parameter to include the fields with units in the
-// response. Otherwise only
-// the `_in_bytes` sizes are returned in the response.
-// API name: human
-func (r *GetMemoryStats) Human(human bool) *GetMemoryStats {
-	r.values.Set("human", strconv.FormatBool(human))
-
-	return r
-}
-
 // MasterTimeout Period to wait for a connection to the master node. If no response is
 // received before the timeout
 // expires, the request fails and returns an error.
@@ -364,6 +354,19 @@ func (r *GetMemoryStats) FilterPath(filterpaths ...string) *GetMemoryStats {
 		tmp = append(tmp, fmt.Sprintf("%v", item))
 	}
 	r.values.Set("filter_path", strings.Join(tmp, ","))
+
+	return r
+}
+
+// Human When set to `true` will return statistics in a format suitable for humans.
+// For example `"exists_time": "1h"` for humans and
+// `"eixsts_time_in_millis": 3600000` for computers. When disabled the human
+// readable values will be omitted. This makes sense for responses being
+// consumed
+// only by machines.
+// API name: human
+func (r *GetMemoryStats) Human(human bool) *GetMemoryStats {
+	r.values.Set("human", strconv.FormatBool(human))
 
 	return r
 }

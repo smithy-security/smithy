@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package putsettings
 
@@ -26,7 +26,7 @@ import (
 
 // Response holds the response body struct for the package putsettings
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/cluster/put_settings/ClusterPutSettingsResponse.ts#L23-L29
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/cluster/put_settings/ClusterPutSettingsResponse.ts#L23-L29
 type Response struct {
 	Acknowledged bool                       `json:"acknowledged"`
 	Persistent   map[string]json.RawMessage `json:"persistent"`

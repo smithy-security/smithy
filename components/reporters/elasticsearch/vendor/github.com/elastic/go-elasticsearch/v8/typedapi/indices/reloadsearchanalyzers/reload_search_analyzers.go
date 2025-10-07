@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Reload search analyzers.
 // Reload an index's search analyzers and their resources.
@@ -371,6 +371,14 @@ func (r *ReloadSearchAnalyzers) ExpandWildcards(expandwildcards ...expandwildcar
 // API name: ignore_unavailable
 func (r *ReloadSearchAnalyzers) IgnoreUnavailable(ignoreunavailable bool) *ReloadSearchAnalyzers {
 	r.values.Set("ignore_unavailable", strconv.FormatBool(ignoreunavailable))
+
+	return r
+}
+
+// Resource Changed resource to reload analyzers from if applicable
+// API name: resource
+func (r *ReloadSearchAnalyzers) Resource(resource string) *ReloadSearchAnalyzers {
+	r.values.Set("resource", resource)
 
 	return r
 }

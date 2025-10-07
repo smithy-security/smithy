@@ -16,19 +16,64 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"strconv"
+
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/enrichpolicyphase"
 )
 
 // ExecuteEnrichPolicyStatus type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/enrich/execute_policy/types.ts#L20-L22
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/enrich/execute_policy/types.ts#L20-L23
 type ExecuteEnrichPolicyStatus struct {
 	Phase enrichpolicyphase.EnrichPolicyPhase `json:"phase"`
+	Step  *string                             `json:"step,omitempty"`
+}
+
+func (s *ExecuteEnrichPolicyStatus) UnmarshalJSON(data []byte) error {
+
+	dec := json.NewDecoder(bytes.NewReader(data))
+
+	for {
+		t, err := dec.Token()
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return err
+		}
+
+		switch t {
+
+		case "phase":
+			if err := dec.Decode(&s.Phase); err != nil {
+				return fmt.Errorf("%s | %w", "Phase", err)
+			}
+
+		case "step":
+			var tmp json.RawMessage
+			if err := dec.Decode(&tmp); err != nil {
+				return fmt.Errorf("%s | %w", "Step", err)
+			}
+			o := string(tmp[:])
+			o, err = strconv.Unquote(o)
+			if err != nil {
+				o = string(tmp[:])
+			}
+			s.Step = &o
+
+		}
+	}
+	return nil
 }
 
 // NewExecuteEnrichPolicyStatus returns a ExecuteEnrichPolicyStatus.
