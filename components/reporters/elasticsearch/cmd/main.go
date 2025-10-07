@@ -28,16 +28,12 @@ func Main(ctx context.Context, opts ...component.RunnerOption) error {
 	}
 	opts = append(opts, component.RunnerWithComponentName("elasticsearch"))
 
-	client, err := reporter.GetESClient(conf)
+	esReporter, err := reporter.New(ctx, conf)
 	if err != nil {
-		return errors.Errorf("could not create elasticsearch client: %w", err)
+		return errors.Errorf("could not create elasticsearch reporter: %w", err)
 	}
 
-	reporter, err := reporter.NewElasticsearchLogger(conf, client)
-	if err != nil {
-		return errors.Errorf("could not instantiate logger err: %w", err)
-	}
-	if err := component.RunReporter(ctx, reporter, opts...); err != nil {
+	if err := component.RunReporter(ctx, esReporter, opts...); err != nil {
 		return errors.Errorf("could not run reporter: %w", err)
 	}
 
