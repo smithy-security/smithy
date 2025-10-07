@@ -18,6 +18,7 @@
 package elastictransport
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -130,7 +131,17 @@ func (c *Client) getNodesInfo() ([]nodeInfo, error) {
 		scheme = c.urls[0].Scheme
 	)
 
-	req, err := http.NewRequest("GET", "/_nodes/http", nil)
+	var ctx context.Context
+	var cancel context.CancelFunc
+
+	if c.discoverNodeTimeout != nil {
+		ctx, cancel = context.WithTimeout(context.Background(), *c.discoverNodeTimeout)
+		defer cancel()
+	} else {
+		ctx = context.Background() // Use default context if no timeout is set
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", "/_nodes/http", nil)
 	if err != nil {
 		return out, err
 	}

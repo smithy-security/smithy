@@ -83,15 +83,17 @@ type ElasticsearchOpenTelemetry struct {
 // If no provider is passed, the instrumentation will fall back to the global otel provider.
 // captureSearchBody sets the query capture behavior for search endpoints.
 // version should be set to the version provided by the caller.
-func NewOtelInstrumentation(provider trace.TracerProvider, captureSearchBody bool, version string) *ElasticsearchOpenTelemetry {
+func NewOtelInstrumentation(provider trace.TracerProvider, captureSearchBody bool, version string, options ...trace.TracerOption) *ElasticsearchOpenTelemetry {
 	if provider == nil {
 		provider = otel.GetTracerProvider()
 	}
+
+	options = append(options, trace.WithInstrumentationVersion(version), trace.WithSchemaURL(schemaUrl))
+
 	return &ElasticsearchOpenTelemetry{
 		tracer: provider.Tracer(
 			tracerName,
-			trace.WithInstrumentationVersion(version),
-			trace.WithSchemaURL(schemaUrl),
+			options...,
 		),
 		recordBody: captureSearchBody,
 	}
