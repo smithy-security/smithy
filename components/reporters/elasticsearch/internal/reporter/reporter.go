@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strings"
+	"time"
 
-	"github.com/elastic/go-elasticsearch/v8"
-	"github.com/elastic/go-elasticsearch/v8/esapi"
+	"github.com/elastic/go-elasticsearch/v9"
+	"github.com/elastic/go-elasticsearch/v9/esapi"
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
@@ -59,9 +61,12 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	if envLoader != nil {
 		envOpts = append(envOpts, env.WithLoader(envLoader))
 	}
-	esURL, err := env.GetOrDefault("ELASTICSEARCH_URL",
+
+	esURL, err := env.GetOrDefault(
+		"ELASTICSEARCH_URL",
 		"",
-		append(envOpts, env.WithDefaultOnError(false))...)
+		append(envOpts, env.WithDefaultOnError(false))...,
+	)
 	if err != nil {
 		return nil, errors.Errorf("could not get env variable for ELASTICSEARCH_URL: %w", err)
 	}
@@ -142,18 +147,32 @@ func GetESClient(conf *Conf) (*elasticsearch.Client, error) {
 	if err != nil {
 		return nil, errors.Errorf("could not get cluster information as proof of connection, err: %w, raw response: %s", err, dumpStringResponse(res))
 	}
+
 	if res.StatusCode != http.StatusOK || res.IsError() {
 		return nil, errors.Errorf("could not contact Elasticsearch, attempted to retrieve cluster info and got status code: %d as a result, body: %s", res.StatusCode, dumpStringResponse(res))
 	}
 
-	slog.Debug("received info from elasticsearch successfully")
+	slog.Debug("received information from elasticsearch successfully")
 	body := json.NewDecoder(res.Body)
 	if err := body.Decode(&info); err != nil {
 		return nil, errors.Errorf("could not decode elasticsearch cluster information %w", err)
 	}
 
-	if len(info.Version.Number) > 0 && info.Version.Number[0] != '8' {
-		return nil, errors.Errorf("unsupported elasticsearch server version %s only version 8.x is supported, got %s instead", info.Version.Number, info.Version.Number)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	logger := componentlogger.LoggerFromContext(ctx)
+
+	logger.Debug("elasticsearch info",
+		slog.String("version_number", info.Version.Number))
+
+	parts := strings.Split(info.Version.Number, ".")
+	if len(parts) == 0 {
+		return nil, errors.Errorf("could not parse es version number: %s", info.Version.Number)
+	}
+
+	majorVersion := parts[0]
+	if majorVersion != "9" {
+		return nil, errors.Errorf("unsupported elasticsearch server version: only version 9.x is supported, got %s", info.Version.Number)
 	}
 	return es, nil
 }

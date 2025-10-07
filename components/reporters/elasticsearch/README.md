@@ -1,4 +1,4 @@
-# json-logger
+# Elasticsearch
 
 This component implements a [reporter](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
 that sends vulnerabilities to elasticsearch.
