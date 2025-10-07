@@ -16,12 +16,33 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update user profile data.
 //
 // Update specific data for the user profile that is associated with a unique
 // ID.
+//
+// NOTE: The user profile feature is designed only for use by Kibana and
+// Elastic's Observability, Enterprise Search, and Elastic Security solutions.
+// Individual users and external applications should not call this API directly.
+// Elastic reserves the right to change or remove this feature in future
+// releases without prior notice.
+//
+// To use this API, you must have one of the following privileges:
+//
+// * The `manage_user_profile` cluster privilege.
+// * The `update_profile_data` global privilege for the namespaces that are
+// referenced in the request.
+//
+// This API updates the `labels` and `data` fields of an existing user profile
+// document with JSON objects.
+// New keys and their values are added to the profile document and conflicting
+// keys are replaced by data that's included in the request.
+//
+// For both labels and data, content is namespaced by the top-level fields.
+// The `update_profile_data` global privilege grants privileges for updating
+// only the allowed namespaces.
 package updateuserprofiledata
 
 import (
@@ -90,6 +111,27 @@ func NewUpdateUserProfileDataFunc(tp elastictransport.Interface) NewUpdateUserPr
 // Update specific data for the user profile that is associated with a unique
 // ID.
 //
+// NOTE: The user profile feature is designed only for use by Kibana and
+// Elastic's Observability, Enterprise Search, and Elastic Security solutions.
+// Individual users and external applications should not call this API directly.
+// Elastic reserves the right to change or remove this feature in future
+// releases without prior notice.
+//
+// To use this API, you must have one of the following privileges:
+//
+// * The `manage_user_profile` cluster privilege.
+// * The `update_profile_data` global privilege for the namespaces that are
+// referenced in the request.
+//
+// This API updates the `labels` and `data` fields of an existing user profile
+// document with JSON objects.
+// New keys and their values are added to the profile document and conflicting
+// keys are replaced by data that's included in the request.
+//
+// For both labels and data, content is namespaced by the top-level fields.
+// The `update_profile_data` global privilege grants privileges for updating
+// only the allowed namespaces.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-update-user-profile-data.html
 func New(tp elastictransport.Interface) *UpdateUserProfileData {
 	r := &UpdateUserProfileData{
@@ -98,8 +140,6 @@ func New(tp elastictransport.Interface) *UpdateUserProfileData {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -341,9 +381,10 @@ func (r *UpdateUserProfileData) IfPrimaryTerm(ifprimaryterm string) *UpdateUserP
 }
 
 // Refresh If 'true', Elasticsearch refreshes the affected shards to make this operation
-// visible to search, if 'wait_for' then wait for a refresh to make this
-// operation
-// visible to search, if 'false' do nothing with refreshes.
+// visible to search.
+// If 'wait_for', it waits for a refresh to make this operation visible to
+// search.
+// If 'false', nothing is done with refreshes.
 // API name: refresh
 func (r *UpdateUserProfileData) Refresh(refresh refresh.Refresh) *UpdateUserProfileData {
 	r.values.Set("refresh", refresh.String())
@@ -397,18 +438,30 @@ func (r *UpdateUserProfileData) Pretty(pretty bool) *UpdateUserProfileData {
 
 // Data Non-searchable data that you want to associate with the user profile.
 // This field supports a nested data structure.
+// Within the `data` object, top-level keys cannot begin with an underscore
+// (`_`) or contain a period (`.`).
+// The data object is not searchable, but can be retrieved with the get user
+// profile API.
 // API name: data
 func (r *UpdateUserProfileData) Data(data map[string]json.RawMessage) *UpdateUserProfileData {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Data = data
 
 	return r
 }
 
-// Labels Searchable data that you want to associate with the user profile. This
-// field supports a nested data structure.
+// Labels Searchable data that you want to associate with the user profile.
+// This field supports a nested data structure.
+// Within the labels object, top-level keys cannot begin with an underscore
+// (`_`) or contain a period (`.`).
 // API name: labels
 func (r *UpdateUserProfileData) Labels(labels map[string]json.RawMessage) *UpdateUserProfileData {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Labels = labels
 

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get the async SQL search status.
 // Get the current status of an async SQL search or a stored synchronous SQL
@@ -296,7 +296,7 @@ func (r *GetAsyncStatus) Header(key, value string) *GetAsyncStatus {
 	return r
 }
 
-// Id Identifier for the search.
+// Id The identifier for the search.
 // API Name: id
 func (r *GetAsyncStatus) _id(id string) *GetAsyncStatus {
 	r.paramSet |= idMask

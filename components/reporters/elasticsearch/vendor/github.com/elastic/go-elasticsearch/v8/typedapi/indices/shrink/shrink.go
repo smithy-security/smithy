@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Shrink an index.
 // Shrink an index into a new index with fewer primary shards.
@@ -206,8 +206,6 @@ func New(tp elastictransport.Interface) *Shrink {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -522,6 +520,9 @@ func (r *Shrink) Pretty(pretty bool) *Shrink {
 // Index alias names support date math.
 // API name: aliases
 func (r *Shrink) Aliases(aliases map[string]types.Alias) *Shrink {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Aliases = aliases
 
@@ -531,6 +532,9 @@ func (r *Shrink) Aliases(aliases map[string]types.Alias) *Shrink {
 // Settings Configuration options for the target index.
 // API name: settings
 func (r *Shrink) Settings(settings map[string]json.RawMessage) *Shrink {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 

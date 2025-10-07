@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update the connector error field.
 //
@@ -103,8 +103,6 @@ func New(tp elastictransport.Interface) *UpdateError {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -373,6 +371,9 @@ func (r *UpdateError) Pretty(pretty bool) *UpdateError {
 
 // API name: error
 func (r *UpdateError) Error(error any) *UpdateError {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Error = error
 
 	return r

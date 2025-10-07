@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -24,6 +24,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func newILMPutLifecycleFunc(t Transport) ILMPutLifecycle {
@@ -34,7 +35,7 @@ func newILMPutLifecycleFunc(t Transport) ILMPutLifecycle {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -54,6 +55,9 @@ type ILMPutLifecycleRequest struct {
 
 	Policy string
 
+	MasterTimeout time.Duration
+	Timeout       time.Duration
+
 	Pretty     bool
 	Human      bool
 	ErrorTrace bool
@@ -63,7 +67,7 @@ type ILMPutLifecycleRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -75,7 +79,7 @@ func (r ILMPutLifecycleRequest) Do(providedCtx context.Context, transport Transp
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "ilm.put_lifecycle")
 		defer instrument.Close(ctx)
 	}
@@ -93,11 +97,19 @@ func (r ILMPutLifecycleRequest) Do(providedCtx context.Context, transport Transp
 	path.WriteString("policy")
 	path.WriteString("/")
 	path.WriteString(r.Policy)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "policy", r.Policy)
 	}
 
 	params = make(map[string]string)
+
+	if r.MasterTimeout != 0 {
+		params["master_timeout"] = formatDuration(r.MasterTimeout)
+	}
+
+	if r.Timeout != 0 {
+		params["timeout"] = formatDuration(r.Timeout)
+	}
 
 	if r.Pretty {
 		params["pretty"] = "true"
@@ -117,7 +129,7 @@ func (r ILMPutLifecycleRequest) Do(providedCtx context.Context, transport Transp
 
 	req, err := newRequest(method, path.String(), r.Body)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -151,18 +163,18 @@ func (r ILMPutLifecycleRequest) Do(providedCtx context.Context, transport Transp
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "ilm.put_lifecycle")
 		if reader := instrument.RecordRequestBody(ctx, "ilm.put_lifecycle", r.Body); reader != nil {
 			req.Body = reader
 		}
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "ilm.put_lifecycle")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -188,6 +200,20 @@ func (f ILMPutLifecycle) WithContext(v context.Context) func(*ILMPutLifecycleReq
 func (f ILMPutLifecycle) WithBody(v io.Reader) func(*ILMPutLifecycleRequest) {
 	return func(r *ILMPutLifecycleRequest) {
 		r.Body = v
+	}
+}
+
+// WithMasterTimeout - explicit operation timeout for connection to master node.
+func (f ILMPutLifecycle) WithMasterTimeout(v time.Duration) func(*ILMPutLifecycleRequest) {
+	return func(r *ILMPutLifecycleRequest) {
+		r.MasterTimeout = v
+	}
+}
+
+// WithTimeout - explicit operation timeout.
+func (f ILMPutLifecycle) WithTimeout(v time.Duration) func(*ILMPutLifecycleRequest) {
+	return func(r *ILMPutLifecycleRequest) {
+		r.Timeout = v
 	}
 }
 

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package suggestuserprofiles
 
@@ -26,11 +26,16 @@ import (
 
 // Response holds the response body struct for the package suggestuserprofiles
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/suggest_user_profiles/Response.ts#L29-L35
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/suggest_user_profiles/Response.ts#L29-L44
 type Response struct {
-	Profiles []types.UserProfile     `json:"profiles"`
-	Took     int64                   `json:"took"`
-	Total    types.TotalUserProfiles `json:"total"`
+
+	// Profiles A list of profile documents, ordered by relevance, that match the search
+	// criteria.
+	Profiles []types.UserProfile `json:"profiles"`
+	// Took The number of milliseconds it took Elasticsearch to run the request.
+	Took int64 `json:"took"`
+	// Total Metadata about the number of matching profiles.
+	Total types.TotalUserProfiles `json:"total"`
 }
 
 // NewResponse returns a Response

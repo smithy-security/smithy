@@ -16,12 +16,17 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Find roles with a query.
 //
-// Get roles in a paginated manner. You can optionally filter the results with a
-// query.
+// Get roles in a paginated manner.
+// The role management APIs are generally the preferred way to manage roles,
+// rather than using file-based role management.
+// The query roles API does not retrieve roles that are defined in roles files,
+// nor built-in ones.
+// You can optionally filter the results with a query.
+// Also, the results can be paginated and sorted.
 package queryrole
 
 import (
@@ -78,8 +83,13 @@ func NewQueryRoleFunc(tp elastictransport.Interface) NewQueryRole {
 
 // Find roles with a query.
 //
-// Get roles in a paginated manner. You can optionally filter the results with a
-// query.
+// Get roles in a paginated manner.
+// The role management APIs are generally the preferred way to manage roles,
+// rather than using file-based role management.
+// The query roles API does not retrieve roles that are defined in roles files,
+// nor built-in ones.
+// You can optionally filter the results with a query.
+// Also, the results can be paginated and sorted.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-query-role.html
 func New(tp elastictransport.Interface) *QueryRole {
@@ -89,8 +99,6 @@ func New(tp elastictransport.Interface) *QueryRole {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -344,12 +352,16 @@ func (r *QueryRole) Pretty(pretty bool) *QueryRole {
 	return r
 }
 
-// From Starting document offset.
-// By default, you cannot page through more than 10,000 hits using the from and
-// size parameters.
+// From The starting document offset.
+// It must not be negative.
+// By default, you cannot page through more than 10,000 hits using the `from`
+// and `size` parameters.
 // To page through more hits, use the `search_after` parameter.
 // API name: from
 func (r *QueryRole) From(from int) *QueryRole {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.From = &from
 
 	return r
@@ -362,40 +374,54 @@ func (r *QueryRole) From(from int) *QueryRole {
 // `ids`, `prefix`, `wildcard`, `exists`, `range`, and `simple_query_string`.
 // You can query the following information associated with roles: `name`,
 // `description`, `metadata`,
-// `applications.application`, `applications.privileges`,
+// `applications.application`, `applications.privileges`, and
 // `applications.resources`.
 // API name: query
 func (r *QueryRole) Query(query *types.RoleQueryContainer) *QueryRole {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Query = query
 
 	return r
 }
 
-// SearchAfter Search after definition
+// SearchAfter The search after definition.
 // API name: search_after
 func (r *QueryRole) SearchAfter(sortresults ...types.FieldValue) *QueryRole {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.SearchAfter = sortresults
 
 	return r
 }
 
 // Size The number of hits to return.
+// It must not be negative.
 // By default, you cannot page through more than 10,000 hits using the `from`
 // and `size` parameters.
 // To page through more hits, use the `search_after` parameter.
 // API name: size
 func (r *QueryRole) Size(size int) *QueryRole {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Size = &size
 
 	return r
 }
 
-// Sort All public fields of a role are eligible for sorting.
+// Sort The sort definition.
+// You can sort on `username`, `roles`, or `enabled`.
 // In addition, sort can also be applied to the `_doc` field to sort by index
 // order.
 // API name: sort
 func (r *QueryRole) Sort(sorts ...types.SortCombinations) *QueryRole {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Sort = sorts
 
 	return r

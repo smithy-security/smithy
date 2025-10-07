@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package evaluatedataframe
 
@@ -26,11 +26,19 @@ import (
 
 // Response holds the response body struct for the package evaluatedataframe
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ml/evaluate_data_frame/MlEvaluateDataFrameResponse.ts#L26-L33
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ml/evaluate_data_frame/MlEvaluateDataFrameResponse.ts#L26-L44
 type Response struct {
-	Classification   *types.DataframeClassificationSummary   `json:"classification,omitempty"`
+
+	// Classification Evaluation results for a classification analysis.
+	// It outputs a prediction that identifies to which of the classes each document
+	// belongs.
+	Classification *types.DataframeClassificationSummary `json:"classification,omitempty"`
+	// OutlierDetection Evaluation results for an outlier detection analysis.
+	// It outputs the probability that each document is an outlier.
 	OutlierDetection *types.DataframeOutlierDetectionSummary `json:"outlier_detection,omitempty"`
-	Regression       *types.DataframeRegressionSummary       `json:"regression,omitempty"`
+	// Regression Evaluation results for a regression analysis which outputs a prediction of
+	// values.
+	Regression *types.DataframeRegressionSummary `json:"regression,omitempty"`
 }
 
 // NewResponse returns a Response

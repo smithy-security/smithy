@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get cluster repositories metering.
 // Get repositories metering information for a cluster.
@@ -303,8 +303,8 @@ func (r *GetRepositoriesMeteringInfo) Header(key, value string) *GetRepositories
 }
 
 // NodeId Comma-separated list of node IDs or names used to limit returned information.
-// All the nodes selective options are explained
-// [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html#cluster-nodes).
+// For more information about the nodes selective options, refer to the node
+// specification documentation.
 // API Name: nodeid
 func (r *GetRepositoriesMeteringInfo) _nodeid(nodeid string) *GetRepositoriesMeteringInfo {
 	r.paramSet |= nodeidMask

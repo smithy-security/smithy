@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func newILMExplainLifecycleFunc(t Transport) ILMExplainLifecycle {
@@ -34,7 +35,7 @@ func newILMExplainLifecycleFunc(t Transport) ILMExplainLifecycle {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -52,8 +53,9 @@ type ILMExplainLifecycle func(index string, o ...func(*ILMExplainLifecycleReques
 type ILMExplainLifecycleRequest struct {
 	Index string
 
-	OnlyErrors  *bool
-	OnlyManaged *bool
+	MasterTimeout time.Duration
+	OnlyErrors    *bool
+	OnlyManaged   *bool
 
 	Pretty     bool
 	Human      bool
@@ -64,7 +66,7 @@ type ILMExplainLifecycleRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -76,7 +78,7 @@ func (r ILMExplainLifecycleRequest) Do(providedCtx context.Context, transport Tr
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "ilm.explain_lifecycle")
 		defer instrument.Close(ctx)
 	}
@@ -90,7 +92,7 @@ func (r ILMExplainLifecycleRequest) Do(providedCtx context.Context, transport Tr
 	path.WriteString("http://")
 	path.WriteString("/")
 	path.WriteString(r.Index)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "index", r.Index)
 	}
 	path.WriteString("/")
@@ -99,6 +101,10 @@ func (r ILMExplainLifecycleRequest) Do(providedCtx context.Context, transport Tr
 	path.WriteString("explain")
 
 	params = make(map[string]string)
+
+	if r.MasterTimeout != 0 {
+		params["master_timeout"] = formatDuration(r.MasterTimeout)
+	}
 
 	if r.OnlyErrors != nil {
 		params["only_errors"] = strconv.FormatBool(*r.OnlyErrors)
@@ -126,7 +132,7 @@ func (r ILMExplainLifecycleRequest) Do(providedCtx context.Context, transport Tr
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -156,15 +162,15 @@ func (r ILMExplainLifecycleRequest) Do(providedCtx context.Context, transport Tr
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "ilm.explain_lifecycle")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "ilm.explain_lifecycle")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -183,6 +189,13 @@ func (r ILMExplainLifecycleRequest) Do(providedCtx context.Context, transport Tr
 func (f ILMExplainLifecycle) WithContext(v context.Context) func(*ILMExplainLifecycleRequest) {
 	return func(r *ILMExplainLifecycleRequest) {
 		r.ctx = v
+	}
+}
+
+// WithMasterTimeout - explicit operation timeout for connection to master node.
+func (f ILMExplainLifecycle) WithMasterTimeout(v time.Duration) func(*ILMExplainLifecycleRequest) {
+	return func(r *ILMExplainLifecycleRequest) {
+		r.MasterTimeout = v
 	}
 }
 

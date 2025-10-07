@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Delete a synonym rule.
 // Delete a synonym rule from a synonym set.
@@ -307,7 +307,7 @@ func (r *DeleteSynonymRule) Header(key, value string) *DeleteSynonymRule {
 	return r
 }
 
-// SetId The id of the synonym set to be updated
+// SetId The ID of the synonym set to update.
 // API Name: setid
 func (r *DeleteSynonymRule) _setid(setid string) *DeleteSynonymRule {
 	r.paramSet |= setidMask
@@ -316,7 +316,7 @@ func (r *DeleteSynonymRule) _setid(setid string) *DeleteSynonymRule {
 	return r
 }
 
-// RuleId The id of the synonym rule to be deleted
+// RuleId The ID of the synonym rule to delete.
 // API Name: ruleid
 func (r *DeleteSynonymRule) _ruleid(ruleid string) *DeleteSynonymRule {
 	r.paramSet |= ruleidMask

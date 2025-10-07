@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update voting configuration exclusions.
 // Update the cluster voting config exclusions by node IDs or node names.
@@ -144,7 +144,7 @@ func NewPostVotingConfigExclusionsFunc(tp elastictransport.Interface) NewPostVot
 // They are not required when removing master-ineligible nodes or when removing
 // fewer than half of the master-eligible nodes.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/voting-config-exclusions.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-cluster-post-voting-config-exclusions
 func New(tp elastictransport.Interface) *PostVotingConfigExclusions {
 	r := &PostVotingConfigExclusions{
 		transport: tp,
@@ -316,6 +316,14 @@ func (r *PostVotingConfigExclusions) NodeNames(names ...string) *PostVotingConfi
 // API name: node_ids
 func (r *PostVotingConfigExclusions) NodeIds(ids ...string) *PostVotingConfigExclusions {
 	r.values.Set("node_ids", strings.Join(ids, ","))
+
+	return r
+}
+
+// MasterTimeout Period to wait for a connection to the master node.
+// API name: master_timeout
+func (r *PostVotingConfigExclusions) MasterTimeout(duration string) *PostVotingConfigExclusions {
+	r.values.Set("master_timeout", duration)
 
 	return r
 }

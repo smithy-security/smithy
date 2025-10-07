@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // ModelPackageConfig type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ml/_types/TrainedModel.ts#L244-L259
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ml/_types/TrainedModel.ts#L257-L272
 type ModelPackageConfig struct {
 	CreateTime           *int64                     `json:"create_time,omitempty"`
 	Description          *string                    `json:"description,omitempty"`
@@ -194,7 +194,7 @@ func (s *ModelPackageConfig) UnmarshalJSON(data []byte) error {
 // NewModelPackageConfig returns a ModelPackageConfig.
 func NewModelPackageConfig() *ModelPackageConfig {
 	r := &ModelPackageConfig{
-		InferenceConfig: make(map[string]json.RawMessage, 0),
+		InferenceConfig: make(map[string]json.RawMessage),
 	}
 
 	return r

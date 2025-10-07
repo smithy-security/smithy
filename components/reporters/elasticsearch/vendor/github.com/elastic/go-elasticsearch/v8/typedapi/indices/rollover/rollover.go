@@ -16,10 +16,63 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Roll over to a new index.
-// Creates a new index for a data stream or index alias.
+// TIP: It is recommended to use the index lifecycle rollover action to automate
+// rollovers.
+//
+// The rollover API creates a new index for a data stream or index alias.
+// The API behavior depends on the rollover target.
+//
+// **Roll over a data stream**
+//
+// If you roll over a data stream, the API creates a new write index for the
+// stream.
+// The stream's previous write index becomes a regular backing index.
+// A rollover also increments the data stream's generation.
+//
+// **Roll over an index alias with a write index**
+//
+// TIP: Prior to Elasticsearch 7.9, you'd typically use an index alias with a
+// write index to manage time series data.
+// Data streams replace this functionality, require less maintenance, and
+// automatically integrate with data tiers.
+//
+// If an index alias points to multiple indices, one of the indices must be a
+// write index.
+// The rollover API creates a new write index for the alias with
+// `is_write_index` set to `true`.
+// The API also `sets is_write_index` to `false` for the previous write index.
+//
+// **Roll over an index alias with one index**
+//
+// If you roll over an index alias that points to only one index, the API
+// creates a new index for the alias and removes the original index from the
+// alias.
+//
+// NOTE: A rollover creates a new index and is subject to the
+// `wait_for_active_shards` setting.
+//
+// **Increment index names for an alias**
+//
+// When you roll over an index alias, you can specify a name for the new index.
+// If you don't specify a name and the current index ends with `-` and a number,
+// such as `my-index-000001` or `my-index-3`, the new index name increments that
+// number.
+// For example, if you roll over an alias with a current index of
+// `my-index-000001`, the rollover creates a new index named `my-index-000002`.
+// This number is always six characters and zero-padded, regardless of the
+// previous index's name.
+//
+// If you use an index alias for time series data, you can use date math in the
+// index name to track the rollover date.
+// For example, you can create an alias that points to an index named
+// `<my-index-{now/d}-000001>`.
+// If you create the index on May 6, 2099, the index's name is
+// `my-index-2099.05.06-000001`.
+// If you roll over the alias on May 7, 2099, the new index's name is
+// `my-index-2099.05.07-000002`.
 package rollover
 
 import (
@@ -86,7 +139,60 @@ func NewRolloverFunc(tp elastictransport.Interface) NewRollover {
 }
 
 // Roll over to a new index.
-// Creates a new index for a data stream or index alias.
+// TIP: It is recommended to use the index lifecycle rollover action to automate
+// rollovers.
+//
+// The rollover API creates a new index for a data stream or index alias.
+// The API behavior depends on the rollover target.
+//
+// **Roll over a data stream**
+//
+// If you roll over a data stream, the API creates a new write index for the
+// stream.
+// The stream's previous write index becomes a regular backing index.
+// A rollover also increments the data stream's generation.
+//
+// **Roll over an index alias with a write index**
+//
+// TIP: Prior to Elasticsearch 7.9, you'd typically use an index alias with a
+// write index to manage time series data.
+// Data streams replace this functionality, require less maintenance, and
+// automatically integrate with data tiers.
+//
+// If an index alias points to multiple indices, one of the indices must be a
+// write index.
+// The rollover API creates a new write index for the alias with
+// `is_write_index` set to `true`.
+// The API also `sets is_write_index` to `false` for the previous write index.
+//
+// **Roll over an index alias with one index**
+//
+// If you roll over an index alias that points to only one index, the API
+// creates a new index for the alias and removes the original index from the
+// alias.
+//
+// NOTE: A rollover creates a new index and is subject to the
+// `wait_for_active_shards` setting.
+//
+// **Increment index names for an alias**
+//
+// When you roll over an index alias, you can specify a name for the new index.
+// If you don't specify a name and the current index ends with `-` and a number,
+// such as `my-index-000001` or `my-index-3`, the new index name increments that
+// number.
+// For example, if you roll over an alias with a current index of
+// `my-index-000001`, the rollover creates a new index named `my-index-000002`.
+// This number is always six characters and zero-padded, regardless of the
+// previous index's name.
+//
+// If you use an index alias for time series data, you can use date math in the
+// index name to track the rollover date.
+// For example, you can create an alias that points to an index named
+// `<my-index-{now/d}-000001>`.
+// If you create the index on May 6, 2099, the index's name is
+// `my-index-2099.05.06-000001`.
+// If you roll over the alias on May 7, 2099, the new index's name is
+// `my-index-2099.05.07-000002`.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-rollover-index.html
 func New(tp elastictransport.Interface) *Rollover {
@@ -96,8 +202,6 @@ func New(tp elastictransport.Interface) *Rollover {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -386,6 +490,16 @@ func (r *Rollover) WaitForActiveShards(waitforactiveshards string) *Rollover {
 	return r
 }
 
+// Lazy If set to true, the rollover action will only mark a data stream to signal
+// that it needs to be rolled over at the next write.
+// Only allowed on data streams.
+// API name: lazy
+func (r *Rollover) Lazy(lazy bool) *Rollover {
+	r.values.Set("lazy", strconv.FormatBool(lazy))
+
+	return r
+}
+
 // ErrorTrace When set to `true` Elasticsearch will include the full stack trace of errors
 // when they occur.
 // API name: error_trace
@@ -434,6 +548,9 @@ func (r *Rollover) Pretty(pretty bool) *Rollover {
 // Data streams do not support this parameter.
 // API name: aliases
 func (r *Rollover) Aliases(aliases map[string]types.Alias) *Rollover {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Aliases = aliases
 
@@ -451,6 +568,9 @@ func (r *Rollover) Aliases(aliases map[string]types.Alias) *Rollover {
 // conditions are satisfied.
 // API name: conditions
 func (r *Rollover) Conditions(conditions *types.RolloverConditions) *Rollover {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Conditions = conditions
 
@@ -462,6 +582,9 @@ func (r *Rollover) Conditions(conditions *types.RolloverConditions) *Rollover {
 // mapping paramaters.
 // API name: mappings
 func (r *Rollover) Mappings(mappings *types.TypeMapping) *Rollover {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Mappings = mappings
 
@@ -472,6 +595,9 @@ func (r *Rollover) Mappings(mappings *types.TypeMapping) *Rollover {
 // Data streams do not support this parameter.
 // API name: settings
 func (r *Rollover) Settings(settings map[string]json.RawMessage) *Rollover {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 

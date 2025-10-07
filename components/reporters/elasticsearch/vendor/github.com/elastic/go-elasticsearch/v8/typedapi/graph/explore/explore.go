@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Explore graph analytics.
 // Extract and summarize information about the documents and terms in an
@@ -111,8 +111,6 @@ func New(tp elastictransport.Interface) *Explore {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -402,6 +400,9 @@ func (r *Explore) Pretty(pretty bool) *Explore {
 // associated with the specified vertices.
 // API name: connections
 func (r *Explore) Connections(connections *types.Hop) *Explore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Connections = connections
 
@@ -411,6 +412,9 @@ func (r *Explore) Connections(connections *types.Hop) *Explore {
 // Controls Direct the Graph API how to build the graph.
 // API name: controls
 func (r *Explore) Controls(controls *types.ExploreControls) *Explore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Controls = controls
 
@@ -421,6 +425,9 @@ func (r *Explore) Controls(controls *types.ExploreControls) *Explore {
 // Elasticsearch query.
 // API name: query
 func (r *Explore) Query(query *types.Query) *Explore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Query = query
 
@@ -431,6 +438,9 @@ func (r *Explore) Query(query *types.Query) *Explore {
 // the graph as vertices.
 // API name: vertices
 func (r *Explore) Vertices(vertices ...types.VertexDefinition) *Explore {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Vertices = vertices
 
 	return r

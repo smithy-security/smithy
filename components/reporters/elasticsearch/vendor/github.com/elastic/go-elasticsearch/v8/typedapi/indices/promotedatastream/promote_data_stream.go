@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Promote a data stream.
 // Promote a data stream from a replicated data stream managed by cross-cluster
@@ -114,7 +114,7 @@ func NewPromoteDataStreamFunc(tp elastictransport.Interface) NewPromoteDataStrea
 // This will affect the lifecycle management of the data stream and interfere
 // with the data stream size and retention.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/data-streams.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-indices-promote-data-stream
 func New(tp elastictransport.Interface) *PromoteDataStream {
 	r := &PromoteDataStream{
 		transport: tp,

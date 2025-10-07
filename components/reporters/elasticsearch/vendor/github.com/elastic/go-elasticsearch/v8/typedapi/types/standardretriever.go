@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // StandardRetriever type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/Retriever.ts#L51-L62
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/Retriever.ts#L102-L113
 type StandardRetriever struct {
 	// Collapse Collapses the top documents by a specified key into a single top document per
 	// key.
@@ -41,6 +41,8 @@ type StandardRetriever struct {
 	// MinScore Minimum _score for matching documents. Documents with a lower _score are not
 	// included in the top documents.
 	MinScore *float32 `json:"min_score,omitempty"`
+	// Name_ Retriever name.
+	Name_ *string `json:"_name,omitempty"`
 	// Query Defines a query to retrieve a set of top documents.
 	Query *Query `json:"query,omitempty"`
 	// SearchAfter Defines a search after object parameter used for pagination.
@@ -102,6 +104,18 @@ func (s *StandardRetriever) UnmarshalJSON(data []byte) error {
 				f := float32(v)
 				s.MinScore = &f
 			}
+
+		case "_name":
+			var tmp json.RawMessage
+			if err := dec.Decode(&tmp); err != nil {
+				return fmt.Errorf("%s | %w", "Name_", err)
+			}
+			o := string(tmp[:])
+			o, err = strconv.Unquote(o)
+			if err != nil {
+				o = string(tmp[:])
+			}
+			s.Name_ = &o
 
 		case "query":
 			if err := dec.Decode(&s.Query); err != nil {

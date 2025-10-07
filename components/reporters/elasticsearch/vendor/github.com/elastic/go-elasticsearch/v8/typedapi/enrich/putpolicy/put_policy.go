@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create an enrich policy.
 // Creates an enrich policy.
@@ -93,8 +93,6 @@ func New(tp elastictransport.Interface) *PutPolicy {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -317,6 +315,14 @@ func (r *PutPolicy) _name(name string) *PutPolicy {
 	return r
 }
 
+// MasterTimeout Period to wait for a connection to the master node.
+// API name: master_timeout
+func (r *PutPolicy) MasterTimeout(duration string) *PutPolicy {
+	r.values.Set("master_timeout", duration)
+
+	return r
+}
+
 // ErrorTrace When set to `true` Elasticsearch will include the full stack trace of errors
 // when they occur.
 // API name: error_trace
@@ -364,6 +370,9 @@ func (r *PutPolicy) Pretty(pretty bool) *PutPolicy {
 // GeoMatch Matches enrich data to incoming documents based on a `geo_shape` query.
 // API name: geo_match
 func (r *PutPolicy) GeoMatch(geomatch *types.EnrichPolicy) *PutPolicy {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.GeoMatch = geomatch
 
@@ -373,6 +382,9 @@ func (r *PutPolicy) GeoMatch(geomatch *types.EnrichPolicy) *PutPolicy {
 // Match Matches enrich data to incoming documents based on a `term` query.
 // API name: match
 func (r *PutPolicy) Match(match *types.EnrichPolicy) *PutPolicy {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Match = match
 
@@ -383,6 +395,9 @@ func (r *PutPolicy) Match(match *types.EnrichPolicy) *PutPolicy {
 // enrich index based on a `term` query.
 // API name: range
 func (r *PutPolicy) Range(range_ *types.EnrichPolicy) *PutPolicy {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Range = range_
 

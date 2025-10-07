@@ -16,11 +16,20 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Retrieve status of a node or nodes that are currently marked as shutting
-// down. Designed for indirect use by ECE/ESS and ECK. Direct use is not
+// Get the shutdown status.
+//
+// Get information about nodes that are ready to be shut down, have shut down
+// preparations still in progress, or have stalled.
+// The API returns status information for each part of the shut down process.
+//
+// NOTE: This feature is designed for indirect use by Elasticsearch Service,
+// Elastic Cloud Enterprise, and Elastic Cloud on Kubernetes. Direct use is not
 // supported.
+//
+// If the operator privileges feature is enabled, you must be an operator to use
+// this API.
 package getnode
 
 import (
@@ -77,11 +86,20 @@ func NewGetNodeFunc(tp elastictransport.Interface) NewGetNode {
 	}
 }
 
-// Retrieve status of a node or nodes that are currently marked as shutting
-// down. Designed for indirect use by ECE/ESS and ECK. Direct use is not
+// Get the shutdown status.
+//
+// Get information about nodes that are ready to be shut down, have shut down
+// preparations still in progress, or have stalled.
+// The API returns status information for each part of the shut down process.
+//
+// NOTE: This feature is designed for indirect use by Elasticsearch Service,
+// Elastic Cloud Enterprise, and Elastic Cloud on Kubernetes. Direct use is not
 // supported.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current
+// If the operator privileges feature is enabled, you must be an operator to use
+// this API.
+//
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/get-shutdown.html
 func New(tp elastictransport.Interface) *GetNode {
 	r := &GetNode{
 		transport: tp,
@@ -320,15 +338,6 @@ func (r *GetNode) NodeId(nodeid string) *GetNode {
 // API name: master_timeout
 func (r *GetNode) MasterTimeout(mastertimeout timeunit.TimeUnit) *GetNode {
 	r.values.Set("master_timeout", mastertimeout.String())
-
-	return r
-}
-
-// Timeout Period to wait for a response. If no response is received before the timeout
-// expires, the request fails and returns an error.
-// API name: timeout
-func (r *GetNode) Timeout(timeout timeunit.TimeUnit) *GetNode {
-	r.values.Set("timeout", timeout.String())
 
 	return r
 }

@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Close anomaly detection jobs.
+//
 // A job can be opened and closed multiple times throughout its lifecycle. A
 // closed job cannot receive data or perform analysis operations, but you can
 // still explore and navigate results.
@@ -98,6 +99,7 @@ func NewCloseJobFunc(tp elastictransport.Interface) NewCloseJob {
 }
 
 // Close anomaly detection jobs.
+//
 // A job can be opened and closed multiple times throughout its lifecycle. A
 // closed job cannot receive data or perform analysis operations, but you can
 // still explore and navigate results.
@@ -123,8 +125,6 @@ func New(tp elastictransport.Interface) *CloseJob {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -400,6 +400,9 @@ func (r *CloseJob) Pretty(pretty bool) *CloseJob {
 // AllowNoMatch Refer to the description for the `allow_no_match` query parameter.
 // API name: allow_no_match
 func (r *CloseJob) AllowNoMatch(allownomatch bool) *CloseJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AllowNoMatch = &allownomatch
 
 	return r
@@ -408,6 +411,9 @@ func (r *CloseJob) AllowNoMatch(allownomatch bool) *CloseJob {
 // Force Refer to the descriptiion for the `force` query parameter.
 // API name: force
 func (r *CloseJob) Force(force bool) *CloseJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Force = &force
 
 	return r
@@ -416,6 +422,9 @@ func (r *CloseJob) Force(force bool) *CloseJob {
 // Timeout Refer to the description for the `timeout` query parameter.
 // API name: timeout
 func (r *CloseJob) Timeout(duration types.Duration) *CloseJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Timeout = duration
 
 	return r

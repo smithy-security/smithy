@@ -16,14 +16,20 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // TokenizationConfigContainer type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ml/_types/inference.ts#L110-L131
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ml/_types/inference.ts#L135-L158
 type TokenizationConfigContainer struct {
+	AdditionalTokenizationConfigContainerProperty map[string]json.RawMessage `json:"-"`
 	// Bert Indicates BERT tokenization and its options
 	Bert *NlpBertTokenizationConfig `json:"bert,omitempty"`
 	// BertJa Indicates BERT Japanese tokenization and its options
@@ -31,12 +37,44 @@ type TokenizationConfigContainer struct {
 	// Mpnet Indicates MPNET tokenization and its options
 	Mpnet *NlpBertTokenizationConfig `json:"mpnet,omitempty"`
 	// Roberta Indicates RoBERTa tokenization and its options
-	Roberta *NlpRobertaTokenizationConfig `json:"roberta,omitempty"`
+	Roberta    *NlpRobertaTokenizationConfig `json:"roberta,omitempty"`
+	XlmRoberta *XlmRobertaTokenizationConfig `json:"xlm_roberta,omitempty"`
+}
+
+// MarhsalJSON overrides marshalling for types with additional properties
+func (s TokenizationConfigContainer) MarshalJSON() ([]byte, error) {
+	type opt TokenizationConfigContainer
+	// We transform the struct to a map without the embedded additional properties map
+	tmp := make(map[string]any, 0)
+
+	data, err := json.Marshal(opt(s))
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, &tmp)
+	if err != nil {
+		return nil, err
+	}
+
+	// We inline the additional fields from the underlying map
+	for key, value := range s.AdditionalTokenizationConfigContainerProperty {
+		tmp[fmt.Sprintf("%s", key)] = value
+	}
+	delete(tmp, "AdditionalTokenizationConfigContainerProperty")
+
+	data, err = json.Marshal(tmp)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // NewTokenizationConfigContainer returns a TokenizationConfigContainer.
 func NewTokenizationConfigContainer() *TokenizationConfigContainer {
-	r := &TokenizationConfigContainer{}
+	r := &TokenizationConfigContainer{
+		AdditionalTokenizationConfigContainerProperty: make(map[string]json.RawMessage),
+	}
 
 	return r
 }

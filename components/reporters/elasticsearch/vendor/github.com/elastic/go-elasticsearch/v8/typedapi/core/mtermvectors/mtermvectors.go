@@ -16,15 +16,22 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get multiple term vectors.
 //
+// Get multiple term vectors with a single request.
 // You can specify existing documents by index and ID or provide artificial
 // documents in the body of the request.
 // You can specify the index in the request body or request URI.
 // The response contains a `docs` array with all the fetched termvectors.
 // Each element has the structure provided by the termvectors API.
+//
+// **Artificial documents**
+//
+// You can also use `mtermvectors` to generate term vectors for artificial
+// documents provided in the body of the request.
+// The mapping used is determined by the specified `_index`.
 package mtermvectors
 
 import (
@@ -88,11 +95,18 @@ func NewMtermvectorsFunc(tp elastictransport.Interface) NewMtermvectors {
 
 // Get multiple term vectors.
 //
+// Get multiple term vectors with a single request.
 // You can specify existing documents by index and ID or provide artificial
 // documents in the body of the request.
 // You can specify the index in the request body or request URI.
 // The response contains a `docs` array with all the fetched termvectors.
 // Each element has the structure provided by the termvectors API.
+//
+// **Artificial documents**
+//
+// You can also use `mtermvectors` to generate term vectors for artificial
+// documents provided in the body of the request.
+// The mapping used is determined by the specified `_index`.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-termvectors.html
 func New(tp elastictransport.Interface) *Mtermvectors {
@@ -102,8 +116,6 @@ func New(tp elastictransport.Interface) *Mtermvectors {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -320,7 +332,7 @@ func (r *Mtermvectors) Header(key, value string) *Mtermvectors {
 	return r
 }
 
-// Index Name of the index that contains the documents.
+// Index The name of the index that contains the documents.
 // API Name: index
 func (r *Mtermvectors) Index(index string) *Mtermvectors {
 	r.paramSet |= indexMask
@@ -329,10 +341,10 @@ func (r *Mtermvectors) Index(index string) *Mtermvectors {
 	return r
 }
 
-// Fields Comma-separated list or wildcard expressions of fields to include in the
+// Fields A comma-separated list or wildcard expressions of fields to include in the
 // statistics.
-// Used as the default list unless a specific field list is provided in the
-// `completion_fields` or `fielddata_fields` parameters.
+// It is used as the default list unless a specific field list is provided in
+// the `completion_fields` or `fielddata_fields` parameters.
 // API name: fields
 func (r *Mtermvectors) Fields(fields ...string) *Mtermvectors {
 	r.values.Set("fields", strings.Join(fields, ","))
@@ -373,8 +385,8 @@ func (r *Mtermvectors) Positions(positions bool) *Mtermvectors {
 	return r
 }
 
-// Preference Specifies the node or shard the operation should be performed on.
-// Random by default.
+// Preference The node or shard the operation should be performed on.
+// It is random by default.
 // API name: preference
 func (r *Mtermvectors) Preference(preference string) *Mtermvectors {
 	r.values.Set("preference", preference)
@@ -390,7 +402,7 @@ func (r *Mtermvectors) Realtime(realtime bool) *Mtermvectors {
 	return r
 }
 
-// Routing Custom value used to route operations to a specific shard.
+// Routing A custom value used to route operations to a specific shard.
 // API name: routing
 func (r *Mtermvectors) Routing(routing string) *Mtermvectors {
 	r.values.Set("routing", routing)
@@ -414,7 +426,7 @@ func (r *Mtermvectors) Version(versionnumber string) *Mtermvectors {
 	return r
 }
 
-// VersionType Specific version type.
+// VersionType The version type.
 // API name: version_type
 func (r *Mtermvectors) VersionType(versiontype versiontype.VersionType) *Mtermvectors {
 	r.values.Set("version_type", versiontype.String())
@@ -466,18 +478,24 @@ func (r *Mtermvectors) Pretty(pretty bool) *Mtermvectors {
 	return r
 }
 
-// Docs Array of existing or artificial documents.
+// Docs An array of existing or artificial documents.
 // API name: docs
 func (r *Mtermvectors) Docs(docs ...types.MTermVectorsOperation) *Mtermvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Docs = docs
 
 	return r
 }
 
-// Ids Simplified syntax to specify documents by their ID if they're in the same
+// Ids A simplified syntax to specify documents by their ID if they're in the same
 // index.
 // API name: ids
 func (r *Mtermvectors) Ids(ids ...string) *Mtermvectors {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Ids = ids
 
 	return r

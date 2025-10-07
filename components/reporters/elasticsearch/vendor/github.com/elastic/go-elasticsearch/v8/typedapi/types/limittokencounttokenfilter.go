@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,12 +31,16 @@ import (
 
 // LimitTokenCountTokenFilter type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/analysis/token_filters.ts#L250-L254
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/analysis/token_filters.ts#L336-L342
 type LimitTokenCountTokenFilter struct {
-	ConsumeAllTokens *bool              `json:"consume_all_tokens,omitempty"`
-	MaxTokenCount    Stringifiedinteger `json:"max_token_count,omitempty"`
-	Type             string             `json:"type,omitempty"`
-	Version          *string            `json:"version,omitempty"`
+	// ConsumeAllTokens If `true`, the limit filter exhausts the token stream, even if the
+	// `max_token_count` has already been reached. Defaults to `false`.
+	ConsumeAllTokens *bool `json:"consume_all_tokens,omitempty"`
+	// MaxTokenCount Maximum number of tokens to keep. Once this limit is reached, any remaining
+	// tokens are excluded from the output. Defaults to `1`.
+	MaxTokenCount Stringifiedinteger `json:"max_token_count,omitempty"`
+	Type          string             `json:"type,omitempty"`
+	Version       *string            `json:"version,omitempty"`
 }
 
 func (s *LimitTokenCountTokenFilter) UnmarshalJSON(data []byte) error {

@@ -16,9 +16,11 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Returns information about ongoing and completed shard recoveries.
+// Get shard recovery information.
+//
+// Get information about ongoing and completed shard recoveries.
 // Shard recovery is the process of initializing a shard copy, such as restoring
 // a primary shard from a snapshot or syncing a replica shard from a primary
 // shard. When a shard recovery completes, the recovered shard is available for
@@ -44,6 +46,8 @@ import (
 	"github.com/elastic/elastic-transport-go/v8/elastictransport"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/bytes"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/catrecoverycolumn"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/timeunit"
 )
 
 const (
@@ -84,7 +88,9 @@ func NewRecoveryFunc(tp elastictransport.Interface) NewRecovery {
 	}
 }
 
-// Returns information about ongoing and completed shard recoveries.
+// Get shard recovery information.
+//
+// Get information about ongoing and completed shard recoveries.
 // Shard recovery is the process of initializing a shard copy, such as restoring
 // a primary shard from a snapshot or syncing a replica shard from a primary
 // shard. When a shard recovery completes, the recovered shard is available for
@@ -350,6 +356,38 @@ func (r *Recovery) Detailed(detailed bool) *Recovery {
 	return r
 }
 
+// H A comma-separated list of columns names to display.
+// It supports simple wildcards.
+// API name: h
+func (r *Recovery) H(catrecoverycolumns ...catrecoverycolumn.CatRecoveryColumn) *Recovery {
+	tmp := []string{}
+	for _, item := range catrecoverycolumns {
+		tmp = append(tmp, item.String())
+	}
+	r.values.Set("expand_wildcards", strings.Join(tmp, ","))
+
+	return r
+}
+
+// S A comma-separated list of column names or aliases that determines the sort
+// order.
+// Sorting defaults to ascending and can be changed by setting `:asc`
+// or `:desc` as a suffix to the column name.
+// API name: s
+func (r *Recovery) S(names ...string) *Recovery {
+	r.values.Set("s", strings.Join(names, ","))
+
+	return r
+}
+
+// Time The unit used to display time values.
+// API name: time
+func (r *Recovery) Time(time timeunit.TimeUnit) *Recovery {
+	r.values.Set("time", time.String())
+
+	return r
+}
+
 // Format Specifies the format to return the columnar data in, can be set to
 // `text`, `json`, `cbor`, `yaml`, or `smile`.
 // API name: format
@@ -359,48 +397,11 @@ func (r *Recovery) Format(format string) *Recovery {
 	return r
 }
 
-// H List of columns to appear in the response. Supports simple wildcards.
-// API name: h
-func (r *Recovery) H(names ...string) *Recovery {
-	r.values.Set("h", strings.Join(names, ","))
-
-	return r
-}
-
 // Help When set to `true` will output available columns. This option
 // can't be combined with any other query string option.
 // API name: help
 func (r *Recovery) Help(help bool) *Recovery {
 	r.values.Set("help", strconv.FormatBool(help))
-
-	return r
-}
-
-// Local If `true`, the request computes the list of selected nodes from the
-// local cluster state. If `false` the list of selected nodes are computed
-// from the cluster state of the master node. In both cases the coordinating
-// node will send requests for further information to each selected node.
-// API name: local
-func (r *Recovery) Local(local bool) *Recovery {
-	r.values.Set("local", strconv.FormatBool(local))
-
-	return r
-}
-
-// MasterTimeout Period to wait for a connection to the master node.
-// API name: master_timeout
-func (r *Recovery) MasterTimeout(duration string) *Recovery {
-	r.values.Set("master_timeout", duration)
-
-	return r
-}
-
-// S List of columns that determine how the table should be sorted.
-// Sorting defaults to ascending and can be changed by setting `:asc`
-// or `:desc` as a suffix to the column name.
-// API name: s
-func (r *Recovery) S(names ...string) *Recovery {
-	r.values.Set("s", strings.Join(names, ","))
 
 	return r
 }

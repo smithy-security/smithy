@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,12 +31,12 @@ import (
 
 // CzechAnalyzer type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/analysis/analyzers.ts#L121-L126
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/analysis/analyzers.ts#L112-L117
 type CzechAnalyzer struct {
-	StemExclusion []string `json:"stem_exclusion,omitempty"`
-	Stopwords     []string `json:"stopwords,omitempty"`
-	StopwordsPath *string  `json:"stopwords_path,omitempty"`
-	Type          string   `json:"type,omitempty"`
+	StemExclusion []string  `json:"stem_exclusion,omitempty"`
+	Stopwords     StopWords `json:"stopwords,omitempty"`
+	StopwordsPath *string   `json:"stopwords_path,omitempty"`
+	Type          string    `json:"type,omitempty"`
 }
 
 func (s *CzechAnalyzer) UnmarshalJSON(data []byte) error {
@@ -60,19 +60,8 @@ func (s *CzechAnalyzer) UnmarshalJSON(data []byte) error {
 			}
 
 		case "stopwords":
-			rawMsg := json.RawMessage{}
-			dec.Decode(&rawMsg)
-			if !bytes.HasPrefix(rawMsg, []byte("[")) {
-				o := new(string)
-				if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&o); err != nil {
-					return fmt.Errorf("%s | %w", "Stopwords", err)
-				}
-
-				s.Stopwords = append(s.Stopwords, *o)
-			} else {
-				if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&s.Stopwords); err != nil {
-					return fmt.Errorf("%s | %w", "Stopwords", err)
-				}
+			if err := dec.Decode(&s.Stopwords); err != nil {
+				return fmt.Errorf("%s | %w", "Stopwords", err)
 			}
 
 		case "stopwords_path":

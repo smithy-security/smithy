@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Bulk create or update roles.
 //
@@ -94,8 +94,6 @@ func New(tp elastictransport.Interface) *BulkPutRole {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -360,6 +358,9 @@ func (r *BulkPutRole) Pretty(pretty bool) *BulkPutRole {
 // Roles A dictionary of role name to RoleDescriptor objects to add or update
 // API name: roles
 func (r *BulkPutRole) Roles(roles map[string]types.RoleDescriptor) *BulkPutRole {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Roles = roles
 

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -24,6 +24,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func newIngestPutGeoipDatabaseFunc(t Transport) IngestPutGeoipDatabase {
@@ -34,7 +35,7 @@ func newIngestPutGeoipDatabaseFunc(t Transport) IngestPutGeoipDatabase {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -54,6 +55,9 @@ type IngestPutGeoipDatabaseRequest struct {
 
 	Body io.Reader
 
+	MasterTimeout time.Duration
+	Timeout       time.Duration
+
 	Pretty     bool
 	Human      bool
 	ErrorTrace bool
@@ -63,7 +67,7 @@ type IngestPutGeoipDatabaseRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -75,7 +79,7 @@ func (r IngestPutGeoipDatabaseRequest) Do(providedCtx context.Context, transport
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "ingest.put_geoip_database")
 		defer instrument.Close(ctx)
 	}
@@ -95,11 +99,19 @@ func (r IngestPutGeoipDatabaseRequest) Do(providedCtx context.Context, transport
 	path.WriteString("database")
 	path.WriteString("/")
 	path.WriteString(r.DocumentID)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "id", r.DocumentID)
 	}
 
 	params = make(map[string]string)
+
+	if r.MasterTimeout != 0 {
+		params["master_timeout"] = formatDuration(r.MasterTimeout)
+	}
+
+	if r.Timeout != 0 {
+		params["timeout"] = formatDuration(r.Timeout)
+	}
 
 	if r.Pretty {
 		params["pretty"] = "true"
@@ -119,7 +131,7 @@ func (r IngestPutGeoipDatabaseRequest) Do(providedCtx context.Context, transport
 
 	req, err := newRequest(method, path.String(), r.Body)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -153,18 +165,18 @@ func (r IngestPutGeoipDatabaseRequest) Do(providedCtx context.Context, transport
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "ingest.put_geoip_database")
 		if reader := instrument.RecordRequestBody(ctx, "ingest.put_geoip_database", r.Body); reader != nil {
 			req.Body = reader
 		}
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "ingest.put_geoip_database")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -183,6 +195,20 @@ func (r IngestPutGeoipDatabaseRequest) Do(providedCtx context.Context, transport
 func (f IngestPutGeoipDatabase) WithContext(v context.Context) func(*IngestPutGeoipDatabaseRequest) {
 	return func(r *IngestPutGeoipDatabaseRequest) {
 		r.ctx = v
+	}
+}
+
+// WithMasterTimeout - explicit operation timeout for connection to master node.
+func (f IngestPutGeoipDatabase) WithMasterTimeout(v time.Duration) func(*IngestPutGeoipDatabaseRequest) {
+	return func(r *IngestPutGeoipDatabaseRequest) {
+		r.MasterTimeout = v
+	}
+}
+
+// WithTimeout - explicit operation timeout.
+func (f IngestPutGeoipDatabase) WithTimeout(v time.Duration) func(*IngestPutGeoipDatabaseRequest) {
+	return func(r *IngestPutGeoipDatabaseRequest) {
+		r.Timeout = v
 	}
 }
 

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,8 +31,9 @@ import (
 
 // FieldSuggester type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/search/_types/suggester.ts#L109-L142
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/search/_types/suggester.ts#L109-L142
 type FieldSuggester struct {
+	AdditionalFieldSuggesterProperty map[string]json.RawMessage `json:"-"`
 	// Completion Provides auto-complete/search-as-you-type functionality.
 	Completion *CompletionSuggester `json:"completion,omitempty"`
 	// Phrase Provides access to word alternatives on a per token basis within a certain
@@ -115,14 +116,58 @@ func (s *FieldSuggester) UnmarshalJSON(data []byte) error {
 			}
 			s.Text = &o
 
+		default:
+
+			if key, ok := t.(string); ok {
+				if s.AdditionalFieldSuggesterProperty == nil {
+					s.AdditionalFieldSuggesterProperty = make(map[string]json.RawMessage, 0)
+				}
+				raw := new(json.RawMessage)
+				if err := dec.Decode(&raw); err != nil {
+					return fmt.Errorf("%s | %w", "AdditionalFieldSuggesterProperty", err)
+				}
+				s.AdditionalFieldSuggesterProperty[key] = *raw
+			}
+
 		}
 	}
 	return nil
 }
 
+// MarhsalJSON overrides marshalling for types with additional properties
+func (s FieldSuggester) MarshalJSON() ([]byte, error) {
+	type opt FieldSuggester
+	// We transform the struct to a map without the embedded additional properties map
+	tmp := make(map[string]any, 0)
+
+	data, err := json.Marshal(opt(s))
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, &tmp)
+	if err != nil {
+		return nil, err
+	}
+
+	// We inline the additional fields from the underlying map
+	for key, value := range s.AdditionalFieldSuggesterProperty {
+		tmp[fmt.Sprintf("%s", key)] = value
+	}
+	delete(tmp, "AdditionalFieldSuggesterProperty")
+
+	data, err = json.Marshal(tmp)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 // NewFieldSuggester returns a FieldSuggester.
 func NewFieldSuggester() *FieldSuggester {
-	r := &FieldSuggester{}
+	r := &FieldSuggester{
+		AdditionalFieldSuggesterProperty: make(map[string]json.RawMessage),
+	}
 
 	return r
 }

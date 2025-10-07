@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Evaluate a trained model.
 package infertrainedmodel
@@ -91,8 +91,6 @@ func New(tp elastictransport.Interface) *InferTrainedModel {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -393,6 +391,9 @@ func (r *InferTrainedModel) Pretty(pretty bool) *InferTrainedModel {
 // Currently, for NLP models, only a single value is allowed.
 // API name: docs
 func (r *InferTrainedModel) Docs(docs ...map[string]json.RawMessage) *InferTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Docs = docs
 
 	return r
@@ -401,6 +402,9 @@ func (r *InferTrainedModel) Docs(docs ...map[string]json.RawMessage) *InferTrain
 // InferenceConfig The inference configuration updates to apply on the API call
 // API name: inference_config
 func (r *InferTrainedModel) InferenceConfig(inferenceconfig *types.InferenceConfigUpdateContainer) *InferTrainedModel {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.InferenceConfig = inferenceconfig
 

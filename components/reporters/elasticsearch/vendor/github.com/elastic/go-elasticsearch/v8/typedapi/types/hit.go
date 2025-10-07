@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // Hit type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/search/_types/hits.ts#L41-L66
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/search/_types/hits.ts#L41-L66
 type Hit struct {
 	Explanation_       *Explanation               `json:"_explanation,omitempty"`
 	Fields             map[string]json.RawMessage `json:"fields,omitempty"`
@@ -248,10 +248,10 @@ func (s *Hit) UnmarshalJSON(data []byte) error {
 // NewHit returns a Hit.
 func NewHit() *Hit {
 	r := &Hit{
-		Fields:             make(map[string]json.RawMessage, 0),
-		Highlight:          make(map[string][]string, 0),
-		IgnoredFieldValues: make(map[string][]FieldValue, 0),
-		InnerHits:          make(map[string]InnerHitsResult, 0),
+		Fields:             make(map[string]json.RawMessage),
+		Highlight:          make(map[string][]string),
+		IgnoredFieldValues: make(map[string][]FieldValue),
+		InnerHits:          make(map[string]InnerHitsResult),
 	}
 
 	return r

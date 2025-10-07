@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Run an ES|QL query.
 // Get search results for an ES|QL (Elasticsearch query language) query.
@@ -86,8 +86,6 @@ func New(tp elastictransport.Interface) *Query {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -294,6 +292,9 @@ func (r *Query) Header(key, value string) *Query {
 }
 
 // Format A short version of the Accept header, e.g. json, yaml.
+//
+// `csv`, `tsv`, and `txt` formats will return results in a tabular format,
+// excluding other metadata fields from the response.
 // API name: format
 func (r *Query) Format(format esqlformat.EsqlFormat) *Query {
 	r.values.Set("format", format.String())
@@ -317,6 +318,19 @@ func (r *Query) Delimiter(delimiter string) *Query {
 // API name: drop_null_columns
 func (r *Query) DropNullColumns(dropnullcolumns bool) *Query {
 	r.values.Set("drop_null_columns", strconv.FormatBool(dropnullcolumns))
+
+	return r
+}
+
+// AllowPartialResults If `true`, partial results will be returned if there are shard failures, but
+// the query can continue to execute on other clusters and shards.
+// If `false`, the query will fail if there are any failures.
+//
+// To override the default behavior, you can set the
+// `esql.query.allow_partial_results` cluster setting to `false`.
+// API name: allow_partial_results
+func (r *Query) AllowPartialResults(allowpartialresults bool) *Query {
+	r.values.Set("allow_partial_results", strconv.FormatBool(allowpartialresults))
 
 	return r
 }
@@ -371,6 +385,9 @@ func (r *Query) Pretty(pretty bool) *Query {
 // all the values of a certain column in the results.
 // API name: columnar
 func (r *Query) Columnar(columnar bool) *Query {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Columnar = &columnar
 
 	return r
@@ -380,14 +397,35 @@ func (r *Query) Columnar(columnar bool) *Query {
 // documents that an ES|QL query runs on.
 // API name: filter
 func (r *Query) Filter(filter *types.Query) *Query {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Filter = filter
 
 	return r
 }
 
+// IncludeCcsMetadata When set to `true` and performing a cross-cluster query, the response will
+// include an extra `_clusters`
+// object with information about the clusters that participated in the search
+// along with info such as shards
+// count.
+// API name: include_ccs_metadata
+func (r *Query) IncludeCcsMetadata(includeccsmetadata bool) *Query {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.IncludeCcsMetadata = &includeccsmetadata
+
+	return r
+}
+
 // API name: locale
 func (r *Query) Locale(locale string) *Query {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Locale = &locale
 
@@ -399,6 +437,9 @@ func (r *Query) Locale(locale string) *Query {
 // string for each of the parameters.
 // API name: params
 func (r *Query) Params(params ...types.FieldValue) *Query {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Params = params
 
 	return r
@@ -412,6 +453,9 @@ func (r *Query) Params(params ...types.FieldValue) *Query {
 // of each part of the query.
 // API name: profile
 func (r *Query) Profile(profile bool) *Query {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Profile = &profile
 
 	return r
@@ -421,6 +465,9 @@ func (r *Query) Profile(profile bool) *Query {
 // runs it, and returns the results.
 // API name: query
 func (r *Query) Query(query string) *Query {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Query = query
 
@@ -431,6 +478,9 @@ func (r *Query) Query(query string) *Query {
 // name and the next level key is the column name.
 // API name: tables
 func (r *Query) Tables(tables map[string]map[string]types.TableValuesContainer) *Query {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Tables = tables
 

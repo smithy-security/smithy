@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,15 +31,15 @@ import (
 
 // TermVectorsFilter type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/termvectors/types.ts#L49-L86
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/termvectors/types.ts#L49-L86
 type TermVectorsFilter struct {
 	// MaxDocFreq Ignore words which occur in more than this many docs.
 	// Defaults to unbounded.
 	MaxDocFreq *int `json:"max_doc_freq,omitempty"`
-	// MaxNumTerms Maximum number of terms that must be returned per field.
+	// MaxNumTerms The maximum number of terms that must be returned per field.
 	MaxNumTerms *int `json:"max_num_terms,omitempty"`
 	// MaxTermFreq Ignore words with more than this frequency in the source doc.
-	// Defaults to unbounded.
+	// It defaults to unbounded.
 	MaxTermFreq *int `json:"max_term_freq,omitempty"`
 	// MaxWordLength The maximum word length above which words will be ignored.
 	// Defaults to unbounded.

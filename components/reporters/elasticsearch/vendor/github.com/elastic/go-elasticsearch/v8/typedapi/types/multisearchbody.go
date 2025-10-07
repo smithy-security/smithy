@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // MultisearchBody type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/msearch/types.ts#L70-L204
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/msearch/types.ts#L70-L204
 type MultisearchBody struct {
 	Aggregations map[string]Aggregations `json:"aggregations,omitempty"`
 	Collapse     *FieldCollapse          `json:"collapse,omitempty"`
@@ -56,8 +56,9 @@ type MultisearchBody struct {
 	IndicesBoost []map[string]Float64 `json:"indices_boost,omitempty"`
 	// Knn Defines the approximate kNN search to run.
 	Knn []KnnSearch `json:"knn,omitempty"`
-	// MinScore Minimum _score for matching documents. Documents with a lower _score are
-	// not included in the search results.
+	// MinScore The minimum `_score` for matching documents.
+	// Documents with a lower `_score` are not included in search results and
+	// results collected by aggregations.
 	MinScore *Float64 `json:"min_score,omitempty"`
 	// Pit Limits the search to a point in time (PIT). If you provide a PIT, you
 	// cannot specify an <index> in the request path.
@@ -366,7 +367,7 @@ func (s *MultisearchBody) UnmarshalJSON(data []byte) error {
 
 				switch t {
 
-				case "excludes", "includes":
+				case "exclude_vectors", "excludes", "includes":
 					o := NewSourceFilter()
 					localDec := json.NewDecoder(bytes.NewReader(message))
 					if err := localDec.Decode(&o); err != nil {
@@ -478,9 +479,9 @@ func (s *MultisearchBody) UnmarshalJSON(data []byte) error {
 // NewMultisearchBody returns a MultisearchBody.
 func NewMultisearchBody() *MultisearchBody {
 	r := &MultisearchBody{
-		Aggregations: make(map[string]Aggregations, 0),
-		Ext:          make(map[string]json.RawMessage, 0),
-		ScriptFields: make(map[string]ScriptField, 0),
+		Aggregations: make(map[string]Aggregations),
+		Ext:          make(map[string]json.RawMessage),
+		ScriptFields: make(map[string]ScriptField),
 	}
 
 	return r

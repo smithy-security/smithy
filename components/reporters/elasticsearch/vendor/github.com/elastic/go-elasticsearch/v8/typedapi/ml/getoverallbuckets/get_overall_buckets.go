@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get overall bucket results.
 //
@@ -127,8 +127,6 @@ func New(tp elastictransport.Interface) *GetOverallBuckets {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -407,6 +405,9 @@ func (r *GetOverallBuckets) Pretty(pretty bool) *GetOverallBuckets {
 // AllowNoMatch Refer to the description for the `allow_no_match` query parameter.
 // API name: allow_no_match
 func (r *GetOverallBuckets) AllowNoMatch(allownomatch bool) *GetOverallBuckets {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AllowNoMatch = &allownomatch
 
 	return r
@@ -415,6 +416,9 @@ func (r *GetOverallBuckets) AllowNoMatch(allownomatch bool) *GetOverallBuckets {
 // BucketSpan Refer to the description for the `bucket_span` query parameter.
 // API name: bucket_span
 func (r *GetOverallBuckets) BucketSpan(duration types.Duration) *GetOverallBuckets {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.BucketSpan = duration
 
 	return r
@@ -423,6 +427,9 @@ func (r *GetOverallBuckets) BucketSpan(duration types.Duration) *GetOverallBucke
 // End Refer to the description for the `end` query parameter.
 // API name: end
 func (r *GetOverallBuckets) End(datetime types.DateTime) *GetOverallBuckets {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.End = datetime
 
 	return r
@@ -431,6 +438,9 @@ func (r *GetOverallBuckets) End(datetime types.DateTime) *GetOverallBuckets {
 // ExcludeInterim Refer to the description for the `exclude_interim` query parameter.
 // API name: exclude_interim
 func (r *GetOverallBuckets) ExcludeInterim(excludeinterim bool) *GetOverallBuckets {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ExcludeInterim = &excludeinterim
 
 	return r
@@ -439,7 +449,10 @@ func (r *GetOverallBuckets) ExcludeInterim(excludeinterim bool) *GetOverallBucke
 // OverallScore Refer to the description for the `overall_score` query parameter.
 // API name: overall_score
 func (r *GetOverallBuckets) OverallScore(overallscore string) *GetOverallBuckets {
-	r.req.OverallScore = overallscore
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.OverallScore = &overallscore
 
 	return r
 }
@@ -447,6 +460,9 @@ func (r *GetOverallBuckets) OverallScore(overallscore string) *GetOverallBuckets
 // Start Refer to the description for the `start` query parameter.
 // API name: start
 func (r *GetOverallBuckets) Start(datetime types.DateTime) *GetOverallBuckets {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Start = datetime
 
 	return r
@@ -455,6 +471,9 @@ func (r *GetOverallBuckets) Start(datetime types.DateTime) *GetOverallBuckets {
 // TopN Refer to the description for the `top_n` query parameter.
 // API name: top_n
 func (r *GetOverallBuckets) TopN(topn int) *GetOverallBuckets {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.TopN = &topn
 
 	return r

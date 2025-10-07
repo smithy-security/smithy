@@ -16,10 +16,43 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create an index.
-// Creates a new index.
+// You can use the create index API to add a new index to an Elasticsearch
+// cluster.
+// When creating an index, you can specify the following:
+//
+// * Settings for the index.
+// * Mappings for fields in the index.
+// * Index aliases
+//
+// **Wait for active shards**
+//
+// By default, index creation will only return a response to the client when the
+// primary copies of each shard have been started, or the request times out.
+// The index creation response will indicate what happened.
+// For example, `acknowledged` indicates whether the index was successfully
+// created in the cluster, `while shards_acknowledged` indicates whether the
+// requisite number of shard copies were started for each shard in the index
+// before timing out.
+// Note that it is still possible for either `acknowledged` or
+// `shards_acknowledged` to be `false`, but for the index creation to be
+// successful.
+// These values simply indicate whether the operation completed before the
+// timeout.
+// If `acknowledged` is false, the request timed out before the cluster state
+// was updated with the newly created index, but it probably will be created
+// sometime soon.
+// If `shards_acknowledged` is false, then the request timed out before the
+// requisite number of shards were started (by default just the primaries), even
+// if the cluster state was successfully updated to reflect the newly created
+// index (that is to say, `acknowledged` is `true`).
+//
+// You can change the default of only waiting for the primary shards to start
+// through the index setting `index.write.wait_for_active_shards`.
+// Note that changing this setting will also affect the `wait_for_active_shards`
+// value on all subsequent write operations.
 package create
 
 import (
@@ -83,7 +116,40 @@ func NewCreateFunc(tp elastictransport.Interface) NewCreate {
 }
 
 // Create an index.
-// Creates a new index.
+// You can use the create index API to add a new index to an Elasticsearch
+// cluster.
+// When creating an index, you can specify the following:
+//
+// * Settings for the index.
+// * Mappings for fields in the index.
+// * Index aliases
+//
+// **Wait for active shards**
+//
+// By default, index creation will only return a response to the client when the
+// primary copies of each shard have been started, or the request times out.
+// The index creation response will indicate what happened.
+// For example, `acknowledged` indicates whether the index was successfully
+// created in the cluster, `while shards_acknowledged` indicates whether the
+// requisite number of shard copies were started for each shard in the index
+// before timing out.
+// Note that it is still possible for either `acknowledged` or
+// `shards_acknowledged` to be `false`, but for the index creation to be
+// successful.
+// These values simply indicate whether the operation completed before the
+// timeout.
+// If `acknowledged` is false, the request timed out before the cluster state
+// was updated with the newly created index, but it probably will be created
+// sometime soon.
+// If `shards_acknowledged` is false, then the request timed out before the
+// requisite number of shards were started (by default just the primaries), even
+// if the cluster state was successfully updated to reflect the newly created
+// index (that is to say, `acknowledged` is `true`).
+//
+// You can change the default of only waiting for the primary shards to start
+// through the index setting `index.write.wait_for_active_shards`.
+// Note that changing this setting will also affect the `wait_for_active_shards`
+// value on all subsequent write operations.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html
 func New(tp elastictransport.Interface) *Create {
@@ -93,8 +159,6 @@ func New(tp elastictransport.Interface) *Create {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -391,6 +455,9 @@ func (r *Create) Pretty(pretty bool) *Create {
 // Aliases Aliases for the index.
 // API name: aliases
 func (r *Create) Aliases(aliases map[string]types.Alias) *Create {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Aliases = aliases
 
@@ -403,6 +470,9 @@ func (r *Create) Aliases(aliases map[string]types.Alias) *Create {
 // - Mapping parameters
 // API name: mappings
 func (r *Create) Mappings(mappings *types.TypeMapping) *Create {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Mappings = mappings
 
@@ -412,6 +482,9 @@ func (r *Create) Mappings(mappings *types.TypeMapping) *Create {
 // Settings Configuration options for the index.
 // API name: settings
 func (r *Create) Settings(settings *types.IndexSettings) *Create {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 

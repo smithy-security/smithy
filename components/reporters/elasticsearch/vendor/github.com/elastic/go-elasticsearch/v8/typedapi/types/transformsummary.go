@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,14 +31,15 @@ import (
 
 // TransformSummary type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/transform/get_transform/types.ts#L33-L61
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/transform/get_transform/types.ts#L33-L62
 type TransformSummary struct {
 	// Authorization The security privileges that the transform uses to run its queries. If
 	// Elastic Stack security features were disabled at the time of the most recent
 	// update to the transform, this property is omitted.
 	Authorization *TransformAuthorization `json:"authorization,omitempty"`
 	// CreateTime The time the transform was created.
-	CreateTime *int64 `json:"create_time,omitempty"`
+	CreateTime       *int64   `json:"create_time,omitempty"`
+	CreateTimeString DateTime `json:"create_time_string,omitempty"`
 	// Description Free text description of the transform.
 	Description *string `json:"description,omitempty"`
 	// Dest The destination for the transform.
@@ -84,6 +85,11 @@ func (s *TransformSummary) UnmarshalJSON(data []byte) error {
 		case "create_time":
 			if err := dec.Decode(&s.CreateTime); err != nil {
 				return fmt.Errorf("%s | %w", "CreateTime", err)
+			}
+
+		case "create_time_string":
+			if err := dec.Decode(&s.CreateTimeString); err != nil {
+				return fmt.Errorf("%s | %w", "CreateTimeString", err)
 			}
 
 		case "description":

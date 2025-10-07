@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Start a trial.
 // Start a 30-day trial, which gives access to all subscription features.
@@ -302,9 +302,18 @@ func (r *PostStartTrial) Acknowledge(acknowledge bool) *PostStartTrial {
 	return r
 }
 
-// API name: type_query_string
-func (r *PostStartTrial) TypeQueryString(typequerystring string) *PostStartTrial {
-	r.values.Set("type_query_string", typequerystring)
+// Type The type of trial license to generate (default: "trial")
+// API name: type
+func (r *PostStartTrial) Type(type_ string) *PostStartTrial {
+	r.values.Set("type", type_)
+
+	return r
+}
+
+// MasterTimeout Period to wait for a connection to the master node.
+// API name: master_timeout
+func (r *PostStartTrial) MasterTimeout(duration string) *PostStartTrial {
+	r.values.Set("master_timeout", duration)
 
 	return r
 }

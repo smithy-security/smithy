@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Start datafeeds.
 //
@@ -129,8 +129,6 @@ func New(tp elastictransport.Interface) *StartDatafeed {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -406,6 +404,9 @@ func (r *StartDatafeed) Pretty(pretty bool) *StartDatafeed {
 // End Refer to the description for the `end` query parameter.
 // API name: end
 func (r *StartDatafeed) End(datetime types.DateTime) *StartDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.End = datetime
 
 	return r
@@ -414,6 +415,9 @@ func (r *StartDatafeed) End(datetime types.DateTime) *StartDatafeed {
 // Start Refer to the description for the `start` query parameter.
 // API name: start
 func (r *StartDatafeed) Start(datetime types.DateTime) *StartDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Start = datetime
 
 	return r
@@ -422,6 +426,9 @@ func (r *StartDatafeed) Start(datetime types.DateTime) *StartDatafeed {
 // Timeout Refer to the description for the `timeout` query parameter.
 // API name: timeout
 func (r *StartDatafeed) Timeout(duration types.Duration) *StartDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Timeout = duration
 
 	return r

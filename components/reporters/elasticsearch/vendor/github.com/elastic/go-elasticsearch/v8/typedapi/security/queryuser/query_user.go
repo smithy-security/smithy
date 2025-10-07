@@ -16,12 +16,16 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Find users with a query.
 //
 // Get information for users in a paginated manner.
 // You can optionally filter the results with a query.
+//
+// NOTE: As opposed to the get user API, built-in users are excluded from the
+// result.
+// This API is only for native users.
 package queryuser
 
 import (
@@ -81,6 +85,10 @@ func NewQueryUserFunc(tp elastictransport.Interface) NewQueryUser {
 // Get information for users in a paginated manner.
 // You can optionally filter the results with a query.
 //
+// NOTE: As opposed to the get user API, built-in users are excluded from the
+// result.
+// This API is only for native users.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-query-user.html
 func New(tp elastictransport.Interface) *QueryUser {
 	r := &QueryUser{
@@ -89,8 +97,6 @@ func New(tp elastictransport.Interface) *QueryUser {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -300,8 +306,8 @@ func (r *QueryUser) Header(key, value string) *QueryUser {
 	return r
 }
 
-// WithProfileUid If true will return the User Profile ID for the users in the query result, if
-// any.
+// WithProfileUid Determines whether to retrieve the user profile UID, if it exists, for the
+// users.
 // API name: with_profile_uid
 func (r *QueryUser) WithProfileUid(withprofileuid bool) *QueryUser {
 	r.values.Set("with_profile_uid", strconv.FormatBool(withprofileuid))
@@ -353,12 +359,16 @@ func (r *QueryUser) Pretty(pretty bool) *QueryUser {
 	return r
 }
 
-// From Starting document offset.
-// By default, you cannot page through more than 10,000 hits using the from and
-// size parameters.
+// From The starting document offset.
+// It must not be negative.
+// By default, you cannot page through more than 10,000 hits using the `from`
+// and `size` parameters.
 // To page through more hits, use the `search_after` parameter.
 // API name: from
 func (r *QueryUser) From(from int) *QueryUser {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.From = &from
 
 	return r
@@ -370,39 +380,53 @@ func (r *QueryUser) From(from int) *QueryUser {
 // `term`, `terms`, `match`,
 // `ids`, `prefix`, `wildcard`, `exists`, `range`, and `simple_query_string`.
 // You can query the following information associated with user: `username`,
-// `roles`, `enabled`
+// `roles`, `enabled`, `full_name`, and `email`.
 // API name: query
 func (r *QueryUser) Query(query *types.UserQueryContainer) *QueryUser {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Query = query
 
 	return r
 }
 
-// SearchAfter Search after definition
+// SearchAfter The search after definition
 // API name: search_after
 func (r *QueryUser) SearchAfter(sortresults ...types.FieldValue) *QueryUser {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.SearchAfter = sortresults
 
 	return r
 }
 
 // Size The number of hits to return.
+// It must not be negative.
 // By default, you cannot page through more than 10,000 hits using the `from`
 // and `size` parameters.
 // To page through more hits, use the `search_after` parameter.
 // API name: size
 func (r *QueryUser) Size(size int) *QueryUser {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Size = &size
 
 	return r
 }
 
-// Sort Fields eligible for sorting are: username, roles, enabled
+// Sort The sort definition.
+// Fields eligible for sorting are: `username`, `roles`, `enabled`.
 // In addition, sort can also be applied to the `_doc` field to sort by index
 // order.
 // API name: sort
 func (r *QueryUser) Sort(sorts ...types.SortCombinations) *QueryUser {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Sort = sorts
 
 	return r

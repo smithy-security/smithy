@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Reset the features.
 // Clear all of the state information stored in system indices by Elasticsearch
@@ -118,7 +118,7 @@ func NewResetFeaturesFunc(tp elastictransport.Interface) NewResetFeatures {
 // the features that will be reset. Run on the master node if you have any
 // doubts about which plugins are installed on individual nodes.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-snapshots.html
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/reset-features-api.html
 func New(tp elastictransport.Interface) *ResetFeatures {
 	r := &ResetFeatures{
 		transport: tp,
@@ -320,6 +320,14 @@ func (r ResetFeatures) IsSuccess(providedCtx context.Context) (bool, error) {
 // Header set a key, value pair in the ResetFeatures headers map.
 func (r *ResetFeatures) Header(key, value string) *ResetFeatures {
 	r.headers.Set(key, value)
+
+	return r
+}
+
+// MasterTimeout Period to wait for a connection to the master node.
+// API name: master_timeout
+func (r *ResetFeatures) MasterTimeout(duration string) *ResetFeatures {
+	r.values.Set("master_timeout", duration)
 
 	return r
 }

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Analyze the index disk usage.
 // Analyze the disk usage of each field of an index or data stream.
@@ -24,6 +24,15 @@
 // versions.
 // The result of a small index can be inaccurate as some parts of an index might
 // not be analyzed by the API.
+//
+// NOTE: The total size of fields of the analyzed shards of the index in the
+// response is usually smaller than the index `store_size` value because some
+// small metadata files are ignored and some parts of data files might not be
+// scanned by the API.
+// Since stored fields are stored together in a compressed format, the sizes of
+// stored fields are also estimates and can be inaccurate.
+// The stored size of the `_id` field is likely underestimated while the
+// `_source` field is overestimated.
 package diskusage
 
 import (
@@ -88,6 +97,15 @@ func NewDiskUsageFunc(tp elastictransport.Interface) NewDiskUsage {
 // versions.
 // The result of a small index can be inaccurate as some parts of an index might
 // not be analyzed by the API.
+//
+// NOTE: The total size of fields of the analyzed shards of the index in the
+// response is usually smaller than the index `store_size` value because some
+// small metadata files are ignored and some parts of data files might not be
+// scanned by the API.
+// Since stored fields are stored together in a compressed format, the sizes of
+// stored fields are also estimates and can be inaccurate.
+// The stored size of the `_id` field is likely underestimated while the
+// `_source` field is overestimated.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-disk-usage.html
 func New(tp elastictransport.Interface) *DiskUsage {

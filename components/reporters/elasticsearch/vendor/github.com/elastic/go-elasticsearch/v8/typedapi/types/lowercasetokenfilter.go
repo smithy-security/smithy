@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -26,16 +26,18 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strconv"
+
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/lowercasetokenfilterlanguages"
 )
 
 // LowercaseTokenFilter type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/analysis/token_filters.ts#L256-L259
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/analysis/token_filters.ts#L350-L354
 type LowercaseTokenFilter struct {
-	Language *string `json:"language,omitempty"`
-	Type     string  `json:"type,omitempty"`
-	Version  *string `json:"version,omitempty"`
+	// Language Language-specific lowercase token filter to use.
+	Language *lowercasetokenfilterlanguages.LowercaseTokenFilterLanguages `json:"language,omitempty"`
+	Type     string                                                       `json:"type,omitempty"`
+	Version  *string                                                      `json:"version,omitempty"`
 }
 
 func (s *LowercaseTokenFilter) UnmarshalJSON(data []byte) error {
@@ -54,16 +56,9 @@ func (s *LowercaseTokenFilter) UnmarshalJSON(data []byte) error {
 		switch t {
 
 		case "language":
-			var tmp json.RawMessage
-			if err := dec.Decode(&tmp); err != nil {
+			if err := dec.Decode(&s.Language); err != nil {
 				return fmt.Errorf("%s | %w", "Language", err)
 			}
-			o := string(tmp[:])
-			o, err = strconv.Unquote(o)
-			if err != nil {
-				o = string(tmp[:])
-			}
-			s.Language = &o
 
 		case "type":
 			if err := dec.Decode(&s.Type); err != nil {

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create or update a search application.
 package put
@@ -91,8 +91,6 @@ func New(tp elastictransport.Interface) *Put {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -371,6 +369,9 @@ func (r *Put) Pretty(pretty bool) *Put {
 // AnalyticsCollectionName Analytics collection associated to the Search Application.
 // API name: analytics_collection_name
 func (r *Put) AnalyticsCollectionName(name string) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AnalyticsCollectionName = &name
 
 	return r
@@ -379,15 +380,10 @@ func (r *Put) AnalyticsCollectionName(name string) *Put {
 // Indices Indices that are part of the Search Application.
 // API name: indices
 func (r *Put) Indices(indices ...string) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Indices = indices
-
-	return r
-}
-
-// Name Search Application name.
-// API name: name
-func (r *Put) Name(name string) *Put {
-	r.req.Name = name
 
 	return r
 }
@@ -395,16 +391,11 @@ func (r *Put) Name(name string) *Put {
 // Template Search template to use on search operations.
 // API name: template
 func (r *Put) Template(template *types.SearchApplicationTemplate) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Template = template
-
-	return r
-}
-
-// UpdatedAtMillis Last time the Search Application was updated.
-// API name: updated_at_millis
-func (r *Put) UpdatedAtMillis(epochtimeunitmillis int64) *Put {
-	r.req.UpdatedAtMillis = epochtimeunitmillis
 
 	return r
 }

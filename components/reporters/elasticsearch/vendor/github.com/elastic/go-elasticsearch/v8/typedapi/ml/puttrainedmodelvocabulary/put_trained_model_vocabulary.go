@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create a trained model vocabulary.
 // This API is supported only for natural language processing (NLP) models.
@@ -97,8 +97,6 @@ func New(tp elastictransport.Interface) *PutTrainedModelVocabulary {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -370,6 +368,9 @@ func (r *PutTrainedModelVocabulary) Pretty(pretty bool) *PutTrainedModelVocabula
 // Merges The optional model merges if required by the tokenizer.
 // API name: merges
 func (r *PutTrainedModelVocabulary) Merges(merges ...string) *PutTrainedModelVocabulary {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Merges = merges
 
 	return r
@@ -378,6 +379,9 @@ func (r *PutTrainedModelVocabulary) Merges(merges ...string) *PutTrainedModelVoc
 // Scores The optional vocabulary value scores if required by the tokenizer.
 // API name: scores
 func (r *PutTrainedModelVocabulary) Scores(scores ...types.Float64) *PutTrainedModelVocabulary {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Scores = scores
 
 	return r
@@ -386,6 +390,9 @@ func (r *PutTrainedModelVocabulary) Scores(scores ...types.Float64) *PutTrainedM
 // Vocabulary The model vocabulary, which must not be empty.
 // API name: vocabulary
 func (r *PutTrainedModelVocabulary) Vocabulary(vocabularies ...string) *PutTrainedModelVocabulary {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Vocabulary = vocabularies
 
 	return r

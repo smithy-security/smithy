@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // ShapeQuery type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/query_dsl/specialized.ts#L367-L381
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/query_dsl/specialized.ts#L367-L381
 type ShapeQuery struct {
 	// Boost Floating point number used to decrease or increase the relevance scores of
 	// the query.
@@ -153,7 +153,7 @@ func (s ShapeQuery) MarshalJSON() ([]byte, error) {
 // NewShapeQuery returns a ShapeQuery.
 func NewShapeQuery() *ShapeQuery {
 	r := &ShapeQuery{
-		ShapeQuery: make(map[string]ShapeFieldQuery, 0),
+		ShapeQuery: make(map[string]ShapeFieldQuery),
 	}
 
 	return r

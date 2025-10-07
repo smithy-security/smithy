@@ -16,9 +16,26 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Run multiple templated searches.
+//
+// Run multiple templated searches with a single request.
+// If you are providing a text file or text input to `curl`, use the
+// `--data-binary` flag instead of `-d` to preserve newlines.
+// For example:
+//
+// ```
+// $ cat requests
+// { "index": "my-index" }
+// { "id": "my-search-template", "params": { "query_string": "hello world",
+// "from": 0, "size": 10 }}
+// { "index": "my-other-index" }
+// { "id": "my-other-search-template", "params": { "query_type": "match_all" }}
+//
+// $ curl -H "Content-Type: application/x-ndjson" -XGET
+// localhost:9200/_msearch/template --data-binary "@requests"; echo
+// ```
 package msearchtemplate
 
 import (
@@ -82,7 +99,24 @@ func NewMsearchTemplateFunc(tp elastictransport.Interface) NewMsearchTemplate {
 
 // Run multiple templated searches.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/search-multi-search.html
+// Run multiple templated searches with a single request.
+// If you are providing a text file or text input to `curl`, use the
+// `--data-binary` flag instead of `-d` to preserve newlines.
+// For example:
+//
+// ```
+// $ cat requests
+// { "index": "my-index" }
+// { "id": "my-search-template", "params": { "query_string": "hello world",
+// "from": 0, "size": 10 }}
+// { "index": "my-other-index" }
+// { "id": "my-other-search-template", "params": { "query_type": "match_all" }}
+//
+// $ curl -H "Content-Type: application/x-ndjson" -XGET
+// localhost:9200/_msearch/template --data-binary "@requests"; echo
+// ```
+//
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-search-template.html
 func New(tp elastictransport.Interface) *MsearchTemplate {
 	r := &MsearchTemplate{
 		transport: tp,
@@ -317,8 +351,8 @@ func (r *MsearchTemplate) Header(key, value string) *MsearchTemplate {
 	return r
 }
 
-// Index Comma-separated list of data streams, indices, and aliases to search.
-// Supports wildcards (`*`).
+// Index A comma-separated list of data streams, indices, and aliases to search.
+// It supports wildcards (`*`).
 // To search all data streams and indices, omit this parameter or use `*`.
 // API Name: index
 func (r *MsearchTemplate) Index(index string) *MsearchTemplate {
@@ -337,7 +371,7 @@ func (r *MsearchTemplate) CcsMinimizeRoundtrips(ccsminimizeroundtrips bool) *Mse
 	return r
 }
 
-// MaxConcurrentSearches Maximum number of concurrent searches the API can run.
+// MaxConcurrentSearches The maximum number of concurrent searches the API can run.
 // API name: max_concurrent_searches
 func (r *MsearchTemplate) MaxConcurrentSearches(maxconcurrentsearches string) *MsearchTemplate {
 	r.values.Set("max_concurrent_searches", maxconcurrentsearches)
@@ -346,7 +380,6 @@ func (r *MsearchTemplate) MaxConcurrentSearches(maxconcurrentsearches string) *M
 }
 
 // SearchType The type of the search operation.
-// Available options: `query_then_fetch`, `dfs_query_then_fetch`.
 // API name: search_type
 func (r *MsearchTemplate) SearchType(searchtype searchtype.SearchType) *MsearchTemplate {
 	r.values.Set("search_type", searchtype.String())

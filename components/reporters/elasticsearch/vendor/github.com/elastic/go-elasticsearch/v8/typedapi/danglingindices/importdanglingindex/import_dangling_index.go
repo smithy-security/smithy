@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Import a dangling index.
 //
@@ -90,7 +90,7 @@ func NewImportDanglingIndexFunc(tp elastictransport.Interface) NewImportDangling
 // `cluster.indices.tombstones.size` indices while an Elasticsearch node is
 // offline.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-gateway-dangling-indices.html
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/dangling-index-import.html
 func New(tp elastictransport.Interface) *ImportDanglingIndex {
 	r := &ImportDanglingIndex{
 		transport: tp,

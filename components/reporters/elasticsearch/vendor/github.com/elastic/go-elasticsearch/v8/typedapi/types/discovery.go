@@ -16,13 +16,13 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
 // Discovery type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/nodes/_types/Stats.ts#L201-L219
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/nodes/_types/Stats.ts#L203-L221
 type Discovery struct {
 	ClusterApplierStats *ClusterAppliedStats `json:"cluster_applier_stats,omitempty"`
 	// ClusterStateQueue Contains statistics for the cluster state queue of the node.
@@ -43,7 +43,7 @@ type Discovery struct {
 // NewDiscovery returns a Discovery.
 func NewDiscovery() *Discovery {
 	r := &Discovery{
-		ClusterStateUpdate: make(map[string]ClusterStateUpdate, 0),
+		ClusterStateUpdate: make(map[string]ClusterStateUpdate),
 	}
 
 	return r

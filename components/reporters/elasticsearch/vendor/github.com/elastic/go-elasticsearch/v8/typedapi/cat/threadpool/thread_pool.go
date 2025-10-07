@@ -16,9 +16,11 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Returns thread pool statistics for each node in a cluster.
+// Get thread pool statistics.
+//
+// Get thread pool statistics for each node in a cluster.
 // Returned information includes all built-in thread pools and custom thread
 // pools.
 // IMPORTANT: cat APIs are only intended for human consumption using the command
@@ -39,6 +41,7 @@ import (
 
 	"github.com/elastic/elastic-transport-go/v8/elastictransport"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/catthreadpoolcolumn"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/timeunit"
 )
 
@@ -80,7 +83,9 @@ func NewThreadPoolFunc(tp elastictransport.Interface) NewThreadPool {
 	}
 }
 
-// Returns thread pool statistics for each node in a cluster.
+// Get thread pool statistics.
+//
+// Get thread pool statistics for each node in a cluster.
 // Returned information includes all built-in thread pools and custom thread
 // pools.
 // IMPORTANT: cat APIs are only intended for human consumption using the command
@@ -316,36 +321,33 @@ func (r *ThreadPool) ThreadPoolPatterns(threadpoolpatterns string) *ThreadPool {
 	return r
 }
 
+// H List of columns to appear in the response. Supports simple wildcards.
+// API name: h
+func (r *ThreadPool) H(catthreadpoolcolumns ...catthreadpoolcolumn.CatThreadPoolColumn) *ThreadPool {
+	tmp := []string{}
+	for _, item := range catthreadpoolcolumns {
+		tmp = append(tmp, item.String())
+	}
+	r.values.Set("expand_wildcards", strings.Join(tmp, ","))
+
+	return r
+}
+
+// S A comma-separated list of column names or aliases that determines the sort
+// order.
+// Sorting defaults to ascending and can be changed by setting `:asc`
+// or `:desc` as a suffix to the column name.
+// API name: s
+func (r *ThreadPool) S(names ...string) *ThreadPool {
+	r.values.Set("s", strings.Join(names, ","))
+
+	return r
+}
+
 // Time The unit used to display time values.
 // API name: time
 func (r *ThreadPool) Time(time timeunit.TimeUnit) *ThreadPool {
 	r.values.Set("time", time.String())
-
-	return r
-}
-
-// Format Specifies the format to return the columnar data in, can be set to
-// `text`, `json`, `cbor`, `yaml`, or `smile`.
-// API name: format
-func (r *ThreadPool) Format(format string) *ThreadPool {
-	r.values.Set("format", format)
-
-	return r
-}
-
-// H List of columns to appear in the response. Supports simple wildcards.
-// API name: h
-func (r *ThreadPool) H(names ...string) *ThreadPool {
-	r.values.Set("h", strings.Join(names, ","))
-
-	return r
-}
-
-// Help When set to `true` will output available columns. This option
-// can't be combined with any other query string option.
-// API name: help
-func (r *ThreadPool) Help(help bool) *ThreadPool {
-	r.values.Set("help", strconv.FormatBool(help))
 
 	return r
 }
@@ -361,7 +363,7 @@ func (r *ThreadPool) Local(local bool) *ThreadPool {
 	return r
 }
 
-// MasterTimeout Period to wait for a connection to the master node.
+// MasterTimeout The period to wait for a connection to the master node.
 // API name: master_timeout
 func (r *ThreadPool) MasterTimeout(duration string) *ThreadPool {
 	r.values.Set("master_timeout", duration)
@@ -369,12 +371,20 @@ func (r *ThreadPool) MasterTimeout(duration string) *ThreadPool {
 	return r
 }
 
-// S List of columns that determine how the table should be sorted.
-// Sorting defaults to ascending and can be changed by setting `:asc`
-// or `:desc` as a suffix to the column name.
-// API name: s
-func (r *ThreadPool) S(names ...string) *ThreadPool {
-	r.values.Set("s", strings.Join(names, ","))
+// Format Specifies the format to return the columnar data in, can be set to
+// `text`, `json`, `cbor`, `yaml`, or `smile`.
+// API name: format
+func (r *ThreadPool) Format(format string) *ThreadPool {
+	r.values.Set("format", format)
+
+	return r
+}
+
+// Help When set to `true` will output available columns. This option
+// can't be combined with any other query string option.
+// API name: help
+func (r *ThreadPool) Help(help bool) *ThreadPool {
+	r.values.Set("help", strconv.FormatBool(help))
 
 	return r
 }

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Stop datafeeds.
 // A datafeed that is stopped ceases to retrieve data from Elasticsearch. A
@@ -97,8 +97,6 @@ func New(tp elastictransport.Interface) *StopDatafeed {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -374,6 +372,9 @@ func (r *StopDatafeed) Pretty(pretty bool) *StopDatafeed {
 // AllowNoMatch Refer to the description for the `allow_no_match` query parameter.
 // API name: allow_no_match
 func (r *StopDatafeed) AllowNoMatch(allownomatch bool) *StopDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AllowNoMatch = &allownomatch
 
 	return r
@@ -382,6 +383,9 @@ func (r *StopDatafeed) AllowNoMatch(allownomatch bool) *StopDatafeed {
 // Force Refer to the description for the `force` query parameter.
 // API name: force
 func (r *StopDatafeed) Force(force bool) *StopDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Force = &force
 
 	return r
@@ -390,6 +394,9 @@ func (r *StopDatafeed) Force(force bool) *StopDatafeed {
 // Timeout Refer to the description for the `timeout` query parameter.
 // API name: timeout
 func (r *StopDatafeed) Timeout(duration types.Duration) *StopDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Timeout = duration
 
 	return r

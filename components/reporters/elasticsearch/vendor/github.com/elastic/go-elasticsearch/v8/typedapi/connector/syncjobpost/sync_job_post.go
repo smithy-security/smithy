@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create a connector sync job.
 //
@@ -91,8 +91,6 @@ func New(tp elastictransport.Interface) *SyncJobPost {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -347,6 +345,9 @@ func (r *SyncJobPost) Pretty(pretty bool) *SyncJobPost {
 // Id The id of the associated connector
 // API name: id
 func (r *SyncJobPost) Id(id string) *SyncJobPost {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Id = id
 
 	return r
@@ -354,6 +355,9 @@ func (r *SyncJobPost) Id(id string) *SyncJobPost {
 
 // API name: job_type
 func (r *SyncJobPost) JobType(jobtype syncjobtype.SyncJobType) *SyncJobPost {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.JobType = &jobtype
 
 	return r
@@ -361,6 +365,9 @@ func (r *SyncJobPost) JobType(jobtype syncjobtype.SyncJobType) *SyncJobPost {
 
 // API name: trigger_method
 func (r *SyncJobPost) TriggerMethod(triggermethod syncjobtriggermethod.SyncJobTriggerMethod) *SyncJobPost {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.TriggerMethod = &triggermethod
 
 	return r

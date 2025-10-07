@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update a data frame analytics job.
 package updatedataframeanalytics
@@ -83,7 +83,7 @@ func NewUpdateDataFrameAnalyticsFunc(tp elastictransport.Interface) NewUpdateDat
 
 // Update a data frame analytics job.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/update-dfanalytics.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-ml-update-data-frame-analytics
 func New(tp elastictransport.Interface) *UpdateDataFrameAnalytics {
 	r := &UpdateDataFrameAnalytics{
 		transport: tp,
@@ -91,8 +91,6 @@ func New(tp elastictransport.Interface) *UpdateDataFrameAnalytics {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -369,6 +367,9 @@ func (r *UpdateDataFrameAnalytics) Pretty(pretty bool) *UpdateDataFrameAnalytics
 // learning node capacity for it to be immediately assigned to a node.
 // API name: allow_lazy_start
 func (r *UpdateDataFrameAnalytics) AllowLazyStart(allowlazystart bool) *UpdateDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AllowLazyStart = &allowlazystart
 
 	return r
@@ -377,6 +378,9 @@ func (r *UpdateDataFrameAnalytics) AllowLazyStart(allowlazystart bool) *UpdateDa
 // Description A description of the job.
 // API name: description
 func (r *UpdateDataFrameAnalytics) Description(description string) *UpdateDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -389,6 +393,9 @@ func (r *UpdateDataFrameAnalytics) Description(description string) *UpdateDataFr
 // for operational functionality other than the analysis itself.
 // API name: max_num_threads
 func (r *UpdateDataFrameAnalytics) MaxNumThreads(maxnumthreads int) *UpdateDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxNumThreads = &maxnumthreads
 
 	return r
@@ -401,6 +408,9 @@ func (r *UpdateDataFrameAnalytics) MaxNumThreads(maxnumthreads int) *UpdateDataF
 // greater than that setting.
 // API name: model_memory_limit
 func (r *UpdateDataFrameAnalytics) ModelMemoryLimit(modelmemorylimit string) *UpdateDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ModelMemoryLimit = &modelmemorylimit
 

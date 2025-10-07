@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -33,16 +33,16 @@ import (
 
 // IndexPrivilegesCheck type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/has_privileges/types.ts#L33-L44
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/has_privileges/types.ts#L34-L45
 type IndexPrivilegesCheck struct {
-	// AllowRestrictedIndices This needs to be set to true (default is false) if using wildcards or regexps
-	// for patterns that cover restricted indices.
+	// AllowRestrictedIndices This needs to be set to `true` (default is `false`) if using wildcards or
+	// regexps for patterns that cover restricted indices.
 	// Implicitly, restricted indices do not match index patterns because restricted
 	// indices usually have limited privileges and including them in pattern tests
 	// would render most such tests false.
 	// If restricted indices are explicitly included in the names list, privileges
 	// will be checked against them regardless of the value of
-	// allow_restricted_indices.
+	// `allow_restricted_indices`.
 	AllowRestrictedIndices *bool `json:"allow_restricted_indices,omitempty"`
 	// Names A list of indices.
 	Names []string `json:"names"`

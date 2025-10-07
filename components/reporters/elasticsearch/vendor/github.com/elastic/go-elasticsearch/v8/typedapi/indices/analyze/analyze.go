@@ -16,12 +16,18 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get tokens from text analysis.
-// The analyze API performs
-// [analysis](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html)
-// on a text string and returns the resulting tokens.
+// The analyze API performs analysis on a text string and returns the resulting
+// tokens.
+//
+// Generating excessive amount of tokens may cause a node to run out of memory.
+// The `index.analyze.max_token_count` setting enables you to limit the number
+// of tokens that can be produced.
+// If more than this limit of tokens gets generated, an error occurs.
+// The `_analyze` endpoint without a specified index will always use `10000` as
+// its limit.
 package analyze
 
 import (
@@ -83,11 +89,17 @@ func NewAnalyzeFunc(tp elastictransport.Interface) NewAnalyze {
 }
 
 // Get tokens from text analysis.
-// The analyze API performs
-// [analysis](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis.html)
-// on a text string and returns the resulting tokens.
+// The analyze API performs analysis on a text string and returns the resulting
+// tokens.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-analyze.html
+// Generating excessive amount of tokens may cause a node to run out of memory.
+// The `index.analyze.max_token_count` setting enables you to limit the number
+// of tokens that can be produced.
+// If more than this limit of tokens gets generated, an error occurs.
+// The `_analyze` endpoint without a specified index will always use `10000` as
+// its limit.
+//
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-indices-analyze
 func New(tp elastictransport.Interface) *Analyze {
 	r := &Analyze{
 		transport: tp,
@@ -95,8 +107,6 @@ func New(tp elastictransport.Interface) *Analyze {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -374,6 +384,9 @@ func (r *Analyze) Pretty(pretty bool) *Analyze {
 // the index.
 // API name: analyzer
 func (r *Analyze) Analyzer(analyzer string) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Analyzer = &analyzer
 
@@ -384,6 +397,9 @@ func (r *Analyze) Analyzer(analyzer string) *Analyze {
 // parameter.
 // API name: attributes
 func (r *Analyze) Attributes(attributes ...string) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Attributes = attributes
 
 	return r
@@ -393,6 +409,9 @@ func (r *Analyze) Attributes(attributes ...string) *Analyze {
 // tokenizer.
 // API name: char_filter
 func (r *Analyze) CharFilter(charfilters ...types.CharFilter) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.CharFilter = charfilters
 
 	return r
@@ -401,6 +420,9 @@ func (r *Analyze) CharFilter(charfilters ...types.CharFilter) *Analyze {
 // Explain If `true`, the response includes token attributes and additional details.
 // API name: explain
 func (r *Analyze) Explain(explain bool) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Explain = &explain
 
 	return r
@@ -411,6 +433,9 @@ func (r *Analyze) Explain(explain bool) *Analyze {
 // If specified, the `analyzer` parameter overrides this value.
 // API name: field
 func (r *Analyze) Field(field string) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Field = &field
 
 	return r
@@ -419,6 +444,9 @@ func (r *Analyze) Field(field string) *Analyze {
 // Filter Array of token filters used to apply after the tokenizer.
 // API name: filter
 func (r *Analyze) Filter(filters ...types.TokenFilter) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Filter = filters
 
 	return r
@@ -427,6 +455,9 @@ func (r *Analyze) Filter(filters ...types.TokenFilter) *Analyze {
 // Normalizer Normalizer to use to convert text into a single token.
 // API name: normalizer
 func (r *Analyze) Normalizer(normalizer string) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Normalizer = &normalizer
 
@@ -437,6 +468,9 @@ func (r *Analyze) Normalizer(normalizer string) *Analyze {
 // If an array of strings is provided, it is analyzed as a multi-value field.
 // API name: text
 func (r *Analyze) Text(texttoanalyzes ...string) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Text = texttoanalyzes
 
 	return r
@@ -445,6 +479,9 @@ func (r *Analyze) Text(texttoanalyzes ...string) *Analyze {
 // Tokenizer Tokenizer to use to convert text into tokens.
 // API name: tokenizer
 func (r *Analyze) Tokenizer(tokenizer types.Tokenizer) *Analyze {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Tokenizer = tokenizer
 
 	return r

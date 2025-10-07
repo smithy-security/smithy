@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get users.
 //
@@ -310,7 +310,8 @@ func (r *GetUser) Username(usernames ...string) *GetUser {
 	return r
 }
 
-// WithProfileUid If true will return the User Profile ID for a user, if any.
+// WithProfileUid Determines whether to retrieve the user profile UID, if it exists, for the
+// users.
 // API name: with_profile_uid
 func (r *GetUser) WithProfileUid(withprofileuid bool) *GetUser {
 	r.values.Set("with_profile_uid", strconv.FormatBool(withprofileuid))

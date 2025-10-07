@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update data stream lifecycles.
 // Update the data stream lifecycle of the specified data streams.
@@ -86,7 +86,7 @@ func NewPutDataLifecycleFunc(tp elastictransport.Interface) NewPutDataLifecycle 
 // Update data stream lifecycles.
 // Update the data stream lifecycle of the specified data streams.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/data-streams-put-lifecycle.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-indices-put-data-lifecycle
 func New(tp elastictransport.Interface) *PutDataLifecycle {
 	r := &PutDataLifecycle{
 		transport: tp,
@@ -94,8 +94,6 @@ func New(tp elastictransport.Interface) *PutDataLifecycle {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -322,7 +320,6 @@ func (r *PutDataLifecycle) _name(name string) *PutDataLifecycle {
 
 // ExpandWildcards Type of data stream that wildcard patterns can match.
 // Supports comma-separated values, such as `open,hidden`.
-// Valid values are: `all`, `hidden`, `open`, `closed`, `none`.
 // API name: expand_wildcards
 func (r *PutDataLifecycle) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *PutDataLifecycle {
 	tmp := []string{}
@@ -404,18 +401,36 @@ func (r *PutDataLifecycle) Pretty(pretty bool) *PutDataLifecycle {
 // When empty, every document in this data stream will be stored indefinitely.
 // API name: data_retention
 func (r *PutDataLifecycle) DataRetention(duration types.Duration) *PutDataLifecycle {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.DataRetention = duration
 
 	return r
 }
 
-// Downsampling If defined, every backing index will execute the configured downsampling
-// configuration after the backing
-// index is not the data stream write index anymore.
+// Downsampling The downsampling configuration to execute for the managed backing index after
+// rollover.
 // API name: downsampling
 func (r *PutDataLifecycle) Downsampling(downsampling *types.DataStreamLifecycleDownsampling) *PutDataLifecycle {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Downsampling = downsampling
+
+	return r
+}
+
+// Enabled If defined, it turns data stream lifecycle on/off (`true`/`false`) for this
+// data stream. A data stream lifecycle
+// that's disabled (enabled: `false`) will have no effect on the data stream.
+// API name: enabled
+func (r *PutDataLifecycle) Enabled(enabled bool) *PutDataLifecycle {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.Enabled = &enabled
 
 	return r
 }

@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -34,7 +34,7 @@ func newIndicesRecoveryFunc(t Transport) IndicesRecovery {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -52,8 +52,11 @@ type IndicesRecovery func(o ...func(*IndicesRecoveryRequest)) (*Response, error)
 type IndicesRecoveryRequest struct {
 	Index []string
 
-	ActiveOnly *bool
-	Detailed   *bool
+	ActiveOnly        *bool
+	AllowNoIndices    *bool
+	Detailed          *bool
+	ExpandWildcards   string
+	IgnoreUnavailable *bool
 
 	Pretty     bool
 	Human      bool
@@ -64,7 +67,7 @@ type IndicesRecoveryRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -76,7 +79,7 @@ func (r IndicesRecoveryRequest) Do(providedCtx context.Context, transport Transp
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "indices.recovery")
 		defer instrument.Close(ctx)
 	}
@@ -91,7 +94,7 @@ func (r IndicesRecoveryRequest) Do(providedCtx context.Context, transport Transp
 	if len(r.Index) > 0 {
 		path.WriteString("/")
 		path.WriteString(strings.Join(r.Index, ","))
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordPathPart(ctx, "index", strings.Join(r.Index, ","))
 		}
 	}
@@ -104,8 +107,20 @@ func (r IndicesRecoveryRequest) Do(providedCtx context.Context, transport Transp
 		params["active_only"] = strconv.FormatBool(*r.ActiveOnly)
 	}
 
+	if r.AllowNoIndices != nil {
+		params["allow_no_indices"] = strconv.FormatBool(*r.AllowNoIndices)
+	}
+
 	if r.Detailed != nil {
 		params["detailed"] = strconv.FormatBool(*r.Detailed)
+	}
+
+	if r.ExpandWildcards != "" {
+		params["expand_wildcards"] = r.ExpandWildcards
+	}
+
+	if r.IgnoreUnavailable != nil {
+		params["ignore_unavailable"] = strconv.FormatBool(*r.IgnoreUnavailable)
 	}
 
 	if r.Pretty {
@@ -126,7 +141,7 @@ func (r IndicesRecoveryRequest) Do(providedCtx context.Context, transport Transp
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -156,15 +171,15 @@ func (r IndicesRecoveryRequest) Do(providedCtx context.Context, transport Transp
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "indices.recovery")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "indices.recovery")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -200,10 +215,31 @@ func (f IndicesRecovery) WithActiveOnly(v bool) func(*IndicesRecoveryRequest) {
 	}
 }
 
+// WithAllowNoIndices - whether to ignore if a wildcard indices expression resolves into no concrete indices. (this includes `_all` string or when no indices have been specified).
+func (f IndicesRecovery) WithAllowNoIndices(v bool) func(*IndicesRecoveryRequest) {
+	return func(r *IndicesRecoveryRequest) {
+		r.AllowNoIndices = &v
+	}
+}
+
 // WithDetailed - whether to display detailed information about shard recovery.
 func (f IndicesRecovery) WithDetailed(v bool) func(*IndicesRecoveryRequest) {
 	return func(r *IndicesRecoveryRequest) {
 		r.Detailed = &v
+	}
+}
+
+// WithExpandWildcards - whether to expand wildcard expression to concrete indices that are open, closed or both..
+func (f IndicesRecovery) WithExpandWildcards(v string) func(*IndicesRecoveryRequest) {
+	return func(r *IndicesRecoveryRequest) {
+		r.ExpandWildcards = v
+	}
+}
+
+// WithIgnoreUnavailable - whether specified concrete indices should be ignored when unavailable (missing or closed).
+func (f IndicesRecovery) WithIgnoreUnavailable(v bool) func(*IndicesRecoveryRequest) {
+	return func(r *IndicesRecoveryRequest) {
+		r.IgnoreUnavailable = &v
 	}
 }
 

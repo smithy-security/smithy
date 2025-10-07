@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // UserProfile type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/_types/UserProfile.ts#L41-L47
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/_types/UserProfile.ts#L41-L47
 type UserProfile struct {
 	Data    map[string]json.RawMessage `json:"data"`
 	Enabled *bool                      `json:"enabled,omitempty"`
@@ -103,8 +103,8 @@ func (s *UserProfile) UnmarshalJSON(data []byte) error {
 // NewUserProfile returns a UserProfile.
 func NewUserProfile() *UserProfile {
 	r := &UserProfile{
-		Data:   make(map[string]json.RawMessage, 0),
-		Labels: make(map[string]json.RawMessage, 0),
+		Data:   make(map[string]json.RawMessage),
+		Labels: make(map[string]json.RawMessage),
 	}
 
 	return r

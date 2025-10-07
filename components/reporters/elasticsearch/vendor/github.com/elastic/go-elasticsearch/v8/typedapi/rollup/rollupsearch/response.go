@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package rollupsearch
 
@@ -34,7 +34,7 @@ import (
 
 // Response holds the response body struct for the package rollupsearch
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/rollup/rollup_search/RollupSearchResponse.ts#L27-L36
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/rollup/rollup_search/RollupSearchResponse.ts#L27-L36
 type Response struct {
 	Aggregations    map[string]types.Aggregate `json:"aggregations,omitempty"`
 	Hits            types.HitsMetadata         `json:"hits"`

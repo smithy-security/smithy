@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -36,7 +36,7 @@ func newOpenPointInTimeFunc(t Transport) OpenPointInTime {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -56,12 +56,13 @@ type OpenPointInTimeRequest struct {
 
 	Body io.Reader
 
-	AllowPartialSearchResults *bool
-	ExpandWildcards           string
-	IgnoreUnavailable         *bool
-	KeepAlive                 string
-	Preference                string
-	Routing                   string
+	AllowPartialSearchResults  *bool
+	ExpandWildcards            string
+	IgnoreUnavailable          *bool
+	KeepAlive                  string
+	MaxConcurrentShardRequests *int
+	Preference                 string
+	Routing                    string
 
 	Pretty     bool
 	Human      bool
@@ -72,7 +73,7 @@ type OpenPointInTimeRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -84,7 +85,7 @@ func (r OpenPointInTimeRequest) Do(providedCtx context.Context, transport Transp
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "open_point_in_time")
 		defer instrument.Close(ctx)
 	}
@@ -102,7 +103,7 @@ func (r OpenPointInTimeRequest) Do(providedCtx context.Context, transport Transp
 	path.WriteString("http://")
 	path.WriteString("/")
 	path.WriteString(strings.Join(r.Index, ","))
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "index", strings.Join(r.Index, ","))
 	}
 	path.WriteString("/")
@@ -124,6 +125,10 @@ func (r OpenPointInTimeRequest) Do(providedCtx context.Context, transport Transp
 
 	if r.KeepAlive != "" {
 		params["keep_alive"] = r.KeepAlive
+	}
+
+	if r.MaxConcurrentShardRequests != nil {
+		params["max_concurrent_shard_requests"] = strconv.FormatInt(int64(*r.MaxConcurrentShardRequests), 10)
 	}
 
 	if r.Preference != "" {
@@ -152,7 +157,7 @@ func (r OpenPointInTimeRequest) Do(providedCtx context.Context, transport Transp
 
 	req, err := newRequest(method, path.String(), r.Body)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -186,18 +191,18 @@ func (r OpenPointInTimeRequest) Do(providedCtx context.Context, transport Transp
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "open_point_in_time")
 		if reader := instrument.RecordRequestBody(ctx, "open_point_in_time", r.Body); reader != nil {
 			req.Body = reader
 		}
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "open_point_in_time")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -251,6 +256,13 @@ func (f OpenPointInTime) WithIgnoreUnavailable(v bool) func(*OpenPointInTimeRequ
 func (f OpenPointInTime) WithKeepAlive(v string) func(*OpenPointInTimeRequest) {
 	return func(r *OpenPointInTimeRequest) {
 		r.KeepAlive = v
+	}
+}
+
+// WithMaxConcurrentShardRequests - the number of concurrent shard requests per node executed concurrently when opening this point-in-time. this value should be used to limit the impact of opening the point-in-time on the cluster.
+func (f OpenPointInTime) WithMaxConcurrentShardRequests(v int) func(*OpenPointInTimeRequest) {
+	return func(r *OpenPointInTimeRequest) {
+		r.MaxConcurrentShardRequests = &v
 	}
 }
 
