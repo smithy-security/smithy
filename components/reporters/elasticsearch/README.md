@@ -1,4 +1,4 @@
-# json-logger
+# Elasticsearch
 
 This component implements a [reporter](https://github.com/smithy-security/smithy/blob/main/sdk/component/component.go)
 that sends vulnerabilities to elasticsearch.
@@ -7,6 +7,10 @@ It supports authenticating to elasticsearch using an API key.
 The API key requires reading cluster's information in order for the  component to
 validate connectivity and write to any indexes you plan on using this component
 with.
+
+## Supported Versions
+
+Be aware that at the moment of writing this we have proper support for two major versions of Elasticsearch 8.x.x and 9.x.x. For any major versions of elasticsearch above 9, there is no guarantee that it will work properly.
 
 ## Environment variables
 

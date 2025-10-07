@@ -11,6 +11,9 @@ parameters:
   - name: elasticsearch_api_key
     type: string
     value: ""
+  - name: elasticsearch_server_version
+    type: string
+    value: ""
 steps:
   - name: elasticsearch
     image: components/reporters/elasticsearch
