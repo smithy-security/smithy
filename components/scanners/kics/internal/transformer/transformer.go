@@ -29,6 +29,7 @@ type (
 		targetType     TargetType
 		clock          clockwork.Clock
 		rawOutFilePath string
+		workspacePath  string
 	}
 )
 
@@ -89,10 +90,20 @@ func New(opts ...KicsTransformerOption) (*kicsTransformer, error) {
 		return nil, err
 	}
 
+	workspacePath, err := env.GetOrDefault(
+		"KICS_WORKSPACE_PATH",
+		"",
+		env.WithDefaultOnError(false),
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	t := kicsTransformer{
 		rawOutFilePath: rawOutFilePath,
 		targetType:     TargetType(target),
 		clock:          clockwork.NewRealClock(),
+		workspacePath:  workspacePath,
 	}
 
 	for _, opt := range opts {
@@ -149,7 +160,15 @@ func (g *kicsTransformer) Transform(ctx context.Context) ([]*ocsf.VulnerabilityF
 		return nil, errors.Errorf("failed to create guid provider: %w", err)
 	}
 
-	transformer, err := sarif.NewTransformer(&report, "", g.clock, guidProvider, true, component.TargetMetadataFromCtx(ctx))
+	transformer, err := sarif.NewTransformer(
+		&report,
+		"",
+		g.clock,
+		guidProvider,
+		true,
+		component.TargetMetadataFromCtx(ctx),
+		g.workspacePath,
+	)
 	if err != nil {
 		return nil, err
 	}
