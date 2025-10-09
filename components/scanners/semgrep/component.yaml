@@ -21,4 +21,5 @@ steps:
     image: components/scanners/semgrep
     env_vars:
       SEMGREP_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/semgrep-out.sarif.json"
+      WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: /bin/app
