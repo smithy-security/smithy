@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update a filter.
 // Updates the description of a filter, adds items, or removes items from the
@@ -95,8 +95,6 @@ func New(tp elastictransport.Interface) *UpdateFilter {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -368,6 +366,9 @@ func (r *UpdateFilter) Pretty(pretty bool) *UpdateFilter {
 // AddItems The items to add to the filter.
 // API name: add_items
 func (r *UpdateFilter) AddItems(additems ...string) *UpdateFilter {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AddItems = additems
 
 	return r
@@ -376,6 +377,9 @@ func (r *UpdateFilter) AddItems(additems ...string) *UpdateFilter {
 // Description A description for the filter.
 // API name: description
 func (r *UpdateFilter) Description(description string) *UpdateFilter {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -385,6 +389,9 @@ func (r *UpdateFilter) Description(description string) *UpdateFilter {
 // RemoveItems The items to remove from the filter.
 // API name: remove_items
 func (r *UpdateFilter) RemoveItems(removeitems ...string) *UpdateFilter {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.RemoveItems = removeitems
 
 	return r

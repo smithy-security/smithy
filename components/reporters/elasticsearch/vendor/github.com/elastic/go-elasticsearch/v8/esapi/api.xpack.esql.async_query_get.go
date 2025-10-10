@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -35,7 +35,7 @@ func newEsqlAsyncQueryGetFunc(t Transport) EsqlAsyncQueryGet {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -54,6 +54,7 @@ type EsqlAsyncQueryGetRequest struct {
 	DocumentID string
 
 	DropNullColumns          *bool
+	Format                   string
 	KeepAlive                time.Duration
 	WaitForCompletionTimeout time.Duration
 
@@ -66,7 +67,7 @@ type EsqlAsyncQueryGetRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -78,7 +79,7 @@ func (r EsqlAsyncQueryGetRequest) Do(providedCtx context.Context, transport Tran
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "esql.async_query_get")
 		defer instrument.Close(ctx)
 	}
@@ -96,7 +97,7 @@ func (r EsqlAsyncQueryGetRequest) Do(providedCtx context.Context, transport Tran
 	path.WriteString("async")
 	path.WriteString("/")
 	path.WriteString(r.DocumentID)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "id", r.DocumentID)
 	}
 
@@ -104,6 +105,10 @@ func (r EsqlAsyncQueryGetRequest) Do(providedCtx context.Context, transport Tran
 
 	if r.DropNullColumns != nil {
 		params["drop_null_columns"] = strconv.FormatBool(*r.DropNullColumns)
+	}
+
+	if r.Format != "" {
+		params["format"] = r.Format
 	}
 
 	if r.KeepAlive != 0 {
@@ -132,7 +137,7 @@ func (r EsqlAsyncQueryGetRequest) Do(providedCtx context.Context, transport Tran
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -162,15 +167,15 @@ func (r EsqlAsyncQueryGetRequest) Do(providedCtx context.Context, transport Tran
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "esql.async_query_get")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "esql.async_query_get")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -196,6 +201,13 @@ func (f EsqlAsyncQueryGet) WithContext(v context.Context) func(*EsqlAsyncQueryGe
 func (f EsqlAsyncQueryGet) WithDropNullColumns(v bool) func(*EsqlAsyncQueryGetRequest) {
 	return func(r *EsqlAsyncQueryGetRequest) {
 		r.DropNullColumns = &v
+	}
+}
+
+// WithFormat - a short version of the accept header, e.g. json, yaml.
+func (f EsqlAsyncQueryGet) WithFormat(v string) func(*EsqlAsyncQueryGetRequest) {
+	return func(r *EsqlAsyncQueryGetRequest) {
+		r.Format = v
 	}
 }
 

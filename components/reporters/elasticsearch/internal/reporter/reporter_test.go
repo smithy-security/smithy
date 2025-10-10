@@ -3,6 +3,7 @@ package reporter
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -21,10 +22,11 @@ import (
 )
 
 func TestElasticsearchReporter(t *testing.T) {
-	t.Run("The config should initialize correctly", func(t *testing.T) {
+	t.Run("config should initialize correctly", func(t *testing.T) {
 		url := "http://example.com:1234"
 		index := "smithy"
 		key := "some-key"
+
 		require.NoError(t, os.Setenv("ELASTICSEARCH_URL", url))
 		require.NoError(t, os.Setenv("ELASTICSEARCH_INDEX", index))
 		require.NoError(t, os.Setenv("ELASTICSEARCH_API_KEY", key))
@@ -33,19 +35,21 @@ func TestElasticsearchReporter(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, url, conf.ElasticsearchURL)
 		assert.Equal(t, index, conf.ElasticsearchIndex)
-		assert.Equal(t, key, conf.ElasticsearchApiKey)
+		assert.Equal(t, key, conf.ElasticsearchAPIKey)
 	})
 
-	t.Run("it should send to elasticsearch", func(t *testing.T) {
+	t.Run("it should send to elasticsearch using the v8 client", func(t *testing.T) {
+		testElasticsearchReporter(t, "8.1.0")
+	})
+
+	t.Run("it should send to elasticsearch using the v9 client", func(t *testing.T) {
+		testElasticsearchReporter(t, "9.1.5")
+	})
+	t.Run("it should return an error when the server version is not supported", func(t *testing.T) {
 		expected := map[uint64]*ocsf.VulnerabilityFinding{}
-		data := getTestData(time.Now().Unix())
-		for _, dat := range data {
-			// out, err := protojson.Marshal(dat.Finding)
-			// require.NoError(t, err)
-			id, err := strconv.ParseUint(dat.Finding.FindingInfo.Uid, 10, 64)
-			require.NoError(t, err)
-			expected[id] = dat.Finding
-		}
+		//  On purpse mock the server to be 7.1.0
+		serverVersion := "7.1.0"
+
 		index := "smithy"
 		svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			buf := new(bytes.Buffer)
@@ -56,38 +60,96 @@ func TestElasticsearchReporter(t *testing.T) {
 			w.WriteHeader(http.StatusOK)
 
 			if r.Method == http.MethodGet {
-				_, err = w.Write([]byte(`{"Version":{"Number":"8.1.0"}}`))
+				// Return version info for cluster info request
+				_, err = w.Write([]byte(`{"version":{"number":"` + serverVersion + `"}}`))
 				require.NoError(t, err)
-			} else if r.Method == http.MethodPost {
+			} else if r.Method == http.MethodPost || r.Method == http.MethodPut {
 				finding := ocsf.VulnerabilityFinding{}
 				msg := buf.Bytes()
 				err := protojson.Unmarshal(msg, &finding)
 				require.NoError(t, err)
+
 				id, err := strconv.ParseUint(finding.FindingInfo.Uid, 10, 64)
 				require.NoError(t, err)
 				assert.Equal(t, expected[id], &finding)
 				require.Equal(t, r.RequestURI, "/"+index+"/_doc")
 
-				_, err = w.Write([]byte("OK"))
+				_, err = w.Write([]byte(`{"_index":"` + index + `","_id":"test","result":"created"}`))
 				require.NoError(t, err)
 			}
 		}))
 		defer svr.Close()
+
 		require.NoError(t, os.Setenv("ELASTICSEARCH_URL", svr.URL))
 		require.NoError(t, os.Setenv("ELASTICSEARCH_INDEX", index))
-		require.NoError(t, os.Setenv("ELASTICSEARCH_API_KEY", "asdf"))
+		require.NoError(t, os.Setenv("ELASTICSEARCH_API_KEY", "test-api-key"))
+
 		conf, err := NewConf(nil)
 		require.NoError(t, err)
-		c, err := GetESClient(conf)
-		require.NoError(t, err)
-		reporter, err := NewElasticsearchLogger(conf, c)
-		require.NoError(t, err)
-		require.NoError(t, reporter.Report(context.Background(), data))
+
+		errMsg := fmt.Sprintf("unsupported elasticsearch version: %s. Minimum supported version is 8.x.x", serverVersion)
+
+		_, err = New(context.Background(), conf)
+		require.EqualError(t, err, errMsg)
 	})
+
 }
 
 func ptr[T any](v T) *T {
 	return &v
+}
+
+func testElasticsearchReporter(t *testing.T, serverVersion string) {
+	expected := map[uint64]*ocsf.VulnerabilityFinding{}
+	data := getTestData(time.Now().Unix())
+	for _, dat := range data {
+		id, err := strconv.ParseUint(dat.Finding.FindingInfo.Uid, 10, 64)
+		require.NoError(t, err)
+		expected[id] = dat.Finding
+	}
+
+	index := "smithy"
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		buf := new(bytes.Buffer)
+		_, err := buf.ReadFrom(r.Body)
+		require.NoError(t, err)
+
+		w.Header().Set("X-Elastic-Product", "Elasticsearch")
+		w.WriteHeader(http.StatusOK)
+
+		if r.Method == http.MethodGet {
+			// Return version info for cluster info request
+			_, err = w.Write([]byte(`{"version":{"number":"` + serverVersion + `"}}`))
+			require.NoError(t, err)
+		} else if r.Method == http.MethodPost || r.Method == http.MethodPut {
+			finding := ocsf.VulnerabilityFinding{}
+			msg := buf.Bytes()
+			err := protojson.Unmarshal(msg, &finding)
+			require.NoError(t, err)
+
+			id, err := strconv.ParseUint(finding.FindingInfo.Uid, 10, 64)
+			require.NoError(t, err)
+			assert.Equal(t, expected[id], &finding)
+			require.Equal(t, r.RequestURI, "/"+index+"/_doc")
+
+			_, err = w.Write([]byte(`{"_index":"` + index + `","_id":"test","result":"created"}`))
+			require.NoError(t, err)
+		}
+	}))
+	defer svr.Close()
+
+	require.NoError(t, os.Setenv("ELASTICSEARCH_URL", svr.URL))
+	require.NoError(t, os.Setenv("ELASTICSEARCH_INDEX", index))
+	require.NoError(t, os.Setenv("ELASTICSEARCH_API_KEY", "test-api-key"))
+
+	conf, err := NewConf(nil)
+	require.NoError(t, err)
+
+	reporter, err := New(context.Background(), conf)
+	require.NoError(t, err)
+
+	// Report the findings
+	require.NoError(t, reporter.Report(context.Background(), data))
 }
 
 func getTestData(now int64) []*vf.VulnerabilityFinding {

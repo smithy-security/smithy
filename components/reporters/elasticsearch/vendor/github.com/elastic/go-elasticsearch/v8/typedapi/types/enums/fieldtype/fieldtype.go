@@ -16,14 +16,14 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Package fieldtype
 package fieldtype
 
 import "strings"
 
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/mapping/Property.ts#L166-L213
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/mapping/Property.ts#L193-L242
 type FieldType struct {
 	Name string
 }
@@ -56,6 +56,8 @@ var (
 	Nested = FieldType{"nested"}
 
 	Object = FieldType{"object"}
+
+	Passthrough = FieldType{"passthrough"}
 
 	Version = FieldType{"version"}
 
@@ -109,6 +111,8 @@ var (
 
 	Constantkeyword = FieldType{"constant_keyword"}
 
+	Countedkeyword = FieldType{"counted_keyword"}
+
 	Aggregatemetricdouble = FieldType{"aggregate_metric_double"}
 
 	Densevector = FieldType{"dense_vector"}
@@ -157,6 +161,8 @@ func (f *FieldType) UnmarshalText(text []byte) error {
 		*f = Nested
 	case "object":
 		*f = Object
+	case "passthrough":
+		*f = Passthrough
 	case "version":
 		*f = Version
 	case "murmur3":
@@ -209,6 +215,8 @@ func (f *FieldType) UnmarshalText(text []byte) error {
 		*f = Histogram
 	case "constant_keyword":
 		*f = Constantkeyword
+	case "counted_keyword":
+		*f = Countedkeyword
 	case "aggregate_metric_double":
 		*f = Aggregatemetricdouble
 	case "dense_vector":

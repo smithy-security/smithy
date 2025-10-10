@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get all query rulesets.
 // Get summarized information about the query rulesets.
@@ -276,7 +276,7 @@ func (r *ListRulesets) Header(key, value string) *ListRulesets {
 	return r
 }
 
-// From Starting offset (default: 0)
+// From The offset from the first result to fetch.
 // API name: from
 func (r *ListRulesets) From(from int) *ListRulesets {
 	r.values.Set("from", strconv.Itoa(from))
@@ -284,7 +284,7 @@ func (r *ListRulesets) From(from int) *ListRulesets {
 	return r
 }
 
-// Size specifies a max number of results to get
+// Size The maximum number of results to retrieve.
 // API name: size
 func (r *ListRulesets) Size(size int) *ListRulesets {
 	r.values.Set("size", strconv.Itoa(size))

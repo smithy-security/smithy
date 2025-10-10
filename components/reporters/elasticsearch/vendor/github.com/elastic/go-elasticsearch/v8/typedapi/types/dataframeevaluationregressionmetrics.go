@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -26,7 +26,7 @@ import (
 
 // DataframeEvaluationRegressionMetrics type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ml/_types/DataframeEvaluation.ts#L92-L110
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ml/_types/DataframeEvaluation.ts#L92-L110
 type DataframeEvaluationRegressionMetrics struct {
 	// Huber Pseudo Huber loss function.
 	Huber *DataframeEvaluationRegressionMetricsHuber `json:"huber,omitempty"`
@@ -44,8 +44,8 @@ type DataframeEvaluationRegressionMetrics struct {
 // NewDataframeEvaluationRegressionMetrics returns a DataframeEvaluationRegressionMetrics.
 func NewDataframeEvaluationRegressionMetrics() *DataframeEvaluationRegressionMetrics {
 	r := &DataframeEvaluationRegressionMetrics{
-		Mse:      make(map[string]json.RawMessage, 0),
-		RSquared: make(map[string]json.RawMessage, 0),
+		Mse:      make(map[string]json.RawMessage),
+		RSquared: make(map[string]json.RawMessage),
 	}
 
 	return r

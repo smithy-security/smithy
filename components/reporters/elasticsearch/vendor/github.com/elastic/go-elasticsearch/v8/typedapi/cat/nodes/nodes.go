@@ -16,9 +16,11 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Returns information about the nodes in a cluster.
+// Get node information.
+//
+// Get information about the nodes in a cluster.
 // IMPORTANT: cat APIs are only intended for human consumption using the command
 // line or Kibana console. They are not intended for use by applications. For
 // application consumption, use the nodes info API.
@@ -38,6 +40,8 @@ import (
 	"github.com/elastic/elastic-transport-go/v8/elastictransport"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/bytes"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/catnodecolumn"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/timeunit"
 )
 
 // ErrBuildPath is returned in case of missing parameters within the build of the request.
@@ -72,7 +76,9 @@ func NewNodesFunc(tp elastictransport.Interface) NewNodes {
 	}
 }
 
-// Returns information about the nodes in a cluster.
+// Get node information.
+//
+// Get information about the nodes in a cluster.
 // IMPORTANT: cat APIs are only intended for human consumption using the command
 // line or Kibana console. They are not intended for use by applications. For
 // application consumption, use the nodes info API.
@@ -308,6 +314,46 @@ func (r *Nodes) IncludeUnloadedSegments(includeunloadedsegments bool) *Nodes {
 	return r
 }
 
+// H A comma-separated list of columns names to display.
+// It supports simple wildcards.
+// API name: h
+func (r *Nodes) H(catnodecolumns ...catnodecolumn.CatNodeColumn) *Nodes {
+	tmp := []string{}
+	for _, item := range catnodecolumns {
+		tmp = append(tmp, item.String())
+	}
+	r.values.Set("expand_wildcards", strings.Join(tmp, ","))
+
+	return r
+}
+
+// S A comma-separated list of column names or aliases that determines the sort
+// order.
+// Sorting defaults to ascending and can be changed by setting `:asc`
+// or `:desc` as a suffix to the column name.
+// API name: s
+func (r *Nodes) S(names ...string) *Nodes {
+	r.values.Set("s", strings.Join(names, ","))
+
+	return r
+}
+
+// MasterTimeout The period to wait for a connection to the master node.
+// API name: master_timeout
+func (r *Nodes) MasterTimeout(duration string) *Nodes {
+	r.values.Set("master_timeout", duration)
+
+	return r
+}
+
+// Time The unit used to display time values.
+// API name: time
+func (r *Nodes) Time(time timeunit.TimeUnit) *Nodes {
+	r.values.Set("time", time.String())
+
+	return r
+}
+
 // Format Specifies the format to return the columnar data in, can be set to
 // `text`, `json`, `cbor`, `yaml`, or `smile`.
 // API name: format
@@ -317,48 +363,11 @@ func (r *Nodes) Format(format string) *Nodes {
 	return r
 }
 
-// H List of columns to appear in the response. Supports simple wildcards.
-// API name: h
-func (r *Nodes) H(names ...string) *Nodes {
-	r.values.Set("h", strings.Join(names, ","))
-
-	return r
-}
-
 // Help When set to `true` will output available columns. This option
 // can't be combined with any other query string option.
 // API name: help
 func (r *Nodes) Help(help bool) *Nodes {
 	r.values.Set("help", strconv.FormatBool(help))
-
-	return r
-}
-
-// Local If `true`, the request computes the list of selected nodes from the
-// local cluster state. If `false` the list of selected nodes are computed
-// from the cluster state of the master node. In both cases the coordinating
-// node will send requests for further information to each selected node.
-// API name: local
-func (r *Nodes) Local(local bool) *Nodes {
-	r.values.Set("local", strconv.FormatBool(local))
-
-	return r
-}
-
-// MasterTimeout Period to wait for a connection to the master node.
-// API name: master_timeout
-func (r *Nodes) MasterTimeout(duration string) *Nodes {
-	r.values.Set("master_timeout", duration)
-
-	return r
-}
-
-// S List of columns that determine how the table should be sorted.
-// Sorting defaults to ascending and can be changed by setting `:asc`
-// or `:desc` as a suffix to the column name.
-// API name: s
-func (r *Nodes) S(names ...string) *Nodes {
-	r.values.Set("s", strings.Join(names, ","))
 
 	return r
 }

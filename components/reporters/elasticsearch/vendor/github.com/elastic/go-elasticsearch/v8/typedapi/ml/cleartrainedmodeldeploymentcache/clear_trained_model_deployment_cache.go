@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Clear trained model deployment cache.
+//
 // Cache will be cleared on all nodes where the trained model is assigned.
 // A trained model deployment may have an inference cache enabled.
 // As requests are handled by each allocated node, their responses may be cached
@@ -82,6 +83,7 @@ func NewClearTrainedModelDeploymentCacheFunc(tp elastictransport.Interface) NewC
 }
 
 // Clear trained model deployment cache.
+//
 // Cache will be cleared on all nodes where the trained model is assigned.
 // A trained model deployment may have an inference cache enabled.
 // As requests are handled by each allocated node, their responses may be cached

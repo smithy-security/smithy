@@ -17,4 +17,4 @@
 
 package version
 
-const Transport = "8.6.1"
+const Transport = "8.7.0"

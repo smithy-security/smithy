@@ -16,11 +16,17 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get a user profile.
 //
 // Get a user's profile using the unique profile ID.
+//
+// NOTE: The user profile feature is designed only for use by Kibana and
+// Elastic's Observability, Enterprise Search, and Elastic Security solutions.
+// Individual users and external applications should not call this API directly.
+// Elastic reserves the right to change or remove this feature in future
+// releases without prior notice.
 package getuserprofile
 
 import (
@@ -81,6 +87,12 @@ func NewGetUserProfileFunc(tp elastictransport.Interface) NewGetUserProfile {
 // Get a user profile.
 //
 // Get a user's profile using the unique profile ID.
+//
+// NOTE: The user profile feature is designed only for use by Kibana and
+// Elastic's Observability, Enterprise Search, and Elastic Security solutions.
+// Individual users and external applications should not call this API directly.
+// Elastic reserves the right to change or remove this feature in future
+// releases without prior notice.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-user-profile.html
 func New(tp elastictransport.Interface) *GetUserProfile {
@@ -303,9 +315,11 @@ func (r *GetUserProfile) _uid(uids ...string) *GetUserProfile {
 	return r
 }
 
-// Data List of filters for the `data` field of the profile document.
-// To return all content use `data=*`. To return a subset of content
-// use `data=<key>` to retrieve content nested under the specified `<key>`.
+// Data A comma-separated list of filters for the `data` field of the profile
+// document.
+// To return all content use `data=*`.
+// To return a subset of content use `data=<key>` to retrieve content nested
+// under the specified `<key>`.
 // By default returns no `data` content.
 // API name: data
 func (r *GetUserProfile) Data(data ...string) *GetUserProfile {

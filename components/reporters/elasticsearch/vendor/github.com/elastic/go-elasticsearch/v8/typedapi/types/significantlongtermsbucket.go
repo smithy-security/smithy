@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -32,7 +32,7 @@ import (
 
 // SignificantLongTermsBucket type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/aggregations/Aggregate.ts#L677-L680
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/aggregations/Aggregate.ts#L679-L682
 type SignificantLongTermsBucket struct {
 	Aggregations map[string]Aggregate `json:"-"`
 	BgCount      int64                `json:"bg_count"`
@@ -687,7 +687,7 @@ func (s SignificantLongTermsBucket) MarshalJSON() ([]byte, error) {
 // NewSignificantLongTermsBucket returns a SignificantLongTermsBucket.
 func NewSignificantLongTermsBucket() *SignificantLongTermsBucket {
 	r := &SignificantLongTermsBucket{
-		Aggregations: make(map[string]Aggregate, 0),
+		Aggregations: make(map[string]Aggregate),
 	}
 
 	return r

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package query
 
@@ -33,60 +33,74 @@ import (
 
 // Request holds the request body struct for the package query
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/sql/query/QuerySqlRequest.ts#L28-L124
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/sql/query/QuerySqlRequest.ts#L27-L151
 type Request struct {
 
-	// Catalog Default catalog (cluster) for queries. If unspecified, the queries execute on
-	// the data in the local cluster only.
+	// AllowPartialSearchResults If `true`, the response has partial results when there are shard request
+	// timeouts or shard failures.
+	// If `false`, the API returns an error with no partial results.
+	AllowPartialSearchResults *bool `json:"allow_partial_search_results,omitempty"`
+	// Catalog The default catalog (cluster) for queries.
+	// If unspecified, the queries execute on the data in the local cluster only.
 	Catalog *string `json:"catalog,omitempty"`
-	// Columnar If true, the results in a columnar fashion: one row represents all the values
-	// of a certain column from the current page of results.
+	// Columnar If `true`, the results are in a columnar fashion: one row represents all the
+	// values of a certain column from the current page of results.
+	// The API supports this parameter only for CBOR, JSON, SMILE, and YAML
+	// responses.
 	Columnar *bool `json:"columnar,omitempty"`
-	// Cursor Cursor used to retrieve a set of paginated results.
+	// Cursor The cursor used to retrieve a set of paginated results.
 	// If you specify a cursor, the API only uses the `columnar` and `time_zone`
 	// request body parameters.
 	// It ignores other request body parameters.
 	Cursor *string `json:"cursor,omitempty"`
-	// FetchSize The maximum number of rows (or entries) to return in one response
+	// FetchSize The maximum number of rows (or entries) to return in one response.
 	FetchSize *int `json:"fetch_size,omitempty"`
-	// FieldMultiValueLeniency Throw an exception when encountering multiple values for a field (default) or
-	// be lenient and return the first value from the list (without any guarantees
-	// of what that will be - typically the first in natural ascending order).
+	// FieldMultiValueLeniency If `false`, the API returns an exception when encountering multiple values
+	// for a field.
+	// If `true`, the API is lenient and returns the first value from the array with
+	// no guarantee of consistent results.
 	FieldMultiValueLeniency *bool `json:"field_multi_value_leniency,omitempty"`
-	// Filter Elasticsearch query DSL for additional filtering.
+	// Filter The Elasticsearch query DSL for additional filtering.
 	Filter *types.Query `json:"filter,omitempty"`
-	// IndexUsingFrozen If true, the search can run on frozen indices. Defaults to false.
+	// IndexUsingFrozen If `true`, the search can run on frozen indices.
 	IndexUsingFrozen *bool `json:"index_using_frozen,omitempty"`
-	// KeepAlive Retention period for an async or saved synchronous search.
+	// KeepAlive The retention period for an async or saved synchronous search.
 	KeepAlive types.Duration `json:"keep_alive,omitempty"`
-	// KeepOnCompletion If true, Elasticsearch stores synchronous searches if you also specify the
-	// wait_for_completion_timeout parameter. If false, Elasticsearch only stores
-	// async searches that don’t finish before the wait_for_completion_timeout.
+	// KeepOnCompletion If `true`, Elasticsearch stores synchronous searches if you also specify the
+	// `wait_for_completion_timeout` parameter.
+	// If `false`, Elasticsearch only stores async searches that don't finish before
+	// the `wait_for_completion_timeout`.
 	KeepOnCompletion *bool `json:"keep_on_completion,omitempty"`
-	// PageTimeout The timeout before a pagination request fails.
+	// PageTimeout The minimum retention period for the scroll cursor.
+	// After this time period, a pagination request might fail because the scroll
+	// cursor is no longer available.
+	// Subsequent scroll requests prolong the lifetime of the scroll cursor by the
+	// duration of `page_timeout` in the scroll request.
 	PageTimeout types.Duration `json:"page_timeout,omitempty"`
-	// Params Values for parameters in the query.
-	Params map[string]json.RawMessage `json:"params,omitempty"`
-	// Query SQL query to run.
+	// Params The values for parameters in the query.
+	Params []json.RawMessage `json:"params,omitempty"`
+	// Query The SQL query to run.
 	Query *string `json:"query,omitempty"`
 	// RequestTimeout The timeout before the request fails.
 	RequestTimeout types.Duration `json:"request_timeout,omitempty"`
-	// RuntimeMappings Defines one or more runtime fields in the search request. These fields take
-	// precedence over mapped fields with the same name.
+	// RuntimeMappings One or more runtime fields for the search request.
+	// These fields take precedence over mapped fields with the same name.
 	RuntimeMappings types.RuntimeFields `json:"runtime_mappings,omitempty"`
-	// TimeZone ISO-8601 time zone ID for the search.
+	// TimeZone The ISO-8601 time zone ID for the search.
 	TimeZone *string `json:"time_zone,omitempty"`
-	// WaitForCompletionTimeout Period to wait for complete results. Defaults to no timeout, meaning the
-	// request waits for complete search results. If the search doesn’t finish
-	// within this period, the search becomes async.
+	// WaitForCompletionTimeout The period to wait for complete results.
+	// It defaults to no timeout, meaning the request waits for complete search
+	// results.
+	// If the search doesn't finish within this period, the search becomes async.
+	//
+	// To save a synchronous search, you must specify this parameter and the
+	// `keep_on_completion` parameter.
 	WaitForCompletionTimeout types.Duration `json:"wait_for_completion_timeout,omitempty"`
 }
 
 // NewRequest returns a Request
 func NewRequest() *Request {
-	r := &Request{
-		Params: make(map[string]json.RawMessage, 0),
-	}
+	r := &Request{}
 
 	return r
 }
@@ -116,6 +130,20 @@ func (s *Request) UnmarshalJSON(data []byte) error {
 		}
 
 		switch t {
+
+		case "allow_partial_search_results":
+			var tmp any
+			dec.Decode(&tmp)
+			switch v := tmp.(type) {
+			case string:
+				value, err := strconv.ParseBool(v)
+				if err != nil {
+					return fmt.Errorf("%s | %w", "AllowPartialSearchResults", err)
+				}
+				s.AllowPartialSearchResults = &value
+			case bool:
+				s.AllowPartialSearchResults = &v
+			}
 
 		case "catalog":
 			var tmp json.RawMessage
@@ -229,9 +257,6 @@ func (s *Request) UnmarshalJSON(data []byte) error {
 			}
 
 		case "params":
-			if s.Params == nil {
-				s.Params = make(map[string]json.RawMessage, 0)
-			}
 			if err := dec.Decode(&s.Params); err != nil {
 				return fmt.Errorf("%s | %w", "Params", err)
 			}

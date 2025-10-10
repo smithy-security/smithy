@@ -16,13 +16,13 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
 // WatcherWatch type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/xpack/usage/types.ts#L398-L403
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/xpack/usage/types.ts#L410-L415
 type WatcherWatch struct {
 	Action    map[string]Counter  `json:"action,omitempty"`
 	Condition map[string]Counter  `json:"condition,omitempty"`
@@ -33,9 +33,9 @@ type WatcherWatch struct {
 // NewWatcherWatch returns a WatcherWatch.
 func NewWatcherWatch() *WatcherWatch {
 	r := &WatcherWatch{
-		Action:    make(map[string]Counter, 0),
-		Condition: make(map[string]Counter, 0),
-		Input:     make(map[string]Counter, 0),
+		Action:    make(map[string]Counter),
+		Condition: make(map[string]Counter),
+		Input:     make(map[string]Counter),
 	}
 
 	return r

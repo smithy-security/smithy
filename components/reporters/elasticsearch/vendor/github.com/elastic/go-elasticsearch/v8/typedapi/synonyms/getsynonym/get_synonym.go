@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get a synonym set.
 package getsynonym
@@ -288,7 +288,7 @@ func (r *GetSynonym) Header(key, value string) *GetSynonym {
 	return r
 }
 
-// Id "The id of the synonyms set to be retrieved
+// Id The synonyms set identifier to retrieve.
 // API Name: id
 func (r *GetSynonym) _id(id string) *GetSynonym {
 	r.paramSet |= idMask
@@ -297,7 +297,7 @@ func (r *GetSynonym) _id(id string) *GetSynonym {
 	return r
 }
 
-// From Starting offset for query rules to be retrieved
+// From The starting offset for query rules to retrieve.
 // API name: from
 func (r *GetSynonym) From(from int) *GetSynonym {
 	r.values.Set("from", strconv.Itoa(from))
@@ -305,7 +305,7 @@ func (r *GetSynonym) From(from int) *GetSynonym {
 	return r
 }
 
-// Size specifies a max number of query rules to retrieve
+// Size The max number of query rules to retrieve.
 // API name: size
 func (r *GetSynonym) Size(size int) *GetSynonym {
 	r.values.Set("size", strconv.Itoa(size))

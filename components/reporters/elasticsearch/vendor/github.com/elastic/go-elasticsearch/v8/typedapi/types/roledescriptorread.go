@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -33,14 +33,14 @@ import (
 
 // RoleDescriptorRead type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/_types/RoleDescriptor.ts#L82-L128
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/_types/RoleDescriptor.ts#L85-L133
 type RoleDescriptorRead struct {
 	// Applications A list of application privilege entries
 	Applications []ApplicationPrivileges `json:"applications,omitempty"`
 	// Cluster A list of cluster privileges. These privileges define the cluster level
 	// actions that API keys are able to execute.
 	Cluster []clusterprivilege.ClusterPrivilege `json:"cluster"`
-	// Description Optional description of the role descriptor
+	// Description An optional description of the role descriptor.
 	Description *string `json:"description,omitempty"`
 	// Global An object defining global privileges. A global privilege is a form of cluster
 	// privilege that is request-aware. Support for global privileges is currently
@@ -51,12 +51,12 @@ type RoleDescriptorRead struct {
 	// Metadata Optional meta-data. Within the metadata object, keys that begin with `_` are
 	// reserved for system usage.
 	Metadata Metadata `json:"metadata,omitempty"`
-	// RemoteCluster A list of cluster permissions for remote clusters. Note - this is limited a
-	// subset of the cluster permissions.
+	// RemoteCluster A list of cluster permissions for remote clusters.
+	// NOTE: This is limited a subset of the cluster permissions.
 	RemoteCluster []RemoteClusterPrivileges `json:"remote_cluster,omitempty"`
 	// RemoteIndices A list of indices permissions for remote clusters.
 	RemoteIndices []RemoteIndicesPrivileges `json:"remote_indices,omitempty"`
-	// Restriction Restriction for when the role descriptor is allowed to be effective.
+	// Restriction A restriction for when the role descriptor is allowed to be effective.
 	Restriction *Restriction `json:"restriction,omitempty"`
 	// RunAs A list of users that the API keys can impersonate.
 	RunAs             []string                   `json:"run_as,omitempty"`
@@ -162,7 +162,7 @@ func (s *RoleDescriptorRead) UnmarshalJSON(data []byte) error {
 // NewRoleDescriptorRead returns a RoleDescriptorRead.
 func NewRoleDescriptorRead() *RoleDescriptorRead {
 	r := &RoleDescriptorRead{
-		TransientMetadata: make(map[string]json.RawMessage, 0),
+		TransientMetadata: make(map[string]json.RawMessage),
 	}
 
 	return r

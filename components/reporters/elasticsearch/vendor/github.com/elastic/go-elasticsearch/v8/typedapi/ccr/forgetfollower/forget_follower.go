@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Forget a follower.
 // Remove the cross-cluster replication follower retention leases from the
@@ -139,8 +139,6 @@ func New(tp elastictransport.Interface) *ForgetFollower {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -364,6 +362,15 @@ func (r *ForgetFollower) _index(index string) *ForgetFollower {
 	return r
 }
 
+// Timeout Period to wait for a response. If no response is received before the timeout
+// expires, the request fails and returns an error.
+// API name: timeout
+func (r *ForgetFollower) Timeout(duration string) *ForgetFollower {
+	r.values.Set("timeout", duration)
+
+	return r
+}
+
 // ErrorTrace When set to `true` Elasticsearch will include the full stack trace of errors
 // when they occur.
 // API name: error_trace
@@ -410,6 +417,9 @@ func (r *ForgetFollower) Pretty(pretty bool) *ForgetFollower {
 
 // API name: follower_cluster
 func (r *ForgetFollower) FollowerCluster(followercluster string) *ForgetFollower {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.FollowerCluster = &followercluster
 
@@ -418,6 +428,9 @@ func (r *ForgetFollower) FollowerCluster(followercluster string) *ForgetFollower
 
 // API name: follower_index
 func (r *ForgetFollower) FollowerIndex(indexname string) *ForgetFollower {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.FollowerIndex = &indexname
 
 	return r
@@ -425,6 +438,9 @@ func (r *ForgetFollower) FollowerIndex(indexname string) *ForgetFollower {
 
 // API name: follower_index_uuid
 func (r *ForgetFollower) FollowerIndexUuid(uuid string) *ForgetFollower {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.FollowerIndexUuid = &uuid
 
 	return r
@@ -432,6 +448,9 @@ func (r *ForgetFollower) FollowerIndexUuid(uuid string) *ForgetFollower {
 
 // API name: leader_remote_cluster
 func (r *ForgetFollower) LeaderRemoteCluster(leaderremotecluster string) *ForgetFollower {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.LeaderRemoteCluster = &leaderremotecluster
 

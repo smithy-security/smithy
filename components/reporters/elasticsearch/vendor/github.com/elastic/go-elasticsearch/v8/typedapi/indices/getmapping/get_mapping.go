@@ -16,10 +16,9 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get mapping definitions.
-// Retrieves mapping definitions for one or more indices.
 // For data streams, the API retrieves mappings for the stream’s backing
 // indices.
 package getmapping
@@ -79,7 +78,6 @@ func NewGetMappingFunc(tp elastictransport.Interface) NewGetMapping {
 }
 
 // Get mapping definitions.
-// Retrieves mapping definitions for one or more indices.
 // For data streams, the API retrieves mappings for the stream’s backing
 // indices.
 //
@@ -325,7 +323,6 @@ func (r *GetMapping) AllowNoIndices(allownoindices bool) *GetMapping {
 // If the request can target data streams, this argument determines whether
 // wildcard expressions match hidden data streams.
 // Supports comma-separated values, such as `open,hidden`.
-// Valid values are: `all`, `open`, `closed`, `hidden`, `none`.
 // API name: expand_wildcards
 func (r *GetMapping) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *GetMapping {
 	tmp := []string{}

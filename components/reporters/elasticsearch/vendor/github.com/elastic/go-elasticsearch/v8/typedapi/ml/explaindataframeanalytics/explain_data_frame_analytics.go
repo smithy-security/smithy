@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Explain data frame analytics config.
+//
 // This API provides explanations for a data frame analytics config that either
 // exists already or one that has not been created yet. The following
 // explanations are provided:
@@ -88,6 +89,7 @@ func NewExplainDataFrameAnalyticsFunc(tp elastictransport.Interface) NewExplainD
 }
 
 // Explain data frame analytics config.
+//
 // This API provides explanations for a data frame analytics config that either
 // exists already or one that has not been created yet. The following
 // explanations are provided:
@@ -97,7 +99,7 @@ func NewExplainDataFrameAnalyticsFunc(tp elastictransport.Interface) NewExplainD
 // If you have object fields or fields that are excluded via source filtering,
 // they are not included in the explanation.
 //
-// http://www.elastic.co/guide/en/elasticsearch/reference/current/explain-dfanalytics.html
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/explain-dfanalytics.html
 func New(tp elastictransport.Interface) *ExplainDataFrameAnalytics {
 	r := &ExplainDataFrameAnalytics{
 		transport: tp,
@@ -105,8 +107,6 @@ func New(tp elastictransport.Interface) *ExplainDataFrameAnalytics {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -394,6 +394,9 @@ func (r *ExplainDataFrameAnalytics) Pretty(pretty bool) *ExplainDataFrameAnalyti
 // learning node capacity for it to be immediately assigned to a node.
 // API name: allow_lazy_start
 func (r *ExplainDataFrameAnalytics) AllowLazyStart(allowlazystart bool) *ExplainDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AllowLazyStart = &allowlazystart
 
 	return r
@@ -404,6 +407,9 @@ func (r *ExplainDataFrameAnalytics) AllowLazyStart(allowlazystart bool) *Explain
 // detection, or regression.
 // API name: analysis
 func (r *ExplainDataFrameAnalytics) Analysis(analysis *types.DataframeAnalysisContainer) *ExplainDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Analysis = analysis
 
@@ -417,6 +423,9 @@ func (r *ExplainDataFrameAnalytics) Analysis(analysis *types.DataframeAnalysisCo
 // be included in the analysis.
 // API name: analyzed_fields
 func (r *ExplainDataFrameAnalytics) AnalyzedFields(analyzedfields *types.DataframeAnalysisAnalyzedFields) *ExplainDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.AnalyzedFields = analyzedfields
 
@@ -426,6 +435,9 @@ func (r *ExplainDataFrameAnalytics) AnalyzedFields(analyzedfields *types.Datafra
 // Description A description of the job.
 // API name: description
 func (r *ExplainDataFrameAnalytics) Description(description string) *ExplainDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -436,6 +448,9 @@ func (r *ExplainDataFrameAnalytics) Description(description string) *ExplainData
 // results_field (ml by default).
 // API name: dest
 func (r *ExplainDataFrameAnalytics) Dest(dest *types.DataframeAnalyticsDestination) *ExplainDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Dest = dest
 
@@ -448,6 +463,9 @@ func (r *ExplainDataFrameAnalytics) Dest(dest *types.DataframeAnalyticsDestinati
 // for operational functionality other than the analysis itself.
 // API name: max_num_threads
 func (r *ExplainDataFrameAnalytics) MaxNumThreads(maxnumthreads int) *ExplainDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.MaxNumThreads = &maxnumthreads
 
 	return r
@@ -460,6 +478,9 @@ func (r *ExplainDataFrameAnalytics) MaxNumThreads(maxnumthreads int) *ExplainDat
 // greater than that setting.
 // API name: model_memory_limit
 func (r *ExplainDataFrameAnalytics) ModelMemoryLimit(modelmemorylimit string) *ExplainDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ModelMemoryLimit = &modelmemorylimit
 
@@ -470,6 +491,9 @@ func (r *ExplainDataFrameAnalytics) ModelMemoryLimit(modelmemorylimit string) *E
 // index. Optionally, query and _source may be specified.
 // API name: source
 func (r *ExplainDataFrameAnalytics) Source(source *types.DataframeAnalyticsSource) *ExplainDataFrameAnalytics {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Source = source
 

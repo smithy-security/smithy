@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // TopHitsAggregation type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/aggregations/metric.ts#L346-L406
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/aggregations/metric.ts#L369-L429
 type TopHitsAggregation struct {
 	// DocvalueFields Fields for which to return doc values.
 	DocvalueFields []FieldAndFormat `json:"docvalue_fields,omitempty"`
@@ -221,7 +221,7 @@ func (s *TopHitsAggregation) UnmarshalJSON(data []byte) error {
 
 				switch t {
 
-				case "excludes", "includes":
+				case "exclude_vectors", "excludes", "includes":
 					o := NewSourceFilter()
 					localDec := json.NewDecoder(bytes.NewReader(message))
 					if err := localDec.Decode(&o); err != nil {
@@ -291,7 +291,7 @@ func (s *TopHitsAggregation) UnmarshalJSON(data []byte) error {
 // NewTopHitsAggregation returns a TopHitsAggregation.
 func NewTopHitsAggregation() *TopHitsAggregation {
 	r := &TopHitsAggregation{
-		ScriptFields: make(map[string]ScriptField, 0),
+		ScriptFields: make(map[string]ScriptField),
 	}
 
 	return r

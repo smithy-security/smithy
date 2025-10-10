@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Invalidate API keys.
 //
@@ -25,13 +25,20 @@
 // Invalidated API keys fail authentication, but they can still be viewed using
 // the get API key information and query API key information APIs, for at least
 // the configured retention period, until they are automatically deleted.
-// The `manage_api_key` privilege allows deleting any API keys.
-// The `manage_own_api_key` only allows deleting API keys that are owned by the
-// user.
+//
+// To use this API, you must have at least the `manage_security`,
+// `manage_api_key`, or `manage_own_api_key` cluster privileges.
+// The `manage_security` privilege allows deleting any API key, including both
+// REST and cross cluster API keys.
+// The `manage_api_key` privilege allows deleting any REST API key, but not
+// cross cluster API keys.
+// The `manage_own_api_key` only allows deleting REST API keys that are owned by
+// the user.
 // In addition, with the `manage_own_api_key` privilege, an invalidation request
 // must be issued in one of the three formats:
+//
 // - Set the parameter `owner=true`.
-// - Or, set both `username` and `realm_name` to match the user’s identity.
+// - Or, set both `username` and `realm_name` to match the user's identity.
 // - Or, if the request is issued by an API key, that is to say an API key
 // invalidates itself, specify its ID in the `ids` field.
 package invalidateapikey
@@ -95,13 +102,20 @@ func NewInvalidateApiKeyFunc(tp elastictransport.Interface) NewInvalidateApiKey 
 // Invalidated API keys fail authentication, but they can still be viewed using
 // the get API key information and query API key information APIs, for at least
 // the configured retention period, until they are automatically deleted.
-// The `manage_api_key` privilege allows deleting any API keys.
-// The `manage_own_api_key` only allows deleting API keys that are owned by the
-// user.
+//
+// To use this API, you must have at least the `manage_security`,
+// `manage_api_key`, or `manage_own_api_key` cluster privileges.
+// The `manage_security` privilege allows deleting any API key, including both
+// REST and cross cluster API keys.
+// The `manage_api_key` privilege allows deleting any REST API key, but not
+// cross cluster API keys.
+// The `manage_own_api_key` only allows deleting REST API keys that are owned by
+// the user.
 // In addition, with the `manage_own_api_key` privilege, an invalidation request
 // must be issued in one of the three formats:
+//
 // - Set the parameter `owner=true`.
-// - Or, set both `username` and `realm_name` to match the user’s identity.
+// - Or, set both `username` and `realm_name` to match the user's identity.
 // - Or, if the request is issued by an API key, that is to say an API key
 // invalidates itself, specify its ID in the `ids` field.
 //
@@ -113,8 +127,6 @@ func New(tp elastictransport.Interface) *InvalidateApiKey {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -368,6 +380,9 @@ func (r *InvalidateApiKey) Pretty(pretty bool) *InvalidateApiKey {
 
 // API name: id
 func (r *InvalidateApiKey) Id(id string) *InvalidateApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Id = &id
 
 	return r
@@ -378,6 +393,9 @@ func (r *InvalidateApiKey) Id(id string) *InvalidateApiKey {
 // `username`.
 // API name: ids
 func (r *InvalidateApiKey) Ids(ids ...string) *InvalidateApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Ids = ids
 
 	return r
@@ -387,17 +405,26 @@ func (r *InvalidateApiKey) Ids(ids ...string) *InvalidateApiKey {
 // This parameter cannot be used with any of `ids`, `realm_name` or `username`.
 // API name: name
 func (r *InvalidateApiKey) Name(name string) *InvalidateApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Name = &name
 
 	return r
 }
 
-// Owner Can be used to query API keys owned by the currently authenticated user.
+// Owner Query API keys owned by the currently authenticated user.
 // The `realm_name` or `username` parameters cannot be specified when this
 // parameter is set to `true` as they are assumed to be the currently
 // authenticated ones.
+//
+// NOTE: At least one of `ids`, `name`, `username`, and `realm_name` must be
+// specified if `owner` is `false`.
 // API name: owner
 func (r *InvalidateApiKey) Owner(owner bool) *InvalidateApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Owner = &owner
 
 	return r
@@ -408,6 +435,9 @@ func (r *InvalidateApiKey) Owner(owner bool) *InvalidateApiKey {
 // flag is set to `true`.
 // API name: realm_name
 func (r *InvalidateApiKey) RealmName(realmname string) *InvalidateApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RealmName = &realmname
 
@@ -415,10 +445,13 @@ func (r *InvalidateApiKey) RealmName(realmname string) *InvalidateApiKey {
 }
 
 // Username The username of a user.
-// This parameter cannot be used with either `ids` or `name`, or when `owner`
+// This parameter cannot be used with either `ids` or `name` or when `owner`
 // flag is set to `true`.
 // API name: username
 func (r *InvalidateApiKey) Username(username string) *InvalidateApiKey {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Username = &username
 
 	return r

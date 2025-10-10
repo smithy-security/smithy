@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,8 +31,10 @@ import (
 
 // InferenceEndpoint type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/inference/_types/Services.ts#L23-L39
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/inference/_types/Services.ts#L45-L65
 type InferenceEndpoint struct {
+	// ChunkingSettings Chunking configuration object
+	ChunkingSettings *InferenceChunkingSettings `json:"chunking_settings,omitempty"`
 	// Service The service type
 	Service string `json:"service"`
 	// ServiceSettings Settings specific to the service
@@ -55,6 +57,11 @@ func (s *InferenceEndpoint) UnmarshalJSON(data []byte) error {
 		}
 
 		switch t {
+
+		case "chunking_settings":
+			if err := dec.Decode(&s.ChunkingSettings); err != nil {
+				return fmt.Errorf("%s | %w", "ChunkingSettings", err)
+			}
 
 		case "service":
 			var tmp json.RawMessage

@@ -16,10 +16,20 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Removes a node from the shutdown list. Designed for indirect use by ECE/ESS
-// and ECK. Direct use is not supported.
+// Cancel node shutdown preparations.
+// Remove a node from the shutdown list so it can resume normal operations.
+// You must explicitly clear the shutdown request when a node rejoins the
+// cluster or when a node has permanently left the cluster.
+// Shutdown requests are never removed automatically by Elasticsearch.
+//
+// NOTE: This feature is designed for indirect use by Elastic Cloud, Elastic
+// Cloud Enterprise, and Elastic Cloud on Kubernetes.
+// Direct use is not supported.
+//
+// If the operator privileges feature is enabled, you must be an operator to use
+// this API.
 package deletenode
 
 import (
@@ -78,10 +88,20 @@ func NewDeleteNodeFunc(tp elastictransport.Interface) NewDeleteNode {
 	}
 }
 
-// Removes a node from the shutdown list. Designed for indirect use by ECE/ESS
-// and ECK. Direct use is not supported.
+// Cancel node shutdown preparations.
+// Remove a node from the shutdown list so it can resume normal operations.
+// You must explicitly clear the shutdown request when a node rejoins the
+// cluster or when a node has permanently left the cluster.
+// Shutdown requests are never removed automatically by Elasticsearch.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current
+// NOTE: This feature is designed for indirect use by Elastic Cloud, Elastic
+// Cloud Enterprise, and Elastic Cloud on Kubernetes.
+// Direct use is not supported.
+//
+// If the operator privileges feature is enabled, you must be an operator to use
+// this API.
+//
+// https://www.elastic.co/guide/en/elasticsearch/reference/current/delete-shutdown.html
 func New(tp elastictransport.Interface) *DeleteNode {
 	r := &DeleteNode{
 		transport: tp,

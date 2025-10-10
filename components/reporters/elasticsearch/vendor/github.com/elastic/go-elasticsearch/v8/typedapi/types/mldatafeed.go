@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // MLDatafeed type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ml/_types/Datafeed.ts#L37-L61
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ml/_types/Datafeed.ts#L37-L61
 type MLDatafeed struct {
 	Aggregations map[string]Aggregations `json:"aggregations,omitempty"`
 	// Authorization The security privileges that the datafeed uses to run its queries. If Elastic
@@ -185,8 +185,8 @@ func (s *MLDatafeed) UnmarshalJSON(data []byte) error {
 // NewMLDatafeed returns a MLDatafeed.
 func NewMLDatafeed() *MLDatafeed {
 	r := &MLDatafeed{
-		Aggregations: make(map[string]Aggregations, 0),
-		ScriptFields: make(map[string]ScriptField, 0),
+		Aggregations: make(map[string]Aggregations),
+		ScriptFields: make(map[string]ScriptField),
 	}
 
 	return r

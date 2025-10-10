@@ -16,10 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get component templates.
-// Retrieves information about component templates.
+// Get information about component templates.
 package getcomponenttemplate
 
 import (
@@ -76,7 +76,7 @@ func NewGetComponentTemplateFunc(tp elastictransport.Interface) NewGetComponentT
 }
 
 // Get component templates.
-// Retrieves information about component templates.
+// Get information about component templates.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-component-template.html
 func New(tp elastictransport.Interface) *GetComponentTemplate {
@@ -307,6 +307,19 @@ func (r *GetComponentTemplate) Name(name string) *GetComponentTemplate {
 // API name: flat_settings
 func (r *GetComponentTemplate) FlatSettings(flatsettings bool) *GetComponentTemplate {
 	r.values.Set("flat_settings", strconv.FormatBool(flatsettings))
+
+	return r
+}
+
+// SettingsFilter Filter out results, for example to filter out sensitive information. Supports
+// wildcards or full settings keys
+// API name: settings_filter
+func (r *GetComponentTemplate) SettingsFilter(settingsfilters ...string) *GetComponentTemplate {
+	tmp := []string{}
+	for _, item := range settingsfilters {
+		tmp = append(tmp, fmt.Sprintf("%v", item))
+	}
+	r.values.Set("settings_filter", strings.Join(tmp, ","))
 
 	return r
 }

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // IndexSettingsLifecycle type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/indices/_types/IndexSettings.ts#L276-L309
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/indices/_types/IndexSettings.ts#L284-L323
 type IndexSettingsLifecycle struct {
 	// IndexingComplete Indicates whether or not the index has been rolled over. Automatically set to
 	// true when ILM completes the rollover action.
@@ -55,6 +55,10 @@ type IndexSettingsLifecycle struct {
 	// for example logs-2016.10.31-000002). If the index name doesn’t match the
 	// pattern, index creation fails.
 	ParseOriginationDate *bool `json:"parse_origination_date,omitempty"`
+	// PreferIlm Preference for the system that manages a data stream backing index
+	// (preferring ILM when both ILM and DLM are
+	// applicable for an index).
+	PreferIlm *string `json:"prefer_ilm,omitempty"`
 	// RolloverAlias The index alias to update when the index rolls over. Specify when using a
 	// policy that contains a rollover action.
 	// When the index rolls over, the alias is updated to reflect that the index is
@@ -117,6 +121,18 @@ func (s *IndexSettingsLifecycle) UnmarshalJSON(data []byte) error {
 			case bool:
 				s.ParseOriginationDate = &v
 			}
+
+		case "prefer_ilm":
+			var tmp json.RawMessage
+			if err := dec.Decode(&tmp); err != nil {
+				return fmt.Errorf("%s | %w", "PreferIlm", err)
+			}
+			o := string(tmp[:])
+			o, err = strconv.Unquote(o)
+			if err != nil {
+				o = string(tmp[:])
+			}
+			s.PreferIlm = &o
 
 		case "rollover_alias":
 			var tmp json.RawMessage

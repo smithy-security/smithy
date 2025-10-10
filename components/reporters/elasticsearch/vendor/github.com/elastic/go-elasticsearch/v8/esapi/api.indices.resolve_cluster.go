@@ -15,27 +15,27 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func newIndicesResolveClusterFunc(t Transport) IndicesResolveCluster {
-	return func(name []string, o ...func(*IndicesResolveClusterRequest)) (*Response, error) {
-		var r = IndicesResolveClusterRequest{Name: name}
+	return func(o ...func(*IndicesResolveClusterRequest)) (*Response, error) {
+		var r = IndicesResolveClusterRequest{}
 		for _, f := range o {
 			f(&r)
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -44,10 +44,10 @@ func newIndicesResolveClusterFunc(t Transport) IndicesResolveCluster {
 
 // ----- API Definition -------------------------------------------------------
 
-// IndicesResolveCluster resolves the specified index expressions to return information about each cluster, including the local cluster, if included.
+// IndicesResolveCluster resolves the specified index expressions to return information about each cluster. If no index expression is provided, this endpoint will return information about all the remote clusters that are configured on the local cluster.
 //
 // See full documentation at https://www.elastic.co/guide/en/elasticsearch/reference/master/indices-resolve-cluster-api.html.
-type IndicesResolveCluster func(name []string, o ...func(*IndicesResolveClusterRequest)) (*Response, error)
+type IndicesResolveCluster func(o ...func(*IndicesResolveClusterRequest)) (*Response, error)
 
 // IndicesResolveClusterRequest configures the Indices Resolve Cluster API request.
 type IndicesResolveClusterRequest struct {
@@ -57,6 +57,7 @@ type IndicesResolveClusterRequest struct {
 	ExpandWildcards   string
 	IgnoreThrottled   *bool
 	IgnoreUnavailable *bool
+	Timeout           time.Duration
 
 	Pretty     bool
 	Human      bool
@@ -67,7 +68,7 @@ type IndicesResolveClusterRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -79,7 +80,7 @@ func (r IndicesResolveClusterRequest) Do(providedCtx context.Context, transport 
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "indices.resolve_cluster")
 		defer instrument.Close(ctx)
 	}
@@ -89,20 +90,18 @@ func (r IndicesResolveClusterRequest) Do(providedCtx context.Context, transport 
 
 	method = "GET"
 
-	if len(r.Name) == 0 {
-		return nil, errors.New("name is required and cannot be nil or empty")
-	}
-
 	path.Grow(7 + 1 + len("_resolve") + 1 + len("cluster") + 1 + len(strings.Join(r.Name, ",")))
 	path.WriteString("http://")
 	path.WriteString("/")
 	path.WriteString("_resolve")
 	path.WriteString("/")
 	path.WriteString("cluster")
-	path.WriteString("/")
-	path.WriteString(strings.Join(r.Name, ","))
-	if instrument, ok := r.instrument.(Instrumentation); ok {
-		instrument.RecordPathPart(ctx, "name", strings.Join(r.Name, ","))
+	if len(r.Name) > 0 {
+		path.WriteString("/")
+		path.WriteString(strings.Join(r.Name, ","))
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
+			instrument.RecordPathPart(ctx, "name", strings.Join(r.Name, ","))
+		}
 	}
 
 	params = make(map[string]string)
@@ -123,6 +122,10 @@ func (r IndicesResolveClusterRequest) Do(providedCtx context.Context, transport 
 		params["ignore_unavailable"] = strconv.FormatBool(*r.IgnoreUnavailable)
 	}
 
+	if r.Timeout != 0 {
+		params["timeout"] = formatDuration(r.Timeout)
+	}
+
 	if r.Pretty {
 		params["pretty"] = "true"
 	}
@@ -141,7 +144,7 @@ func (r IndicesResolveClusterRequest) Do(providedCtx context.Context, transport 
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -171,15 +174,15 @@ func (r IndicesResolveClusterRequest) Do(providedCtx context.Context, transport 
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "indices.resolve_cluster")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "indices.resolve_cluster")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -201,31 +204,45 @@ func (f IndicesResolveCluster) WithContext(v context.Context) func(*IndicesResol
 	}
 }
 
-// WithAllowNoIndices - whether to ignore if a wildcard indices expression resolves into no concrete indices. (this includes `_all` string or when no indices have been specified).
+// WithName - a list of cluster:index names or wildcard expressions.
+func (f IndicesResolveCluster) WithName(v ...string) func(*IndicesResolveClusterRequest) {
+	return func(r *IndicesResolveClusterRequest) {
+		r.Name = v
+	}
+}
+
+// WithAllowNoIndices - whether to ignore if a wildcard indices expression resolves into no concrete indices. (this includes `_all` string or when no indices have been specified). only allowed when providing an index expression..
 func (f IndicesResolveCluster) WithAllowNoIndices(v bool) func(*IndicesResolveClusterRequest) {
 	return func(r *IndicesResolveClusterRequest) {
 		r.AllowNoIndices = &v
 	}
 }
 
-// WithExpandWildcards - whether wildcard expressions should get expanded to open or closed indices (default: open).
+// WithExpandWildcards - whether wildcard expressions should get expanded to open or closed indices (default: open). only allowed when providing an index expression..
 func (f IndicesResolveCluster) WithExpandWildcards(v string) func(*IndicesResolveClusterRequest) {
 	return func(r *IndicesResolveClusterRequest) {
 		r.ExpandWildcards = v
 	}
 }
 
-// WithIgnoreThrottled - whether specified concrete, expanded or aliased indices should be ignored when throttled.
+// WithIgnoreThrottled - whether specified concrete, expanded or aliased indices should be ignored when throttled. only allowed when providing an index expression..
 func (f IndicesResolveCluster) WithIgnoreThrottled(v bool) func(*IndicesResolveClusterRequest) {
 	return func(r *IndicesResolveClusterRequest) {
 		r.IgnoreThrottled = &v
 	}
 }
 
-// WithIgnoreUnavailable - whether specified concrete indices should be ignored when unavailable (missing or closed).
+// WithIgnoreUnavailable - whether specified concrete indices should be ignored when unavailable (missing or closed). only allowed when providing an index expression..
 func (f IndicesResolveCluster) WithIgnoreUnavailable(v bool) func(*IndicesResolveClusterRequest) {
 	return func(r *IndicesResolveClusterRequest) {
 		r.IgnoreUnavailable = &v
+	}
+}
+
+// WithTimeout - the maximum time to wait for remote clusters to respond.
+func (f IndicesResolveCluster) WithTimeout(v time.Duration) func(*IndicesResolveClusterRequest) {
+	return func(r *IndicesResolveClusterRequest) {
+		r.Timeout = v
 	}
 }
 

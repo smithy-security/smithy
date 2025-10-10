@@ -16,11 +16,11 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get data stream lifecycles.
-// Retrieves the data stream lifecycle configuration of one or more data
-// streams.
+//
+// Get the data stream lifecycle configuration of one or more data streams.
 package getdatalifecycle
 
 import (
@@ -80,8 +80,8 @@ func NewGetDataLifecycleFunc(tp elastictransport.Interface) NewGetDataLifecycle 
 }
 
 // Get data stream lifecycles.
-// Retrieves the data stream lifecycle configuration of one or more data
-// streams.
+//
+// Get the data stream lifecycle configuration of one or more data streams.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/data-streams-get-lifecycle.html
 func New(tp elastictransport.Interface) *GetDataLifecycle {
@@ -308,7 +308,6 @@ func (r *GetDataLifecycle) _name(name string) *GetDataLifecycle {
 
 // ExpandWildcards Type of data stream that wildcard patterns can match.
 // Supports comma-separated values, such as `open,hidden`.
-// Valid values are: `all`, `open`, `closed`, `hidden`, `none`.
 // API name: expand_wildcards
 func (r *GetDataLifecycle) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *GetDataLifecycle {
 	tmp := []string{}

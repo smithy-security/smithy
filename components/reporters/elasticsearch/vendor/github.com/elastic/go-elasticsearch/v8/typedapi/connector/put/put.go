@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create or update a connector.
 package put
@@ -89,8 +89,6 @@ func New(tp elastictransport.Interface) *Put {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -363,6 +361,9 @@ func (r *Put) Pretty(pretty bool) *Put {
 
 // API name: description
 func (r *Put) Description(description string) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -371,6 +372,9 @@ func (r *Put) Description(description string) *Put {
 
 // API name: index_name
 func (r *Put) IndexName(indexname string) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IndexName = &indexname
 
 	return r
@@ -378,6 +382,9 @@ func (r *Put) IndexName(indexname string) *Put {
 
 // API name: is_native
 func (r *Put) IsNative(isnative bool) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IsNative = &isnative
 
 	return r
@@ -385,6 +392,9 @@ func (r *Put) IsNative(isnative bool) *Put {
 
 // API name: language
 func (r *Put) Language(language string) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Language = &language
 
@@ -393,6 +403,9 @@ func (r *Put) Language(language string) *Put {
 
 // API name: name
 func (r *Put) Name(name string) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Name = &name
 
@@ -401,6 +414,9 @@ func (r *Put) Name(name string) *Put {
 
 // API name: service_type
 func (r *Put) ServiceType(servicetype string) *Put {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ServiceType = &servicetype
 

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -30,9 +30,12 @@ import (
 
 // MultiplexerTokenFilter type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/analysis/token_filters.ts#L261-L265
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/analysis/token_filters.ts#L356-L362
 type MultiplexerTokenFilter struct {
-	Filters          []string           `json:"filters"`
+	// Filters A list of token filters to apply to incoming tokens.
+	Filters []string `json:"filters"`
+	// PreserveOriginal If `true` (the default) then emit the original token in addition to the
+	// filtered tokens.
 	PreserveOriginal Stringifiedboolean `json:"preserve_original,omitempty"`
 	Type             string             `json:"type,omitempty"`
 	Version          *string            `json:"version,omitempty"`

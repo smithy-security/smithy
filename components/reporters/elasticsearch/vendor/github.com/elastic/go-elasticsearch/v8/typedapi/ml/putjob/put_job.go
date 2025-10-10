@@ -16,11 +16,14 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create an anomaly detection job.
+//
 // If you include a `datafeed_config`, you must have read index privileges on
 // the source index.
+// If you include a `datafeed_config` but do not provide a query, the datafeed
+// uses `{"match_all": {"boost": 1}}`.
 package putjob
 
 import (
@@ -85,8 +88,11 @@ func NewPutJobFunc(tp elastictransport.Interface) NewPutJob {
 }
 
 // Create an anomaly detection job.
+//
 // If you include a `datafeed_config`, you must have read index privileges on
 // the source index.
+// If you include a `datafeed_config` but do not provide a query, the datafeed
+// uses `{"match_all": {"boost": 1}}`.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/ml-put-job.html
 func New(tp elastictransport.Interface) *PutJob {
@@ -96,8 +102,6 @@ func New(tp elastictransport.Interface) *PutJob {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -335,16 +339,7 @@ func (r *PutJob) AllowNoIndices(allownoindices bool) *PutJob {
 // ExpandWildcards Type of index that wildcard patterns can match. If the request can target
 // data streams, this argument determines
 // whether wildcard expressions match hidden data streams. Supports
-// comma-separated values. Valid values are:
-//
-// * `all`: Match any data stream or index, including hidden ones.
-// * `closed`: Match closed, non-hidden indices. Also matches any non-hidden
-// data stream. Data streams cannot be closed.
-// * `hidden`: Match hidden data streams and hidden indices. Must be combined
-// with `open`, `closed`, or both.
-// * `none`: Wildcard patterns are not accepted.
-// * `open`: Match open, non-hidden indices. Also matches any non-hidden data
-// stream.
+// comma-separated values.
 // API name: expand_wildcards
 func (r *PutJob) ExpandWildcards(expandwildcards ...expandwildcard.ExpandWildcard) *PutJob {
 	tmp := []string{}
@@ -426,6 +421,9 @@ func (r *PutJob) Pretty(pretty bool) *PutJob {
 // opening state until sufficient machine learning node capacity is available.
 // API name: allow_lazy_open
 func (r *PutJob) AllowLazyOpen(allowlazyopen bool) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.AllowLazyOpen = &allowlazyopen
 
 	return r
@@ -435,6 +433,9 @@ func (r *PutJob) AllowLazyOpen(allowlazyopen bool) *PutJob {
 // the analysis configuration; all the properties are informational.
 // API name: analysis_config
 func (r *PutJob) AnalysisConfig(analysisconfig *types.AnalysisConfig) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.AnalysisConfig = *analysisconfig
 
@@ -447,6 +448,9 @@ func (r *PutJob) AnalysisConfig(analysisconfig *types.AnalysisConfig) *PutJob {
 // Elasticsearch Java processes.
 // API name: analysis_limits
 func (r *PutJob) AnalysisLimits(analysislimits *types.AnalysisLimits) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.AnalysisLimits = analysislimits
 
@@ -461,6 +465,9 @@ func (r *PutJob) AnalysisLimits(analysislimits *types.AnalysisLimits) *PutJob {
 // value too low.
 // API name: background_persist_interval
 func (r *PutJob) BackgroundPersistInterval(duration types.Duration) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.BackgroundPersistInterval = duration
 
 	return r
@@ -469,6 +476,9 @@ func (r *PutJob) BackgroundPersistInterval(duration types.Duration) *PutJob {
 // CustomSettings Advanced configuration option. Contains custom meta data about the job.
 // API name: custom_settings
 func (r *PutJob) CustomSettings(customsettings json.RawMessage) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.CustomSettings = customsettings
 
 	return r
@@ -481,6 +491,9 @@ func (r *PutJob) CustomSettings(customsettings json.RawMessage) *PutJob {
 // from 0 to `model_snapshot_retention_days`.
 // API name: daily_model_snapshot_retention_after_days
 func (r *PutJob) DailyModelSnapshotRetentionAfterDays(dailymodelsnapshotretentionafterdays int64) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.DailyModelSnapshotRetentionAfterDays = &dailymodelsnapshotretentionafterdays
 
@@ -493,6 +506,9 @@ func (r *PutJob) DailyModelSnapshotRetentionAfterDays(dailymodelsnapshotretentio
 // stored in Elasticsearch. Only the results for anomaly detection are retained.
 // API name: data_description
 func (r *PutJob) DataDescription(datadescription *types.DataDescription) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.DataDescription = *datadescription
 
@@ -506,6 +522,9 @@ func (r *PutJob) DataDescription(datadescription *types.DataDescription) *PutJob
 // used instead.
 // API name: datafeed_config
 func (r *PutJob) DatafeedConfig(datafeedconfig *types.DatafeedConfig) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.DatafeedConfig = datafeedconfig
 
@@ -515,6 +534,9 @@ func (r *PutJob) DatafeedConfig(datafeedconfig *types.DatafeedConfig) *PutJob {
 // Description A description of the job.
 // API name: description
 func (r *PutJob) Description(description string) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -524,6 +546,9 @@ func (r *PutJob) Description(description string) *PutJob {
 // Groups A list of job groups. A job can belong to no groups or many.
 // API name: groups
 func (r *PutJob) Groups(groups ...string) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Groups = groups
 
 	return r
@@ -540,6 +565,9 @@ func (r *PutJob) Groups(groups ...string) *PutJob {
 // or updated later. It must be disabled if performance issues are experienced.
 // API name: model_plot_config
 func (r *PutJob) ModelPlotConfig(modelplotconfig *types.ModelPlotConfig) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ModelPlotConfig = modelplotconfig
 
@@ -553,6 +581,9 @@ func (r *PutJob) ModelPlotConfig(modelplotconfig *types.ModelPlotConfig) *PutJob
 // older than the newest snapshot are deleted.
 // API name: model_snapshot_retention_days
 func (r *PutJob) ModelSnapshotRetentionDays(modelsnapshotretentiondays int64) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ModelSnapshotRetentionDays = &modelsnapshotretentiondays
 
@@ -564,6 +595,9 @@ func (r *PutJob) ModelSnapshotRetentionDays(modelsnapshotretentiondays int64) *P
 // or 100 bucket spans.
 // API name: renormalization_window_days
 func (r *PutJob) RenormalizationWindowDays(renormalizationwindowdays int64) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.RenormalizationWindowDays = &renormalizationwindowdays
 
@@ -574,6 +608,9 @@ func (r *PutJob) RenormalizationWindowDays(renormalizationwindowdays int64) *Put
 // default, the job generates an index named `.ml-anomalies-shared`.
 // API name: results_index_name
 func (r *PutJob) ResultsIndexName(indexname string) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.ResultsIndexName = &indexname
 
 	return r
@@ -589,6 +626,9 @@ func (r *PutJob) ResultsIndexName(indexname string) *PutJob {
 // number of days as results. Annotations added by users are retained forever.
 // API name: results_retention_days
 func (r *PutJob) ResultsRetentionDays(resultsretentiondays int64) *PutJob {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.ResultsRetentionDays = &resultsretentiondays
 

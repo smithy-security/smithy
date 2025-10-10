@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Delete service account tokens.
 //
@@ -321,7 +321,7 @@ func (r *DeleteServiceToken) Header(key, value string) *DeleteServiceToken {
 	return r
 }
 
-// Namespace An identifier for the namespace
+// Namespace The namespace, which is a top-level grouping of service accounts.
 // API Name: namespace
 func (r *DeleteServiceToken) _namespace(namespace string) *DeleteServiceToken {
 	r.paramSet |= namespaceMask
@@ -330,7 +330,7 @@ func (r *DeleteServiceToken) _namespace(namespace string) *DeleteServiceToken {
 	return r
 }
 
-// Service An identifier for the service name
+// Service The service name.
 // API Name: service
 func (r *DeleteServiceToken) _service(service string) *DeleteServiceToken {
 	r.paramSet |= serviceMask
@@ -339,7 +339,7 @@ func (r *DeleteServiceToken) _service(service string) *DeleteServiceToken {
 	return r
 }
 
-// Name An identifier for the token name
+// Name The name of the service account token.
 // API Name: name
 func (r *DeleteServiceToken) _name(name string) *DeleteServiceToken {
 	r.paramSet |= nameMask

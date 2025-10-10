@@ -16,9 +16,9 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Create or update an index template.
+// Create or update a legacy index template.
 // Index templates define settings, mappings, and aliases that can be applied
 // automatically to new indices.
 // Elasticsearch applies templates to new indices based on an index pattern that
@@ -36,6 +36,20 @@
 // Changes to index templates do not affect existing indices.
 // Settings and mappings specified in create index API requests override any
 // settings or mappings specified in an index template.
+//
+// You can use C-style `/* *\/` block comments in index templates.
+// You can include comments anywhere in the request body, except before the
+// opening curly bracket.
+//
+// **Indices matching multiple templates**
+//
+// Multiple index templates can potentially match an index, in this case, both
+// the settings and mappings are merged into the final configuration of the
+// index.
+// The order of the merging can be controlled using the order parameter, with
+// lower order being applied first, and higher orders overriding them.
+// NOTE: Multiple matching templates with the same order value will result in a
+// non-deterministic merging order.
 package puttemplate
 
 import (
@@ -98,7 +112,7 @@ func NewPutTemplateFunc(tp elastictransport.Interface) NewPutTemplate {
 	}
 }
 
-// Create or update an index template.
+// Create or update a legacy index template.
 // Index templates define settings, mappings, and aliases that can be applied
 // automatically to new indices.
 // Elasticsearch applies templates to new indices based on an index pattern that
@@ -117,6 +131,20 @@ func NewPutTemplateFunc(tp elastictransport.Interface) NewPutTemplate {
 // Settings and mappings specified in create index API requests override any
 // settings or mappings specified in an index template.
 //
+// You can use C-style `/* *\/` block comments in index templates.
+// You can include comments anywhere in the request body, except before the
+// opening curly bracket.
+//
+// **Indices matching multiple templates**
+//
+// Multiple index templates can potentially match an index, in this case, both
+// the settings and mappings are merged into the final configuration of the
+// index.
+// The order of the merging can be controlled using the order parameter, with
+// lower order being applied first, and higher orders overriding them.
+// NOTE: Multiple matching templates with the same order value will result in a
+// non-deterministic merging order.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-templates-v1.html
 func New(tp elastictransport.Interface) *PutTemplate {
 	r := &PutTemplate{
@@ -125,8 +153,6 @@ func New(tp elastictransport.Interface) *PutTemplate {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -364,6 +390,7 @@ func (r *PutTemplate) MasterTimeout(duration string) *PutTemplate {
 	return r
 }
 
+// Cause User defined reason for creating/updating the index template
 // API name: cause
 func (r *PutTemplate) Cause(cause string) *PutTemplate {
 	r.values.Set("cause", cause)
@@ -418,6 +445,9 @@ func (r *PutTemplate) Pretty(pretty bool) *PutTemplate {
 // Aliases Aliases for the index.
 // API name: aliases
 func (r *PutTemplate) Aliases(aliases map[string]types.Alias) *PutTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Aliases = aliases
 
@@ -428,6 +458,9 @@ func (r *PutTemplate) Aliases(aliases map[string]types.Alias) *PutTemplate {
 // of indices during creation.
 // API name: index_patterns
 func (r *PutTemplate) IndexPatterns(indexpatterns ...string) *PutTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IndexPatterns = indexpatterns
 
 	return r
@@ -436,6 +469,9 @@ func (r *PutTemplate) IndexPatterns(indexpatterns ...string) *PutTemplate {
 // Mappings Mapping for fields in the index.
 // API name: mappings
 func (r *PutTemplate) Mappings(mappings *types.TypeMapping) *PutTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Mappings = mappings
 
@@ -449,6 +485,9 @@ func (r *PutTemplate) Mappings(mappings *types.TypeMapping) *PutTemplate {
 // 'order' values are merged later, overriding templates with lower values.
 // API name: order
 func (r *PutTemplate) Order(order int) *PutTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Order = &order
 
 	return r
@@ -457,6 +496,9 @@ func (r *PutTemplate) Order(order int) *PutTemplate {
 // Settings Configuration options for the index.
 // API name: settings
 func (r *PutTemplate) Settings(settings *types.IndexSettings) *PutTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 
@@ -465,8 +507,12 @@ func (r *PutTemplate) Settings(settings *types.IndexSettings) *PutTemplate {
 
 // Version Version number used to manage index templates externally. This number
 // is not automatically generated by Elasticsearch.
+// To unset a version, replace the template without specifying one.
 // API name: version
 func (r *PutTemplate) Version(versionnumber int64) *PutTemplate {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Version = &versionnumber
 
 	return r

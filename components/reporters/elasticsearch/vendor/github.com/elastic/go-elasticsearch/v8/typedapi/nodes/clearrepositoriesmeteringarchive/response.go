@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package clearrepositoriesmeteringarchive
 
@@ -26,11 +26,10 @@ import (
 
 // Response holds the response body struct for the package clearrepositoriesmeteringarchive
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/nodes/clear_repositories_metering_archive/ClearRepositoriesMeteringArchiveResponse.ts#L36-L38
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/nodes/clear_repositories_metering_archive/ClearRepositoriesMeteringArchiveResponse.ts#L37-L39
 type Response struct {
 
-	// ClusterName Name of the cluster. Based on the [Cluster name
-	// setting](https://www.elastic.co/guide/en/elasticsearch/reference/current/important-settings.html#cluster-name).
+	// ClusterName Name of the cluster. Based on the `cluster.name` setting.
 	ClusterName string `json:"cluster_name"`
 	// NodeStats Contains statistics about the number of nodes selected by the request’s node
 	// filters.

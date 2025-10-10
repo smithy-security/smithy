@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get multiple documents.
 //
@@ -25,6 +25,23 @@
 // document IDs in the request body.
 // To ensure fast responses, this multi get (mget) API responds with partial
 // results if one or more shards fail.
+//
+// **Filter source fields**
+//
+// By default, the `_source` field is returned for every document (if stored).
+// Use the `_source` and `_source_include` or `source_exclude` attributes to
+// filter what fields are returned for a particular document.
+// You can include the `_source`, `_source_includes`, and `_source_excludes`
+// query parameters in the request URI to specify the defaults to use when there
+// are no per-document instructions.
+//
+// **Get stored fields**
+//
+// Use the `stored_fields` attribute to specify the set of stored fields you
+// want to retrieve.
+// Any requested fields that are not stored are ignored.
+// You can include the `stored_fields` query parameter in the request URI to
+// specify the defaults to use when there are no per-document instructions.
 package mget
 
 import (
@@ -93,6 +110,23 @@ func NewMgetFunc(tp elastictransport.Interface) NewMget {
 // To ensure fast responses, this multi get (mget) API responds with partial
 // results if one or more shards fail.
 //
+// **Filter source fields**
+//
+// By default, the `_source` field is returned for every document (if stored).
+// Use the `_source` and `_source_include` or `source_exclude` attributes to
+// filter what fields are returned for a particular document.
+// You can include the `_source`, `_source_includes`, and `_source_excludes`
+// query parameters in the request URI to specify the defaults to use when there
+// are no per-document instructions.
+//
+// **Get stored fields**
+//
+// Use the `stored_fields` attribute to specify the set of stored fields you
+// want to retrieve.
+// Any requested fields that are not stored are ignored.
+// You can include the `stored_fields` query parameter in the request URI to
+// specify the defaults to use when there are no per-document instructions.
+//
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-multi-get.html
 func New(tp elastictransport.Interface) *Mget {
 	r := &Mget{
@@ -101,8 +135,6 @@ func New(tp elastictransport.Interface) *Mget {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -462,6 +494,9 @@ func (r *Mget) Pretty(pretty bool) *Mget {
 // request URI.
 // API name: docs
 func (r *Mget) Docs(docs ...types.MgetOperation) *Mget {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Docs = docs
 
 	return r
@@ -471,6 +506,9 @@ func (r *Mget) Docs(docs ...types.MgetOperation) *Mget {
 // specified in the request URI.
 // API name: ids
 func (r *Mget) Ids(ids ...string) *Mget {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Ids = ids
 
 	return r

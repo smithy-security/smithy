@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get anomaly detection job results for influencers.
 // Influencers are the entities that have contributed to, or are to blame for,
@@ -97,8 +97,6 @@ func New(tp elastictransport.Interface) *GetInfluencers {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -443,6 +441,9 @@ func (r *GetInfluencers) Pretty(pretty bool) *GetInfluencers {
 // This parameter has the `from` and `size` properties.
 // API name: page
 func (r *GetInfluencers) Page(page *types.Page) *GetInfluencers {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Page = page
 

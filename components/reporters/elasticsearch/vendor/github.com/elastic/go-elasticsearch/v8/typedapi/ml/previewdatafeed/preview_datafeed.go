@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Preview a datafeed.
 // This API returns the first "page" of search results from a datafeed.
@@ -115,8 +115,6 @@ func New(tp elastictransport.Interface) *PreviewDatafeed {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -419,6 +417,9 @@ func (r *PreviewDatafeed) Pretty(pretty bool) *PreviewDatafeed {
 // DatafeedConfig The datafeed definition to preview.
 // API name: datafeed_config
 func (r *PreviewDatafeed) DatafeedConfig(datafeedconfig *types.DatafeedConfig) *PreviewDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.DatafeedConfig = datafeedconfig
 
@@ -435,6 +436,9 @@ func (r *PreviewDatafeed) DatafeedConfig(datafeedconfig *types.DatafeedConfig) *
 // `datafeed_config` object.
 // API name: job_config
 func (r *PreviewDatafeed) JobConfig(jobconfig *types.JobConfig) *PreviewDatafeed {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.JobConfig = jobconfig
 

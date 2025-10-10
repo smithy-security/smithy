@@ -16,9 +16,15 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Get user privileges.
+//
+// Get the security privileges for the logged in user.
+// All users can use this API, but only to determine their own privileges.
+// To check the privileges of other users, you must use the run as feature.
+// To check whether a user has a specific list of privileges, use the has
+// privileges API.
 package getuserprivileges
 
 import (
@@ -69,6 +75,12 @@ func NewGetUserPrivilegesFunc(tp elastictransport.Interface) NewGetUserPrivilege
 }
 
 // Get user privileges.
+//
+// Get the security privileges for the logged in user.
+// All users can use this API, but only to determine their own privileges.
+// To check the privileges of other users, you must use the run as feature.
+// To check whether a user has a specific list of privileges, use the has
+// privileges API.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-get-user-privileges.html
 func New(tp elastictransport.Interface) *GetUserPrivileges {
@@ -274,32 +286,6 @@ func (r GetUserPrivileges) IsSuccess(providedCtx context.Context) (bool, error) 
 // Header set a key, value pair in the GetUserPrivileges headers map.
 func (r *GetUserPrivileges) Header(key, value string) *GetUserPrivileges {
 	r.headers.Set(key, value)
-
-	return r
-}
-
-// Application The name of the application. Application privileges are always associated
-// with exactly one application. If you do not specify this parameter, the API
-// returns information about all privileges for all applications.
-// API name: application
-func (r *GetUserPrivileges) Application(name string) *GetUserPrivileges {
-	r.values.Set("application", name)
-
-	return r
-}
-
-// Priviledge The name of the privilege. If you do not specify this parameter, the API
-// returns information about all privileges for the requested application.
-// API name: priviledge
-func (r *GetUserPrivileges) Priviledge(name string) *GetUserPrivileges {
-	r.values.Set("priviledge", name)
-
-	return r
-}
-
-// API name: username
-func (r *GetUserPrivileges) Username(username string) *GetUserPrivileges {
-	r.values.Set("username", username)
 
 	return r
 }

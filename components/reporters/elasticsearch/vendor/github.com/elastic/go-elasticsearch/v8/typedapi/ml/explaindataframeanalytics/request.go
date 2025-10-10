@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package explaindataframeanalytics
 
@@ -29,7 +29,7 @@ import (
 
 // Request holds the request body struct for the package explaindataframeanalytics
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ml/explain_data_frame_analytics/MlExplainDataFrameAnalyticsRequest.ts#L30-L108
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ml/explain_data_frame_analytics/MlExplainDataFrameAnalyticsRequest.ts#L30-L120
 type Request struct {
 
 	// AllowLazyStart Specifies whether this job can start when there is insufficient machine

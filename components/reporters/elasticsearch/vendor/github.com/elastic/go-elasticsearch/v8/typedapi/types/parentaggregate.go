@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -32,7 +32,7 @@ import (
 
 // ParentAggregate type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/aggregations/Aggregate.ts#L894-L898
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/aggregations/Aggregate.ts#L896-L900
 type ParentAggregate struct {
 	Aggregations map[string]Aggregate `json:"-"`
 	DocCount     int64                `json:"doc_count"`
@@ -631,7 +631,7 @@ func (s ParentAggregate) MarshalJSON() ([]byte, error) {
 // NewParentAggregate returns a ParentAggregate.
 func NewParentAggregate() *ParentAggregate {
 	r := &ParentAggregate{
-		Aggregations: make(map[string]Aggregate, 0),
+		Aggregations: make(map[string]Aggregate),
 	}
 
 	return r

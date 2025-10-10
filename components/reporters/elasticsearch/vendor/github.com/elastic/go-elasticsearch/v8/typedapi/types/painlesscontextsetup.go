@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -30,13 +30,22 @@ import (
 
 // PainlessContextSetup type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_global/scripts_painless_execute/types.ts#L25-L39
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_global/scripts_painless_execute/types.ts#L27-L46
 type PainlessContextSetup struct {
-	// Document Document that’s temporarily indexed in-memory and accessible from the script.
+	// Document Document that's temporarily indexed in-memory and accessible from the script.
 	Document json.RawMessage `json:"document,omitempty"`
-	// Index Index containing a mapping that’s compatible with the indexed document.
+	// Index Index containing a mapping that's compatible with the indexed document.
 	// You may specify a remote index by prefixing the index with the remote cluster
 	// alias.
+	// For example, `remote1:my_index` indicates that you want to run the painless
+	// script against the "my_index" index on the "remote1" cluster.
+	// This request will be forwarded to the "remote1" cluster if you have
+	// configured a connection to that remote cluster.
+	//
+	// NOTE: Wildcards are not accepted in the index expression for this endpoint.
+	// The expression `*:myindex` will return the error "No such remote cluster" and
+	// the expression `logs*` or `remote1:logs*` will return the error "index not
+	// found".
 	Index string `json:"index"`
 	// Query Use this parameter to specify a query for computing a score.
 	Query *Query `json:"query,omitempty"`

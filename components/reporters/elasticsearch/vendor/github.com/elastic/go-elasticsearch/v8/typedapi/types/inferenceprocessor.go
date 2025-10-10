@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // InferenceProcessor type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/ingest/_types/Processors.ts#L1027-L1046
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/ingest/_types/Processors.ts#L1027-L1059
 type InferenceProcessor struct {
 	// Description Description of the processor.
 	// Useful for describing the purpose of the processor or its configuration.
@@ -44,8 +44,18 @@ type InferenceProcessor struct {
 	If *string `json:"if,omitempty"`
 	// IgnoreFailure Ignore failures for the processor.
 	IgnoreFailure *bool `json:"ignore_failure,omitempty"`
+	// IgnoreMissing If true and any of the input fields defined in input_ouput are missing
+	// then those missing fields are quietly ignored, otherwise a missing field
+	// causes a failure.
+	// Only applies when using input_output configurations to explicitly list the
+	// input fields.
+	IgnoreMissing *bool `json:"ignore_missing,omitempty"`
 	// InferenceConfig Contains the inference type and its options.
 	InferenceConfig *InferenceConfig `json:"inference_config,omitempty"`
+	// InputOutput Input fields for inference and output (destination) fields for the inference
+	// results.
+	// This option is incompatible with the target_field and field_map options.
+	InputOutput []InputConfig `json:"input_output,omitempty"`
 	// ModelId The ID or alias for the trained model, or the ID of the deployment.
 	ModelId string `json:"model_id"`
 	// OnFailure Handle failures for the processor.
@@ -118,9 +128,39 @@ func (s *InferenceProcessor) UnmarshalJSON(data []byte) error {
 				s.IgnoreFailure = &v
 			}
 
+		case "ignore_missing":
+			var tmp any
+			dec.Decode(&tmp)
+			switch v := tmp.(type) {
+			case string:
+				value, err := strconv.ParseBool(v)
+				if err != nil {
+					return fmt.Errorf("%s | %w", "IgnoreMissing", err)
+				}
+				s.IgnoreMissing = &value
+			case bool:
+				s.IgnoreMissing = &v
+			}
+
 		case "inference_config":
 			if err := dec.Decode(&s.InferenceConfig); err != nil {
 				return fmt.Errorf("%s | %w", "InferenceConfig", err)
+			}
+
+		case "input_output":
+			rawMsg := json.RawMessage{}
+			dec.Decode(&rawMsg)
+			if !bytes.HasPrefix(rawMsg, []byte("[")) {
+				o := NewInputConfig()
+				if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&o); err != nil {
+					return fmt.Errorf("%s | %w", "InputOutput", err)
+				}
+
+				s.InputOutput = append(s.InputOutput, *o)
+			} else {
+				if err := json.NewDecoder(bytes.NewReader(rawMsg)).Decode(&s.InputOutput); err != nil {
+					return fmt.Errorf("%s | %w", "InputOutput", err)
+				}
 			}
 
 		case "model_id":
@@ -158,7 +198,7 @@ func (s *InferenceProcessor) UnmarshalJSON(data []byte) error {
 // NewInferenceProcessor returns a InferenceProcessor.
 func NewInferenceProcessor() *InferenceProcessor {
 	r := &InferenceProcessor{
-		FieldMap: make(map[string]json.RawMessage, 0),
+		FieldMap: make(map[string]json.RawMessage),
 	}
 
 	return r

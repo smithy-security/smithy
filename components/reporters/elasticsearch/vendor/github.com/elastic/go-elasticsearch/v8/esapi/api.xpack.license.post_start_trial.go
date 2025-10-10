@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -35,7 +35,7 @@ func newLicensePostStartTrialFunc(t Transport) LicensePostStartTrial {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -53,7 +53,6 @@ type LicensePostStartTrial func(o ...func(*LicensePostStartTrialRequest)) (*Resp
 type LicensePostStartTrialRequest struct {
 	Acknowledge   *bool
 	MasterTimeout time.Duration
-	Timeout       time.Duration
 	DocumentType  string
 
 	Pretty     bool
@@ -65,7 +64,7 @@ type LicensePostStartTrialRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -77,7 +76,7 @@ func (r LicensePostStartTrialRequest) Do(providedCtx context.Context, transport 
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "license.post_start_trial")
 		defer instrument.Close(ctx)
 	}
@@ -99,10 +98,6 @@ func (r LicensePostStartTrialRequest) Do(providedCtx context.Context, transport 
 
 	if r.MasterTimeout != 0 {
 		params["master_timeout"] = formatDuration(r.MasterTimeout)
-	}
-
-	if r.Timeout != 0 {
-		params["timeout"] = formatDuration(r.Timeout)
 	}
 
 	if r.DocumentType != "" {
@@ -127,7 +122,7 @@ func (r LicensePostStartTrialRequest) Do(providedCtx context.Context, transport 
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -157,15 +152,15 @@ func (r LicensePostStartTrialRequest) Do(providedCtx context.Context, transport 
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "license.post_start_trial")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "license.post_start_trial")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -198,13 +193,6 @@ func (f LicensePostStartTrial) WithAcknowledge(v bool) func(*LicensePostStartTri
 func (f LicensePostStartTrial) WithMasterTimeout(v time.Duration) func(*LicensePostStartTrialRequest) {
 	return func(r *LicensePostStartTrialRequest) {
 		r.MasterTimeout = v
-	}
-}
-
-// WithTimeout - timeout for acknowledgement of update from all nodes in cluster.
-func (f LicensePostStartTrial) WithTimeout(v time.Duration) func(*LicensePostStartTrialRequest) {
-	return func(r *LicensePostStartTrialRequest) {
-		r.Timeout = v
 	}
 }
 

@@ -16,9 +16,11 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Delete a query ruleset.
+// Remove a query ruleset and its associated data.
+// This is a destructive action that is not recoverable.
 package deleteruleset
 
 import (
@@ -77,6 +79,8 @@ func NewDeleteRulesetFunc(tp elastictransport.Interface) NewDeleteRuleset {
 }
 
 // Delete a query ruleset.
+// Remove a query ruleset and its associated data.
+// This is a destructive action that is not recoverable.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/delete-query-ruleset.html
 func New(tp elastictransport.Interface) *DeleteRuleset {

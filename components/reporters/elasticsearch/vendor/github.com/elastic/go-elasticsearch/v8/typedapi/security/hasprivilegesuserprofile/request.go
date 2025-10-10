@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package hasprivilegesuserprofile
 
@@ -29,8 +29,10 @@ import (
 
 // Request holds the request body struct for the package hasprivilegesuserprofile
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/has_privileges_user_profile/Request.ts#L24-L42
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/has_privileges_user_profile/Request.ts#L24-L55
 type Request struct {
+
+	// Privileges An object containing all the privileges to be checked.
 	Privileges types.PrivilegesCheck `json:"privileges"`
 	// Uids A list of profile IDs. The privileges are checked for associated users of the
 	// profiles.

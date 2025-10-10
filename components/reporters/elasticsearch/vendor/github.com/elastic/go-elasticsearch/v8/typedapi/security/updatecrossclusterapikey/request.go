@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package updatecrossclusterapikey
 
@@ -32,7 +32,7 @@ import (
 
 // Request holds the request body struct for the package updatecrossclusterapikey
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/update_cross_cluster_api_key/UpdateCrossClusterApiKeyRequest.ts#L25-L61
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/update_cross_cluster_api_key/UpdateCrossClusterApiKeyRequest.ts#L25-L83
 type Request struct {
 
 	// Access The access to be granted to this API key.
@@ -42,7 +42,7 @@ type Request struct {
 	// When specified, the new access assignment fully replaces the previously
 	// assigned access.
 	Access types.Access `json:"access"`
-	// Expiration Expiration time for the API key.
+	// Expiration The expiration time for the API key.
 	// By default, API keys never expire. This property can be omitted to leave the
 	// value unchanged.
 	Expiration types.Duration `json:"expiration,omitempty"`

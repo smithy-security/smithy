@@ -16,11 +16,11 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Simulate an index.
-// Returns the index configuration that would be applied to the specified index
-// from an existing index template.
+// Get the index configuration that would be applied to the specified index from
+// an existing index template.
 package simulateindextemplate
 
 import (
@@ -79,8 +79,8 @@ func NewSimulateIndexTemplateFunc(tp elastictransport.Interface) NewSimulateInde
 }
 
 // Simulate an index.
-// Returns the index configuration that would be applied to the specified index
-// from an existing index template.
+// Get the index configuration that would be applied to the specified index from
+// an existing index template.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-simulate-index.html
 func New(tp elastictransport.Interface) *SimulateIndexTemplate {
@@ -305,6 +305,24 @@ func (r *SimulateIndexTemplate) Header(key, value string) *SimulateIndexTemplate
 func (r *SimulateIndexTemplate) _name(name string) *SimulateIndexTemplate {
 	r.paramSet |= nameMask
 	r.name = name
+
+	return r
+}
+
+// Create Whether the index template we optionally defined in the body should only be
+// dry-run added if new or can also replace an existing one
+// API name: create
+func (r *SimulateIndexTemplate) Create(create bool) *SimulateIndexTemplate {
+	r.values.Set("create", strconv.FormatBool(create))
+
+	return r
+}
+
+// Cause User defined reason for dry-run creating the new template for simulation
+// purposes
+// API name: cause
+func (r *SimulateIndexTemplate) Cause(cause string) *SimulateIndexTemplate {
+	r.values.Set("cause", cause)
 
 	return r
 }

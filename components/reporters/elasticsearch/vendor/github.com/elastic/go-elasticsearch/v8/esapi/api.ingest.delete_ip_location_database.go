@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -24,6 +24,7 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func newIngestDeleteIPLocationDatabaseFunc(t Transport) IngestDeleteIPLocationDatabase {
@@ -34,7 +35,7 @@ func newIngestDeleteIPLocationDatabaseFunc(t Transport) IngestDeleteIPLocationDa
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -52,6 +53,9 @@ type IngestDeleteIPLocationDatabase func(id []string, o ...func(*IngestDeleteIPL
 type IngestDeleteIPLocationDatabaseRequest struct {
 	DocumentID []string
 
+	MasterTimeout time.Duration
+	Timeout       time.Duration
+
 	Pretty     bool
 	Human      bool
 	ErrorTrace bool
@@ -61,7 +65,7 @@ type IngestDeleteIPLocationDatabaseRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -73,7 +77,7 @@ func (r IngestDeleteIPLocationDatabaseRequest) Do(providedCtx context.Context, t
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "ingest.delete_ip_location_database")
 		defer instrument.Close(ctx)
 	}
@@ -97,11 +101,19 @@ func (r IngestDeleteIPLocationDatabaseRequest) Do(providedCtx context.Context, t
 	path.WriteString("database")
 	path.WriteString("/")
 	path.WriteString(strings.Join(r.DocumentID, ","))
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "id", strings.Join(r.DocumentID, ","))
 	}
 
 	params = make(map[string]string)
+
+	if r.MasterTimeout != 0 {
+		params["master_timeout"] = formatDuration(r.MasterTimeout)
+	}
+
+	if r.Timeout != 0 {
+		params["timeout"] = formatDuration(r.Timeout)
+	}
 
 	if r.Pretty {
 		params["pretty"] = "true"
@@ -121,7 +133,7 @@ func (r IngestDeleteIPLocationDatabaseRequest) Do(providedCtx context.Context, t
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -151,15 +163,15 @@ func (r IngestDeleteIPLocationDatabaseRequest) Do(providedCtx context.Context, t
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "ingest.delete_ip_location_database")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "ingest.delete_ip_location_database")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -178,6 +190,20 @@ func (r IngestDeleteIPLocationDatabaseRequest) Do(providedCtx context.Context, t
 func (f IngestDeleteIPLocationDatabase) WithContext(v context.Context) func(*IngestDeleteIPLocationDatabaseRequest) {
 	return func(r *IngestDeleteIPLocationDatabaseRequest) {
 		r.ctx = v
+	}
+}
+
+// WithMasterTimeout - explicit operation timeout for connection to master node.
+func (f IngestDeleteIPLocationDatabase) WithMasterTimeout(v time.Duration) func(*IngestDeleteIPLocationDatabaseRequest) {
+	return func(r *IngestDeleteIPLocationDatabaseRequest) {
+		r.MasterTimeout = v
+	}
+}
+
+// WithTimeout - explicit operation timeout.
+func (f IngestDeleteIPLocationDatabase) WithTimeout(v time.Duration) func(*IngestDeleteIPLocationDatabaseRequest) {
+	return func(r *IngestDeleteIPLocationDatabaseRequest) {
+		r.Timeout = v
 	}
 }
 

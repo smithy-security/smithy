@@ -16,9 +16,20 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Removes a watch from Watcher.
+// Delete a watch.
+// When the watch is removed, the document representing the watch in the
+// `.watches` index is gone and it will never be run again.
+//
+// Deleting a watch does not delete any watch execution records related to this
+// watch from the watch history.
+//
+// IMPORTANT: Deleting a watch must be done by using only this API.
+// Do not delete the watch directly from the `.watches` index using the
+// Elasticsearch delete document API
+// When Elasticsearch security features are enabled, make sure no write
+// privileges are granted to anyone for the `.watches` index.
 package deletewatch
 
 import (
@@ -76,9 +87,20 @@ func NewDeleteWatchFunc(tp elastictransport.Interface) NewDeleteWatch {
 	}
 }
 
-// Removes a watch from Watcher.
+// Delete a watch.
+// When the watch is removed, the document representing the watch in the
+// `.watches` index is gone and it will never be run again.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/watcher-api-delete-watch.html
+// Deleting a watch does not delete any watch execution records related to this
+// watch from the watch history.
+//
+// IMPORTANT: Deleting a watch must be done by using only this API.
+// Do not delete the watch directly from the `.watches` index using the
+// Elasticsearch delete document API
+// When Elasticsearch security features are enabled, make sure no write
+// privileges are granted to anyone for the `.watches` index.
+//
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-watcher-delete-watch
 func New(tp elastictransport.Interface) *DeleteWatch {
 	r := &DeleteWatch{
 		transport: tp,
@@ -290,7 +312,7 @@ func (r *DeleteWatch) Header(key, value string) *DeleteWatch {
 	return r
 }
 
-// Id Watch ID
+// Id The watch identifier.
 // API Name: id
 func (r *DeleteWatch) _id(id string) *DeleteWatch {
 	r.paramSet |= idMask

@@ -4,29 +4,27 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"net/http"
 
-	"github.com/elastic/go-elasticsearch/v8"
-	"github.com/elastic/go-elasticsearch/v8/esapi"
+	"github.com/Masterminds/semver/v3"
+	esv8 "github.com/elastic/go-elasticsearch/v8"
+	esv9 "github.com/elastic/go-elasticsearch/v9"
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 	"google.golang.org/protobuf/encoding/protojson"
-
-	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
 )
 
 type (
+	// Conf is a struct to define the ES configuration
 	Conf struct {
-		ElasticsearchURL    string
-		ElasticsearchIndex  string
-		ElasticsearchApiKey string
-	}
-
-	esLogger struct {
-		conf   *Conf
-		client *elasticsearch.Client
+		ElasticsearchURL           string
+		ElasticsearchIndex         string
+		ElasticsearchAPIKey        string
+		ElasticsearchServerVersion string
 	}
 
 	esInfo struct {
@@ -35,23 +33,33 @@ type (
 		} `json:"version"`
 	}
 
-	// ElasticsearchReporterOption allows customising the reporter.
-	ElasticsearchReporterOption func(g *esLogger) error
-)
+	elasticsearchReporter struct {
+		conf   *Conf
+		client esClient
+	}
 
-// NewJsonLogger returns a new json logger.
-func NewElasticsearchLogger(config *Conf, client *elasticsearch.Client) (*esLogger, error) {
-	if config == nil {
-		return nil, errors.Errorf("configuration is nil")
+	// esClient is a common interface for the Elasticsearch clients
+	esClient interface {
+		Index(index string, body io.Reader) (esResponse, error)
 	}
-	if client == nil {
-		return nil, errors.Errorf("elasticsearch client is nil")
+
+	// esResponse is a common interface for the Elasticsearch responses
+	esResponse interface {
+		IsError() bool
+		String() string
+		StatusCode() int
+		Body() io.ReadCloser
 	}
-	return &esLogger{
-		client: client,
-		conf:   config,
-	}, nil
-}
+
+	clusterInfo interface {
+		Info() (esResponse, error)
+	}
+
+	// Reporter is an interface for the findings report
+	Reporter interface {
+		Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error
+	}
+)
 
 // NewConf returns a new configuration build from environment lookup.
 func NewConf(envLoader env.Loader) (*Conf, error) {
@@ -59,9 +67,12 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	if envLoader != nil {
 		envOpts = append(envOpts, env.WithLoader(envLoader))
 	}
-	esURL, err := env.GetOrDefault("ELASTICSEARCH_URL",
+
+	esURL, err := env.GetOrDefault(
+		"ELASTICSEARCH_URL",
 		"",
-		append(envOpts, env.WithDefaultOnError(false))...)
+		append(envOpts, env.WithDefaultOnError(false))...,
+	)
 	if err != nil {
 		return nil, errors.Errorf("could not get env variable for ELASTICSEARCH_URL: %w", err)
 	}
@@ -96,12 +107,12 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 	return &Conf{
 		ElasticsearchURL:    esURL,
 		ElasticsearchIndex:  index,
-		ElasticsearchApiKey: apiKey,
+		ElasticsearchAPIKey: apiKey,
 	}, nil
 }
 
-// Report logs the findings in json format in the target elastcisearch.
-func (e esLogger) Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error {
+// Report logs the findings in json format in the target elasticsearch
+func (r *elasticsearchReporter) Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error {
 	logger := componentlogger.
 		LoggerFromContext(ctx).
 		With(slog.Int("num_findings", len(findings)))
@@ -111,49 +122,100 @@ func (e esLogger) Report(ctx context.Context, findings []*vf.VulnerabilityFindin
 		if err != nil {
 			return errors.Errorf("could not json marshal finding: %w", err)
 		}
-		e.client.Index(e.conf.ElasticsearchIndex, bytes.NewBuffer(b))
-		logger.Info("found finding", slog.String("finding", string(b)))
-	}
 
+		res, err := r.client.Index(r.conf.ElasticsearchIndex, bytes.NewBuffer(b))
+		if err != nil {
+			return errors.Errorf("could not index finding: %w", err)
+		}
+		if res.IsError() {
+			return errors.Errorf("elasticsearch returned error: %s", res.String())
+		}
+
+		logger.Info("found finding", slog.String("finding", string(b)))
+		res.Body().Close()
+	}
 	return nil
 }
 
-func dumpStringResponse(res *esapi.Response) string {
-	return res.String()
+// New creates a new Reporter with automatic version detection.
+// It starts with a v8 client, detects the server version, and upgrades to v9 if needed.
+func New(ctx context.Context, conf *Conf) (Reporter, error) {
+	logger := componentlogger.LoggerFromContext(ctx)
+
+	// Start with thee v8 client for initial connection
+	cfg := esv8.Config{
+		APIKey:    conf.ElasticsearchAPIKey,
+		Addresses: []string{conf.ElasticsearchURL},
+	}
+	client, err := esv8.NewClient(cfg)
+	if err != nil {
+		return nil, errors.Errorf("could not create elasticsearch v8 client: %w", err)
+	}
+
+	wrapper := &v8Client{client: client}
+	info, err := getServerInfo(logger, wrapper)
+	if err != nil {
+		return nil, err
+	}
+
+	serverVer, err := semver.NewVersion(info.Version.Number)
+	if err != nil {
+		return nil, errors.Errorf("could not parse elasticsearch server version %q: %w", info.Version.Number, err)
+	}
+
+	serverMajorVersion := serverVer.Major()
+	logger.Info("detected elasticsearch server version",
+		slog.String("version", info.Version.Number),
+		slog.Uint64("major", serverMajorVersion))
+
+	switch {
+	case serverMajorVersion < 8:
+		return nil, errors.Errorf("unsupported elasticsearch version: %s. Minimum supported version is 8.x.x", info.Version.Number)
+	case serverMajorVersion == 8:
+		logger.Debug("using v8 client for v8 elasticsearch server...")
+		return &elasticsearchReporter{client: wrapper, conf: conf}, nil
+	default:
+		logger.Info("server is v9 or higher, using v9 client", slog.Uint64("major_version", serverMajorVersion))
+		cfg := esv9.Config{
+			APIKey:    conf.ElasticsearchAPIKey,
+			Addresses: []string{conf.ElasticsearchURL},
+		}
+		client, err := esv9.NewClient(cfg)
+		if err != nil {
+			return nil, errors.Errorf("error creating v9 client: %w", err)
+		}
+
+		wrapper := &v9Client{client: client}
+		if _, err := getServerInfo(logger, wrapper); err != nil {
+			return nil, errors.Errorf("failed to verify connection to elasticsearch: %w", err)
+		}
+		return &elasticsearchReporter{client: wrapper, conf: conf}, nil
+	}
 }
 
-func GetESClient(conf *Conf) (*elasticsearch.Client, error) {
-	var es *elasticsearch.Client
-	var err error
-
-	es, err = elasticsearch.NewClient(elasticsearch.Config{
-		APIKey: conf.ElasticsearchApiKey,
-		Addresses: []string{
-			conf.ElasticsearchURL,
-		},
-	})
+// getServerInfo retrieves and validates server information
+func getServerInfo(logger componentlogger.Logger, cluster clusterInfo) (*esInfo, error) {
+	res, err := cluster.Info()
 	if err != nil {
-		return nil, errors.Errorf("could not get elasticsearch client err: %w", err)
+		resStr := ""
+		if res != nil {
+			resStr = res.String()
+		}
+		return nil, errors.Errorf("could not get cluster information as proof of connection, err: %w, raw response: %s", err, resStr)
+	}
+	defer res.Body().Close()
+
+	if res.StatusCode() != http.StatusOK || res.IsError() {
+		return nil, errors.Errorf("could not contact Elasticsearch, attempted to retrieve cluster info and got status code: %d as a result, body: %s", res.StatusCode(), res.String())
 	}
 
-	// prove connection by attempting to retrieve cluster info, this requires read access to the cluster info
+	logger.Debug("received information from elasticsearch successfully")
+
 	var info esInfo
-	res, err := es.Info()
-	if err != nil {
-		return nil, errors.Errorf("could not get cluster information as proof of connection, err: %w, raw response: %s", err, dumpStringResponse(res))
-	}
-	if res.StatusCode != http.StatusOK || res.IsError() {
-		return nil, errors.Errorf("could not contact Elasticsearch, attempted to retrieve cluster info and got status code: %d as a result, body: %s", res.StatusCode, dumpStringResponse(res))
-	}
-
-	slog.Debug("received info from elasticsearch successfully")
-	body := json.NewDecoder(res.Body)
-	if err := body.Decode(&info); err != nil {
+	decoder := json.NewDecoder(res.Body())
+	if err := decoder.Decode(&info); err != nil {
 		return nil, errors.Errorf("could not decode elasticsearch cluster information %w", err)
 	}
 
-	if len(info.Version.Number) > 0 && info.Version.Number[0] != '8' {
-		return nil, errors.Errorf("unsupported elasticsearch server version %s only version 8.x is supported, got %s instead", info.Version.Number, info.Version.Number)
-	}
-	return es, nil
+	return &info, nil
 }

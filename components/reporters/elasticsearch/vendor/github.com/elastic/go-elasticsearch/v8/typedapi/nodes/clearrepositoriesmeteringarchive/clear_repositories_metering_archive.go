@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Clear the archived repositories metering.
 // Clear the archived repositories metering information in the cluster.
@@ -304,8 +304,6 @@ func (r *ClearRepositoriesMeteringArchive) Header(key, value string) *ClearRepos
 }
 
 // NodeId Comma-separated list of node IDs or names used to limit returned information.
-// All the nodes selective options are explained
-// [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster.html#cluster-nodes).
 // API Name: nodeid
 func (r *ClearRepositoriesMeteringArchive) _nodeid(nodeid string) *ClearRepositoriesMeteringArchive {
 	r.paramSet |= nodeidMask
@@ -314,9 +312,7 @@ func (r *ClearRepositoriesMeteringArchive) _nodeid(nodeid string) *ClearReposito
 	return r
 }
 
-// MaxArchiveVersion Specifies the maximum
-// [archive_version](https://www.elastic.co/guide/en/elasticsearch/reference/current/get-repositories-metering-api.html#get-repositories-metering-api-response-body)
-// to be cleared from the archive.
+// MaxArchiveVersion Specifies the maximum `archive_version` to be cleared from the archive.
 // API Name: maxarchiveversion
 func (r *ClearRepositoriesMeteringArchive) _maxarchiveversion(maxarchiveversion string) *ClearRepositoriesMeteringArchive {
 	r.paramSet |= maxarchiveversionMask

@@ -16,9 +16,28 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
-// Creates a new watch, or updates an existing one.
+// Create or update a watch.
+// When a watch is registered, a new document that represents the watch is added
+// to the `.watches` index and its trigger is immediately registered with the
+// relevant trigger engine.
+// Typically for the `schedule` trigger, the scheduler is the trigger engine.
+//
+// IMPORTANT: You must use Kibana or this API to create a watch.
+// Do not add a watch directly to the `.watches` index by using the
+// Elasticsearch index API.
+// If Elasticsearch security features are enabled, do not give users write
+// privileges on the `.watches` index.
+//
+// When you add a watch you can also define its initial active state by setting
+// the *active* parameter.
+//
+// When Elasticsearch security features are enabled, your watch can index or
+// search only on indices for which the user that stored the watch has
+// privileges.
+// If the user is able to read index `a`, but not index `b`, the same will apply
+// when the watch runs.
 package putwatch
 
 import (
@@ -81,9 +100,28 @@ func NewPutWatchFunc(tp elastictransport.Interface) NewPutWatch {
 	}
 }
 
-// Creates a new watch, or updates an existing one.
+// Create or update a watch.
+// When a watch is registered, a new document that represents the watch is added
+// to the `.watches` index and its trigger is immediately registered with the
+// relevant trigger engine.
+// Typically for the `schedule` trigger, the scheduler is the trigger engine.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/watcher-api-put-watch.html
+// IMPORTANT: You must use Kibana or this API to create a watch.
+// Do not add a watch directly to the `.watches` index by using the
+// Elasticsearch index API.
+// If Elasticsearch security features are enabled, do not give users write
+// privileges on the `.watches` index.
+//
+// When you add a watch you can also define its initial active state by setting
+// the *active* parameter.
+//
+// When Elasticsearch security features are enabled, your watch can index or
+// search only on indices for which the user that stored the watch has
+// privileges.
+// If the user is able to read index `a`, but not index `b`, the same will apply
+// when the watch runs.
+//
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-watcher-put-watch
 func New(tp elastictransport.Interface) *PutWatch {
 	r := &PutWatch{
 		transport: tp,
@@ -91,8 +129,6 @@ func New(tp elastictransport.Interface) *PutWatch {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -306,7 +342,7 @@ func (r *PutWatch) Header(key, value string) *PutWatch {
 	return r
 }
 
-// Id Watch ID
+// Id The identifier for the watch.
 // API Name: id
 func (r *PutWatch) _id(id string) *PutWatch {
 	r.paramSet |= idMask
@@ -315,7 +351,8 @@ func (r *PutWatch) _id(id string) *PutWatch {
 	return r
 }
 
-// Active Specify whether the watch is in/active by default
+// Active The initial state of the watch.
+// The default value is `true`, which means the watch is active by default.
 // API name: active
 func (r *PutWatch) Active(active bool) *PutWatch {
 	r.values.Set("active", strconv.FormatBool(active))
@@ -393,55 +430,101 @@ func (r *PutWatch) Pretty(pretty bool) *PutWatch {
 	return r
 }
 
+// Actions The list of actions that will be run if the condition matches.
 // API name: actions
 func (r *PutWatch) Actions(actions map[string]types.WatcherAction) *PutWatch {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Actions = actions
 
 	return r
 }
 
+// Condition The condition that defines if the actions should be run.
 // API name: condition
 func (r *PutWatch) Condition(condition *types.WatcherCondition) *PutWatch {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Condition = condition
 
 	return r
 }
 
+// Input The input that defines the input that loads the data for the watch.
 // API name: input
 func (r *PutWatch) Input(input *types.WatcherInput) *PutWatch {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Input = input
 
 	return r
 }
 
+// Metadata Metadata JSON that will be copied into the history entries.
 // API name: metadata
 func (r *PutWatch) Metadata(metadata types.Metadata) *PutWatch {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Metadata = metadata
 
 	return r
 }
 
+// ThrottlePeriod The minimum time between actions being run.
+// The default is 5 seconds.
+// This default can be changed in the config file with the setting
+// `xpack.watcher.throttle.period.default_period`.
+// If both this value and the `throttle_period_in_millis` parameter are
+// specified, Watcher uses the last parameter included in the request.
 // API name: throttle_period
-func (r *PutWatch) ThrottlePeriod(throttleperiod string) *PutWatch {
-
-	r.req.ThrottlePeriod = &throttleperiod
+func (r *PutWatch) ThrottlePeriod(duration types.Duration) *PutWatch {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.ThrottlePeriod = duration
 
 	return r
 }
 
+// ThrottlePeriodInMillis Minimum time in milliseconds between actions being run. Defaults to 5000. If
+// both this value and the throttle_period parameter are specified, Watcher uses
+// the last parameter included in the request.
+// API name: throttle_period_in_millis
+func (r *PutWatch) ThrottlePeriodInMillis(durationvalueunitmillis int64) *PutWatch {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
+	r.req.ThrottlePeriodInMillis = &durationvalueunitmillis
+
+	return r
+}
+
+// Transform The transform that processes the watch payload to prepare it for the watch
+// actions.
 // API name: transform
 func (r *PutWatch) Transform(transform *types.TransformContainer) *PutWatch {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Transform = transform
 
 	return r
 }
 
+// Trigger The trigger that defines when the watch should run.
 // API name: trigger
 func (r *PutWatch) Trigger(trigger *types.TriggerContainer) *PutWatch {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Trigger = trigger
 

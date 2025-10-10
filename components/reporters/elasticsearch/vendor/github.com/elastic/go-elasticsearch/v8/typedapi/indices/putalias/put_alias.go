@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Create or update an alias.
 // Adds a data stream or index to an alias.
@@ -90,7 +90,7 @@ func NewPutAliasFunc(tp elastictransport.Interface) NewPutAlias {
 // Create or update an alias.
 // Adds a data stream or index to an alias.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-indices-put-alias
 func New(tp elastictransport.Interface) *PutAlias {
 	r := &PutAlias{
 		transport: tp,
@@ -98,8 +98,6 @@ func New(tp elastictransport.Interface) *PutAlias {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -423,6 +421,9 @@ func (r *PutAlias) Pretty(pretty bool) *PutAlias {
 // Filter Query used to limit documents the alias can access.
 // API name: filter
 func (r *PutAlias) Filter(filter *types.Query) *PutAlias {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Filter = filter
 
@@ -434,6 +435,9 @@ func (r *PutAlias) Filter(filter *types.Query) *PutAlias {
 // Data stream aliases don’t support this parameter.
 // API name: index_routing
 func (r *PutAlias) IndexRouting(routing string) *PutAlias {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IndexRouting = &routing
 
 	return r
@@ -448,6 +452,9 @@ func (r *PutAlias) IndexRouting(routing string) *PutAlias {
 // alias points to one data stream.
 // API name: is_write_index
 func (r *PutAlias) IsWriteIndex(iswriteindex bool) *PutAlias {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.IsWriteIndex = &iswriteindex
 
 	return r
@@ -457,6 +464,9 @@ func (r *PutAlias) IsWriteIndex(iswriteindex bool) *PutAlias {
 // Data stream aliases don’t support this parameter.
 // API name: routing
 func (r *PutAlias) Routing(routing string) *PutAlias {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Routing = &routing
 
 	return r
@@ -467,6 +477,9 @@ func (r *PutAlias) Routing(routing string) *PutAlias {
 // Data stream aliases don’t support this parameter.
 // API name: search_routing
 func (r *PutAlias) SearchRouting(routing string) *PutAlias {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.SearchRouting = &routing
 
 	return r

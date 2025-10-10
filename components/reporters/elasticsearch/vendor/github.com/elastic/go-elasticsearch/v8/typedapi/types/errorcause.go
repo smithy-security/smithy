@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,11 +31,11 @@ import (
 
 // ErrorCause type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/Errors.ts#L25-L50
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/Errors.ts#L25-L50
 type ErrorCause struct {
 	CausedBy *ErrorCause                `json:"caused_by,omitempty"`
 	Metadata map[string]json.RawMessage `json:"-"`
-	// Reason A human-readable explanation of the error, in english
+	// Reason A human-readable explanation of the error, in English.
 	Reason    *string      `json:"reason,omitempty"`
 	RootCause []ErrorCause `json:"root_cause,omitempty"`
 	// StackTrace The server stack trace. Present only if the `error_trace=true` parameter was
@@ -168,7 +168,7 @@ func (s ErrorCause) MarshalJSON() ([]byte, error) {
 // NewErrorCause returns a ErrorCause.
 func NewErrorCause() *ErrorCause {
 	r := &ErrorCause{
-		Metadata: make(map[string]json.RawMessage, 0),
+		Metadata: make(map[string]json.RawMessage),
 	}
 
 	return r

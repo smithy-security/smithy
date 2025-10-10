@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -31,7 +31,7 @@ import (
 
 // ScriptScoreQuery type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/_types/query_dsl/specialized.ts#L348-L365
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/_types/query_dsl/specialized.ts#L348-L365
 type ScriptScoreQuery struct {
 	// Boost Floating point number used to decrease or increase the relevance scores of
 	// the query.
@@ -43,7 +43,7 @@ type ScriptScoreQuery struct {
 	// from the search results.
 	MinScore *float32 `json:"min_score,omitempty"`
 	// Query Query used to return documents.
-	Query      *Query  `json:"query,omitempty"`
+	Query      Query   `json:"query"`
 	QueryName_ *string `json:"_name,omitempty"`
 	// Script Script used to compute the score of documents returned by the query.
 	// Important: final relevance scores from the `script_score` query cannot be

@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 package types
 
@@ -33,7 +33,7 @@ import (
 
 // QueryRole type.
 //
-// https://github.com/elastic/elasticsearch-specification/blob/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64/specification/security/query_role/types.ts#L103-L109
+// https://github.com/elastic/elasticsearch-specification/blob/470b4b9aaaa25cae633ec690e54b725c6fc939c7/specification/security/query_role/types.ts#L103-L109
 type QueryRole struct {
 	// Applications A list of application privilege entries
 	Applications []ApplicationPrivileges `json:"applications,omitempty"`
@@ -53,16 +53,17 @@ type QueryRole struct {
 	Metadata Metadata `json:"metadata,omitempty"`
 	// Name Name of the role.
 	Name string `json:"name"`
-	// RemoteCluster A list of cluster permissions for remote clusters. Note - this is limited a
-	// subset of the cluster permissions.
+	// RemoteCluster A list of cluster permissions for remote clusters.
+	// NOTE: This is limited a subset of the cluster permissions.
 	RemoteCluster []RemoteClusterPrivileges `json:"remote_cluster,omitempty"`
 	// RemoteIndices A list of indices permissions for remote clusters.
 	RemoteIndices []RemoteIndicesPrivileges `json:"remote_indices,omitempty"`
 	// Restriction Restriction for when the role descriptor is allowed to be effective.
 	Restriction *Restriction `json:"restriction,omitempty"`
-	// RunAs A list of users that the API keys can impersonate. *Note*: in Serverless, the
-	// run-as feature is disabled. For API compatibility, you can still specify an
-	// empty `run_as` field, but a non-empty list will be rejected.
+	// RunAs A list of users that the API keys can impersonate.
+	// NOTE: In Elastic Cloud Serverless, the run-as feature is disabled.
+	// For API compatibility, you can still specify an empty `run_as` field, but a
+	// non-empty list will be rejected.
 	RunAs             []string                   `json:"run_as,omitempty"`
 	Sort_             []FieldValue               `json:"_sort,omitempty"`
 	TransientMetadata map[string]json.RawMessage `json:"transient_metadata,omitempty"`
@@ -184,7 +185,7 @@ func (s *QueryRole) UnmarshalJSON(data []byte) error {
 // NewQueryRole returns a QueryRole.
 func NewQueryRole() *QueryRole {
 	r := &QueryRole{
-		TransientMetadata: make(map[string]json.RawMessage, 0),
+		TransientMetadata: make(map[string]json.RawMessage),
 	}
 
 	return r

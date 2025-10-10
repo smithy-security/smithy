@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -23,6 +23,7 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func newILMStartFunc(t Transport) ILMStart {
@@ -33,7 +34,7 @@ func newILMStartFunc(t Transport) ILMStart {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -49,6 +50,9 @@ type ILMStart func(o ...func(*ILMStartRequest)) (*Response, error)
 
 // ILMStartRequest configures the ILM Start API request.
 type ILMStartRequest struct {
+	MasterTimeout time.Duration
+	Timeout       time.Duration
+
 	Pretty     bool
 	Human      bool
 	ErrorTrace bool
@@ -58,7 +62,7 @@ type ILMStartRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -70,7 +74,7 @@ func (r ILMStartRequest) Do(providedCtx context.Context, transport Transport) (*
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "ilm.start")
 		defer instrument.Close(ctx)
 	}
@@ -85,6 +89,14 @@ func (r ILMStartRequest) Do(providedCtx context.Context, transport Transport) (*
 	path.WriteString("/_ilm/start")
 
 	params = make(map[string]string)
+
+	if r.MasterTimeout != 0 {
+		params["master_timeout"] = formatDuration(r.MasterTimeout)
+	}
+
+	if r.Timeout != 0 {
+		params["timeout"] = formatDuration(r.Timeout)
+	}
 
 	if r.Pretty {
 		params["pretty"] = "true"
@@ -104,7 +116,7 @@ func (r ILMStartRequest) Do(providedCtx context.Context, transport Transport) (*
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -134,15 +146,15 @@ func (r ILMStartRequest) Do(providedCtx context.Context, transport Transport) (*
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "ilm.start")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "ilm.start")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -161,6 +173,20 @@ func (r ILMStartRequest) Do(providedCtx context.Context, transport Transport) (*
 func (f ILMStart) WithContext(v context.Context) func(*ILMStartRequest) {
 	return func(r *ILMStartRequest) {
 		r.ctx = v
+	}
+}
+
+// WithMasterTimeout - explicit operation timeout for connection to master node.
+func (f ILMStart) WithMasterTimeout(v time.Duration) func(*ILMStartRequest) {
+	return func(r *ILMStartRequest) {
+		r.MasterTimeout = v
+	}
+}
+
+// WithTimeout - explicit operation timeout.
+func (f ILMStart) WithTimeout(v time.Duration) func(*ILMStartRequest) {
+	return func(r *ILMStartRequest) {
+		r.Timeout = v
 	}
 }
 

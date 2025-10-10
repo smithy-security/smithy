@@ -16,9 +16,10 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Check index templates.
+//
 // Check whether index templates exist.
 package existsindextemplate
 
@@ -76,9 +77,10 @@ func NewExistsIndexTemplateFunc(tp elastictransport.Interface) NewExistsIndexTem
 }
 
 // Check index templates.
+//
 // Check whether index templates exist.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-indices-exists-index-template
 func New(tp elastictransport.Interface) *ExistsIndexTemplate {
 	r := &ExistsIndexTemplate{
 		transport: tp,
@@ -245,6 +247,23 @@ func (r *ExistsIndexTemplate) Header(key, value string) *ExistsIndexTemplate {
 func (r *ExistsIndexTemplate) _name(name string) *ExistsIndexTemplate {
 	r.paramSet |= nameMask
 	r.name = name
+
+	return r
+}
+
+// Local If true, the request retrieves information from the local node only. Defaults
+// to false, which means information is retrieved from the master node.
+// API name: local
+func (r *ExistsIndexTemplate) Local(local bool) *ExistsIndexTemplate {
+	r.values.Set("local", strconv.FormatBool(local))
+
+	return r
+}
+
+// FlatSettings If true, returns settings in flat format.
+// API name: flat_settings
+func (r *ExistsIndexTemplate) FlatSettings(flatsettings bool) *ExistsIndexTemplate {
+	r.values.Set("flat_settings", strconv.FormatBool(flatsettings))
 
 	return r
 }

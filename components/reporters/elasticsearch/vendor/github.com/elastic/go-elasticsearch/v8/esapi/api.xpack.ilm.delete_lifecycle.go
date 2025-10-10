@@ -15,7 +15,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-// Code generated from specification version 8.17.0: DO NOT EDIT
+// Code generated from specification version 8.19.0: DO NOT EDIT
 
 package esapi
 
@@ -23,6 +23,7 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func newILMDeleteLifecycleFunc(t Transport) ILMDeleteLifecycle {
@@ -33,7 +34,7 @@ func newILMDeleteLifecycleFunc(t Transport) ILMDeleteLifecycle {
 		}
 
 		if transport, ok := t.(Instrumented); ok {
-			r.instrument = transport.InstrumentationEnabled()
+			r.Instrument = transport.InstrumentationEnabled()
 		}
 
 		return r.Do(r.ctx, t)
@@ -51,6 +52,9 @@ type ILMDeleteLifecycle func(policy string, o ...func(*ILMDeleteLifecycleRequest
 type ILMDeleteLifecycleRequest struct {
 	Policy string
 
+	MasterTimeout time.Duration
+	Timeout       time.Duration
+
 	Pretty     bool
 	Human      bool
 	ErrorTrace bool
@@ -60,7 +64,7 @@ type ILMDeleteLifecycleRequest struct {
 
 	ctx context.Context
 
-	instrument Instrumentation
+	Instrument Instrumentation
 }
 
 // Do executes the request and returns response or error.
@@ -72,7 +76,7 @@ func (r ILMDeleteLifecycleRequest) Do(providedCtx context.Context, transport Tra
 		ctx    context.Context
 	)
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		ctx = instrument.Start(providedCtx, "ilm.delete_lifecycle")
 		defer instrument.Close(ctx)
 	}
@@ -90,11 +94,19 @@ func (r ILMDeleteLifecycleRequest) Do(providedCtx context.Context, transport Tra
 	path.WriteString("policy")
 	path.WriteString("/")
 	path.WriteString(r.Policy)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.RecordPathPart(ctx, "policy", r.Policy)
 	}
 
 	params = make(map[string]string)
+
+	if r.MasterTimeout != 0 {
+		params["master_timeout"] = formatDuration(r.MasterTimeout)
+	}
+
+	if r.Timeout != 0 {
+		params["timeout"] = formatDuration(r.Timeout)
+	}
 
 	if r.Pretty {
 		params["pretty"] = "true"
@@ -114,7 +126,7 @@ func (r ILMDeleteLifecycleRequest) Do(providedCtx context.Context, transport Tra
 
 	req, err := newRequest(method, path.String(), nil)
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -144,15 +156,15 @@ func (r ILMDeleteLifecycleRequest) Do(providedCtx context.Context, transport Tra
 		req = req.WithContext(ctx)
 	}
 
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.BeforeRequest(req, "ilm.delete_lifecycle")
 	}
 	res, err := transport.Perform(req)
-	if instrument, ok := r.instrument.(Instrumentation); ok {
+	if instrument, ok := r.Instrument.(Instrumentation); ok {
 		instrument.AfterRequest(req, "elasticsearch", "ilm.delete_lifecycle")
 	}
 	if err != nil {
-		if instrument, ok := r.instrument.(Instrumentation); ok {
+		if instrument, ok := r.Instrument.(Instrumentation); ok {
 			instrument.RecordError(ctx, err)
 		}
 		return nil, err
@@ -171,6 +183,20 @@ func (r ILMDeleteLifecycleRequest) Do(providedCtx context.Context, transport Tra
 func (f ILMDeleteLifecycle) WithContext(v context.Context) func(*ILMDeleteLifecycleRequest) {
 	return func(r *ILMDeleteLifecycleRequest) {
 		r.ctx = v
+	}
+}
+
+// WithMasterTimeout - explicit operation timeout for connection to master node.
+func (f ILMDeleteLifecycle) WithMasterTimeout(v time.Duration) func(*ILMDeleteLifecycleRequest) {
+	return func(r *ILMDeleteLifecycleRequest) {
+		r.MasterTimeout = v
+	}
+}
+
+// WithTimeout - explicit operation timeout.
+func (f ILMDeleteLifecycle) WithTimeout(v time.Duration) func(*ILMDeleteLifecycleRequest) {
+	return func(r *ILMDeleteLifecycleRequest) {
+		r.Timeout = v
 	}
 }
 

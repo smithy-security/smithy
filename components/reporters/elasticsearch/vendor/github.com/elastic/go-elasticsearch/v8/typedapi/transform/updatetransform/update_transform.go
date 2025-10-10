@@ -16,7 +16,7 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Update a transform.
 // Updates certain properties of a transform.
@@ -105,7 +105,7 @@ func NewUpdateTransformFunc(tp elastictransport.Interface) NewUpdateTransform {
 // roles the user who updated it had at the
 // time of update and runs with those privileges.
 //
-// https://www.elastic.co/guide/en/elasticsearch/reference/current/update-transform.html
+// https://www.elastic.co/docs/api/doc/elasticsearch/v8/operation/operation-transform-update-transform
 func New(tp elastictransport.Interface) *UpdateTransform {
 	r := &UpdateTransform{
 		transport: tp,
@@ -113,8 +113,6 @@ func New(tp elastictransport.Interface) *UpdateTransform {
 		headers:   make(http.Header),
 
 		buf: gobytes.NewBuffer(nil),
-
-		req: NewRequest(),
 	}
 
 	if instrumented, ok := r.transport.(elastictransport.Instrumented); ok {
@@ -403,6 +401,9 @@ func (r *UpdateTransform) Pretty(pretty bool) *UpdateTransform {
 // Description Free text description of the transform.
 // API name: description
 func (r *UpdateTransform) Description(description string) *UpdateTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Description = &description
 
@@ -412,6 +413,9 @@ func (r *UpdateTransform) Description(description string) *UpdateTransform {
 // Dest The destination for the transform.
 // API name: dest
 func (r *UpdateTransform) Dest(dest *types.TransformDestination) *UpdateTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Dest = dest
 
@@ -424,6 +428,9 @@ func (r *UpdateTransform) Dest(dest *types.TransformDestination) *UpdateTransfor
 // indexing. The minimum value is 1s and the maximum is 1h.
 // API name: frequency
 func (r *UpdateTransform) Frequency(duration types.Duration) *UpdateTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Frequency = duration
 
 	return r
@@ -432,6 +439,9 @@ func (r *UpdateTransform) Frequency(duration types.Duration) *UpdateTransform {
 // Meta_ Defines optional transform metadata.
 // API name: _meta
 func (r *UpdateTransform) Meta_(metadata types.Metadata) *UpdateTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.Meta_ = metadata
 
 	return r
@@ -441,6 +451,9 @@ func (r *UpdateTransform) Meta_(metadata types.Metadata) *UpdateTransform {
 // criteria is deleted from the destination index.
 // API name: retention_policy
 func (r *UpdateTransform) RetentionPolicy(retentionpolicy types.RetentionPolicyContainer) *UpdateTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 	r.req.RetentionPolicy = &retentionpolicy
 
 	return r
@@ -449,6 +462,9 @@ func (r *UpdateTransform) RetentionPolicy(retentionpolicy types.RetentionPolicyC
 // Settings Defines optional transform settings.
 // API name: settings
 func (r *UpdateTransform) Settings(settings *types.Settings) *UpdateTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Settings = settings
 
@@ -458,6 +474,9 @@ func (r *UpdateTransform) Settings(settings *types.Settings) *UpdateTransform {
 // Source The source of the data for the transform.
 // API name: source
 func (r *UpdateTransform) Source(source *types.TransformSource) *UpdateTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Source = source
 
@@ -467,6 +486,9 @@ func (r *UpdateTransform) Source(source *types.TransformSource) *UpdateTransform
 // Sync Defines the properties transforms require to run continuously.
 // API name: sync
 func (r *UpdateTransform) Sync(sync *types.SyncContainer) *UpdateTransform {
+	if r.req == nil {
+		r.req = NewRequest()
+	}
 
 	r.req.Sync = sync
 

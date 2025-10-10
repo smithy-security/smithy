@@ -16,9 +16,15 @@
 // under the License.
 
 // Code generated from the elasticsearch-specification DO NOT EDIT.
-// https://github.com/elastic/elasticsearch-specification/tree/2f823ff6fcaa7f3f0f9b990dc90512d8901e5d64
+// https://github.com/elastic/elasticsearch-specification/tree/470b4b9aaaa25cae633ec690e54b725c6fc939c7
 
 // Delete role mappings.
+//
+// Role mappings define which roles are assigned to each user.
+// The role mapping APIs are generally the preferred way to manage role mappings
+// rather than using role mapping files.
+// The delete role mappings API cannot remove role mappings that are defined in
+// role mapping files.
 package deleterolemapping
 
 import (
@@ -78,6 +84,12 @@ func NewDeleteRoleMappingFunc(tp elastictransport.Interface) NewDeleteRoleMappin
 }
 
 // Delete role mappings.
+//
+// Role mappings define which roles are assigned to each user.
+// The role mapping APIs are generally the preferred way to manage role mappings
+// rather than using role mapping files.
+// The delete role mappings API cannot remove role mappings that are defined in
+// role mapping files.
 //
 // https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-delete-role-mapping.html
 func New(tp elastictransport.Interface) *DeleteRoleMapping {
@@ -291,7 +303,9 @@ func (r *DeleteRoleMapping) Header(key, value string) *DeleteRoleMapping {
 	return r
 }
 
-// Name Role-mapping name
+// Name The distinct name that identifies the role mapping.
+// The name is used solely as an identifier to facilitate interaction via the
+// API; it does not affect the behavior of the mapping in any way.
 // API Name: name
 func (r *DeleteRoleMapping) _name(name string) *DeleteRoleMapping {
 	r.paramSet |= nameMask
