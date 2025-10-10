@@ -3,19 +3,23 @@ description: "Static analysis for Infrastructure as code."
 type: "scanner"
 steps:
   - name: "run-kics"
-    image: "checkmarx/kics:latest"
-    executable: "/app/bin/kics"
+    image: "checkmarx/kics:v2.1.14"
+    executable: "/bin/sh"
     args:
-      - "scan"
-      - "--ignore-on-exit=results"
-      - "--output-path={{ scratchWorkspace }}"
-      - "--parallel=0"
-      - "--path={{sourceCodeWorkspace}}"
-      - "--payload-lines"
-      - "--report-formats=sarif"
-      - "--ci"
+      - "-c"
+      - |
+        cd {{ sourceCodeWorkspace }} && \
+        /app/bin/kics scan \
+        --ignore-on-exit=results \
+        --output-path={{ scratchWorkspace }} \
+        --parallel=0 \
+        --path=. \
+        --payload-lines \
+        --report-formats=sarif \
+        --ci
   - name: "parser"
     image: "components/scanners/kics"
     env_vars:
-      KICS_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/results_sarif.sarif"
+      KICS_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/results.sarif"
+      KICS_WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: "/bin/app"
