@@ -7,18 +7,20 @@ parameters:
     value: "p/default"
 steps:
   - name: run-semgrep
-    image: docker.io/returntocorp/semgrep:1.80
-    executable: /usr/local/bin/semgrep
+    image: docker.io/returntocorp/semgrep:1.139.0
+    executable: "/bin/sh"
     args:
-    - scan
-    - --metrics=off
-    - --config={{.parameters.ruleset}}
-    - --sarif
-    - --sarif-output
-    - "{{ scratchWorkspace }}/semgrep-out.sarif.json"
-    - "{{ sourceCodeWorkspace }}"
+      - "-c"
+      - |
+        cd {{ sourceCodeWorkspace }} && \
+        /usr/local/bin/semgrep scan \
+        --metrics=off \
+        --config={{.parameters.ruleset}} \
+        --sarif \
+        --sarif-output "{{ scratchWorkspace }}/semgrep-out.sarif.json" .
   - name: parser
     image: components/scanners/semgrep
     env_vars:
       SEMGREP_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/semgrep-out.sarif.json"
+      WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: /bin/app

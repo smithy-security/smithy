@@ -12,6 +12,8 @@ It requires the component
 environment variables defined [here](https://github.com/smithy-security/smithy/blob/main/sdk/README.md#component) as well
 as the following:
 
-| Environment Variable     | Type   | Required | Default    | Description                                             |
-|--------------------------|--------|----------|------------|---------------------------------------------------------|
-| SEMGREP\_RAW\_OUT\_FILE\_PATH  | string | yes      | -          | The path where to find the semgrep sarif report   |
+| Environment Variable          | Type   | Required | Default    | Description                                     |
+|-------------------------------|--------|----------|------------|-------------------------------------------------|
+| SEMGREP\_RAW\_OUT\_FILE\_PATH | string | yes      | -          | The path where to find the semgrep sarif report |
+| SEMGREP\_TARGET\_TYPE         | string | yes      | -          | The target type that semgrep is targeting       |
+| WORKSPACE\_PATH               | string | yes      | -          | The path to the workspace                       |

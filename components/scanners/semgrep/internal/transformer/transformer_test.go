@@ -29,6 +29,8 @@ func TestSemgrepTransformer_Transform(t *testing.T) {
 		)
 	)
 
+	t.Setenv("WORKSPACE_PATH", "/code")
+
 	defer cancel()
 	commitRef := "fb00c88b58a57ce73de1871c3b51776386d603fa"
 	repositoryURL := "https://github.com/smithy-security/test"
@@ -56,6 +58,7 @@ func TestSemgrepTransformer_Transform(t *testing.T) {
 		require.Len(t, findings, 3)
 
 		for idx, finding := range findings {
+
 			assert.Equalf(
 				t,
 				ocsf.VulnerabilityFinding_ACTIVITY_ID_CREATE.String(),
