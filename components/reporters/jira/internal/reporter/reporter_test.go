@@ -9,22 +9,18 @@ import (
 	"testing"
 	"time"
 
+	"github.com/smithy-security/pkg/utils"
+	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
+	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
+	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
-	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
-	ocsf "github.com/smithy-security/smithy/sdk/gen/ocsf_schema/v1"
-
 	"github.com/smithy-security/smithy/components/reporters/jira/internal/issuer"
 	"github.com/smithy-security/smithy/components/reporters/jira/internal/reporter"
 )
-
-func ptr[T any](v T) *T {
-	return &v
-}
 
 func TestReporter_Report(t *testing.T) {
 	const (
@@ -40,61 +36,65 @@ func TestReporter_Report(t *testing.T) {
 	expectedDesc3, err := os.ReadFile(filepath.Join("testdata", "expected_issue3.txt"))
 	require.NoError(t, err)
 
+	dataSourceRepo := &ocsffindinginfo.DataSource{
+		TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
+		Uri: &ocsffindinginfo.DataSource_URI{
+			UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
+			Path:      "util/middleware/middleware.go",
+		},
+		LocationData: &ocsffindinginfo.DataSource_FileFindingLocationData_{
+			FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
+				StartLine:   70,
+				EndLine:     76,
+				StartColumn: 4,
+				EndColumn:   4,
+			},
+		},
+		SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
+			RepositoryUrl: "https://github.com/0c34/govwa",
+			Reference:     "master",
+		},
+	}
+	dataSourceRepoJSON, err := protojson.Marshal(dataSourceRepo)
+	require.NoError(t, err)
+
+	baseURL, err := url.Parse(testBaseURL)
+	require.NoError(t, err)
+
 	var (
 		ctrl             = gomock.NewController(t)
 		mockIssueCreator = NewMockIssueCreator(ctrl)
-		baseURL, _       = url.Parse(testBaseURL)
 		batchCreateErr   = errors.New("batch create error")
-		dataSourceRepo   = &ocsffindinginfo.DataSource{
-			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_REPOSITORY,
-			Uri: &ocsffindinginfo.DataSource_URI{
-				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_FILE,
-				Path:      "util/middleware/middleware.go",
-			},
-			LocationData: &ocsffindinginfo.DataSource_FileFindingLocationData_{
-				FileFindingLocationData: &ocsffindinginfo.DataSource_FileFindingLocationData{
-					StartLine:   70,
-					EndLine:     76,
-					StartColumn: 4,
-					EndColumn:   4,
-				},
-			},
-			SourceCodeMetadata: &ocsffindinginfo.DataSource_SourceCodeMetadata{
-				RepositoryUrl: "https://github.com/0c34/govwa",
-				Reference:     "master",
-			},
-		}
-		dataSourceRepoJson, _ = protojson.Marshal(dataSourceRepo)
-		vulnerabilities       = []*ocsf.Vulnerability{
+		vulnerabilities  = []*ocsf.Vulnerability{
 			{
-				Title:      ptr("Vulnerability 1"),
-				Desc:       ptr("Description 1"),
-				Severity:   ptr("SEVERITY_ID_MEDIUM"),
-				VendorName: ptr("gosec"),
+				Title:      utils.Ptr("Vulnerability 1"),
+				Desc:       utils.Ptr("Description 1"),
+				Severity:   utils.Ptr("SEVERITY_ID_MEDIUM"),
+				VendorName: utils.Ptr("gosec"),
 				Cve: &ocsf.Cve{
 					Uid:  "CVE-2022-1234",
-					Desc: ptr("CVE Description"),
+					Desc: utils.Ptr("CVE Description"),
 				},
 				Cwe: &ocsf.Cwe{
-					Caption: ptr("CWE-79"),
-					SrcUrl:  ptr("https://cwe.mitre.org/data/definitions/79.html"),
+					Caption: utils.Ptr("CWE-79"),
+					SrcUrl:  utils.Ptr("https://cwe.mitre.org/data/definitions/79.html"),
 				},
 			},
 			{
-				Title:      ptr("Vulnerability 2"),
-				Desc:       ptr("Description 2"),
-				Severity:   ptr("SEVERITY_ID_HIGH"),
-				VendorName: ptr("semgrep"),
+				Title:      utils.Ptr("Vulnerability 2"),
+				Desc:       utils.Ptr("Description 2"),
+				Severity:   utils.Ptr("SEVERITY_ID_HIGH"),
+				VendorName: utils.Ptr("semgrep"),
 				Cwe: &ocsf.Cwe{
-					Caption: ptr("CWE-89"),
-					SrcUrl:  ptr("https://cwe.mitre.org/data/definitions/89.html"),
+					Caption: utils.Ptr("CWE-89"),
+					SrcUrl:  utils.Ptr("https://cwe.mitre.org/data/definitions/89.html"),
 				},
 			},
 			{
-				Title:      ptr("Vulnerability 3"),
-				Desc:       ptr("Description 3"),
-				Severity:   ptr("SEVERITY_ID_CRITICAL"),
-				VendorName: ptr("snyk"),
+				Title:      utils.Ptr("Vulnerability 3"),
+				Desc:       utils.Ptr("Description 3"),
+				Severity:   utils.Ptr("SEVERITY_ID_CRITICAL"),
+				VendorName: utils.Ptr("snyk"),
 				Cve: &ocsf.Cve{
 					Uid: "CVE-2023-5678",
 				},
@@ -106,11 +106,11 @@ func TestReporter_Report(t *testing.T) {
 				Finding: &ocsf.VulnerabilityFinding{
 					FindingInfo: &ocsf.FindingInfo{
 						DataSources: []string{
-							string(dataSourceRepoJson),
+							string(dataSourceRepoJSON),
 						},
 					},
-					ConfidenceId:    ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
-					Confidence:      ptr("High"),
+					ConfidenceId:    utils.Ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
+					Confidence:      utils.Ptr("High"),
 					Vulnerabilities: vulnerabilities,
 				},
 			},
@@ -146,11 +146,11 @@ func TestReporter_Report(t *testing.T) {
 				Finding: &ocsf.VulnerabilityFinding{
 					FindingInfo: &ocsf.FindingInfo{
 						DataSources: []string{
-							string(dataSourceRepoJson),
+							string(dataSourceRepoJSON),
 						},
 					},
-					ConfidenceId:    ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
-					Confidence:      ptr("High"),
+					ConfidenceId:    utils.Ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
+					Confidence:      utils.Ptr("High"),
 					Vulnerabilities: []*ocsf.Vulnerability{vulnerabilities[0]},
 				},
 			},
@@ -161,11 +161,11 @@ func TestReporter_Report(t *testing.T) {
 				Finding: &ocsf.VulnerabilityFinding{
 					FindingInfo: &ocsf.FindingInfo{
 						DataSources: []string{
-							string(dataSourceRepoJson),
+							string(dataSourceRepoJSON),
 						},
 					},
-					ConfidenceId:    ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
-					Confidence:      ptr("High"),
+					ConfidenceId:    utils.Ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
+					Confidence:      utils.Ptr("High"),
 					Vulnerabilities: []*ocsf.Vulnerability{vulnerabilities[1]},
 				},
 			},
@@ -176,11 +176,11 @@ func TestReporter_Report(t *testing.T) {
 				Finding: &ocsf.VulnerabilityFinding{
 					FindingInfo: &ocsf.FindingInfo{
 						DataSources: []string{
-							string(dataSourceRepoJson),
+							string(dataSourceRepoJSON),
 						},
 					},
-					ConfidenceId:    ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
-					Confidence:      ptr("High"),
+					ConfidenceId:    utils.Ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
+					Confidence:      utils.Ptr("High"),
 					Vulnerabilities: []*ocsf.Vulnerability{vulnerabilities[2]},
 				},
 			},
@@ -197,8 +197,8 @@ func TestReporter_Report(t *testing.T) {
 	require.NoError(t, err)
 
 	t.Run("successful report", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		t.Cleanup(cancel)
 
 		mockIssueCreator.EXPECT().
 			BatchCreate(ctx, expectedIssues).
@@ -209,16 +209,16 @@ func TestReporter_Report(t *testing.T) {
 	})
 
 	t.Run("empty findings list", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		t.Cleanup(cancel)
 
 		err = testReporter.Report(ctx, []*vf.VulnerabilityFinding{})
 		require.NoError(t, err)
 	})
 
 	t.Run("failed to create issues with false bool", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		t.Cleanup(cancel)
 
 		mockIssueCreator.EXPECT().
 			BatchCreate(ctx, []issuer.Issue{expectedIssue1}).
@@ -230,8 +230,8 @@ func TestReporter_Report(t *testing.T) {
 	})
 
 	t.Run("partial success with true bool", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		t.Cleanup(cancel)
 
 		mockIssueCreator.EXPECT().
 			BatchCreate(ctx, []issuer.Issue{expectedIssue2}).
@@ -242,14 +242,70 @@ func TestReporter_Report(t *testing.T) {
 	})
 
 	t.Run("no issues created", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		t.Cleanup(cancel)
 
 		mockIssueCreator.EXPECT().
 			BatchCreate(ctx, []issuer.Issue{expectedIssue3}).
 			Return(uint(0), false, nil)
 
 		err = testReporter.Report(ctx, simpleFindings3)
+		require.NoError(t, err)
+	})
+
+	t.Run("investigated findings are skipped", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		t.Cleanup(cancel)
+
+		dataSourceRepo = &ocsffindinginfo.DataSource{
+			TargetType: ocsffindinginfo.DataSource_TARGET_TYPE_WEBSITE,
+			Uri: &ocsffindinginfo.DataSource_URI{
+				UriSchema: ocsffindinginfo.DataSource_URI_SCHEMA_WEBSITE,
+				Path:      "https://example.com",
+			},
+		}
+		dataSourceRepoJSON, err = protojson.Marshal(dataSourceRepo)
+		require.NoError(t, err)
+
+		err = testReporter.Report(
+			ctx,
+			[]*vf.VulnerabilityFinding{
+				{
+					ID: 1,
+					Finding: &ocsf.VulnerabilityFinding{
+						FindingInfo: &ocsf.FindingInfo{
+							DataSources: []string{
+								string(dataSourceRepoJSON),
+							},
+						},
+						ConfidenceId: utils.Ptr(ocsf.VulnerabilityFinding_CONFIDENCE_ID_HIGH),
+						Confidence:   utils.Ptr("High"),
+						Enrichments: []*ocsf.Enrichment{
+							{
+								Name: ocsffindinginfo.Enrichment_ENRICHMENT_TYPE_INVESTIGATION.String(),
+								Type: utils.Ptr(ocsffindinginfo.Enrichment_ENRICHMENT_TYPE_INVESTIGATION.String()),
+							},
+						},
+						Vulnerabilities: []*ocsf.Vulnerability{
+							{
+								Title:      utils.Ptr("Vulnerability 1"),
+								Desc:       utils.Ptr("Description 1"),
+								Severity:   utils.Ptr("SEVERITY_ID_MEDIUM"),
+								VendorName: utils.Ptr("gosec"),
+								Cve: &ocsf.Cve{
+									Uid:  "CVE-2022-1234",
+									Desc: utils.Ptr("CVE Description"),
+								},
+								Cwe: &ocsf.Cwe{
+									Caption: utils.Ptr("CWE-79"),
+									SrcUrl:  utils.Ptr("https://cwe.mitre.org/data/definitions/79.html"),
+								},
+							},
+						},
+					},
+				},
+			},
+		)
 		require.NoError(t, err)
 	})
 }
