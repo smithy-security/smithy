@@ -84,6 +84,8 @@ func (r *reporter) Report(
 ) error {
 	logger := componentlogger.LoggerFromContext(ctx)
 
+	findings = r.removeInvestigatedFindings(findings)
+
 	logger.Debug("preparing to report issues...")
 	if len(findings) == 0 {
 		logger.Debug("no findings to report, skipping")
@@ -127,6 +129,28 @@ func (r *reporter) Report(
 
 	logger.Debug("successfully reported issues!")
 	return nil
+}
+
+// removeInvestigatedFindings removes any vulnerability finding that has an
+// investigation annotation because that could mess with the reporter to Jira
+// skipping for now until we can improve the situation
+func (r *reporter) removeInvestigatedFindings(vulnFindings []*vf.VulnerabilityFinding) []*vf.VulnerabilityFinding {
+	var filteredVulnFindings []*vf.VulnerabilityFinding
+	for _, vulnFinding := range vulnFindings {
+		investigationEnrichmentFound := false
+		for _, enrichment := range vulnFinding.Finding.Enrichments {
+			if enrichment.Name == ocsffindinginfo.Enrichment_ENRICHMENT_TYPE_INVESTIGATION.String() {
+				investigationEnrichmentFound = true
+				break
+			}
+		}
+
+		if !investigationEnrichmentFound {
+			filteredVulnFindings = append(filteredVulnFindings, vulnFinding)
+		}
+	}
+
+	return filteredVulnFindings
 }
 
 func (r *reporter) toIssues(tpl *template.Template, vf *vf.VulnerabilityFinding) ([]issuer.Issue, error) {
