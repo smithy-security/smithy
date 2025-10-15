@@ -7,6 +7,7 @@ require (
 	github.com/go-errors/errors v1.5.1
 	github.com/smithy-security/pkg/env v0.0.3
 	github.com/smithy-security/pkg/retry v0.0.3
+	github.com/smithy-security/pkg/utils v0.0.2
 	github.com/smithy-security/smithy/sdk v0.0.19-alpha
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/mock v0.5.0
@@ -51,7 +52,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
-	github.com/smithy-security/pkg/utils v0.0.2 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/sqlc-dev/sqlc v1.28.0 // indirect
 	github.com/trivago/tgo v1.0.7 // indirect
