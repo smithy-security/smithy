@@ -4,9 +4,13 @@ go 1.23.4
 
 require (
 	github.com/go-errors/errors v1.5.1
+	github.com/slack-go/slack v0.17.3
 	github.com/smithy-security/pkg/env v0.0.3
+	github.com/smithy-security/pkg/retry v0.0.3
+	github.com/smithy-security/pkg/utils v0.0.2
 	github.com/smithy-security/smithy/sdk v0.0.19-alpha
 	github.com/stretchr/testify v1.10.0
+	go.uber.org/mock v0.5.0
 	google.golang.org/protobuf v1.36.5
 )
 
@@ -20,12 +24,14 @@ require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
+	github.com/cenkalti/backoff/v5 v5.0.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.6 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-openapi/inflect v0.21.2 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/hcl/v2 v2.23.0 // indirect
 	github.com/huandu/xstrings v1.5.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
@@ -43,14 +49,12 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
-	github.com/smithy-security/pkg/utils v0.0.2 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/sqlc-dev/sqlc v1.28.0 // indirect
 	github.com/urfave/cli/v2 v2.27.6 // indirect
 	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	github.com/zclconf/go-cty v1.16.2 // indirect
 	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
-	go.uber.org/mock v0.5.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.37.0 // indirect
