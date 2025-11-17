@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/go-errors/errors"
-	tektonv1beta1client "github.com/tektoncd/pipeline/pkg/client/clientset/versioned/typed/pipeline/v1beta1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -20,7 +19,6 @@ import (
 // ClientInterface is an interface implemented by our K8s Go clients
 type ClientInterface interface {
 	k8sclient.Interface
-	tektonv1beta1client.TektonV1beta1Interface
 	// Apply replicates the behaviour of the `kubectl apply` command
 	Apply(ctx context.Context, obj runtime.Object, namespace string, forceConflicts bool) error
 	// RESTMapper returns an instance implementing the `meta.RESTMapper` interface
@@ -29,7 +27,6 @@ type ClientInterface interface {
 
 type clientSet struct {
 	*k8sclient.Clientset
-	*tektonv1beta1client.TektonV1beta1Client
 	fieldManager  string
 	dynamicClient dynamic.Interface
 	restMapper    meta.RESTMapper
@@ -41,10 +38,6 @@ func NewTypedClientForConfig(config *rest.Config, fieldManager string) (ClientIn
 	k8sClientSet, err := k8sclient.NewForConfig(config)
 	if err != nil {
 		return nil, errors.Errorf("could not initialise K8s clienset: %w", err)
-	}
-	tektonClientSet, err := tektonv1beta1client.NewForConfig(config)
-	if err != nil {
-		return nil, errors.Errorf("could not initialise tekton clientset: %w", err)
 	}
 
 	dynamicClient, err := dynamic.NewForConfig(config)
@@ -59,11 +52,10 @@ func NewTypedClientForConfig(config *rest.Config, fieldManager string) (ClientIn
 	)
 
 	return clientSet{
-		Clientset:           k8sClientSet,
-		TektonV1beta1Client: tektonClientSet,
-		fieldManager:        fieldManager,
-		dynamicClient:       dynamicClient,
-		restMapper:          deferredRESTMapper,
+		Clientset:     k8sClientSet,
+		fieldManager:  fieldManager,
+		dynamicClient: dynamicClient,
+		restMapper:    deferredRESTMapper,
 	}, nil
 }
 
