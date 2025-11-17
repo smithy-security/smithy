@@ -1,0 +1,143 @@
+<table class="vuln-table">
+  <tr>
+    <th></th>
+    {{ if isOSResult .Type }}
+    <th>Source Package</th>
+    {{ else }}
+    <th>Package</th>
+    {{ end }}
+    <th>Installed version</th>
+    <th>
+      <div class="tooltip">
+        <p>Fix available</p>
+        <span class="tooltiptext">Fix available indicates whether a patch or update exists to address the
+          vulnerabilities found in the corresponding package.</span>
+      </div>
+    </th>
+    <th>
+      <div class="tooltip">
+        <p>Vulnerability count</p>
+        <span class="tooltiptext">Vulnerability count shows the number of vulnerabilities found in the package, counted
+          by each severity level.</span>
+      </div>
+    </th>
+    {{ $showLicense := false }}
+    {{ if gt .LicenseViolationsCount 0 }}
+      {{ $showLicense = true }}
+      <th>License violations</th>
+    {{ end }}
+  </tr>
+  {{ range $rowIndex, $element := .Packages }}
+  {{ $index := uniqueID }}
+  {{ $isUncalled := false }}
+  {{ if eq $element.VulnCount.AnalysisCount.Regular 0 }}
+  {{ $isUncalled = true }}
+  {{ end }}
+  {{ $hasLicenseViolations := false }}
+  {{ if gt (len .LicenseViolations) 0 }}
+  {{ $hasLicenseViolations = true }}
+  {{ end }}
+  <tr class="table-tr package-tr {{if $element.LayerDetail }}has-layer-info"
+    data-layer="{{ $element.LayerDetail.LayerInfo.LayerMetadata.DiffID }}{{ end }}" id="table-tr-{{ $index }}" onclick="showPackageDetails('{{ $index }}')">
+    <td class="icon-td">
+      <div class="expand-icon">
+        <i class="material-icons">play_arrow</i>
+      </div>
+    </td>
+    <td {{ if $isUncalled }}class="uncalled-text" {{ end }}>{{ $element.Name }}</td>
+    <td {{ if $isUncalled }}class="uncalled-text" {{ end }}>
+    {{ if ne $element.InstalledVersion "" }}
+      {{ $element.InstalledVersion }}
+    {{ else if ne $element.Commit "" }}
+      <div class="tooltip">
+        <div>@{{ GetShortCommit $element.Commit }}</div>
+        <span class="tooltiptext">Commit: {{ $element.Commit }}</span>
+      </div>
+    {{ end }}
+    </td>
+    {{ if not $isUncalled }}
+    <td>
+      <div class="tooltip no-underline">
+      {{ if ne $element.VulnCount.FixableCount.UnFixed 0 }}
+        {{ if eq $element.VulnCount.FixableCount.Fixed 0}}
+          <p class="fixable-tag no-fix">No fix available</p>
+            <span class="tooltiptext">All {{ $element.VulnCount.AnalysisCount.Regular }} vulnerabilities have no fixed version available.</span>
+          {{ else }}
+          <p class="fixable-tag has-fix">Partial fixes available</p>
+          <span class="tooltiptext">Upgrading the package can fix {{ $element.VulnCount.FixableCount.Fixed }} out of {{
+            $element.VulnCount.AnalysisCount.Regular }} vulnerabilities.</span>
+        {{ end }}
+      {{ else }}
+        <p class="fixable-tag has-fix">Fix available</p>
+        <span class="tooltiptext">Upgrading the package can fix all {{ $element.VulnCount.FixableCount.Fixed }} vulnerabilities.</span>
+      {{ end }}
+      </div>
+    </td>
+    <td>
+      {{ template "severity_summary_template.gohtml" $element.VulnCount.SeverityCount }}
+    </td>
+    {{ else }}
+    <td>
+      <p class="fixable-tag no-fix">Filtered out</p>
+    </td>
+    <td>
+      <p class="uncalled-text">{{ getFilteredVulnReasons $element.HiddenVulns }}</p>
+    </td>
+    {{ end }}
+
+    {{ if $showLicense }}
+      {{ if $hasLicenseViolations}}
+      <td>{{ formatLicense .LicenseViolations }}</td>
+      {{ else }}
+      <td> -- </td>
+      {{ end }}
+    {{ end }}
+
+  </tr>
+  <tr class="table-tr-details">
+    <td colspan="100%">
+      <div id="table-tr-{{ $index }}-details" class="package-details hide-block">
+        {{ $binaries := formatSlice $element.OSPackageNames }}
+        {{ if not (eq $binaries "") }}
+        <p><span class="package-detail-title">Installed binaries:</span> {{ $binaries }}</p>
+        {{ end }}
+
+        {{ if and $element.LayerDetail.LayerInfo.LayerMetadata (not (eq $element.LayerDetail.LayerInfo.LayerMetadata.Command "")) }}
+        {{ $index := $element.LayerDetail.LayerIndex }}
+        {{ $diffID := $element.LayerDetail.LayerInfo.LayerMetadata.DiffID }}
+        {{ $baseImageIndex := $element.LayerDetail.LayerInfo.LayerMetadata.BaseImageIndex }}
+        {{ $originalCommand := $element.LayerDetail.LayerInfo.LayerMetadata.Command }}
+        {{ $commandSet := formatLayerCommand $originalCommand }}
+        {{ $command := index $commandSet 0 }}
+        {{ $commandDetail := index $commandSet 1 }}
+        {{ $longCommand := false }}
+        {{ if gt (len $command) 109 }}
+        {{ $longCommand = true }}
+        {{ end }}
+        <div class="layer-command-container">
+          {{ if $longCommand }}
+          <p class="package-detail-title">Introduced in layer # {{ $index }}:&nbsp;</p>
+          <div class="tooltip">
+            <p class="layer-command">{{ $command }}</p>
+            <span class="tooltiptext layer-tooltiptext">{{ $originalCommand }}</span>
+          </div>
+          {{ else if ne $commandDetail "" }}
+          <p class="package-detail-title">Introduced in layer # {{ $index }}:&nbsp;</p>
+          <div class="tooltip">
+            <p class="layer-command">{{ $command }}</p>
+            <span class="tooltiptext layer-tooltiptext">{{ $commandDetail }}</span>
+          </div>
+          {{ else }}
+          <p class="package-detail-title">Introduced in layer # {{ $index }}:&nbsp;</p>
+          <p class="layer-command">{{ $command }}</p>
+          {{ end }}
+        </div>
+        <p><span class="package-detail-title">In base image:</span> {{ if eq $baseImageIndex 0 }} False {{ else }} {{ getBaseImageName $element.LayerDetail.BaseImageInfo }}{{ end }}</p>
+        {{ end }}
+        {{ template "vuln_table_template.gohtml" $element }}
+      </div>
+
+    </td>
+  </tr>
+  {{ end }}
+</table>

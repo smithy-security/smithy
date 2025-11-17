@@ -3,16 +3,8 @@ description: "Scans third party dependencies of multiple languages."
 type: scanner
 steps:
   - name: scanner
-    image: components/scanners/osv-scanner/scanner
-    executable: /bin/bash
-    env_vars: 
-      RAW_OUT_FILE: "{{ scratchWorkspace }}/output.json"
-    args:
-      - -c
-      - /entrypoint.sh scan source -r --format=sarif --call-analysis=true {{ sourceCodeWorkspace }}
-  - name: parser
     image: components/scanners/osv-scanner
     env_vars:
-      RAW_OUT_FILE: "{{ scratchWorkspace }}/output.json"
+      GIT_RAW_DIFF_PATH: "{{ targetMetadataWorkspace }}/raw.diff"
       WORKSPACE_PATH: "{{ sourceCodeWorkspace }}"
     executable: /bin/app

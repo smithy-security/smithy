@@ -1,0 +1,106 @@
+<div id="summary-section">
+  <div id="filter-section">
+    {{ if .IsContainerScanning }}
+    <div class="filter-container">
+      <span>Layer<br></span>
+      <div id="layer-filter" class="filter" onclick="toggleFilter('layer')">
+        <p id="layer-filter-selected" class="filter-selected"></p>
+        <div class="filter-icon">
+          <i class="material-icons">keyboard_arrow_down</i>
+        </div>
+      </div>
+      <div id="layer-filter-option-container" class="filter-option-container hide-block">
+        <div data-layer-hash="all" class="filter-option layer-filter-option" id="all-layer-checkbox"
+          data-layer-all-count="{{ .VulnCount.AnalysisCount.Regular }}">
+          <p>All layers ({{ .VulnCount.AnalysisCount.Regular }})</p>
+          {{ template "severity_summary_template.gohtml" .VulnCount.SeverityCount }}
+        </div>
+        {{ range .ImageInfo.AllLayers }}
+        {{ $index := .Index }}
+        {{ $originalCommand := .LayerMetadata.Command }}
+        {{ $commandSet := formatLayerCommand $originalCommand }}
+        {{ $command := index $commandSet 0 }}
+        {{ $commandDetail := index $commandSet 1 }}
+        {{ $diffID := .LayerMetadata.DiffID }}
+        {{ $longCommand := false }}
+        {{ if gt (len $command) 109 }}
+        {{ $longCommand = true }}
+        {{ end }}
+
+        {{ if gt .Count.AnalysisCount.Regular 0 }}
+        <div data-layer-hash="{{ $diffID }}" class="filter-option layer-filter-option">
+          <div {{ if $longCommand }} class="tooltip" {{ end }}>
+            <p class="layer-command">{{ $index }} {{ $command }}</p>
+            {{ if $longCommand }}
+            <span class="tooltiptext layer-tooltiptext">{{ $originalCommand }}</span>
+            {{ end }}
+          </div>
+          {{ template "severity_summary_template.gohtml".Count.SeverityCount }}
+        </div>
+        {{ end }}
+        {{ end }}
+      </div>
+    </div>
+    {{ end }}
+
+    <div class="filter-container">
+      <span>Filters<br></span>
+      <div id="type-filter" class="filter" onclick="toggleFilter('type')">
+        <p class="filter-selected">
+          <span id="type-filter-selected"></span>
+          <span>(<span id="selected-count"></span>/{{ add .VulnTypeSummary.All .VulnTypeSummary.Hidden }})</span>
+        </p>
+        <div class="filter-icon">
+          <i class="material-icons">keyboard_arrow_down</i>
+        </div>
+      </div>
+      <div id="type-filter-option-container" class="filter-option-container hide-block">
+        {{ if hasOSResult .Ecosystems }}
+        <label class="filter-option" for="all-type-checkbox">
+          <input type="checkbox" checked id="all-type-checkbox" data-type-all-count="{{ .VulnTypeSummary.All }}">
+          Default ({{ .VulnTypeSummary.All }})
+        </label>
+        {{ end }}
+        <label class="filter-option" for="project-type-checkbox">
+          <input type="checkbox" checked id="project-type-checkbox"
+            data-type-project-count="{{ .VulnTypeSummary.Project }}">
+          Project Vulnerabilities ({{ .VulnTypeSummary.Project }})
+        </label>
+        {{ if hasOSResult .Ecosystems }}
+        <label class="filter-option" for="os-type-checkbox">
+          <input type="checkbox" checked id="os-type-checkbox" data-type-os-count="{{ .VulnTypeSummary.OS }}">
+          Operating system vulnerabilities ({{ .VulnTypeSummary.OS }})
+        </label>
+        {{ end }}
+        <label class="filter-option" for="uncalled-type-checkbox">
+          <input type="checkbox" id="uncalled-type-checkbox" data-type-uncalled-count="{{ .VulnTypeSummary.Hidden }}">
+          Uncalled/Unimportant ({{ .VulnTypeSummary.Hidden }})
+        </label>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="severity-section">
+    <span>Overall Severity</span>
+    <div class="flex-box">
+      <div id="critical-long" class="severity-long">
+        <p class="critical">{{ .VulnCount.SeverityCount.Critical }} Critical</p>
+      </div>
+      <div id="high-long" class="severity-long">
+        <p class="high">{{ .VulnCount.SeverityCount.High }} High</p>
+      </div>
+      <div id="medium-long" class="severity-long">
+        <p class="medium">{{ .VulnCount.SeverityCount.Medium }} Medium</p>
+      </div>
+      <div id="low-long" class="severity-long">
+        <p class="low">{{ .VulnCount.SeverityCount.Low }} Low</p>
+      </div>
+      <div id="unknow-long" class="severity-long">
+        <p class="unknown">{{ .VulnCount.SeverityCount.Unknown }} Unknown</p>
+      </div>
+    </div>
+  </div>
+
+
+</div>
