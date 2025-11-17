@@ -8,8 +8,7 @@ steps:
     args:
       - -c
       - >-
-        echo "Running trufflehog and sending output to {{ scratchWorkspace }}/trufflehog.json"  &&
-        /etc/entrypoint.sh filesystem --json --no-fail --directory="{{sourceCodeWorkspace}}"  |
+        /etc/entrypoint.sh filesystem --json --no-fail --directory="{{ sourceCodeWorkspace }}"  |
         tee {{ scratchWorkspace }}/trufflehog.json
   - name: "secret-scanner"
     image: "components/scanners/trufflehog"
@@ -17,4 +16,4 @@ steps:
     env_vars:
       TRUFFLEHOG_RAW_OUT_FILE_PATH: "{{ scratchWorkspace }}/trufflehog.json"
       TRUFFLEHOG_TARGET_TYPE: "TARGET_TYPE_REPOSITORY"
-      TRUFFLEHOG_SOURCE_CODE_WORKSPACE: "{{sourceCodeWorkspace}}"
+      TRUFFLEHOG_SOURCE_CODE_WORKSPACE: "{{ sourceCodeWorkspace }}"
