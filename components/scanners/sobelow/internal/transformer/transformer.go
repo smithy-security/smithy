@@ -17,8 +17,6 @@ import (
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
 )
 
-const TargetTypeRepository TargetType = "repository"
-
 type (
 	// SobelowTransformerOption allows customising the transformer.
 	SobelowTransformerOption func(g *sobelowTransformer) error
@@ -27,7 +25,6 @@ type (
 	TargetType string
 
 	sobelowTransformer struct {
-		targetType     TargetType
 		clock          clockwork.Clock
 		resultsDirPath string
 		workspacePath  string
@@ -45,17 +42,6 @@ func SobelowTransformerWithClock(clock clockwork.Clock) SobelowTransformerOption
 			return errors.Errorf("invalid nil clock")
 		}
 		g.clock = clock
-		return nil
-	}
-}
-
-// SobelowTransformerWithTarget allows customising the underlying target type.
-func SobelowTransformerWithTarget(target TargetType) SobelowTransformerOption {
-	return func(g *sobelowTransformer) error {
-		if target == "" {
-			return errors.Errorf("invalid empty target")
-		}
-		g.targetType = target
 		return nil
 	}
 }
@@ -82,15 +68,6 @@ func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
 		return nil, err
 	}
 
-	target, err := env.GetOrDefault(
-		"SOBELOW_TARGET_TYPE",
-		TargetTypeRepository.String(),
-		env.WithDefaultOnError(true),
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	workspacePath, err := env.GetOrDefault(
 		"WORKSPACE_PATH",
 		"",
@@ -101,7 +78,6 @@ func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
 	}
 
 	t := sobelowTransformer{
-		targetType:     TargetType(target),
 		clock:          clockwork.NewRealClock(),
 		resultsDirPath: resultsDirPath,
 		workspacePath:  workspacePath,
@@ -116,8 +92,6 @@ func New(opts ...SobelowTransformerOption) (*sobelowTransformer, error) {
 	switch {
 	case t.resultsDirPath == "":
 		return nil, errors.New("invalid empty results directory path")
-	case t.targetType == "":
-		return nil, errors.New("invalid empty target type")
 	}
 
 	return &t, nil
