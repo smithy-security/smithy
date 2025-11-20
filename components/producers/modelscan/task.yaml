@@ -1,0 +1,64 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: producer-modelscan
+  labels:
+    v1.dracon.ocurity.com/component: producer
+    v1.dracon.ocurity.com/test-type: sast
+    v1.dracon.ocurity.com/language: python
+spec:
+  description: Analyse Go source code to look for security issues.
+  params:
+  - name: producer-modelscan-relative-path-to-model
+    type: string
+  volumes:
+    - name: scratch
+      emptyDir: {}
+  workspaces:
+    - name: output
+      description: The workspace containing the source-code to scan.
+  steps:
+  - name: run-modelscan
+    image: python:3.11-alpine
+    imagePullPolicy: Always
+    script: |
+      set -x
+      set +e
+
+      pip install 'modelscan'
+      modelscan --path "$(workspaces.output.path)/source-code/$(params.producer-modelscan-relative-path-to-model)" --reporting-format json --output-file /scratch/out.json
+      exitCode=$?
+
+      if [[ $exitCode -eq 1 ]]; then
+        echo "ModelScan found vulnerabilities"
+        exit 0
+      elif [[ $exitCode -eq 2 ]]; then
+        echo "ModelScan failed, error while scanning"
+        exit $exitCode
+      elif [[ $exitCode -eq 3 ]]; then
+        echo "ModelScan did not find any supported files while scanning"
+        exit $exitCode
+      elif [[ $exitCode -eq 4 ]]; then
+        echo "ModelScan encountered an error whle parsing CLI variables, the task definition has a bug"
+        exit $exitCode
+      elif [[ $exitCode -eq 0 ]]; then
+        echo "ModelScan did not find any vulnerabilities"
+        exit $exitCode
+      else
+        echo "Received unexpected exit code, exiting"
+        exit $exitCode
+      fi
+    volumeMounts:
+    - mountPath: /scratch
+      name: scratch
+  - name: produce-issues
+    imagePullPolicy: Always
+    image: '{{ default "ghcr.io/ocurity/dracon" .Values.image.registry }}/components/producers/modelscan:{{ .Chart.AppVersion }}'
+    command: ["/app/components/producers/modelscan/modelscan-parser"]
+    args:
+    - "-in=/scratch/out.json"
+    - "-out=$(workspaces.output.path)/.dracon/producers/modelscan.pb"
+    volumeMounts:
+    - mountPath: /scratch
+      name: scratch

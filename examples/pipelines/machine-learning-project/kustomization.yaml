@@ -1,0 +1,12 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+nameSuffix: -machine-learning-project
+components:
+  - pkg:helm/dracon-oss-components/base
+  - pkg:helm/dracon-oss-components/git-clone
+  - pkg:helm/dracon-oss-components/producer-modelscan
+  - pkg:helm/dracon-oss-components/producer-aggregator
+  - pkg:helm/dracon-oss-components/enricher-codeowners
+  - pkg:helm/dracon-oss-components/enricher-aggregator
+  - pkg:helm/dracon-oss-components/consumer-stdout-json
