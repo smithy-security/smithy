@@ -1,0 +1,35 @@
+language: go
+go:
+  - master
+  - stable
+  - "1.13"
+  - "1.12"
+  - "1.11"
+  - "1.10"
+  - "1.9"
+  - "1.8"
+install:
+  - go get -t ./...
+  - go get github.com/mattn/goveralls
+  - go get github.com/mitchellh/gox
+script:
+  # Run all tests that we have in the project, including tools. This is
+  # important since we're actually publishing the tools.
+  - go test -race ./...
+  # Just calculate coverage over the main library.
+  - goveralls -v -service=travis-ci -package github.com/dsoprea/go-exfat
+before_deploy:
+  - gox -output "build/{{.Dir}}.{{.OS}}-{{.Arch}}" ./cmd/...
+deploy:
+  skip_cleanup: true
+  provider: releases
+  api_key:
+    # Generated via Travis CLI tool.
+    secure: qiXTn6cXJYNNruZbbDxG/LeBRrb7KErYFqE8r3Eoi5akKJtJUKwqqeU3lEHBVAW6ooZLND0nt+T8ubkXmkq4WAMEHOkTuHprCKVUQsu9fKurDWjTrFPCnbbIepfWr8JHmZG8Fs6iTIzhJcpcVD4xPkHTQ1jIdD6As9IAOE05WE+R67d3kwX5FTjjGPRzcSjeb+vkn8e3Hz3bOEC2qGmuaJvw/tVOcga1HN4kUmfwuI59v4vVE4vZezI6YEHvoQ/4Q9Zn6/sS2a49wxOgxYLEUKmdKETAExyAUQX5CT6kjFKW7cAkDVQfvtR9uEAHO4HJ8T99vi5R46U1ZT3yeXzr0KRD3dNvAT/z1+cGez9SPfj5vjoEfRC+IpyYrRUOjd8BpHsfR1ZMb49DI1MaclEojzht9RR/4QBn+YNCUfajumXszqs+q/rskwrsw57W4INhuJMw3aAGQJZ0V6ZhR6niC0Nq6WssC8poxJg8KiUapx9TPKQIqQbxCMnYT1ui7JiDj4FnM3VNMTz/XHDjzh5nRqCo+AnXHnSbfk6JGxWEjbRIV193MyRdAu8vz2/UMtgNgioWgMtxlRbOmsq7tSWPDUIrtl9Qz38brDjusKw2LLzSmPviOuPZSl/CvWK+R/gTURfwZixKNAx6dbhiY4ld6QF6+DJRPAO8oRatE/mmosU=
+  file_glob: true
+  file: build/*
+  overwrite: true
+  on:
+    repo: dsoprea/go-exfat
+    go: 'stable'
+    tags: true

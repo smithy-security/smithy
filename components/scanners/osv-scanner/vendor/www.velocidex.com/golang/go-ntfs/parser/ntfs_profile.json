@@ -1,0 +1,441 @@
+{
+   "NTFS_BOOT_SECTOR": [512, {
+       "Oemname": [3, ["String", {"length": 8}]],
+       "Sector_size": [11, ["unsigned short"]],
+       "_cluster_size": [13, ["unsigned char"]],
+       "_volume_size":   [40, ["unsigned long long"]],
+       "_mft_cluster":   [48, ["unsigned long long"]],
+       "_mirror_mft_cluster":   [56, ["unsigned long long"]],
+       "_mft_record_size": [64, ["char"]],
+       "Index_record_size": [68, ["unsigned char"]],
+       "Serial": [72, ["String", {"length": 8}]],
+       "Magic": [510, ["unsigned short"]]
+    }],
+
+    "MFT_ENTRY": [0, {
+        "Magic": [0, ["Signature", {"value": "FILE"}]],
+        "Fixup_offset": [4, ["unsigned short"]],
+        "Fixup_count":  [6, ["unsigned short"]],
+        "Logfile_sequence_number": [8, ["unsigned long long"]],
+        "Sequence_value": [16, ["unsigned short"]],
+        "Link_count": [18, ["unsigned short"]],
+        "Attribute_offset": [20, ["unsigned short"]],
+        "Flags": [22, ["Flags", {
+            "target": "unsigned short",
+            "bitmap": {
+                "ALLOCATED": 0,
+                "DIRECTORY": 1
+            }
+        }]],
+        "Mft_entry_size": [24, ["unsigned short"]],
+        "Mft_entry_allocated": [28, ["unsigned short"]],
+        "Base_record_reference": [32, ["unsigned long long"]],
+        "Next_attribute_id": [40, ["unsigned short"]],
+        "Record_number": [44, ["unsigned long"]]
+    }],
+
+    "NTFS_ATTRIBUTE": [0, {
+        "Type": [0, ["Enumeration", {
+            "target": "unsigned long",
+            "choices": {
+                "16": "$STANDARD_INFORMATION",
+                "32": "$ATTRIBUTE_LIST",
+                "48": "$FILE_NAME",
+                "64": "$OBJECT_ID",
+                "80": "$SECURITY_DESCRIPTOR",
+                "96": "$VOLUME_NAME",
+                "112": "$VOLUME_INFORMATION",
+                "128": "$DATA",
+                "144": "$INDEX_ROOT",
+                "160": "$INDEX_ALLOCATION",
+                "176": "$BITMAP",
+                "192": "$REPARSE_POINT",
+                "208": "$EA_INFORMATION",
+                "224": "$EA",
+                "256": "$LOGGED_UTILITY_STREAM"
+            }
+        }]],
+        "Length": [4, ["unsigned long"]],
+        "Resident": [8, ["Enumeration", {
+            "target":"unsigned char",
+            "choices": {
+                "0": "RESIDENT",
+                "1": "NON-RESIDENT"
+           }
+        }]],
+
+        "name_length": [9, ["unsigned char"]],
+        "name_offset": [10, ["unsigned short"]],
+        "Flags": [12, ["Flags", {
+            "target": "unsigned short",
+            "bitmap": {
+                "COMPRESSED" : 0,
+                "ENCRYPTED": 14,
+                "SPARSE": 15
+            }
+        }]],
+        "Attribute_id": [14, ["unsigned short"]],
+        "Content_size": [16, ["unsigned long"]],
+        "Content_offset": [20, ["unsigned short"]],
+        "Runlist_vcn_start": [16, ["unsigned long long"]],
+        "Runlist_vcn_end": [24, ["unsigned long long"]],
+        "Runlist_offset": [32, ["unsigned short"]],
+        "Compression_unit_size": [34, ["unsigned short"]],
+        "Allocated_size": [40, ["unsigned long long"]],
+        "Actual_size": [48, ["unsigned long long"]],
+        "Initialized_size": [56, ["unsigned long long"]]
+    }],
+
+    "NTFS_RESIDENT_ATTRIBUTE": [0, {
+        "Type": [0, ["Enumeration", {
+            "target": "unsigned long",
+            "choices": {
+                "16": "$STANDARD_INFORMATION",
+                "32": "$ATTRIBUTE_LIST",
+                "48": "$FILE_NAME",
+                "64": "$OBJECT_ID",
+                "80": "$SECURITY_DESCRIPTOR",
+                "96": "$VOLUME_NAME",
+                "112": "$VOLUME_INFORMATION",
+                "128": "$DATA",
+                "144": "$INDEX_ROOT",
+                "160": "$INDEX_ALLOCATION",
+                "176": "$BITMAP",
+                "192": "$REPARSE_POINT",
+                "256": "$LOGGED_UTILITY_STREAM"
+            }
+        }]],
+        "Length": [4, ["unsigned long"]],
+        "Resident": [8, ["Enumeration", {
+            "target":"unsigned char",
+            "choices": {
+                "0": "RESIDENT",
+                "1": "NON-RESIDENT"
+           }
+        }]],
+        "Name_length": [9, ["unsigned char"]],
+        "Name_offset": [10, ["unsigned short"]],
+        "Attribute_id": [14, ["unsigned short"]],
+        "content_size": [16, ["unsigned long"]],
+        "content_offset": [20, ["unsigned short"]]
+    }],
+
+    "STANDARD_INFORMATION": [0, {
+        "Create_time": [0, ["WinFileTime"]],
+        "File_altered_time": [8, ["WinFileTime"]],
+        "Mft_altered_time": [16, ["WinFileTime"]],
+        "File_accessed_time": [24, ["WinFileTime"]],
+        "Flags": [32, ["Flags", {
+            "target": "unsigned long",
+            "maskmap": {
+                "READ_ONLY": 1,
+                "HIDDEN": 2,
+                "SYSTEM": 4,
+                "ARCHIVE":32,
+                "DEVICE":64,
+                "NORMAL":128,
+                "TEMPORARY":256,
+                "SPARSE":512,
+                "REPARSE_POINT":1024,
+                "COMPRESSED":2048,
+                "OFFLINE":4096,
+                "NOT_INDEXED":8192,
+                "ENCRYPTED":16384
+            }
+        }]],
+        "Max_versions": [36, ["unsigned long"]],
+        "Version": [40, ["unsigned long"]],
+        "Class_id": [44, ["unsigned long"]],
+        "Owner_id": [48, ["unsigned long"]],
+        "Sid": [52, ["unsigned long"]],
+        "Quota": [56, ["unsigned long long"]],
+        "Usn": [64, ["unsigned long"]]
+    }],
+
+    "FILE_NAME": [66, {
+        "MftReference": [0, ["BitField", {
+            "target": "unsigned long long",
+            "start_bit": 0,
+            "end_bit": 48
+        }]],
+        "Seq_num": [6, ["unsigned short"]],
+        "Created": [8, ["WinFileTime"]],
+        "File_modified": [16, ["WinFileTime"]],
+        "Mft_modified": [24, ["WinFileTime"]],
+        "File_accessed": [32, ["WinFileTime"]],
+        "Allocated_size": [40, ["unsigned long long"]],
+        "FilenameSize": [48, ["unsigned long long"]],
+        "Flags": [56, ["Flags", {
+            "target":"unsigned long",
+            "maskmap": {
+                "READ_ONLY": 1,
+                "HIDDEN": 2,
+                "SYSTEM": 4,
+                "ARCHIVE":32,
+                "DEVICE":64,
+                "NORMAL":128,
+                "TEMPORARY":256,
+                "SPARSE":512,
+                "REPARSE_POINT":1024,
+                "COMPRESSED":2048,
+                "OFFLINE":4096,
+                "NOT_INDEXED":8192,
+                "ENCRYPTED":16384
+            }}]],
+        "Reparse_value": [60, ["unsigned long"]],
+        "_length_of_name": [64, ["unsigned char"]],
+        "NameType": [65, ["Enumeration", {
+            "target": "unsigned char",
+            "choices": {
+                "0": "POSIX",
+                "1": "Win32",
+                "2": "DOS",
+                "3": "DOS+Win32"
+            }
+        }]],
+      "name": [66, ["UnicodeString"]]
+    }],
+
+    "STANDARD_INDEX_HEADER": [42, {
+        "MagicNumber": [0, ["Signature", {
+            "value": "INDX"
+        }]],
+
+        "Fixup_offset": [4, ["unsigned short"]],
+        "Fixup_count": [6, ["unsigned short"]],
+        "LogFileSeqNum": [8, ["unsigned long long"]],
+        "VcnOfINDX": [16, ["unsigned long long"]],
+        "Node": [24, ["INDEX_NODE_HEADER"]]
+    }],
+
+    "INDEX_RECORD_ENTRY": [0, {
+        "MftReference": [0, ["BitField", {
+            "target": "unsigned long long",
+            "start_bit": 0,
+            "end_bit":48
+        }]],
+        "Seq_num": [6, ["unsigned short"]],
+        "SizeOfIndexEntry": [8, ["unsigned short"]],
+        "FilenameOffset": [10, ["unsigned short"]],
+        "Flags": [12, ["unsigned long"]],
+        "File": [16, ["FILE_NAME"]]
+    }],
+
+    "INDEX_ROOT": [0, {
+        "Type": [0, ["unsigned long"]],
+        "Collation_rule": [4, ["unsigned long"]],
+        "Idxalloc_size_b": [8, ["unsigned long"]],
+        "Idx_size_c": [12, ["unsigned long"]],
+        "Node": [16, ["INDEX_NODE_HEADER"]]
+    }],
+
+    "INDEX_NODE_HEADER": [16, {
+        "Offset_to_index_entry": [0, ["unsigned long"]],
+        "Offset_to_end_index_entry": [4, ["unsigned long"]],
+        "SizeOfEntriesAlloc": [8, ["long"]]
+    }],
+
+    "ATTRIBUTE_LIST_ENTRY": [0, {
+        "Type": [0, ["unsigned long"]],
+        "Length": [4, ["unsigned short"]],
+        "Name_length": [6, ["unsigned char"]],
+        "Offset_to_name": [7, ["unsigned char"]],
+        "Starting_vcn": [8, ["unsigned long long"]],
+        "MftReference": [16, ["BitField", {
+            "target": "unsigned long long",
+            "start_bit": 0,
+            "end_bit": 48
+        }]],
+        "Attribute_id": [24, ["unsigned short"]]
+    }],
+
+  "VSS_VOLUME_HEADER": [0, {
+    "Identifier": [0, ["GUID"]],
+    "Version": [16, ["unsigned long"]],
+    "RecordType": [20, ["unsigned long"]],
+    "CurrentOffset": [24, ["long long"]],
+    "CatalogOffset": [48, ["long long"]],
+    "MaxSize": [56, ["unsigned long long"]],
+    "VolumeGUID": [64, ["GUID"]],
+    "ShadowVolumeGUID": [80, ["GUID"]]
+  }],
+
+  "VSS_CATALOG_HEADER": [128, {
+    "Identifier": [0, ["GUID"]],
+    "Version": [16, ["unsigned long"]],
+    "RecordType": [20, ["unsigned long"]],
+    "RelativeOffset": [24, ["long long"]],
+    "CurrentOffset": [32, ["long long"]],
+    "NextOffset": [40, ["long long"]]
+  }],
+
+  "VSS_CATALOG_ENTRY_1": [128, {
+    "EntryType": [0, ["long long"]]
+  }],
+
+  "VSS_CATALOG_ENTRY_2": [128, {
+    "EntryType": [0, ["long long"]],
+    "VolumeSize": [8, ["long long"]],
+    "StoreGUID": [16, ["GUID"]],
+    "CreationTime": [48, ["WinFileTime"]]
+  }],
+
+  "VSS_CATALOG_ENTRY_3": [128, {
+    "EntryType": [0, ["long long"]],
+    "StoreBlockListOffset": [8, ["long long"]],
+    "StoreGUID": [16, ["GUID"]],
+    "StoreHeaderOffset": [32, ["long long"]],
+    "StoreBlockRangeListOffset": [40, ["long long"]],
+    "StoreBitmapOffset": [48, ["long long"]],
+    "NTFSFileReference": [56, ["long long"]],
+    "AllocatedSize": [64, ["long long"]],
+    "StorePreviousBitmapOffset": [72, ["long long"]]
+  }],
+
+  "VSS_STORE_BLOCK_HEADER": [128, {
+    "Identifier": [0, ["GUID"]],
+    "Version": [16, ["unsigned long"]],
+    "RecordType": [20, ["Enumeration", {
+      "choices": {
+        "1": "VolumeHeader",
+        "2": "CatalogBlockHeader",
+        "3": "BlockDescriptorList",
+        "4": "StoreHeader",
+        "5": "StoreBlockRangesList",
+        "6": "StoreBitmap"
+      },
+      "target": "unsigned long"
+    }]],
+    "RelativeOffset": [24, ["long long"]],
+    "CurrentOffset": [32, ["long long"]],
+    "NextOffset": [40, ["long long"]],
+    "SizeOfStore": [48, ["long long"]]
+  }],
+
+  "VSS_STORE_INFORMATION": [0, {
+    "ShadowCopyGUID": [16, ["GUID"]],
+    "ShadowCopySetGUID": [32, ["GUID"]],
+    "SnapshotContext": [48, ["unsigned long"]],
+    "AttributeFlags": [56, ["Flags", {
+      "target": "unsigned long",
+      "maskmap": {
+        "VSS_VOLSNAP_ATTR_PERSISTENT": 1,
+        "VSS_VOLSNAP_ATTR_NO_AUTORECOVERY": 2,
+        "VSS_VOLSNAP_ATTR_CLIENT_ACCESSIBLE": 4,
+        "VSS_VOLSNAP_ATTR_NO_AUTO_RELEASE": 8,
+        "VSS_VOLSNAP_ATTR_NO_WRITERS": 16,
+        "VSS_VOLSNAP_ATTR_TRANSPORTABLE": 32,
+        "VSS_VOLSNAP_ATTR_NOT_SURFACED": 64,
+        "VSS_VOLSNAP_ATTR_NOT_TRANSACTED": 128,
+        "VSS_VOLSNAP_ATTR_HARDWARE_ASSISTED": 65536,
+        "VSS_VOLSNAP_ATTR_DIFFERENTIAL": 131072,
+        "VSS_VOLSNAP_ATTR_PLEX": 262144,
+        "VSS_VOLSNAP_ATTR_IMPORTED": 524288,
+        "VSS_VOLSNAP_ATTR_EXPOSED_LOCALLY": 1048576,
+        "VSS_VOLSNAP_ATTR_EXPOSED_REMOTELY": 2097152,
+        "VSS_VOLSNAP_ATTR_AUTORECOVER": 4194304,
+        "VSS_VOLSNAP_ATTR_ROLLBACK_RECOVERY": 8388608,
+        "VSS_VOLSNAP_ATTR_DELAYED_POSTSNAPSHOT": 16777216,
+        "VSS_VOLSNAP_ATTR_TXF_RECOVERY": 33554432
+      }
+    }]]
+  }],
+
+  "GUID": [16, {
+    "Data1": [0, ["unsigned long", {}]],
+    "Data2": [4, ["unsigned short", {}]],
+    "Data3": [6, ["unsigned short", {}]],
+    "Data4": [8, ["Array", {
+      "count": 8,
+      "target": "unsigned char"
+    }]]
+  }],
+
+    "USN_RECORD_V2": [4, {
+        "RecordLength": [0, ["unsigned long"]],
+        "MajorVersion": [4, ["unsigned short"]],
+        "MinorVersion": [6, ["unsigned short"]],
+        "FileReferenceNumberSequence": [8, ["BitField", {
+            "target": "unsigned long long",
+            "start_bit": 48,
+            "end_bit": 63
+        }]],
+        "FileReferenceNumberID": [8, ["BitField", {
+            "target": "unsigned long long",
+            "start_bit": 0,
+            "end_bit": 48
+        }]],
+        "ParentFileReferenceNumberSequence": [16, ["BitField", {
+            "target": "unsigned long long",
+            "start_bit": 48,
+            "end_bit": 63
+        }]],
+        "ParentFileReferenceNumberID": [16, ["BitField", {
+            "target": "unsigned long long",
+            "start_bit": 0,
+            "end_bit": 48
+        }]],
+
+        "Usn": [24, ["unsigned long long"]],
+        "TimeStamp": [32, ["WinFileTime"]],
+        "Reason": [40, ["Flags", {
+            "target": "unsigned long",
+            "bitmap": {
+                "DATA_OVERWRITE": 0,
+                "DATA_EXTEND": 1,
+                "DATA_TRUNCATION": 2,
+                "NAMED_DATA_OVERWRITE": 4,
+                "NAMED_DATA_EXTEND": 5,
+                "NAMED_DATA_TRUNCATION": 6,
+                "FILE_CREATE": 8,
+                "FILE_DELETE": 9,
+                "EA_CHANGE": 10,
+                "SECURITY_CHANGE": 11,
+                "RENAME_OLD_NAME": 12,
+                "RENAME_NEW_NAME": 13,
+                "INDEXABLE_CHANGE": 14,
+                "BASIC_INFO_CHANGE": 15,
+                "HARD_LINK_CHANGE": 16,
+                "COMPRESSION_CHANGE": 17,
+                "ENCRYPTION_CHANGE": 18,
+                "OBJECT_ID_CHANGE": 19,
+                "REPARSE_POINT_CHANGE": 20,
+                "STREAM_CHANGE": 21,
+                "CLOSE": 31
+            }
+        }]],
+        "SourceInfo": [44, ["Flags", {
+            "target": "unsigned long",
+            "bitmap": {
+                "DATA_MANAGEMENT": 0,
+                "AUXILIARY_DATA": 1,
+                "REPLICATION_MANAGEMENT": 2
+            }
+        }]],
+        "SecurityId": [48, ["unsigned long"]],
+        "FileAttributes": [52, ["Flags", {
+            "target": "unsigned long",
+            "bitmap": {
+                "READONLY": 0,
+                "HIDDEN": 1,
+                "SYSTEM": 2,
+                "DIRECTORY": 4,
+                "ARCHIVE": 5,
+                "DEVICE": 6,
+                "NORMAL": 7,
+                "TEMPORARY": 8,
+                "SPARSE_FILE": 9,
+                "REPARSE_POINT": 10,
+                "COMPRESSED": 11,
+                "OFFLINE": 12,
+                "NOT_CONTENT_INDEXED": 13,
+                "ENCRYPTED": 14,
+                "INTEGRITY_STREAM": 15,
+                "VIRTUAL": 16,
+                "NO_SCRUB_DATA": 17
+            }
+        }]],
+        "FileNameLength": [56, ["unsigned short"]],
+        "FileNameOffset": [58, ["unsigned short"]]
+    }]
+}

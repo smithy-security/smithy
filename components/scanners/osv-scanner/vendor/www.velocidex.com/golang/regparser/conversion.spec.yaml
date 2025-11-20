@@ -1,0 +1,24 @@
+Module: regparser
+Profile: RegistryProfile
+Filename: profile_vtypes.json
+GenerateDebugString: false
+Structs:
+   - _HBASE_BLOCK
+   - _GUID
+   - _LARGE_INTEGER
+   - _HBIN
+   - _HCELL
+   - _CM_KEY_NODE
+   - _CM_KEY_INDEX
+   - _CHILD_LIST
+   - _HHIVE
+   - _CM_KEY_VALUE
+   - _CM_KEY_INDEX_FAST
+   - _CM_KEY_INDEX_FAST_ELEMENT
+   - _CM_BIG_DATA
+   - HIVE_LOG_ENTRY
+   - HIVE_DIRTY_PAGE_REF
+
+FieldBlackList:
+   _LARGE_INTEGER:
+   - u

@@ -1,0 +1,203 @@
+{
+    "_LARGE_INTEGER": [8, {
+        "HighPart": [4, ["long", {}]],
+        "LowPart": [0, ["unsigned long", {}]],
+        "QuadPart": [0, ["long long", {}]],
+        "u": [0, ["<unnamed-4167>", {}]]
+    }],
+    "_GUID": [16, {
+        "Data1": [0, ["unsigned long", {}]],
+        "Data2": [4, ["unsigned short", {}]],
+        "Data3": [6, ["unsigned short", {}]],
+        "Data4": [8, ["Array", {
+            "count": 8,
+            "target": "unsigned char"
+        }]]
+    }],
+    "_HBASE_BLOCK": [4096, {
+        "BootRecover": [4092, ["unsigned long", {}]],
+        "BootType": [4088, ["unsigned long", {}]],
+        "CheckSum": [508, ["unsigned long", {}]],
+        "Cluster": [44, ["unsigned long", {}]],
+        "FileName": [48, ["UnicodeString", {
+            "Length": 64
+        }]],
+        "Flags": [144, ["unsigned long", {}]],
+        "Format": [32, ["unsigned long", {}]],
+        "GuidSignature": [164, ["unsigned long", {}]],
+        "Length": [40, ["unsigned long", {}]],
+        "LogId": [128, ["_GUID", {}]],
+        "Major": [20, ["unsigned long", {}]],
+        "Minor": [24, ["unsigned long", {}]],
+        "Reserved1": [168, ["Array", {
+            "count": 85,
+            "target": "unsigned long"
+        }]],
+        "Reserved2": [512, ["Array", {
+            "count": 882,
+            "target": "unsigned long"
+        }]],
+        "RmId": [112, ["_GUID", {}]],
+        "RootCell": [36, ["unsigned long", {}]],
+        "Sequence1": [4, ["unsigned long", {}]],
+        "Sequence2": [8, ["unsigned long", {}]],
+        "Signature": [0, ["unsigned long", {}]],
+        "ThawLogId": [4072, ["_GUID", {}]],
+        "ThawRmId": [4056, ["_GUID", {}]],
+        "ThawTmId": [4040, ["_GUID", {}]],
+        "TimeStamp": [12, ["FileTime", {}]],
+        "TmId": [148, ["_GUID", {}]],
+        "Type": [28, ["unsigned long", {}]]
+    }],
+    "_HBIN": [32, {
+        "FileOffset": [4, ["unsigned long", {}]],
+        "Reserved1": [12, ["Array", {
+            "count": 2,
+            "target": "unsigned long"
+        }]],
+        "Signature": [0, ["unsigned long", {}]],
+        "HbinSize": [8, ["unsigned long", {}]],
+        "Spare": [28, ["unsigned long", {}]],
+        "TimeStamp": [20, ["FileTime", {}]]
+    }],
+    "_HCELL": [12, {
+        "Next": [0, ["unsigned long", {}]],
+        "Signature": [4, ["unsigned short"]],
+        "Data": [4, ["Array", {
+            "target": "unsigned char"
+        }]]
+    }],
+    "_CM_KEY_NODE": [80, {
+        "ChildHiveReference": [28, ["Pointer", {
+            "target": "_HCELL"
+        }]],
+        "Class": [48, ["unsigned long", {}]],
+        "ClassLength": [74, ["unsigned short", {}]],
+        "Debug": [52, ["BitField", {
+            "end_bit": 32,
+            "start_bit": 24,
+            "target": "unsigned long"
+        }]],
+        "Flags": [2, ["unsigned short", {}]],
+        "LastWriteTime": [4, ["FileTime", {}]],
+        "MaxClassLen": [56, ["unsigned long", {}]],
+        "MaxNameLen": [52, ["BitField", {
+            "end_bit": 16,
+            "start_bit": 0,
+            "target": "unsigned long"
+        }]],
+        "MaxValueDataLen": [64, ["unsigned long", {}]],
+        "MaxValueNameLen": [60, ["unsigned long", {}]],
+        "_Name": [76, ["Array", {
+            "target": "unsigned char",
+            "count": 1
+        }]],
+        "NameLength": [72, ["unsigned short", {}]],
+        "Parent": [16, ["unsigned long", {}]],
+        "Security": [44, ["unsigned long", {}]],
+        "Signature": [0, ["unsigned short", {}]],
+        "Spare": [12, ["unsigned long", {}]],
+        "SubKeyCounts": [20, ["Array", {
+            "count": 2,
+            "target": "unsigned long"
+        }]],
+        "SubKeyLists": [28, ["Array", {
+            "count": 2,
+            "target": "unsigned long"
+        }]],
+        "UserFlags": [52, ["BitField", {
+            "end_bit": 20,
+            "start_bit": 16,
+            "target": "unsigned long"
+        }]],
+        "ValueList": [36, ["_CHILD_LIST", {}]],
+        "VirtControlFlags": [52, ["BitField", {
+            "end_bit": 24,
+            "start_bit": 20,
+            "target": "unsigned long"
+        }]],
+        "WorkVar": [68, ["unsigned long", {}]]
+    }],
+    "_CHILD_LIST": [8, {
+        "Count": [0, ["unsigned long", {}]],
+        "List": [4, ["unsigned long", {}]]
+    }],
+    "_CM_BIG_DATA": [8, {
+        "Count": [2, ["unsigned short", {}]],
+        "List": [4, ["unsigned long", {}]],
+        "Signature": [0, ["unsigned short", {}]]
+    }],
+    "_CM_CACHED_VALUE_INDEX": [88, {
+        "CellIndex": [0, ["unsigned long", {}]],
+        "Data": [8, ["<unnamed-8329>", {}]]
+    }],
+    "_CM_CELL_REMAP_BLOCK": [8, {
+        "NewCell": [4, ["unsigned long", {}]],
+        "OldCell": [0, ["unsigned long", {}]]
+    }],
+    "_CM_FULL_RESOURCE_DESCRIPTOR": [36, {
+        "BusNumber": [4, ["unsigned long", {}]],
+        "InterfaceType": [0, ["Enumeration", {
+            "enum_name": "_INTERFACE_TYPE",
+            "target": "long"
+        }]],
+        "PartialResourceList": [8, ["_CM_PARTIAL_RESOURCE_LIST", {}]]
+    }],
+    "_CM_INDEX_HINT_BLOCK": [8, {
+        "Count": [0, ["unsigned long", {}]],
+        "HashKey": [4, ["Array", {
+            "count": 1,
+            "target": "unsigned long"
+        }]]
+    }],
+    "_CM_KEY_INDEX": [8, {
+        "Count": [2, ["unsigned short", {}]],
+        "List": [4, ["Array", {
+            "count": 1,
+            "target": "unsigned long"
+        }]],
+        "Signature": [0, ["unsigned short", {}]]
+    }],
+    "_CM_KEY_INDEX_FAST": [8, {
+        "Count": [2, ["unsigned short", {}]],
+        "List": [4, ["Array", {
+            "count": 1,
+            "target": "_CM_KEY_INDEX_FAST_ELEMENT"
+        }]],
+        "Signature": [0, ["unsigned short", {}]]
+    }],
+    "_CM_KEY_INDEX_FAST_ELEMENT": [8, {
+        "NodeOffset": [0, ["unsigned long"]],
+        "Index": [4, ["unsigned long"]]
+    }],
+    "_CM_KEY_VALUE": [24, {
+        "Data": [8, ["unsigned long", {}]],
+        "DataLength": [4, ["unsigned long", {}]],
+        "Flags": [16, ["unsigned short", {}]],
+        "Name": [20, ["UnicodeString", {
+            "length": 1
+        }]],
+        "NameLength": [2, ["unsigned short", {}]],
+        "Signature": [0, ["unsigned short", {}]],
+        "Spare": [18, ["unsigned short", {}]],
+        "Type": [12, ["unsigned long", {}]]
+    }],
+    "HIVE_LOG_ENTRY": [40, {
+        "Signature": [0, ["unsigned long", {}]],
+        "LogEntrySize": [4, ["unsigned long", {}]],
+        "Flags": [8, ["unsigned long", {}]],
+        "SequenceNumber": [12, ["unsigned long", {}]],
+        "HiveBinsDataSize": [16, ["unsigned long", {}]],
+        "DirtyPagesCount": [20, ["unsigned long", {}]],
+        "Hash1": [24, ["unsigned long long", {}]],
+        "Hash2": [32, ["unsigned long long", {}]],
+        "DirtyPageRefs": [40, ["Array", {
+            "target": "HIVE_DIRTY_PAGE_REF",
+            "dynamic_count": "DirtyPagesCount"
+        }]]
+    }],
+    "HIVE_DIRTY_PAGE_REF": [8, {
+        "PageOffset": [0, ["unsigned long", {}]],
+        "PageSize": [4, ["unsigned long", {}]]
+    }]
+}

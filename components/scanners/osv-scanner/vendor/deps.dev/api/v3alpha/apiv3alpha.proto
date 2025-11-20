@@ -1,0 +1,1252 @@
+// Copyright 2023 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package deps_dev.v3alpha;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "deps.dev/api/v3alpha";
+
+// The Deps.dev Insights API provides information about open source software
+// packages, projects, and security advisories. The information is gathered
+// from upstream services like npm, GitHub, and OSV, and augmented by computing
+// dependencies and relationships between entities.
+service Insights {
+  // GetPackage returns information about a package, including a list of its
+  // available versions, with the default version marked if known.
+  rpc GetPackage(GetPackageRequest) returns (Package) {
+    option (google.api.http) = {
+      get: "/v3alpha/systems/{package_key.system}/packages/{package_key.name}"
+    };
+  }
+
+  // GetVersion returns information about a specific package version, including
+  // its licenses and any security advisories known to affect it.
+  rpc GetVersion(GetVersionRequest) returns (Version) {
+    option (google.api.http) = {
+      get: "/v3alpha/systems/{version_key.system}/packages/{version_key.name}/versions/{version_key.version}"
+    };
+  }
+
+  // GetVersionBatch performs GetVersion requests for a batch of versions.
+  // Large result sets may be paginated.
+  rpc GetVersionBatch(GetVersionBatchRequest) returns (VersionBatch) {
+    option (google.api.http) = {
+      post: "/v3alpha/versionbatch"
+      body: "*"
+    };
+  }
+
+  // GetRequirements returns the requirements for a given version in a
+  // system-specific format. Requirements are currently available for
+  // Maven, npm and NuGet.
+  //
+  // Requirements are the dependency constraints specified by the version.
+  rpc GetRequirements(GetRequirementsRequest) returns (Requirements) {
+    option (google.api.http) = {
+      get: "/v3alpha/systems/{version_key.system}/packages/{version_key.name}/versions/{version_key.version}:requirements"
+    };
+  }
+
+  // GetDependencies returns a resolved dependency graph for the given package
+  // version. Dependencies are currently available for Go, npm, Cargo, Maven
+  // and PyPI.
+  //
+  // Dependencies are the resolution of the requirements (dependency
+  // constraints) specified by a version.
+  //
+  // The dependency graph should be similar to one produced by installing the
+  // package version on a generic 64-bit Linux system, with no other
+  // dependencies present. The precise meaning of this varies from system to
+  // system.
+  rpc GetDependencies(GetDependenciesRequest) returns (Dependencies) {
+    option (google.api.http) = {
+      get: "/v3alpha/systems/{version_key.system}/packages/{version_key.name}/versions/{version_key.version}:dependencies"
+    };
+  }
+
+  // GetDependents returns information about the number of distinct packages
+  // known to depend on the given package version. Dependent counts are
+  // currently available for Go, npm, Cargo, Maven and PyPI.
+  //
+  // Dependent counts are derived from the dependency graphs computed by
+  // deps.dev, which means that only public dependents are counted. As such,
+  // dependent counts should be treated as indicative of relative popularity
+  // rather than precisely accurate.
+  rpc GetDependents(GetDependentsRequest) returns (Dependents) {
+    option (google.api.http) = {
+      get: "/v3alpha/systems/{version_key.system}/packages/{version_key.name}/versions/{version_key.version}:dependents"
+    };
+  }
+
+  // GetCapabilityRequest returns counts for direct and indirect calls to
+  // Capslock capabilities for a given package version.
+  // Currently only available for Go.
+  rpc GetCapabilities(GetCapabilitiesRequest) returns (Capabilities) {
+    option (google.api.http) = {
+      get: "/v3alpha/systems/{version_key.system}/packages/{version_key.name}/versions/{version_key.version}:capabilities"
+    };
+  }
+
+  // GetProject returns information about projects hosted by GitHub, GitLab, or
+  // BitBucket, when known to us.
+  rpc GetProject(GetProjectRequest) returns (Project) {
+    option (google.api.http) = {
+      get: "/v3alpha/projects/{project_key.id}"
+    };
+  }
+
+  // GetProjectBatch performs GetProjectBatch requests for a batch of projects.
+  // Large result sets may be paginated.
+  rpc GetProjectBatch(GetProjectBatchRequest) returns (ProjectBatch) {
+    option (google.api.http) = {
+      post: "/v3alpha/projectbatch"
+      body: "*"
+    };
+  }
+
+  // GetProjectPackageVersions returns known mappings between the requested
+  // project and package versions.
+  // At most 1500 package versions are returned. Mappings which were derived
+  // from attestations are served first.
+  rpc GetProjectPackageVersions(GetProjectPackageVersionsRequest) returns (ProjectPackageVersions) {
+    option (google.api.http) = {
+      get: "/v3alpha/projects/{project_key.id}:packageversions"
+    };
+  }
+
+  // GetAdvisory returns information about security advisories hosted by OSV.
+  rpc GetAdvisory(GetAdvisoryRequest) returns (Advisory) {
+    option (google.api.http) = {
+      get: "/v3alpha/advisories/{advisory_key.id}"
+    };
+  }
+
+  // GetSimilarlyNamedPackages returns packages with names that are similar to
+  // the requested package. This similarity relation is computed by deps.dev.
+  rpc GetSimilarlyNamedPackages(GetSimilarlyNamedPackagesRequest) returns (SimilarlyNamedPackages) {
+    option (google.api.http) = {
+      get: "/v3alpha/systems/{package_key.system}/packages/{package_key.name}:similarlyNamedPackages"
+    };
+  }
+
+  // Query returns information about multiple package versions, which can be
+  // specified by name, content hash, or both. If a hash was specified in the
+  // request, it returns the artifacts that matched the hash.
+  //
+  // Querying by content hash is currently supported for npm, Cargo, Maven,
+  // NuGet, PyPI and RubyGems. It is typical for hash queries to return many
+  // results; hashes are matched against multiple release artifacts (such as
+  // JAR files) that comprise package versions, and any given artifact may
+  // appear in several package versions.
+  rpc Query(QueryRequest) returns (QueryResult) {
+    option (google.api.http) = {
+      // Request fields are passed as query parameters.
+      get: "/v3alpha/query"
+    };
+  }
+
+  // PurlLookup searches for a package or package version specified via
+  // [purl](https://github.com/package-url/purl-spec),
+  // and returns the corresponding result from GetPackage or GetVersion as appropriate.
+  //
+  // For a package lookup, the purl should be in the form
+  //   `pkg:type/namespace/name`   for a namespaced package name, or
+  //   `pkg:type/name`             for a non-namespaced package name.
+  //
+  // For a package version lookup, the purl should be in the form
+  //   `pkg:type/namespace/name@version`, or
+  //   `pkg:type/name@version`.
+  //
+  // Extra fields in the purl must be empty, otherwise the request will fail.
+  // In particular, there must be no subpath or qualifiers.
+  //
+  // Supported values for `type` are `cargo`, `golang`, `maven`, `npm`, `nuget`
+  // and `pypi`. Further details on types, and how to form purls of each type,
+  // can be found in the
+  // [purl spec](https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst).
+  //
+  // Special characters in purls must be percent-encoded. This is described in
+  // detail by the
+  // [purl spec](https://github.com/package-url/purl-spec/blob/master/PURL-SPECIFICATION.rst).
+  rpc PurlLookup(PurlLookupRequest) returns (PurlLookupResult) {
+    option (google.api.http) = {
+      get: "/v3alpha/purl/{purl}"
+    };
+  }
+
+  // PurlLookupBatch performs PurlLookup requests for a batch of purls.
+  // This endpoint only supports version lookups. Purls in requests
+  // must include a version field.
+  //
+  // Supported purl forms are
+  //   `pkg:type/namespace/name@version` for a namespaced package name, or
+  //   `pkg:type/name@version`           for a non-namespaced package name.
+  //
+  // Extra fields in the purl must be empty, otherwise the request will fail.
+  // In particular, there must be no subpath or qualifiers.
+  //
+  // Large result sets may be paginated.
+  rpc PurlLookupBatch(PurlLookupBatchRequest) returns (PurlLookupBatchResult) {
+    option (google.api.http) = {
+      post: "/v3alpha/purlbatch"
+      body: "*"
+    };
+  }
+
+  // QueryContainerImages searches for container image repositories on
+  // DockerHub that match the requested OCI Chain ID. At most 1000 image
+  // repositories are returned.
+  //
+  // An image repository is identifier (eg. 'tensorflow') that refers to
+  // a collection of images.
+  //
+  // An OCI Chain ID is a hashed encoding of an ordered sequence of OCI
+  // layers. For further details see the [OCI Chain ID
+  // spec](https://github.com/opencontainers/image-spec/blob/main/config.md#layer-chainid).
+  rpc QueryContainerImages(QueryContainerImagesRequest) returns (QueryContainerImagesResult) {
+    option (google.api.http) = {
+      get: "/v3alpha/querycontainerimages/{chain_id}"
+    };
+  }
+}
+
+// System identifies a package management system.
+enum System {
+  SYSTEM_UNSPECIFIED = 0;
+  GO = 1;
+  RUBYGEMS = 2;
+  NPM = 3;
+  CARGO = 4;
+  MAVEN = 6;
+  PYPI = 7;
+  NUGET = 8;
+}
+
+// PackageKey identifies a package by name.
+message PackageKey {
+  // The package management system containing the package.
+  System system = 1;
+
+  // The name of the package.
+  string name = 2;
+}
+
+// VersionKey identifies a package version by name.
+message VersionKey {
+  // The package management system containing the package.
+  System system = 1;
+
+  // The name of the package.
+  string name = 2;
+
+  // The version of the package.
+  string version = 3;
+}
+
+// ProjectKey identifies a project.
+message ProjectKey {
+  // A project identifier of the form `github.com/user/repo`,
+  // `gitlab.com/user/repo`, or `bitbucket.org/user/repo`.
+  string id = 1;
+}
+
+// AdvisoryKey identifies a security advisory.
+message AdvisoryKey {
+  // The OSV identifier for the security advisory.
+  string id = 1;
+}
+
+// HashType identifies a function used to produce a hash.
+enum HashType {
+  HASH_TYPE_UNSPECIFIED = 0;
+  MD5 = 1;
+  SHA1 = 2;
+  SHA256 = 3;
+  SHA512 = 4;
+}
+
+// Hash represents the output of a hash function. These messages are used to
+// identify package version artifacts by content hash.
+message Hash {
+  // The function used to produce this hash.
+  HashType type = 1;
+
+  // A hash value.
+  bytes value = 2;
+}
+
+// Link represents a link declared by or derived from package version metadata,
+// to an external web resource such as a homepage or source code repository.
+message Link {
+  // A label describing the resource that the link points to.
+  string label = 1;
+
+  // The URL of the link.
+  string url = 2;
+}
+
+// Non-normalized upstream identifiers encountered when syncing this package
+// version.
+message UpstreamIdentifier {
+  // The non-normalized package name string.
+  string package_name = 1;
+  // The non-normalized version string.
+  string version_string = 2;
+  // The upstream source for this identifier.
+  string source = 3;
+}
+
+// DependencyRelation describes the relation of a node within a dependency
+// graph.
+enum DependencyRelation {
+  DEPENDENCY_RELATION_UNSPECIFIED = 0;
+  SELF = 1;
+  DIRECT = 2;
+  INDIRECT = 3;
+}
+
+// SLSAProvenance contains provenance information extracted from a SLSA
+// provenance statement.
+message SLSAProvenance {
+  // The source code repository used to build the version.
+  string source_repository = 1;
+  // The commit of the source code repository the version was built from.
+  string commit = 2;
+  // The URL of the provenance statement if there is one.
+  string url = 3;
+  // The Sigstore bundle containing this attestation was verified using the
+  // [sigstore-go](https://github.com/sigstore/sigstore-go) library.
+  bool verified = 4;
+}
+
+// Attestation represents a generic attestation. Fields are populated based
+// on 'type'.
+message Attestation {
+  // The type of attestation.
+  // One of https://slsa.dev/provenance/v0.2, https://slsa.dev/provenance/v1,
+  // https://docs.pypi.org/attestations/publish/v1.
+  string type = 1;
+  // The URL of the attestation if there is one.
+  string url = 2;
+  // The attestation has been cryptographically verified by deps.dev.
+  // For attestations distributed in a Sigstore bundle, this field indicates
+  // the bundle was verified using the
+  // [sigstore-go](https://github.com/sigstore/sigstore-go) library.
+  bool verified = 3;
+
+  // Only set if type is https://slsa.dev/provenance/v0.2,
+  // https://slsa.dev/provenance/v1,
+  // https://docs.pypi.org/attestations/publish/v1.
+  // The source code repository used to build the version.
+  string source_repository = 4;
+  // The commit of the source code repository the version was built from.
+  string commit = 5;
+}
+
+// GetPackageRequest identifies a package for which to return information.
+message GetPackageRequest {
+  PackageKey package_key = 1;
+}
+
+// Package holds information about a package, including a list of its available
+// versions, with the default version marked if known.
+message Package {
+  // The name of the package. Note that it may differ from the name in the
+  // request, due to canonicalization.
+  PackageKey package_key = 1;
+
+  // The purl that identifies this package. Note that the package name
+  // may differ from the name in the request, due to canonicalization.
+  string purl = 3;
+
+  message Version {
+    // The name of the version. Note that the package name may differ from the
+    // name in the request, due to canonicalization.
+    VersionKey version_key = 1;
+
+    // The purl that identifies this version of the package.
+    // Note that the package and version name in the purl may differ from the
+    // names in the request, due to canonicalization.
+    string purl = 4;
+
+    // The time when this package version was published, if available, as
+    // reported by the package management authority.
+    google.protobuf.Timestamp published_at = 3;
+
+    // If true, this is the default version of the package: the version that is
+    // installed when no version is specified. The precise meaning of this is
+    // system-specific, but it is commonly the version with the greatest
+    // version number, ignoring pre-release versions.
+    bool is_default = 2;
+
+    // If true, this version has been marked as deprecated.
+    bool is_deprecated = 5;
+  }
+
+  // The available versions of the package.
+  repeated Version versions = 2;
+}
+
+// GetVersionRequest identifies a package version for which to return information.
+message GetVersionRequest {
+  VersionKey version_key = 1;
+}
+
+// Version holds information about a package version.
+message Version {
+  // The name of the package version. Note that the package and version name
+  // may differ from names specified in requests, if applicable, due to
+  // canonicalization.
+  VersionKey version_key = 1;
+
+  // The purl that identifies this package version.
+  // Note that the package and version name in the purl may differ from the
+  // names specified in the request, if applicable, due to canonicalization.
+  string purl = 9;
+
+  // The time when this package version was published, if available, as
+  // reported by the package management authority.
+  google.protobuf.Timestamp published_at = 6;
+
+  // If true, this is the default version of the package: the version that is
+  // installed when no version is specified. The precise meaning of this is
+  // system-specific, but it is commonly the version with the greatest version
+  // number, ignoring pre-release versions.
+  bool is_default = 2;
+
+  // If true, this version has been marked as deprecated.
+  bool is_deprecated = 12;
+
+  // The licenses governing the use of this package version.
+  //
+  // We identify licenses as
+  // [SPDX 2.1](https://spdx.dev/spdx-specification-21-web-version/)
+  // expressions. When there is no associated SPDX identifier, we identify a
+  // license as "non-standard". When we are unable to obtain license
+  // information, this field is empty. When more than one license is listed,
+  // their relationship is unspecified.
+  //
+  // For Cargo, Maven, npm, NuGet, PyPI, and RubyGems, license information is
+  // read from the package metadata. For Go, license information is determined
+  // using the [licensecheck](https://github.com/google/licensecheck) package.
+  //
+  // License information is not intended to be legal advice, and you should
+  // independently verify the license or terms of any software for your own
+  // needs.
+  repeated string licenses = 3;
+
+  message License {
+    // For Cargo, Maven, npm, NuGet, PyPI, and RubyGems, this field holds the
+    // license as specified by the package author in the package metadata. For
+    // Go, it holds license information as determined using the
+    // [licensecheck](https://github.com/google/licensecheck) package.
+    string license = 1;
+
+    // The license mapped to an
+    // [SPDX 2.1](https://spdx.dev/spdx-specification-21-web-version/)
+    // expression, or "non-standard" if the license cannot be unambiguously
+    // mapped to SPDX.
+    string spdx = 2;
+  }
+
+  // Detailed information about the licenses governing the use of this package
+  // version.
+  //
+  // When deps.dev is unable to obtain license information, this field is
+  // empty.
+  //
+  // License information is not intended to be legal advice, and you should
+  // independently verify the license or terms of any software for your own
+  // needs.
+  repeated License license_details = 13;
+
+  // Security advisories known to affect this package version directly. Further
+  // information can be requested using the Advisory method.
+  //
+  // Note that this field does not include advisories that affect dependencies
+  // of this package version.
+  repeated AdvisoryKey advisory_keys = 4;
+
+  // Links declared by or derived from package version metadata, to external
+  // web resources such as a homepage or source code repository. Note that
+  // these links are not verified for correctness.
+  repeated Link links = 5;
+
+  // SLSA provenance information for this package version. Extracted from a
+  // SLSA provenance attestation. This is only populated for npm package
+  // versions. See the 'attestations' field for more attestations (including
+  // SLSA provenance) for all systems.
+  repeated SLSAProvenance slsa_provenances = 7;
+
+  // Attestations for this package version.
+  repeated Attestation attestations = 14;
+
+  // URLs for the package management registries this package version is
+  // available from.
+  // Only set for systems that use a central repository for package
+  // distribution: Cargo, Maven, npm, NuGet, PyPI, and RubyGems.
+  repeated string registries = 8;
+
+  message Project {
+    // The identifier for the project.
+    ProjectKey project_key = 1;
+    // How the mapping between project and package version was discovered.
+    ProjectRelationProvenance relation_provenance = 2;
+    // What the relationship between the project and the package version is.
+    ProjectRelationType relation_type = 3;
+  }
+
+  // Projects that are related to this package version.
+  repeated Project related_projects = 10;
+
+  // Some upstream identifiers used to refer to this package version.
+  repeated UpstreamIdentifier upstream_identifiers = 11;
+}
+
+// GetVersionBatchRequest identifies a batch of versions for which to return
+// Version information.
+message GetVersionBatchRequest {
+  // The batch list of versions to return Version information for.
+  // Up to 5000 requests are allowed in a single batch.
+  repeated GetVersionRequest requests = 1;
+  // If set, request the next page of the result set. It must be set to the
+  // page token provided by the previous version batch response. All other
+  // request fields must be the same as in the initial request.
+  string page_token = 2;
+}
+
+// VersionBatch contains a batch of version information. If there is more
+// version information to be returned, a page token is included in the
+// response.
+message VersionBatch  {
+  message Response {
+     // The uncanonicalized request.
+     GetVersionRequest request = 1;
+     // The version information for the request. If the version was not found,
+     // this field is empty.
+     Version version = 2;
+  }
+  // The Version information for this page.
+  repeated Response responses = 1;
+  // If set, this batch is not the full result set. This page token
+  // may be used to fetch more results in a subsequent request.
+  string next_page_token = 2;
+}
+
+// GetRequirementsRequest identifies a version for which to return
+// requirements.
+message GetRequirementsRequest {
+  VersionKey version_key = 1;
+}
+
+// Requirements contains a system-specific representation of the requirements
+// specified by a package version. Only one of its fields will be set.
+message Requirements {
+  message NuGet {
+     message DependencyGroup {
+      // The target framework that this dependency group is for.
+      string target_framework = 1;
+
+      message Dependency {
+        // The name of the package.
+        string name = 1;
+
+        // The requirement on the package.
+        string requirement = 2;
+      }
+      // The requirements belonging to this dependency group.
+      repeated Dependency dependencies = 2;
+    }
+    // The requirements grouped by target framework.
+    repeated DependencyGroup dependency_groups = 1;
+  }
+  // The NuGet-specific representation of the version's requirements.
+  //
+  // Note that the term "dependency" is used here to mean "a single unresolved
+  // requirement" to be consistent with how the term is used in the NuGet
+  // ecosystem. This is different to how it is used elsewhere in the deps.dev
+  // API.
+  NuGet nuget = 1;
+
+  message NPM {
+    message Dependencies {
+      message Dependency {
+        // The name of the package, the key in the original object.
+        string name = 1;
+        // The requirement, the corresponding value from the original object.
+        string requirement = 2;
+      }
+      // The "dependencies" field of a package.json, represented as a list of
+      // name, requirement pairs.
+      repeated Dependency dependencies = 1;
+      // The "devDependencies" field of a package.json. The format is the
+      // same as "dependencies".
+      repeated Dependency dev_dependencies = 2;
+      // The "optionalDependencies" field of a package.json. The format is
+      // the same as "dependencies".
+      repeated Dependency optional_dependencies = 3;
+      // The "peerDependencies" field of a package.json. The format is the
+      // same as "dependencies".
+      repeated Dependency peer_dependencies = 4;
+      // The "bundleDependencies" field of a package.json: a list of package
+      // names. In the package.json this may also just be the boolean value
+      // "true", in which case this field will contain the names of all the
+      // dependencies from the "dependencies" field.
+      repeated string bundle_dependencies = 5;
+    }
+    message Bundle {
+      // The path inside the tarball where this dependency was found.
+      string path = 1;
+      // The name of the bundled package, as declared inside the bundled
+      // package.json.
+      string name = 2;
+      // The version of this package, as declared inside the bundled
+      // package.json.
+      string version = 3;
+      // The dependency-related fields from the bundled package.json.
+      Dependencies dependencies = 4;
+    }
+
+    // The dependency-related fields declared in the requested package version's
+    // package.json.
+    Dependencies dependencies = 1;
+    // Contents of any additional package.json files found inside the
+    // "node_modules" folder of the version's tarball, including nested
+    // "node_modules".
+    repeated Bundle bundled = 2;
+  }
+  // The npm-specific representation of the version's requirements.
+  //
+  // Note that the term "dependency" is used here to mean "a single unresolved
+  // requirement" to be consistent with how the term is used in the npm
+  // ecosystem. This is different to how it is used elsewhere in the deps.dev
+  // API.
+  NPM npm = 2;
+
+  message Maven {
+    message Dependency {
+      // The name of the package.
+      string name = 1;
+      // The version requirement of the dependency.
+      string version = 2;
+      // The classifier of the dependency, which distinguishes artifacts that
+      // differ in content.
+      string classifier = 3;
+      // The type of the dependency, defaults to jar.
+      string type = 4;
+      // The scope of the dependency, specifies how to limit the transitivity
+      // of a dependency.
+      string scope = 5;
+      // Whether the dependency is optional or not.
+      string optional = 6;
+      // The dependencies to be excluded, in the form of a list of package
+      // names.
+      // Exclusions may contain wildcards in both groupID and artifactID.
+      repeated string exclusions = 7;
+    }
+    message Property {
+      // The name of the property.
+      string name = 1;
+      // The value of the property.
+      string value = 2;
+    }
+    message Repository {
+      // The ID of the repository.
+      string id = 1;
+      // The URL of the repository.
+      string url = 2;
+      // Whether the description of the repository follows a common layout.
+      string layout = 3;
+      // Whether the repository is enabled for release downloads.
+      string releases_enabled = 4;
+      // Whether the repository is enabled for snapshot downloads.
+      string snapshots_enabled = 5;
+    }
+    message Profile {
+      message Activation {
+        message JDK {
+          // The JDK requirement to activate the profile.
+          string jdk = 1;
+        }
+        message OS {
+          // The name of the operating system.
+          string name = 1;
+          // The family of the operating system.
+          string family = 2;
+          // The CPU architecture of the operating system,
+          string arch = 3;
+          // The version of the operating system.
+          string version = 4;
+        }
+        message Property {
+          // The property requirement to activate the profile.
+          // This can be a system property or CLI user property.
+          Maven.Property property = 1;
+        }
+        message File {
+          // The name of the file that its existence activates the profile.
+          string exists = 1;
+          // The name of the file, activate the profile if the file is missing.
+          string missing = 2;
+        }
+        // Whether the profile is active by default.
+        string active_by_default = 1;
+        // The JDK requirement of the activation.
+        JDK jdk = 2;
+        // The operating system requirement of the activation.
+        OS os = 3;
+        // The property requirement of the activation.
+        Property property = 4;
+        // The file requirement of the activation.
+        File file = 5;
+      }
+      // The ID of the profile.
+      string id = 1;
+      // The activation requirement of the profile.
+      Activation activation = 2;
+      // The dependencies specified in the profile.
+      repeated Dependency dependencies = 3;
+      // The dependency management specified in the profile.
+      repeated Dependency dependency_management = 4;
+      // The properties specified in the profile.
+      repeated Property properties = 5;
+      // The repositories specified in the profile.
+      repeated Repository repositories = 6;
+    }
+    // The direct parent of a package version.
+    VersionKey parent = 1;
+    // The list of dependencies.
+    repeated Dependency dependencies = 2;
+    // The list of dependency management.
+    // The format is the same as dependencies.
+    repeated Dependency dependency_management = 3;
+    // The list of properties, used to resolve placeholders.
+    repeated Property properties = 4;
+    // The list of repositories.
+    repeated Repository repositories = 5;
+    // The list of profiles.
+    repeated Profile profiles = 6;
+  }
+  // The Maven-specific representation of the version's requirements.
+  //
+  // Note that the term "dependency" is used here to mean "a single unresolved
+  // requirement" to be consistent with how the term is used in the Maven
+  // ecosystem. This is different to how it is used elsewhere in the deps.dev
+  // API.
+  //
+  // This data is as it is declared in a version POM file. The data in parent
+  // POMs are not merged.
+  // Any string field may contain references to properties, and the properties
+  // are not interpolated.
+  Maven maven = 3;
+
+  message RubyGems {
+    message Dependency {
+      // The name of the package.
+      string name = 1;
+      // The requirement on the package.
+      string requirement = 2;
+    }
+    // The list of runtime dependencies.
+    repeated Dependency runtime_dependencies = 1;
+    // The list of development dependencies.
+    repeated Dependency dev_dependencies = 2;
+  }
+  // The RubyGems-specific representation of the version's requirements.
+  //
+  // Note that the term "dependency" is used here to mean "a single unresolved
+  // requirement" to be consistent with how the term is used in the npm
+  // ecosystem. This is different to how it is used elsewhere in the deps.dev
+  // API.
+  RubyGems rubygems = 4;
+}
+
+// GetDependenciesRequest identifies a package version for which to return
+// dependencies.
+message GetDependenciesRequest {
+  VersionKey version_key = 1;
+}
+
+// Dependencies holds a resolved dependency graph for a package version.
+//
+// The dependency graph should be similar to one produced by installing the
+// package version on a generic 64-bit Linux system, with no other dependencies
+// present. The precise meaning of this varies from system to system.
+message Dependencies {
+  // Node represents a node in a resolved dependency graph.
+  message Node {
+    // The package version represented by this node. Note that the package and
+    // version name may differ from the names in the request, if provided, due
+    // to canonicalization.
+    //
+    // In some systems, a graph may contain multiple nodes for the same package
+    // version.
+    VersionKey version_key = 1;
+
+    // If true, this is a bundled dependency.
+    //
+    // For bundled dependencies, the package name in the version key encodes
+    // how the dependency is bundled. As an example, a bundled dependency with
+    // a name like "a>1.2.3>b>c" is part of the dependency graph of package "a"
+    // at version "1.2.3", and has the local name "c". It may or may not be the
+    // same as a package with the global name "c".
+    bool bundled = 2;
+
+    // Whether this node represents a direct or indirect dependency within this
+    // dependency graph. Note that it's possible for a dependency to be both
+    // direct and indirect; if so, it is marked as direct.
+    DependencyRelation relation = 4;
+
+    // Errors associated with this node of the graph, such as an unresolved
+    // dependency requirement. An error on a node may imply the graph as a
+    // whole is incorrect. These error messages have no defined format and are
+    // intended for human consumption.
+    repeated string errors = 3;
+  }
+  // The nodes of the dependency graph. The first node is the root of the graph.
+  repeated Node nodes = 1;
+
+  // Edge represents a directed edge in a resolved dependency graph: a
+  // dependency relation between two nodes.
+  message Edge {
+    // The node declaring the dependency, specified as an index into the list of
+    // nodes.
+    uint32 from_node = 1;
+
+    // The node resolving the dependency, specified as an index into the list of
+    // nodes.
+    uint32 to_node = 2;
+
+    // The requirement resolved by this edge, as declared by the "from" node.
+    // The meaning of this field is system-specific. As an example, in npm, the
+    // requirement "^1.0.0" may be resolved by the version "1.2.3".
+    string requirement = 3;
+  }
+  // The edges of the dependency graph.
+  repeated Edge edges = 2;
+
+  // Any error associated with the dependency graph that is not specific to a
+  // node. An error here may imply the graph as a whole is incorrect.
+  // This error message has no defined format and is intended for human
+  // consumption.
+  string error = 3;
+}
+
+// GetDependentsRequest identifies a package version for which to return
+// dependent counts.
+message GetDependentsRequest {
+  VersionKey version_key = 1;
+}
+
+// Dependents holds information about the number of distinct packages known to
+// depend on a package version.
+//
+// Dependent counts are derived from the dependency graphs computed by
+// deps.dev, which means that only public dependents are counted. As such,
+// dependent counts should be treated as indicative of relative popularity
+// rather than precisely accurate.
+message Dependents {
+  // The number of packages known to depend on this package version, either
+  // directly or indirectly. Note that this may be less than the sum of the
+  // direct and indirect dependent counts.
+  uint32 dependent_count = 1;
+
+  // The number of packages known to depend directly on this package version.
+  uint32 direct_dependent_count = 2;
+
+  // The number of packages known to depend indirectly on this package version.
+  uint32 indirect_dependent_count = 3;
+}
+
+// GetCapabilitiesRequest identifies a package version for which to return
+// capabilities.
+message GetCapabilitiesRequest {
+  VersionKey version_key = 1;
+}
+
+// Capabilities holds identified capabilities and callpaths for a package version.
+message Capabilities {
+  // Capabilities stores the capabilities identified for the package.
+  message Capability {
+    // A Capslock capability, indicating that the packages uses this capability.
+    string capability = 1;
+    // The number of calls from this package directly to this capability.
+    uint32 direct_count = 2;
+    // The number of calls from this package to the capability via another
+    // package.
+    uint32 indirect_count = 3;
+  }
+  // The Capslock capabilities associated with a package, along with the number
+  // of direct and indirect callpaths to this capability.
+  repeated Capability capabilities = 1;
+}
+
+// GetProjectRequest identifies a project for which to return information.
+message GetProjectRequest {
+  ProjectKey project_key = 1;
+}
+
+// Project holds information about a project hosted by GitHub, GitLab, or
+// Bitbucket.
+message Project {
+  // The identifier for the project. Note that this may differ from the
+  // identifier in the request, due to canonicalization.
+  ProjectKey project_key = 1;
+
+  // The number of open issues reported by the project host.
+  // Only available for GitHub and GitLab.
+  int32 open_issues_count = 2;
+
+  // The number of stars reported by the project host.
+  // Only available for GitHub and GitLab.
+  int32 stars_count = 3;
+
+  // The number of forks reported by the project host.
+  // Only available for GitHub and GitLab.
+  int32 forks_count = 4;
+
+  // The license reported by the project host.
+  string license = 5;
+
+  // The description reported by the project host.
+  string description = 6;
+
+  // The homepage reported by the project host.
+  string homepage = 7;
+
+  message Scorecard {
+    // The date at which the scorecard was produced.
+    // The time portion of this field is midnight UTC.
+    google.protobuf.Timestamp date = 1;
+
+    message Repository {
+      // The source code repository the scorecard was produced from.
+      string name = 1;
+
+      // The source code commit the scorecard was produced from.
+      string commit = 2;
+    }
+
+    // The source code repository and commit the scorecard was produced from.
+    Repository repository = 2;
+
+    message ScorecardDetails {
+      // The version of the Scorecard program used to produce the scorecard.
+      string version = 1;
+
+      // The commit of the Scorecard program used to produce the scorecard.
+      string commit = 2;
+    }
+
+    // The version and commit of the Scorecard program used to produce the
+    // scorecard.
+    ScorecardDetails scorecard = 3;
+
+    message Check {
+      // The name of the check.
+      string name = 1;
+
+      message Documentation {
+        // A short description of the check.
+        string short_description = 1;
+
+        // A link to more details about the check.
+        string url = 2;
+      }
+
+      // Human-readable documentation for the check.
+      Documentation documentation = 2;
+
+      // A score in the range [0,10]. A higher score is better.
+      // A negative score indicates that the check did not run successfully.
+      int32 score = 3;
+
+      // The reason for the score.
+      string reason = 4;
+
+      // Further details regarding the check.
+      repeated string details = 5;
+    }
+
+    // The results of the
+    // [Scorecard Checks](https://github.com/ossf/scorecard#scorecard-checks)
+    // performed on the project.
+    repeated Check checks = 4;
+
+    // A weighted average score in the range [0,10]. A higher score is better.
+    float overall_score = 5;
+
+    // Additional metadata associated with the scorecard.
+    repeated string metadata = 6;
+  }
+
+  // An [OpenSSF Scorecard](https://github.com/ossf/scorecard) for the project,
+  // if one is available.
+  Scorecard scorecard = 8;
+
+  message OSSFuzzDetails {
+    // The total number of lines of code in the project.
+    int32 line_count = 1;
+    // The number of lines of code covered by fuzzing.
+    int32 line_cover_count = 2;
+    // The date the fuzz test that produced the coverage information was run
+    // against this project.
+    // The time portion of this field is midnight UTC.
+    google.protobuf.Timestamp date = 3;
+    // The URL containing the configuration for the project in the
+    // OSS-Fuzz repository.
+    string config_url = 4;
+  }
+
+  // Details of this project's testing by the
+  // [OSS-Fuzz service](https://google.github.io/oss-fuzz/).
+  // Only set if the project is tested by OSS-Fuzz.
+  OSSFuzzDetails oss_fuzz = 9;
+}
+
+// GetProjectBatchRequest identifies a batch of projects for which to return
+// Project information.
+message GetProjectBatchRequest {
+  // The batch list of projects to return Project information for.
+  // Up to 5000 requests are allowed in a single batch.
+  repeated GetProjectRequest requests = 1;
+  // If set, request the next page of the result set. It must be set to the
+  // page token provided by the previous project batch response. All other
+  // request fields must be the same as in the initial request.
+  string page_token = 2;
+}
+
+// ProjectBatch contains a batch of project information. If there is more
+// project information to be returned, a page token is included in the
+// response.
+message ProjectBatch  {
+  message Response {
+     // The uncanonicalized request.
+     GetProjectRequest request = 1;
+     // The project information for the request. If the project was not found,
+     // this field is empty.
+     Project project = 2;
+  }
+  // The Project information for this page.
+  repeated Response responses = 1;
+  // If set, this batch is not the full result set. This page token
+  // may be used to fetch more results in a subsequent request.
+  string next_page_token = 2;
+}
+
+// ProjectRelationType specifies a relationship between a project and a package version.
+enum ProjectRelationType {
+  UNKNOWN_PROJECT_RELATION_TYPE = 0;
+
+  // This project is this package version's source code repository.
+  SOURCE_REPO = 1;
+
+  // This project is the package version's issue tracker.
+  ISSUE_TRACKER = 2;
+}
+
+// How the mapping between project and package version was discovered.
+enum ProjectRelationProvenance {
+  UNKNOWN_PROJECT_RELATION_PROVENANCE = 0;
+
+  // There is a SLSA attestation that links this package version to this project.
+  SLSA_ATTESTATION = 1;
+
+  // This project contains the package version (Go specific).
+  GO_ORIGIN = 2;
+
+  // There is a [PyPI Publish
+  // attestation](https://docs.pypi.org/attestations/publish/v1/) that links
+  // this package version to this project.
+  PYPI_PUBLISH_ATTESTATION = 3;
+
+  // The package version's metadata contains an unverified link to this project.
+  UNVERIFIED_METADATA = 10;
+}
+
+message GetProjectPackageVersionsRequest {
+  ProjectKey project_key = 1;
+}
+
+message ProjectPackageVersions {
+  message Version {
+    // The identifier for the version.
+    VersionKey version_key = 1;
+    // The SLSA provenance statements that link the version to the project. This
+    // is only populated for npm package versions. See the 'attestations' field
+    // for more attestations (including SLSA provenance) for all systems.
+    repeated SLSAProvenance slsa_provenances = 2;
+    // Attestations that link the version to the project.
+    repeated Attestation attestations = 5;
+    // What the relationship between the project and the package version is.
+    ProjectRelationType relation_type = 3;
+    // How the mapping between project and package version was discovered.
+    ProjectRelationProvenance relation_provenance = 4;
+  }
+
+  // The versions that were built from the source code contained in this
+  // project.
+  repeated Version versions = 1;
+}
+
+// GetAdvisoryRequest identifies a security advisory for which to return
+// information.
+message GetAdvisoryRequest {
+  AdvisoryKey advisory_key = 1;
+}
+
+// Advisory holds information about a security advisory hosted by OSV.
+message Advisory {
+  // The identifier for the security advisory. Note that this may differ from
+  // the identifier in the request, due to canonicalization.
+  AdvisoryKey advisory_key = 1;
+
+  // The URL of the security advisory.
+  string url = 2;
+
+  // A brief human-readable description.
+  string title = 3;
+
+  // Other identifiers used for the advisory, including CVEs.
+  repeated string aliases = 4;
+
+  // The severity of the advisory as a CVSS v3 score in the range [0,10].
+  // A higher score represents greater severity.
+  float cvss3_score = 5;
+
+  // The severity of the advisory as a CVSS v3 vector string.
+  string cvss3_vector = 6;
+}
+
+// GetSimilarlyNamedPackagesRequest identifies a package for which to return
+// similarly-named packages.
+message GetSimilarlyNamedPackagesRequest{
+  PackageKey package_key = 1;
+}
+
+// SimilarlyNamedPackages contains packages with similar names.
+message SimilarlyNamedPackages {
+  // The name of the package. Note that the package name may differ from the
+  // name in the request, due to canonicalization.
+  PackageKey package_key = 1;
+
+  message Package {
+    //  A package with a name similar to the requested package.
+    PackageKey package_key = 1;
+  }
+  // Packages with names that deps.dev has calculated are similar to the name
+  // of the requested package. Note that this is not necessarily a symmetric
+  // relation, as we take into account popularity when calculating similar
+  // names.
+  repeated Package packages = 2;
+}
+
+// QueryRequest identifies package versions for which to return information.
+// At least one of its fields must be set, and both fields may be set to narrow
+// the results.
+message QueryRequest {
+  // A content hash for an artifact associated with a package version, such as a
+  // JAR file. Currently supported for npm, Cargo, Maven, and NuGet. Note that
+  // hashes and package versions have a many-to-many relationship.
+  Hash hash = 1;
+
+  // The name of the package version.
+  VersionKey version_key = 2;
+}
+
+// QueryResult holds information about package versions matching the query.
+message QueryResult {
+  message Result {
+    // A package version matching the query.
+    Version version = 1;
+
+    // An artifact is content associated with a package version, such as a JAR
+    // file. Currently supported for npm, Cargo, Maven, and NuGet.
+    message Artifact {
+       // The origin of the artifact with this hash.
+       string url = 1;
+    }
+    // If a hash was specified in the request, artifacts describes the upstream
+    // artifacts matching the hash.
+    repeated Artifact artifacts = 2;
+  }
+  // Package versions matching the query. At most 1000 versions are returned.
+  repeated Result results = 1;
+}
+
+// PurlLookupRequest identifies a purl to search for.
+message PurlLookupRequest {
+  // The purl to search for.
+  string purl = 1;
+}
+
+// PurlLookupResult holds information corresponding to the queried purl,
+// which may be either package, or package version.
+// Only one field will be populated, which depends on the form of the queried purl.
+message PurlLookupResult {
+  // Package result (as from GetPackage) for purls that do not include a version.
+  Package package = 1;
+  // Version result (as from GetVersion), for purls that include a version.
+  Version version = 2;
+}
+
+// PurlLookupBatchRequest identifies a batch of purls to search for.
+message PurlLookupBatchRequest {
+  // The batch list of purls to search for.
+  // Up to 5000 requests are allowed in a single batch.
+  repeated PurlLookupRequest requests = 1;
+  // If set, request the next page of the result set. It must be set to the
+  // page token provided by the previous purl lookup batch response. All other
+  // request fields must be the same as in the initial request.
+  string page_token = 2;
+}
+
+// PurlLookupBatchResult contains a batch of PurlLookupResults. If there is more
+// information to be returned, a page token is included in the response.
+message PurlLookupBatchResult {
+  message Response {
+    // The uncanonicalized request.
+    PurlLookupRequest request = 1;
+    // The result corresponding to the request. If no result was found for the
+    // request, this field is empty.
+    PurlLookupResult result = 2;
+  }
+  // The purl lookup results for this page.
+  repeated Response responses = 1;
+  // If set, this batch is not the full result set. This page token
+  // may be used to fetch more results in a subsequent request.
+  string next_page_token = 2;
+}
+
+// QueryContainerImagesRequest contains an OCI Chain ID to search for.
+message QueryContainerImagesRequest {
+  // An OCI Chain ID referring to an ordered sequence of OCI layers.
+  string chain_id = 1;
+}
+
+// QueryContainerImagesResults contains repositories corresponding to the
+// queried OCI Chain ID.
+message QueryContainerImagesResult {
+  message Result {
+    // An image repository (eg. 'tensorflow') referring to collection of
+    // images.
+    string repository = 1;
+  }
+  // The query results. At most 1000 results are returned.
+  repeated Result results = 1;
+}
