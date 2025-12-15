@@ -1,0 +1,12 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: "github.com/sqlc-dev/sqlc/internal"
+plugins:
+  - plugin: buf.build/protocolbuffers/go:v1.30.0
+    out: internal
+    opt: paths=source_relative
+  - plugin: buf.build/grpc/go:v1.3.0
+    out: internal
+    opt: paths=source_relative

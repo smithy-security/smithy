@@ -1,0 +1,5 @@
+description: Snyk based workflow
+name: snyk
+components:
+- component: file://components/targets/git-clone/component.yaml
+- component: file://components/scanners/snyk-sbom/component.yaml
