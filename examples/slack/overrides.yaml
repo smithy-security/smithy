@@ -1,8 +1,14 @@
 git-clone:
 - name: "repo_url"
   type: "string"
-  value: "https://github.com/sqreen/go-dvwa"
+  value: "<your repo url>"
 slack:
-- name: "slack_webhook"
+- name: "slack_token"
   type: "string"
-  value: "Your webhook here"
+  value: "xoxb-<your token>"
+- name: "slack_channel"
+  type: "string"
+  value: "C<your channel id>"
+- name: "slack_debug"
+  type: "string"
+  value: "false"

@@ -1,45 +1,58 @@
 package reporter
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"fmt"
 	"log/slog"
-	"net/http"
-	"strings"
-	"time"
+	"net/url"
+	"strconv"
+	"text/template"
 
 	"github.com/go-errors/errors"
 	"github.com/smithy-security/pkg/env"
 	vf "github.com/smithy-security/smithy/sdk/component/vulnerability-finding"
-	ocsffindinginfo "github.com/smithy-security/smithy/sdk/gen/ocsf_ext/finding_info/v1"
 	componentlogger "github.com/smithy-security/smithy/sdk/logger"
+
+	"github.com/smithy-security/smithy/components/reporters/slack/internal/reporter/paginator"
+	"github.com/smithy-security/smithy/components/reporters/slack/internal/reporter/slack"
 )
 
 type (
 	Conf struct {
-		SlackWebhook string
+		SmithyInstanceName string
+		SmithyInstanceID   string
+		SmithyDashURL      *url.URL
+		SlackClientConfig  slack.Config
 	}
 
-	slackLogger struct {
-		Conf   *Conf
-		Client *http.Client
+	// MessageSender abstract sending messages to the underlying chat.
+	MessageSender interface {
+		CreateThread(ctx context.Context, msg string) (string, error)
+		SendMessages(ctx context.Context, threadID string, messages []string) error
 	}
 
-	SlackRequestBody struct {
-		Text string `json:"text"`
+	slackReporter struct {
+		conf   *Conf
+		client MessageSender
 	}
 )
 
-// NewSlackLogger returns a new slack logger.
-func NewSlackLogger(c *Conf, client *http.Client) (*slackLogger, error) {
+// NewSlackReporter returns a new slack reporter.
+func NewSlackReporter(c *Conf, client MessageSender) (*slackReporter, error) {
 	if c == nil {
 		return nil, errors.New("configuration is nil")
 	}
-	return &slackLogger{
-		Conf:   c,
-		Client: client,
+
+	if c.SlackClientConfig.Token == "" {
+		return nil, errors.New("Slack token is required")
+	}
+
+	if c.SlackClientConfig.ChannelID == "" {
+		return nil, errors.New("Slack channel ID is required")
+	}
+
+	return &slackReporter{
+		conf:   c,
+		client: client,
 	}, nil
 }
 
@@ -50,106 +63,148 @@ func NewConf(envLoader env.Loader) (*Conf, error) {
 		envOpts = append(envOpts, env.WithLoader(envLoader))
 	}
 
-	webhook, err := env.GetOrDefault(
-		"SLACK_WEBHOOK",
+	token, err := env.GetOrDefault(
+		"SLACK_TOKEN",
 		"",
-		append(envOpts, env.WithDefaultOnError(false))...,
+		env.WithDefaultOnError(true),
 	)
 	if err != nil {
-		return nil, errors.Errorf("could not get env variable for SLACK_WEBHOOK: %w", err)
+		return nil, errors.Errorf("could not get env variable for SLACK_TOKEN: %w", err)
+	}
+
+	channel, err := env.GetOrDefault(
+		"SLACK_CHANNEL",
+		"",
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return nil, errors.Errorf("could not get env variable for SLACK_CHANNEL: %w", err)
+	}
+
+	if token == "" || channel == "" {
+		return nil, errors.New("both SLACK_TOKEN and SLACK_CHANNEL are required")
+	}
+
+	slackClientDebug, err := env.GetOrDefault(
+		"SLACK_DEBUG",
+		"false",
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return nil, errors.Errorf("could not get env variable for SLACK_DEBUG: %w", err)
+	}
+	slackDebug, err := strconv.ParseBool(slackClientDebug)
+	if err != nil {
+		return nil, errors.Errorf("SLACK_DEBUG must be a boolean value('true' or 'false'), it is '%s' instead: %w", slackClientDebug, err)
+	}
+
+	smithyInstanceName, err := env.GetOrDefault(
+		"SMITHY_INSTANCE_NAME",
+		"",
+		env.WithDefaultOnError(true),
+	)
+	if err != nil {
+		return nil, errors.Errorf("could not get env variable for SMITHY_INSTANCE_NAME: %w", err)
+	}
+
+	instanceID, err := env.GetOrDefault("SMITHY_INSTANCE_ID", "")
+	if err != nil {
+		return nil, errors.Errorf("failed to get env var SMITHY_INSTANCE_ID: %w", err)
+	}
+
+	dURL, err := env.GetOrDefault("SMITHY_PUBLIC_URL", "", env.WithDefaultOnError(true))
+	if err != nil {
+		return nil, errors.Errorf("failed to get env var SMITHY_PUBLIC_URL: %w", err)
+	}
+	dashURL, err := url.Parse(dURL)
+	if err != nil {
+		return nil, errors.Errorf("failed to parse env var SMITHY_PUBLIC_URL: %w", err)
 	}
 
 	return &Conf{
-		SlackWebhook: webhook,
+		SlackClientConfig: slack.Config{
+			Token:      token,
+			ChannelID:  channel,
+			Debug:      slackDebug,
+			BaseClient: nil, // This will be set later in the main function with a retry client
+		},
+		SmithyInstanceName: smithyInstanceName,
+		SmithyInstanceID:   instanceID,
+		SmithyDashURL:      dashURL,
 	}, nil
 }
 
-// Report logs the findings summary in slack.
-func (s slackLogger) Report(
-	ctx context.Context,
-	findings []*vf.VulnerabilityFinding,
-) error {
+// Report logs the findings summary in slack and optionally creates a thread with detailed findings.
+func (r slackReporter) Report(ctx context.Context, findings []*vf.VulnerabilityFinding) error {
 	logger := componentlogger.
 		LoggerFromContext(ctx).
 		With(slog.Int("num_findings", len(findings)))
 
 	if len(findings) == 0 {
-		logger.Error("Received 0 scans, this is likely an error, skipping sending empty message")
+		logger.Debug("no findings found, skipping...")
 		return nil
 	}
-	scanID := findings[0].Finding.FindingInfo.Uid
-	numResults := s.countFindings(findings)
-	startTime := findings[0].Finding.StartTime
-	asTime := time.Unix(*startTime, 0).UTC()
-	toDatetime := asTime.Format(time.RFC3339)
-	newFindings := s.countNewFindings(findings)
-	logger.Debug("reporting",
-		slog.Int("new_findings", newFindings),
-		slog.String("start_time", toDatetime),
-		slog.Int("num_results", numResults))
 
-	msg := fmt.Sprintf("Smithy scan %s, started at %s, completed with %d findings, out of which %d new", scanID, toDatetime, numResults, newFindings)
-	return s.push(ctx, msg, s.Conf.SlackWebhook)
-}
-
-func (s slackLogger) push(ctx context.Context, b string, webhook string) error {
-
-	var err error
-	body, err := json.Marshal(SlackRequestBody{Text: b})
+	// Create thread
+	threadMsg, err := r.getThreadHeading(r.countMsgs(findings))
 	if err != nil {
-		return err
+		return errors.Errorf("error getting thread message: %w", err)
 	}
-	ctx, cancelFunc := context.WithTimeout(ctx, time.Duration(10*time.Second))
-	defer cancelFunc()
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhook, bytes.NewBuffer(body))
+	threadID, err := r.client.CreateThread(ctx, threadMsg)
 	if err != nil {
-		return err
+		return errors.Errorf("error creating thread: %w", err)
 	}
 
-	req.Header.Add("Content-Type", "application/json")
+	// Paginate
+	chunks := paginator.StreamObjects(findings, 100)
 
-	resp, err := s.Client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
+	// Send messages
+	for chunk := range chunks {
+		msgs, err := r.getMsgs(chunk)
+		if err != nil {
+			return errors.Errorf("error getting messages: %w", err)
+		}
 
-	if resp.StatusCode != http.StatusOK {
-		return errors.Errorf("failed to submit to slack, status code: %d", resp.StatusCode)
+		logger.Debug("thread created", slog.String("thread_id", threadID))
+		if err := r.client.SendMessages(ctx, threadID, msgs); err != nil {
+			return errors.Errorf("error sending messages: %w", err)
+		}
 	}
-
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(resp.Body); err != nil {
-		return fmt.Errorf("could not read from resp: %w", err)
-	}
-
-	if strings.ToLower(buf.String()) != "ok" {
-		return errors.Errorf("non-ok response returned from Slack, received:%s", buf.String())
-	}
-	slog.Debug("successfully sent overview to slack")
+	logger.Info("reporting completed successfully", slog.String("thread_id", threadID))
 	return nil
 }
 
-func (s slackLogger) countNewFindings(findings []*vf.VulnerabilityFinding) int {
-	count := 0
+func (r slackReporter) countMsgs(findings []*vf.VulnerabilityFinding) int {
+	var total int
 	for _, finding := range findings {
-		duplicate := false
-		for _, e := range finding.Finding.Enrichments {
-			if e.Type != nil && ocsffindinginfo.Enrichment_EnrichmentType_value[*e.Type] == int32(ocsffindinginfo.Enrichment_ENRICHMENT_TYPE_DUPLICATION) {
-				duplicate = true
-			}
-		}
-		if !duplicate {
-			count += 1
-		}
+		total += len(finding.Finding.GetVulnerabilities())
 	}
-	return count
+	return total
 }
 
-func (s slackLogger) countFindings(findings []*vf.VulnerabilityFinding) int {
-	count := 0
-	for _, finding := range findings {
-		count += len(finding.Finding.Vulnerabilities)
+func (r slackReporter) getMsgs(objectPairs []paginator.ObjectPair) ([]string, error) {
+	tpl, err := template.New("issue").Parse(issueTpl)
+	if err != nil {
+		return nil, errors.Errorf("could not parse thread template: %w", err)
 	}
-	return count
+
+	var msgs []string
+	for _, pair := range objectPairs {
+		data, err := NewIssueData(pair.Finding, r.conf)
+		if err != nil {
+			return nil, errors.Errorf("could not create issue data from finding: %w", err)
+		}
+		vulnData, err := data.EnrichWithNewVulnerability(pair.Vulnerability)
+		if err != nil {
+			return nil, errors.Errorf("could not create issue data from vulnerability: %w", err)
+		}
+		msg, err := vulnData.String(tpl)
+		if err != nil {
+			return nil, errors.Errorf("could not create issue message from template: %w", err)
+		}
+		msgs = append(msgs, msg)
+
+	}
+
+	return msgs, nil
 }

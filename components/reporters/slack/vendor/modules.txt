@@ -33,6 +33,9 @@ github.com/apparentlymart/go-textseg/v15/textseg
 # github.com/bmatcuk/doublestar v1.3.4
 ## explicit; go 1.12
 github.com/bmatcuk/doublestar
+# github.com/cenkalti/backoff/v5 v5.0.2
+## explicit; go 1.23
+github.com/cenkalti/backoff/v5
 # github.com/cpuguy83/go-md2man/v2 v2.0.6
 ## explicit; go 1.12
 github.com/cpuguy83/go-md2man/v2/md2man
@@ -59,6 +62,9 @@ github.com/google/go-cmp/cmp/internal/value
 # github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
+# github.com/gorilla/websocket v1.5.3
+## explicit; go 1.12
+github.com/gorilla/websocket
 # github.com/hashicorp/hcl/v2 v2.23.0
 ## explicit; go 1.18
 github.com/hashicorp/hcl/v2
@@ -126,9 +132,19 @@ github.com/russross/blackfriday/v2
 # github.com/shopspring/decimal v1.4.0
 ## explicit; go 1.10
 github.com/shopspring/decimal
+# github.com/slack-go/slack v0.17.3
+## explicit; go 1.22
+github.com/slack-go/slack
+github.com/slack-go/slack/internal/backoff
+github.com/slack-go/slack/internal/errorsx
+github.com/slack-go/slack/internal/timex
+github.com/slack-go/slack/slackutilsx
 # github.com/smithy-security/pkg/env v0.0.3
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/env
+# github.com/smithy-security/pkg/retry v0.0.3
+## explicit; go 1.23
+github.com/smithy-security/pkg/retry
 # github.com/smithy-security/pkg/utils v0.0.2
 ## explicit; go 1.23.2
 github.com/smithy-security/pkg/utils
@@ -183,6 +199,7 @@ github.com/zclconf/go-cty/cty/set
 github.com/zclconf/go-cty-yaml
 # go.uber.org/mock v0.5.0
 ## explicit; go 1.22
+go.uber.org/mock/gomock
 go.uber.org/mock/mockgen
 go.uber.org/mock/mockgen/model
 # golang.org/x/crypto v0.36.0
