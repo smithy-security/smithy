@@ -182,55 +182,45 @@ func (c *client) Validate(finding *ocsf.VulnerabilityFinding) error {
 }
 
 // Read gets findings by instanceID.
-func (c *client) Read(
-	ctx context.Context,
-	instanceID uuid.UUID,
-	queryOpts *store.QueryOpts,
-) (vfs []*vf.VulnerabilityFinding, err error) {
+func (c *client) Read(ctx context.Context, instanceID uuid.UUID, queryOpts *store.QueryOpts) ([]*vf.VulnerabilityFinding, error) {
 	findingBatches := [][]*v1.Finding{}
-
-	defer func() {
-		vfs = slices.Collect(
-			utils.MapSlice(
-				utils.CollectSlices(findingBatches),
-				func(finding *v1.Finding) *vf.VulnerabilityFinding {
-					return &vf.VulnerabilityFinding{
-						Finding: finding.GetDetails(),
-						ID:      finding.GetId(),
-					}
-				},
-			),
-		)
-	}()
-
 	if queryOpts == nil {
-		// we impose our own paging in this case
+		// We impose our own paging in this case
+	pageLoop:
 		for page := uint32(0); ; page++ {
-			findingsPage, err := c.read(
-				ctx,
-				instanceID,
-				&store.QueryOpts{
-					Page:     page,
-					PageSize: c.pageSize,
-				},
-			)
+			pageFindings, err := c.read(ctx, instanceID, &store.QueryOpts{
+				Page:     page,
+				PageSize: c.pageSize,
+			})
 			switch {
 			case errors.Is(store.ErrNoFindingsFound, err) && page > 0:
-				return nil, nil
+				break pageLoop
 			case err != nil:
 				return nil, err
-			case len(findingsPage) < int(c.pageSize):
-				findingBatches = append(findingBatches, findingsPage)
-				return nil, nil
+			case len(pageFindings) < int(c.pageSize):
+				findingBatches = append(findingBatches, pageFindings)
+				break pageLoop
 			default:
-				findingBatches = append(findingBatches, findingsPage)
+				findingBatches = append(findingBatches, pageFindings)
 			}
 		}
+	} else {
+		pageFindings, err := c.read(ctx, instanceID, queryOpts)
+		if err != nil {
+			return nil, err
+		}
+		findingBatches = append(findingBatches, pageFindings)
 	}
 
-	findings, err := c.read(ctx, instanceID, queryOpts)
-	findingBatches = append(findingBatches, findings)
-	return nil, err
+	vfs := slices.Collect(utils.MapSlice(
+		utils.CollectSlices(findingBatches),
+		func(finding *v1.Finding) *vf.VulnerabilityFinding {
+			return &vf.VulnerabilityFinding{
+				Finding: finding.GetDetails(),
+				ID:      finding.GetId(),
+			}
+		}))
+	return vfs, nil
 }
 
 func (c *client) read(
